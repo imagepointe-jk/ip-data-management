@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Color {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  hexCode String   @unique
+  Design  Design[]
+}
+
+model Design {
+  id                       Int                 @id @default(autoincrement())
+  status                   String              @default("Draft")
+  designNumber             Int
+  date                     DateTime            @default(dbgenerated("'1970-01-01 00:00:00'::timestamp without time zone"))
+  description              String?
+  designTypeId             Int                 @default(0)
+  featured                 Boolean             @default(false)
+  name                     String?
+  defaultBackgroundColorId Int
+  imageId                  Int
+  Color                    Color               @relation(fields: [defaultBackgroundColorId], references: [id])
+  DesignType               DesignType          @relation(fields: [designTypeId], references: [id])
+  Image                    Image               @relation(fields: [imageId], references: [id])
+  DesignSubcategory        DesignSubcategory[]
+  DesignTag                DesignTag[]
+}
+
+model DesignCategory {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique
+  designTypeId      Int
+  DesignType        DesignType          @relation(fields: [designTypeId], references: [id])
+  DesignSubcategory DesignSubcategory[]
+}
+
+model DesignSubcategory {
+  id               Int            @id @default(autoincrement())
+  name             String
+  designCategoryId Int
+  DesignCategory   DesignCategory @relation(fields: [designCategoryId], references: [id])
+  Design           Design[]
+}
+
+model DesignTag {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  Design Design[]
+}
+
+model DesignType {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  Design         Design[]
+  DesignCategory DesignCategory[]
+}
+
+model HubSpotSync {
+  id          Int       @id @default(autoincrement())
+  startedById Int
+  startedAt   DateTime
+  finishedAt  DateTime?
+  progress    Decimal
+  User        User      @relation(fields: [startedById], references: [id])
+}
+
+model Image {
+  id     Int      @id @default(autoincrement())
+  url    String
+  Design Design[]
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  email        String        @unique
+  passwordHash String
+  HubSpotSync  HubSpotSync[]
+}
