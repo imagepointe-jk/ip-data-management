@@ -1,8 +1,8 @@
 "use server";
 
-import { validateUserFormData } from "@/validations";
+import { validateUserFormData } from "../types/validations";
 import { prisma } from "../../prisma/client";
-import { hashPassword } from "../../utility/auth";
+import { hashPassword } from "../utility/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

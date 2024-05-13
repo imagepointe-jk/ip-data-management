@@ -1,7 +1,7 @@
 //seed with real data from the design library, sampled on 2-7-24.
 
 import { prisma } from "../prisma/client";
-import { getSourceJson } from "../utility/spreadsheet";
+import { getSourceJson } from "../src/utility/spreadsheet";
 
 const data = getSourceJson("./seed/Design Data 2-7-24.xlsx");
 

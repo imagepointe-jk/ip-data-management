@@ -1,0 +1,50 @@
+.main {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.controls-subsection {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.page-inactive,
+.page-active {
+  padding: 10px 15px;
+  border-radius: 0;
+}
+
+.page-inactive {
+  color: gray;
+  background-color: white;
+}
+
+.page-active {
+  color: white;
+  background-color: var(--color-alpha);
+}
+
+.jump-to-page-input {
+  font-size: var(--size-20);
+  width: 40px;
+  padding: 10px;
+  text-align: center;
+}
+
+@media screen and (max-width: 1024px) {
+  .page-buttons-label {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    justify-content: initial;
+    align-items: center;
+    gap: 10px;
+  }
+}

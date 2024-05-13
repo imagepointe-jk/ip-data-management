@@ -1,7 +1,7 @@
 import NextAuth, { User, NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "../../prisma/client";
-import { comparePassword } from "../../utility/auth";
+import { comparePassword } from "../utility/auth";
 
 export const BASE_PATH = "/api/auth";
 
