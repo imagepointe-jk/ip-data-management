@@ -6,13 +6,10 @@ export default function Navbar() {
     <nav>
       <ul>
         <li>
-          <Link href="/">Link 1</Link>
+          <Link href="/">Home</Link>
         </li>
         <li>
-          <Link href="/">Link 2</Link>
-        </li>
-        <li>
-          <Link href="/">Link 3</Link>
+          <Link href="/users">Users</Link>
         </li>
       </ul>
       <AuthButton />

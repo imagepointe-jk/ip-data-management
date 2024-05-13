@@ -1,7 +1,7 @@
 import NextAuth, { User, NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "../../prisma/client";
-import bcrypt from "bcryptjs";
+import { comparePassword } from "@/utilities";
 
 export const BASE_PATH = "/api/auth";
 
@@ -22,7 +22,7 @@ const authOptions: NextAuthConfig = {
         });
         if (!user) return null;
 
-        const passwordMatch = await bcrypt.compare(
+        const passwordMatch = await comparePassword(
           `${credentials.password}`,
           user.passwordHash
         );
