@@ -1,6 +1,7 @@
 import NextAuth, { User, NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "../../prisma/client";
+import bcrypt from "bcryptjs";
 
 export const BASE_PATH = "/api/auth";
 
@@ -14,16 +15,20 @@ const authOptions: NextAuthConfig = {
         password: { label: "password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
-        //this is where you would check the password.
-        //not implemented yet.
         const user = await prisma.user.findUnique({
           where: {
             email: `${credentials.email}`,
           },
         });
-        return user
-          ? { id: `${user.id}`, name: user.name, email: user.email }
-          : null;
+        if (!user) return null;
+
+        const passwordMatch = await bcrypt.compare(
+          `${credentials.password}`,
+          user.passwordHash
+        );
+        if (!passwordMatch) return null;
+
+        return { id: `${user.id}`, name: user.name, email: user.email };
       },
     }),
   ],
