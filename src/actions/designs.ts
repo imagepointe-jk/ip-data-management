@@ -15,6 +15,7 @@ export async function updateDesign(formData: FormData) {
       id: parsed.existingDesignId,
     },
     data: {
+      designNumber: +parsed.designNumber,
       description: parsed.description,
       featured: parsed.featured,
       date: parsed.date,

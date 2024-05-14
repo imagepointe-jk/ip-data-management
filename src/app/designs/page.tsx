@@ -22,6 +22,7 @@ export default async function Designs({ searchParams }: Props) {
 
   return (
     <>
+      <Link href="designs/0">Create Design</Link>
       <table>
         <thead>
           <tr>

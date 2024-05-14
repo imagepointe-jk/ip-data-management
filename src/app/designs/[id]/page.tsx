@@ -14,7 +14,7 @@ export default async function Design({ params }: Props) {
   const id = +params.id;
   const existingDesign = await getSingleDesign(id);
 
-  if (!existingDesign) return <h1>Design not found.</h1>;
+  if (!existingDesign && id !== 0) return <h1>Design not found.</h1>;
 
   const designTypes = await prisma.designType.findMany();
   const colors = await prisma.color.findMany();
@@ -23,8 +23,6 @@ export default async function Design({ params }: Props) {
 
   return (
     <>
-      <h1>Design {existingDesign.designNumber}</h1>
-      <div>Database ID: {existingDesign.id}</div>
       <DesignDataForm
         existingDesign={existingDesign}
         designTypes={designTypes}

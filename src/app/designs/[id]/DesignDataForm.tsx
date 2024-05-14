@@ -26,16 +26,32 @@ export default function DesignDataForm({
 
   return (
     <form action={updateDesign}>
-      <div>
-        <img
-          src={existingDesign?.image?.url}
-          alt="design image"
-          style={{
-            width: "300px",
-            height: "300px",
-            backgroundColor: `#${existingDesign?.defaultBackgroundColor.hexCode}`,
-          }}
+      <h1>
+        Design{" "}
+        <input
+          type="text"
+          name="design-number"
+          id="design-number"
+          defaultValue={existingDesign ? existingDesign.designNumber : ""}
         />
+      </h1>
+      <div>
+        Database ID: {existingDesign ? existingDesign.id : "(not created)"}
+      </div>
+      <div
+        style={{ border: "1px solid black", width: "300px", height: "300px" }}
+      >
+        {existingDesign && (
+          <img
+            src={existingDesign.image?.url}
+            alt="design image"
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: `#${existingDesign?.defaultBackgroundColor.hexCode}`,
+            }}
+          />
+        )}
       </div>
       <h4>Description</h4>
       <textarea

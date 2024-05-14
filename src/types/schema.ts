@@ -8,6 +8,7 @@ export const userFormDataSchema = z.object({
 });
 
 export const designFormDataSchema = z.object({
+  designNumber: z.string(),
   description: z.string(),
   featured: z.boolean(),
   date: z.date(),
