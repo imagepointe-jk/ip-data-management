@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,79 +10,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Color {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  hexCode String   @unique
-  Design  Design[]
-}
-
-model Design {
-  id                       Int                 @id @default(autoincrement())
-  status                   String              @default("Draft")
-  designNumber             Int
-  date                     DateTime            @default(dbgenerated("'1970-01-01 00:00:00'::timestamp without time zone"))
-  description              String?
-  designTypeId             Int                 @default(0)
-  featured                 Boolean             @default(false)
-  name                     String?
-  defaultBackgroundColorId Int
-  imageId                  Int
-  Color                    Color               @relation(fields: [defaultBackgroundColorId], references: [id])
-  DesignType               DesignType          @relation(fields: [designTypeId], references: [id])
-  Image                    Image               @relation(fields: [imageId], references: [id])
-  DesignSubcategory        DesignSubcategory[]
-  DesignTag                DesignTag[]
-}
-
-model DesignCategory {
-  id                Int                 @id @default(autoincrement())
-  name              String              @unique
-  designTypeId      Int
-  DesignType        DesignType          @relation(fields: [designTypeId], references: [id])
-  DesignSubcategory DesignSubcategory[]
-}
-
-model DesignSubcategory {
-  id               Int            @id @default(autoincrement())
-  name             String
-  designCategoryId Int
-  DesignCategory   DesignCategory @relation(fields: [designCategoryId], references: [id])
-  Design           Design[]
-}
-
-model DesignTag {
-  id     Int      @id @default(autoincrement())
-  name   String   @unique
-  Design Design[]
-}
-
-model DesignType {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  Design         Design[]
-  DesignCategory DesignCategory[]
-}
-
-model HubSpotSync {
-  id          Int       @id @default(autoincrement())
-  startedById Int
-  startedAt   DateTime
-  finishedAt  DateTime?
-  progress    Decimal
-  User        User      @relation(fields: [startedById], references: [id])
-}
-
-model Image {
-  id     Int      @id @default(autoincrement())
-  url    String
-  Design Design[]
-}
-
 model User {
   id           Int           @id @default(autoincrement())
   name         String        @unique
   email        String        @unique
   passwordHash String
-  HubSpotSync  HubSpotSync[]
+  startedSyncs HubSpotSync[]
+}
+
+model Design {
+  id                       Int                 @id @default(autoincrement())
+  designNumber             Int
+  name                     String?
+  description              String?
+  featured                 Boolean             @default(false)
+  date                     DateTime            @default("1970-01-01T00:00:00Z")
+  status                   String              @default("Draft")
+  designSubcategories      DesignSubcategory[]
+  designType               DesignType          @relation(fields: [designTypeId], references: [id])
+  designTypeId             Int                 @default(0)
+  designTags               DesignTag[]
+  image                    Image?              @relation(fields: [imageId], references: [id])
+  imageId                  Int
+  defaultBackgroundColor   Color               @relation(fields: [defaultBackgroundColorId], references: [id])
+  defaultBackgroundColorId Int
+}
+
+model DesignType {
+  id               Int              @id @default(autoincrement())
+  name             String           @unique
+  designs          Design[]
+  designCategories DesignCategory[]
+}
+
+model DesignCategory {
+  id                  Int                 @id @default(autoincrement())
+  name                String              @unique
+  designType          DesignType          @relation(fields: [designTypeId], references: [id])
+  designTypeId        Int
+  designSubcategories DesignSubcategory[]
+}
+
+model DesignSubcategory {
+  id               Int            @id @default(autoincrement())
+  name             String
+  designs          Design[]
+  designCategory   DesignCategory @relation(fields: [designCategoryId], references: [id])
+  designCategoryId Int
+}
+
+model DesignTag {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  designs Design[]
+}
+
+model Color {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  hexCode String   @unique
+  designs Design[]
+}
+
+model Image {
+  id      Int      @id @default(autoincrement())
+  url     String
+  designs Design[]
+}
+
+model HubSpotSync {
+  id          Int       @id @default(autoincrement())
+  startedBy   User      @relation(fields: [startedById], references: [id])
+  startedById Int
+  startedAt   DateTime
+  finishedAt  DateTime?
+  progress    Decimal //0 is no progress, 1 is complete
 }
