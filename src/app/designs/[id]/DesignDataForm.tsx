@@ -1,3 +1,4 @@
+import { updateDesign } from "@/actions/designs";
 import { DesignCategoryWithIncludes, DesignWithIncludes } from "@/types/types";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
@@ -16,8 +17,15 @@ export default function DesignDataForm({
   categories,
   tags,
 }: DesignDataFormProps) {
+  const selectedSubcategoryIds = existingDesign
+    ? existingDesign.designSubcategories.map((cat) => cat.id)
+    : [];
+  const selectedTagIds = existingDesign
+    ? existingDesign.designTags.map((tag) => tag.id)
+    : [];
+
   return (
-    <form action="">
+    <form action={updateDesign}>
       <div>
         <img
           src={existingDesign?.image?.url}
@@ -54,9 +62,13 @@ export default function DesignDataForm({
         }
       />
       <h4>Status</h4>
-      <select name="status" id="status">
-        <option value="published">Published</option>
-        <option value="published">Draft</option>
+      <select
+        name="status"
+        id="status"
+        defaultValue={existingDesign ? existingDesign.status : "Draft"}
+      >
+        <option value="Published">Published</option>
+        <option value="Draft">Draft</option>
       </select>
       <h4>Categories</h4>
       {categories.map((cat) => (
@@ -64,25 +76,45 @@ export default function DesignDataForm({
           <h5>{cat.name}</h5>
           {cat.designSubcategories.map((sub) => (
             <div key={sub.id}>
-              <input type="checkbox" name="subcategories" id={`${sub.id}`} />
-              <label htmlFor={`${sub.id}`}>{sub.name}</label>
+              <input
+                type="checkbox"
+                name="subcategories"
+                id={`subcategory-${sub.id}`}
+                value={sub.id}
+                defaultChecked={selectedSubcategoryIds.includes(sub.id)}
+              />
+              <label htmlFor={`subcategory-${sub.id}`}>{sub.name}</label>
             </div>
           ))}
         </div>
       ))}
       <h4>Design Type</h4>
-      <select name="design-type" id="design-type">
+      <select
+        name="design-type"
+        id="design-type"
+        defaultValue={
+          existingDesign ? existingDesign.designType.id : designTypes[0].id
+        }
+      >
         {designTypes.map((type) => (
-          <option key={type.id}>{type.name}</option>
+          <option key={type.id} value={type.id}>
+            {type.name}
+          </option>
         ))}
       </select>
       <h4>Tags</h4>
-      <ul>
-        {existingDesign &&
-          existingDesign.designTags.map((tag) => (
-            <li key={tag.id}>{tag.name}</li>
-          ))}
-      </ul>
+      {tags.map((tag) => (
+        <div key={tag.id}>
+          <input
+            type="checkbox"
+            name="tags"
+            id={`tag-${tag.id}`}
+            value={`${tag.id}`}
+            defaultChecked={selectedTagIds.includes(tag.id)}
+          />
+          <label htmlFor={`tag-${tag.id}`}>{tag.name}</label>
+        </div>
+      ))}
       <h4>Default Background Color</h4>
       <select
         name="bg-color"
@@ -97,6 +129,12 @@ export default function DesignDataForm({
           </option>
         ))}
       </select>
+      <input
+        type="hidden"
+        name="existingDesignId"
+        value={existingDesign ? `${existingDesign.id}` : undefined}
+      />
+      <button type="submit">Save Changes</button>
     </form>
   );
 }
