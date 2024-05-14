@@ -5,7 +5,6 @@ import {
   DesignSubcategory,
   DesignTag,
   DesignType,
-  Image,
 } from "@prisma/client";
 
 export type DesignQuery = {
@@ -27,7 +26,6 @@ export type DesignWithIncludes = Design & {
   designSubcategories: DesignSubcategory[];
   designTags: DesignTag[];
   designType: DesignType;
-  image: Image | null;
   defaultBackgroundColor: Color;
 };
 

@@ -6,7 +6,6 @@ const standardDesignIncludes = {
   designSubcategories: true,
   designTags: true,
   designType: true,
-  image: true,
   defaultBackgroundColor: true,
 };
 

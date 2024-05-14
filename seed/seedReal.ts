@@ -11,25 +11,8 @@ async function erase() {
   await prisma.designCategory.deleteMany();
   await prisma.designTag.deleteMany();
   await prisma.color.deleteMany();
-  await prisma.image.deleteMany();
 }
 
-async function createImages() {
-  if (!data) return;
-
-  const screenPrintDesigns = data["Screen Print Designs"];
-  const embroideryDesigns = data["Embroidery Designs"];
-  const allUrls = screenPrintDesigns
-    .map((design) => design["Image URL"] || "")
-    .concat(embroideryDesigns.map((design) => design["Image URL"] || ""));
-  for (const url of allUrls) {
-    await prisma.image.create({
-      data: {
-        url,
-      },
-    });
-  }
-}
 async function createColors() {
   if (!data) return;
 
@@ -140,12 +123,6 @@ async function createDesigns() {
     const status = designRow.Status;
     if (status === "Draft") return;
 
-    const foundImage = await prisma.image.findFirst({ where: { url } });
-    if (!foundImage) {
-      throw new Error(
-        `Couldn't create design ${designNumber} due to image url`
-      );
-    }
     const featured = `${designRow.Featured}` === "Yes" ? true : false;
     const colorSplit = `${designRow["Default Background Color"]}`.split(" - ");
     const colorName = colorSplit[1];
@@ -205,11 +182,6 @@ async function createDesigns() {
             name: colorName,
           },
         },
-        image: {
-          connect: {
-            id: foundImage?.id,
-          },
-        },
         description: designRow.Description,
         name: designRow.Name,
         status: designRow.Status,
@@ -225,13 +197,13 @@ async function createDesigns() {
         designTags: {
           connect: tagIds.map((id) => ({ id })),
         },
+        imageUrl: url,
       },
     });
   }
 }
 
 async function seed() {
-  await createImages();
   await createColors();
   await createTags();
   await createDesignCategories();

@@ -43,7 +43,7 @@ export default function DesignDataForm({
       >
         {existingDesign && (
           <img
-            src={existingDesign.image?.url}
+            src={existingDesign.imageUrl}
             alt="design image"
             style={{
               width: "100%",

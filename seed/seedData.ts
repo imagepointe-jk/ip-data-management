@@ -4,7 +4,6 @@ import {
   DesignCategory,
   DesignSubcategory,
   DesignTag,
-  Image,
 } from "@prisma/client";
 
 const screenPrintId = 1;
@@ -91,7 +90,6 @@ type SeedDesignSubcategory = Omit<
 };
 type SeedDesignTag = Omit<DesignTag, "id">;
 type SeedColor = Omit<Color, "id">;
-type SeedImage = Omit<Image, "id">;
 
 export const designCategories: SeedDesignCategory[] = [
   {
@@ -187,38 +185,5 @@ export const colors: SeedColor[] = [
   {
     hexCode: "46326f",
     name: "Purple",
-  },
-];
-
-export const images: SeedImage[] = [
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/567-15.png",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/205.jpg",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/1028.png",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/1611-darks.png",
-  },
-  {
-    url: "",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/1566.png",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/1135-darks.png",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/759-lights.png",
-  },
-  {
-    url: "https://www.imagepointe.com/wp-content/uploads/2024/02/913-lights.png",
   },
 ];

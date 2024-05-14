@@ -30,10 +30,9 @@ model Design {
   designType               DesignType          @relation(fields: [designTypeId], references: [id])
   designTypeId             Int                 @default(0)
   designTags               DesignTag[]
-  image                    Image?              @relation(fields: [imageId], references: [id])
-  imageId                  Int
   defaultBackgroundColor   Color               @relation(fields: [defaultBackgroundColorId], references: [id])
   defaultBackgroundColorId Int
+  imageUrl                 String              @default("none")
 }
 
 model DesignType {
@@ -69,12 +68,6 @@ model Color {
   id      Int      @id @default(autoincrement())
   name    String   @unique
   hexCode String   @unique
-  designs Design[]
-}
-
-model Image {
-  id      Int      @id @default(autoincrement())
-  url     String
   designs Design[]
 }
 

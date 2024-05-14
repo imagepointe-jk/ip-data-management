@@ -42,7 +42,7 @@ export default async function Designs({ searchParams }: Props) {
                       height: "100%",
                       backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
                     }}
-                    src={design.image ? design.image.url : ""}
+                    src={design.imageUrl}
                     alt="Design Image"
                   />
                 </div>

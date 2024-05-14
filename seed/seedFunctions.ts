@@ -5,7 +5,6 @@ import {
   designSubcategories,
   designTags,
   designs,
-  images,
 } from "./seedData";
 
 export async function erase() {
@@ -14,7 +13,6 @@ export async function erase() {
   await prisma.designCategory.deleteMany();
   await prisma.designTag.deleteMany();
   await prisma.color.deleteMany();
-  await prisma.image.deleteMany();
 }
 
 async function createColors() {
@@ -23,16 +21,6 @@ async function createColors() {
       data: {
         hexCode: color.hexCode,
         name: color.name,
-      },
-    });
-  }
-}
-
-async function createImages() {
-  for (const image of images) {
-    await prisma.image.create({
-      data: {
-        url: image.url,
       },
     });
   }
@@ -81,15 +69,6 @@ async function createDesignSubcategories() {
 async function createDesigns() {
   for (const design of designs) {
     try {
-      const image = await prisma.image.findFirst({
-        where: {
-          url: design.imageUrl,
-        },
-      });
-      if (!image)
-        throw new Error(
-          `Could not find seeded image for design number ${design.designNumber}`
-        );
       const subcategoryIds = [];
       for (const subcat of design.subcategories) {
         const foundSubcat = await prisma.designSubcategory.findFirst({
@@ -121,11 +100,7 @@ async function createDesigns() {
               name: design.defaultBackgroundColor,
             },
           },
-          image: {
-            connect: {
-              id: image?.id,
-            },
-          },
+          imageUrl: design.imageUrl,
         },
       });
     } catch (error) {
@@ -138,7 +113,7 @@ async function createDesigns() {
 }
 
 export async function seed() {
-  await createImages();
+  // await createImages();
   await createColors();
   await createTags();
   await createDesignCategories();
