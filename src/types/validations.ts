@@ -15,12 +15,14 @@ export function validateUserFormData(formData: FormData) {
 export function validateDesignFormData(formData: FormData) {
   const existingDesignId = formData.get("existingDesignId");
   const existingDesignIdNum = existingDesignId ? +existingDesignId : undefined;
+  const date = new Date(`${formData.get("date")}`);
+  console.log("DATE=================", date.getTime());
 
   return designFormDataSchema.parse({
     designNumber: formData.get("design-number"),
     description: formData.get("description"),
     featured: !!formData.get("featured"),
-    date: new Date(`${formData.get("date")}`),
+    date: isNaN(date.getTime()) ? new Date() : date,
     status: formData.get("status"),
     subcategoryIds: formData.getAll("subcategories"),
     tagIds: formData.getAll("tags"),

@@ -1,4 +1,4 @@
-import { updateDesign } from "@/actions/designs";
+import { createDesign, updateDesign } from "@/actions/designs";
 import { DesignCategoryWithIncludes, DesignWithIncludes } from "@/types/types";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
@@ -25,7 +25,7 @@ export default function DesignDataForm({
     : [];
 
   return (
-    <form action={updateDesign}>
+    <form action={existingDesign ? updateDesign : createDesign}>
       <h1>
         Design{" "}
         <input
@@ -33,6 +33,7 @@ export default function DesignDataForm({
           name="design-number"
           id="design-number"
           defaultValue={existingDesign ? existingDesign.designNumber : ""}
+          required={!existingDesign}
         />
       </h1>
       <div>
@@ -157,7 +158,9 @@ export default function DesignDataForm({
         name="existingDesignId"
         value={existingDesign ? `${existingDesign.id}` : undefined}
       />
-      <button type="submit">Save Changes</button>
+      <button type="submit">
+        {existingDesign ? "Save Changes" : "Create Design"}
+      </button>
     </form>
   );
 }
