@@ -6,10 +6,26 @@ import {
   DesignTag,
   DesignType,
 } from "@prisma/client";
+import { SortingDirection, SortingType } from "./schema";
 
 export type DesignQuery = {
   perPage?: number;
   pageNumber?: number;
+  designType?: string;
+  designNumber?: number;
+  sortBy?: {
+    type: SortingType;
+    direction: SortingDirection;
+  };
+  getRelated?: boolean;
+  similarToId?: number;
+  allowDuplicates?: boolean;
+  featuredOnly?: boolean;
+  status?: "Published" | "Draft";
+  subcategory?: string;
+  keyword?: string;
+  before?: number; //timestamp
+  after?: number; //timestamp
 };
 
 type ResultsPagination = {

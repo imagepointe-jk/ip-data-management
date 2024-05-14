@@ -20,3 +20,12 @@ export const designFormDataSchema = z.object({
   imageUrl: z.string(),
   existingDesignId: z.number().optional(),
 });
+
+export const sortingTypes = ["Design Number"] as const;
+export const sortingTypeSchema = z.enum(sortingTypes);
+
+export const sortingDirections = ["Ascending", "Descending"] as const;
+export const sortingDirectionSchema = z.enum(sortingDirections);
+
+export type SortingType = z.infer<typeof sortingTypeSchema>;
+export type SortingDirection = z.infer<typeof sortingDirectionSchema>;

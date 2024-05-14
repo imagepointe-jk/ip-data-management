@@ -2,6 +2,7 @@ import { getDesigns } from "@/db/access/designs";
 import { prisma } from "../../../../prisma/client";
 import { NextRequest } from "next/server";
 import { easyCorsInit } from "@/constants";
+import { makeStringTitleCase } from "@/utility/misc";
 
 export async function GET(request: NextRequest) {
   //params to expect:
@@ -31,6 +32,14 @@ export async function GET(request: NextRequest) {
   const designs = await getDesigns({
     pageNumber: pageNumber ? +pageNumber : 1,
     perPage: perPage ? +perPage : 18,
+    featuredOnly: featured ? featured === "true" : false,
+    allowDuplicates: allowDuplicateDesignNumbers
+      ? allowDuplicateDesignNumbers === "true"
+      : false,
+    designType: designType ? makeStringTitleCase(designType) : "Screen Print",
+    keyword: keywords || undefined,
+    similarToId: similarTo ? +similarTo : undefined,
+    subcategory: subcategories || undefined,
   });
 
   return Response.json(designs, easyCorsInit);
