@@ -26,6 +26,7 @@ export function validateDesignFormData(formData: FormData) {
     tagIds: formData.getAll("tags"),
     designTypeId: formData.get("design-type"),
     defaultBackgroundColorId: formData.get("bg-color"),
+    imageUrl: formData.get("image-url"),
     existingDesignId: existingDesignIdNum,
   });
 }

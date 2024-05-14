@@ -52,6 +52,13 @@ export default function DesignDataForm({
             }}
           />
         )}
+        <input
+          type="text"
+          name="image-url"
+          id="image-url"
+          defaultValue={existingDesign ? existingDesign.imageUrl : ""}
+          size={60}
+        />
       </div>
       <h4>Description</h4>
       <textarea

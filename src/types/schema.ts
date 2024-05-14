@@ -17,5 +17,6 @@ export const designFormDataSchema = z.object({
   tagIds: z.array(z.string()),
   designTypeId: z.string(),
   defaultBackgroundColorId: z.string(),
+  imageUrl: z.string(),
   existingDesignId: z.number().optional(),
 });
