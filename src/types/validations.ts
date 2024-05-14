@@ -16,7 +16,6 @@ export function validateDesignFormData(formData: FormData) {
   const existingDesignId = formData.get("existingDesignId");
   const existingDesignIdNum = existingDesignId ? +existingDesignId : undefined;
   const date = new Date(`${formData.get("date")}`);
-  console.log("DATE=================", date.getTime());
 
   return designFormDataSchema.parse({
     designNumber: formData.get("design-number"),
