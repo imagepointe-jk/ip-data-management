@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const keywords = params.get("keywords");
   const designType = params.get("designType");
   const allowDuplicateDesignNumbers = params.get("allowDuplicateDesignNumbers");
-  const getRelatedToId = params.get("getRelatedToId");
+  // const getRelatedToId = params.get("getRelatedToId");
   const sortBy = params.get("sortBy");
   const similarTo = params.get("similarTo");
   const pageNumber = params.get("pageNumber");
@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
     keyword: keywords || undefined,
     similarToId: similarTo ? +similarTo : undefined,
     subcategory: subcategories || undefined,
+    // getRelated: getRelatedToId
   });
 
   return Response.json(designs, easyCorsInit);

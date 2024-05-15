@@ -159,6 +159,17 @@ export async function getSingleDesign(id: number) {
   });
 }
 
+export async function getDesignsWithSameDesignNumber(designNumber: number) {
+  return prisma.design.findMany({
+    where: {
+      designNumber: {
+        equals: designNumber,
+      },
+    },
+    include: standardDesignIncludes,
+  });
+}
+
 export async function getDesignCategoryHierarchy() {
   return await prisma.designCategory.findMany({
     include: {

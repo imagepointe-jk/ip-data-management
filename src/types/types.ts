@@ -17,7 +17,7 @@ export type DesignQuery = {
     type: SortingType;
     direction: SortingDirection;
   };
-  getRelated?: boolean;
+  // getRelated?: boolean;
   similarToId?: number;
   allowDuplicates?: boolean;
   featuredOnly?: boolean;
