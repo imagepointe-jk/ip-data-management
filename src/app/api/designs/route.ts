@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
   //getRelatedToId
   //sortBy (will be "design number" or "priority")
   //similarTo
+  //after (date)
   const params = request.nextUrl.searchParams;
   const featured = params.get("featured");
   const subcategories = params.get("subcategories");
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
   const similarTo = params.get("similarTo");
   const pageNumber = params.get("pageNumber");
   const perPage = params.get("perPage");
+  const after = params.get("after");
 
   const designs = await getDesigns({
     pageNumber: pageNumber ? +pageNumber : 1,
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
     keyword: keywords || undefined,
     similarToId: similarTo ? +similarTo : undefined,
     subcategory: subcategories || undefined,
+    after: after && !isNaN(+after) ? +after : undefined,
     // getRelated: getRelatedToId
   });
 

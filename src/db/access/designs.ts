@@ -26,7 +26,6 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
     subcategory,
   } = query;
   const countPerPage = perPage || defaultPerPage;
-  console.log("design type", designType);
 
   function buildWhere() {
     const where: any = { AND: [] };
@@ -139,8 +138,6 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
       }),
     ]
   );
-
-  console.log(matchingDesigns[matchingDesigns.length - 1]);
 
   return {
     designs: paginatedMatchingDesigns,
