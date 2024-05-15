@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
   const pageNumber = params.get("pageNumber");
   const perPage = params.get("perPage");
   const after = params.get("after");
+  const before = params.get("before");
 
   const designs = await getDesigns({
     pageNumber: pageNumber ? +pageNumber : 1,
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
     similarToId: similarTo ? +similarTo : undefined,
     subcategory: subcategories || undefined,
     after: after && !isNaN(+after) ? +after : undefined,
+    before: before && !isNaN(+before) ? +before : undefined,
     // getRelated: getRelatedToId
   });
 
