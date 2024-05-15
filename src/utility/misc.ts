@@ -8,3 +8,7 @@ export function makeStringTitleCase(str: string) {
     .map((word) => `${word[0].toUpperCase()}${word.substring(1)}`)
     .join(" ");
 }
+
+export function message(message: string) {
+  return { message };
+}

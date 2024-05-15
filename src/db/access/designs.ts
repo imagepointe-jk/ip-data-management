@@ -113,8 +113,6 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
     return where;
   }
 
-  console.log("skipping", pageNumber ? countPerPage * (pageNumber - 1) : 0);
-
   const [matchingDesigns, paginatedMatchingDesigns] = await prisma.$transaction(
     [
       prisma.design.findMany({
