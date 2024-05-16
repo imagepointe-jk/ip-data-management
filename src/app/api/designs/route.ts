@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   //after (date)
   const params = request.nextUrl.searchParams;
   const featured = params.get("featured");
-  const subcategories = params.get("subcategories");
+  const subcategory = params.get("subcategory");
   const keywords = params.get("keywords");
   const designType = params.get("designType");
   const allowDuplicateDesignNumbers = params.get("allowDuplicateDesignNumbers");
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     designType: designType ? makeStringTitleCase(designType) : "Screen Print",
     keyword: keywords || undefined,
     similarToId: similarTo ? +similarTo : undefined,
-    subcategory: subcategories || undefined,
+    subcategory: subcategory || undefined,
     after: after && !isNaN(+after) ? +after : undefined,
     before: before && !isNaN(+before) ? +before : undefined,
     // getRelated: getRelatedToId
