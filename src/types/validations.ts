@@ -1,4 +1,8 @@
-import { designFormDataSchema, userFormDataSchema } from "./schema";
+import {
+  designFormDataSchema,
+  quoteRequestSchema,
+  userFormDataSchema,
+} from "./schema";
 
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
@@ -30,4 +34,8 @@ export function validateDesignFormData(formData: FormData) {
     imageUrl: formData.get("image-url"),
     existingDesignId: existingDesignIdNum,
   });
+}
+
+export function validateQuoteRequest(json: any) {
+  return quoteRequestSchema.parse(json);
 }

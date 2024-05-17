@@ -21,6 +21,22 @@ export const designFormDataSchema = z.object({
   existingDesignId: z.number().optional(),
 });
 
+const quoteRequestDesignSchema = z.object({
+  id: z.number(),
+  designNumber: z.string(),
+  garmentColor: z.string(),
+});
+
+export const quoteRequestSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  phone: z.number(),
+  union: z.string(),
+  comments: z.string(),
+  designs: z.array(quoteRequestDesignSchema),
+});
+
 export const sortingTypes = ["Design Number"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -29,3 +45,4 @@ export const sortingDirectionSchema = z.enum(sortingDirections);
 
 export type SortingType = z.infer<typeof sortingTypeSchema>;
 export type SortingDirection = z.infer<typeof sortingDirectionSchema>;
+export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
