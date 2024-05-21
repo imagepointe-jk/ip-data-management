@@ -1,10 +1,34 @@
-import { startSync } from "@/actions/hubspot";
+"use client";
 
-export default async function Hubspot() {
+import { startSync } from "@/actions/hubspot";
+import { FormEvent, useState } from "react";
+
+export default function Hubspot() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null as string | null);
+  const [message, setMessage] = useState(null as string | null);
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    const { error, message } = await startSync(formData);
+
+    setLoading(false);
+    if (message) setMessage(message);
+    if (error) {
+      console.error(`Error ${error.statusCode}`);
+      setError(error.message);
+    }
+  }
+
   return (
     <>
       <h1>HubSpot</h1>
-      <form action={startSync}>
+      <form onSubmit={onSubmit}>
         <div>
           <label htmlFor="customers">Customers: </label>
           <input type="file" name="customers" id="customers" />
@@ -29,7 +53,10 @@ export default async function Hubspot() {
           <label htmlFor="lineItems">Line Items: </label>
           <input type="file" name="lineItems" id="lineItems" />
         </div>
-        <button type="submit">Start Sync</button>
+        {!loading && <button type="submit">Start Sync</button>}
+        {loading && <div>Uploading...</div>}
+        {!loading && error && <div style={{ color: "red" }}>{error}</div>}
+        {message && <div>{message}</div>}
       </form>
     </>
   );
