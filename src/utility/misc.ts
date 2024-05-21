@@ -12,3 +12,9 @@ export function makeStringTitleCase(str: string) {
 export function message(message: string) {
   return { message };
 }
+
+export function roundToDecimalPlaces(num: number, decimalPlaces: number) {
+  return (
+    Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)
+  );
+}
