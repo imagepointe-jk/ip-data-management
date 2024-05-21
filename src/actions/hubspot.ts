@@ -1,10 +1,10 @@
 "use server";
 
-import { File } from "buffer";
+import { validateHubSpotSyncFormData } from "@/types/validations";
 
 export async function startSync(formData: FormData) {
-  const customers = formData.get("customers") as unknown;
-  if (!(customers instanceof File)) throw new Error("not file");
+  const { customers, contacts, lineItems, orders, po, products } =
+    await validateHubSpotSyncFormData(formData);
 
-  console.log("received");
+  console.log("validation passed===================================");
 }
