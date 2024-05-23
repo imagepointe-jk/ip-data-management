@@ -4,25 +4,23 @@ import { getDesigns } from "@/db/access/designs";
 import Link from "next/link";
 
 type Props = {
-  searchParams?: {
-    perPage?: string;
-    pageNumber?: string;
-  };
+  searchParams?: any;
 };
 export default async function Designs({ searchParams }: Props) {
-  const pageNumber =
-    searchParams && searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
-      ? +searchParams.pageNumber
-      : 1;
-  const perPage =
-    searchParams && searchParams.perPage && !isNaN(+searchParams.perPage)
-      ? +searchParams.perPage
-      : defaultPerPage;
-  const { designs, totalResults } = await getDesigns({ pageNumber, perPage });
+  const { pageNumber, perPage, designType } = parseSearchParams(searchParams);
+  const { designs, totalResults } = await getDesigns({
+    pageNumber,
+    perPage,
+    designType,
+  });
 
   return (
     <>
       <Link href="designs/0">Create Design</Link>
+      <Link href={`designs/?designType=${encodeURIComponent("Screen Print")}`}>
+        Screen Print
+      </Link>
+      <Link href="designs/?designType=Embroidery">Embroidery</Link>
       <table>
         <thead>
           <tr>
@@ -66,4 +64,25 @@ export default async function Designs({ searchParams }: Props) {
       />
     </>
   );
+}
+
+function parseSearchParams(searchParams: any) {
+  const pageNumber =
+    searchParams && searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
+      ? +searchParams.pageNumber
+      : 1;
+  const perPage =
+    searchParams && searchParams.perPage && !isNaN(+searchParams.perPage)
+      ? +searchParams.perPage
+      : defaultPerPage;
+  const designType =
+    searchParams && searchParams.designType === "Embroidery"
+      ? "Embroidery"
+      : "Screen Print";
+
+  return {
+    pageNumber,
+    perPage,
+    designType,
+  };
 }
