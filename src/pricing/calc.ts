@@ -3,6 +3,7 @@ import {
   markupTable,
   markupTableHeaderNumbers,
   markupTableRowNames,
+  printUpchargeHeaderNumbers,
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
@@ -40,6 +41,10 @@ function calculateTshirtLocationPrices(
   locations: DecorationLocation[]
 ) {
   let sum = 0;
+  const quantityToUse = roundDownToAllowedValue(
+    garmentQuantity,
+    printUpchargeHeaderNumbers
+  );
 
   for (const location of locations) {
     if (location.colorCount === undefined)
@@ -56,24 +61,24 @@ function calculateTshirtLocationPrices(
         : "unknown";
 
     const locationPrice = printUpchargeTable.get(
-      `${garmentQuantity}`,
+      `${quantityToUse}`,
       colorCountName
     );
     if (!locationPrice)
       throw new Error(
-        `No t-shirt print upcharge found for quantity ${garmentQuantity} and colorCountName ${colorCountName}`
+        `No t-shirt print upcharge found for quantity ${quantityToUse} and colorCountName ${colorCountName}`
       );
 
     sum += locationPrice;
   }
 
   const oneColorCost = printUpchargeTable.get(
-    `${garmentQuantity}`,
+    `${quantityToUse}`,
     printUpchargeRowNames.oneColor
   );
   if (!oneColorCost)
     throw new Error(
-      `No one-color cost found for quantity ${garmentQuantity} in the t-shirt print upcharge table`
+      `No one-color cost found for quantity ${quantityToUse} in the t-shirt print upcharge table`
     );
   sum -= oneColorCost;
 
