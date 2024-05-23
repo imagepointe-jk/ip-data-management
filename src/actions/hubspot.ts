@@ -21,15 +21,15 @@ export async function startSync(
 
     const { customers, contacts, lineItems, orders, po, products } =
       await validateHubSpotSyncFormData(formData);
-    hubSpotSync(
+    hubSpotSync({
       customers,
       contacts,
       orders,
       po,
       products,
       lineItems,
-      `${userEmail}`
-    );
+      userEmail: `${userEmail}`,
+    });
   } catch (error) {
     //currently returning instances of classes from server actions is not supported
     if (error instanceof AppError) {

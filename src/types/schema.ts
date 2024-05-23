@@ -137,6 +137,12 @@ export const productSchema = z.object({
   ["Unit Price"]: z.number().optional(),
 });
 
+export const hubSpotOwnerSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+});
+
 export const sortingTypes = ["Design Number"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -153,3 +159,11 @@ export type Order = z.infer<typeof orderSchema>;
 export type Product = z.infer<typeof productSchema>;
 export type LineItem = z.infer<typeof lineItemSchema>;
 export type PO = z.infer<typeof poSchema>;
+export type HubSpotOwner = z.infer<typeof hubSpotOwnerSchema>;
+export type ImpressDataType =
+  | "Customer"
+  | "Contact"
+  | "Order"
+  | "Line Item"
+  | "PO"
+  | "Product";

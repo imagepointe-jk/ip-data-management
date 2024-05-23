@@ -1,18 +1,12 @@
 import { AppError } from "@/error";
-import {
-  getHeaderRowValues,
-  getSheetFromBuffer,
-  getSheetRawCells,
-  jsonToSheet,
-} from "@/utility/spreadsheet";
+import { getHeaderRowValues, getSheetFromBuffer } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
 import { File } from "buffer";
-import { WorkSheet } from "xlsx";
 import {
-  Product,
   contactSchema,
   customerSchema,
   designFormDataSchema,
+  hubSpotOwnerSchema,
   lineItemSchema,
   orderSchema,
   poSchema,
@@ -20,6 +14,8 @@ import {
   quoteRequestSchema,
   userFormDataSchema,
 } from "./schema";
+import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
+import { z } from "zod";
 
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
@@ -183,75 +179,14 @@ export function parseProduct(row: any) {
   return productSchema.parse(row);
 }
 
+export function parseHubSpotOwnerResults(json: any) {
+  return z.object({ results: z.array(hubSpotOwnerSchema) }).parse(json);
+}
+
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {
   for (const required of requiredValues) {
     const found = !!inputArray.find((inputVal) => inputVal === required);
     if (!found) return false;
   }
   return true;
-}
-
-function cleanupProductsSheet(sheet: WorkSheet) {
-  console.log("start cleanup");
-  const productsPerPage = 59;
-  const products: Product[] = [
-    {
-      Name: "Less than Minimum Charge - Dye Sub",
-      SKU: "<MIN-DS",
-      "Product Type": "Service",
-      "Unit Price": 0,
-    },
-    {
-      Name: "Less than Minimum Charge - Embroidery",
-      SKU: "<MIN-EMB",
-      "Product Type": "Service",
-      "Unit Price": 0,
-    },
-    {
-      Name: "Less than Minimum Charge - PIP",
-      SKU: "<MIN-PIP",
-      "Product Type": "Service",
-      "Unit Price": 0,
-    },
-    {
-      Name: "Less than Minimum Charge - Screen Print",
-      SKU: "<MIN-SP",
-      "Product Type": "Service",
-      "Unit Price": 0,
-    },
-  ];
-
-  for (let page = 0; page < 500; page++) {
-    const startingRow = page * 63 + 5; //formula determined by observing pattern of Impress paginated output
-    const rows = getSheetRawCells(
-      {
-        columns: {
-          from: 1,
-          to: 2,
-        },
-        rows: {
-          from: startingRow,
-          to: startingRow + productsPerPage - 1,
-        },
-      },
-      sheet
-    );
-    const firstVal = rows[0][0];
-    const noPage = firstVal === undefined;
-    if (noPage) break;
-
-    for (const row of rows) {
-      const SKU = row[0];
-      const Name = row[1];
-      if (!SKU) break;
-      products.push({
-        SKU,
-        Name,
-        "Unit Price": 0,
-      });
-    }
-  }
-
-  console.log("finish cleanup");
-  return jsonToSheet(products);
 }
