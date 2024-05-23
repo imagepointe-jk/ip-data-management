@@ -1,4 +1,3 @@
-import { DecorationLocation, DecorationType, ProductType } from "@/types/types";
 import { roundDownToAllowedValue } from "../utility/misc";
 import {
   markupTable,
@@ -7,18 +6,12 @@ import {
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
-
-type CalculatePriceParams = {
-  productData: { type: ProductType; net: number };
-  decorationType: DecorationType;
-  quantity: number;
-  locations: DecorationLocation[];
-};
+import { CalculatePriceParams, DecorationLocation } from "@/types/schema";
 
 export function calculatePrice(params: CalculatePriceParams) {
   const { decorationType, productData, locations, quantity } = params;
 
-  if (productData.type !== "T-Shirts") return 0;
+  if (productData.type !== "tshirt") return 0;
 
   try {
     const quantityToUse = roundDownToAllowedValue(

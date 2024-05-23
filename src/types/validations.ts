@@ -1,4 +1,5 @@
 import {
+  calculatePriceParamsSchema,
   designFormDataSchema,
   quoteRequestSchema,
   userFormDataSchema,
@@ -38,4 +39,8 @@ export function validateDesignFormData(formData: FormData) {
 
 export function validateQuoteRequest(json: any) {
   return quoteRequestSchema.parse(json);
+}
+
+export function validatePricingRequest(json: any) {
+  return calculatePriceParamsSchema.parse(json);
 }

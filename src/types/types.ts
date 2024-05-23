@@ -49,10 +49,3 @@ export type DesignCategoryWithIncludes = DesignCategory & {
   designSubcategories: DesignSubcategory[];
   designType: DesignType;
 };
-
-export type ProductType = "T-Shirts" | "Polos/Jackets/Sweats" | "Hats/Beanies";
-export type DecorationType = "Screen Print" | "Embroidery";
-export type DecorationLocation = {
-  colorCount?: number;
-  stitchCount?: number;
-};
