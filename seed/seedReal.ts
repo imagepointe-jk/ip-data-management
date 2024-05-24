@@ -16,10 +16,10 @@ async function erase() {
 async function createColors() {
   if (!data) return;
 
-  const colorTable = data["Colors"];
+  const colorTable = data["Colors"]!;
   for (const colorRow of colorTable) {
     const split = `${colorRow.Color}`.split(" - ");
-    const hexCode = split[0].replace("#", "");
+    const hexCode = split[0]!.replace("#", "");
     const name = split[1];
     if (!name || !hexCode) continue;
     await prisma.color.create({
@@ -33,7 +33,7 @@ async function createColors() {
 async function createTags() {
   if (!data) return;
 
-  const tags = data["Tags"];
+  const tags = data["Tags"]!;
   for (const tag of tags) {
     if (!tag.Name) continue;
     await prisma.designTag.create({
@@ -46,7 +46,7 @@ async function createTags() {
 async function createDesignCategories() {
   if (!data) return;
 
-  const categories = data["Categories"];
+  const categories = data["Categories"]!;
   for (const cat of categories) {
     if (!cat.Name || !cat["Design Type"]) continue;
     await prisma.designCategory.create({
@@ -64,7 +64,7 @@ async function createDesignCategories() {
 async function createDesignSubcategories() {
   if (!data) return;
 
-  const subcategories = data["Subcategories"];
+  const subcategories = data["Subcategories"]!;
   for (const subcat of subcategories) {
     if (!subcat.Name || !subcat["Parent Category"]) continue;
     try {
@@ -90,7 +90,7 @@ async function createDesignSubcategories() {
 async function createDesigns() {
   if (!data) return;
 
-  const screenPrintDesigns = data["Screen Print Designs"];
+  const screenPrintDesigns = data["Screen Print Designs"]!;
   for (const design of screenPrintDesigns) {
     if (!design["Design Number"]) continue;
     try {
@@ -103,7 +103,7 @@ async function createDesigns() {
     }
   }
 
-  const embroideryDesigns = data["Embroidery Designs"];
+  const embroideryDesigns = data["Embroidery Designs"]!;
   for (const design of embroideryDesigns) {
     if (!design["Design Number"]) continue;
     try {
