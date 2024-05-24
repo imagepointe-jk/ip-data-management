@@ -16,7 +16,7 @@ export function getSourceJson(path: string) {
     const data: DataFromWorkbook = {};
     for (const sheetName of workbook.SheetNames) {
       data[`${sheetName}`] = xlsx.utils.sheet_to_json(
-        workbook.Sheets[sheetName]
+        workbook.Sheets[sheetName]!
       );
     }
 

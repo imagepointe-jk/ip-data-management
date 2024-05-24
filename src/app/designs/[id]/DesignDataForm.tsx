@@ -117,7 +117,11 @@ export default function DesignDataForm({
         name="design-type"
         id="design-type"
         defaultValue={
-          existingDesign ? existingDesign.designType.id : designTypes[0].id
+          existingDesign
+            ? existingDesign.designType.id
+            : designTypes[0]
+            ? designTypes[0].id
+            : 1
         }
       >
         {designTypes.map((type) => (
