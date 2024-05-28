@@ -1,4 +1,10 @@
-import { HubSpotOwner } from "@/types/schema";
+import {
+  CompanyResource,
+  ContactResource,
+  DealResource,
+  HubSpotOwner,
+  ProductResource,
+} from "@/types/schema";
 import { SyncError } from "./error";
 import { parseHubSpotOwnerResults } from "@/types/validations";
 
@@ -41,4 +47,82 @@ export async function getAllOwners(): Promise<HubSpotOwner[]> {
   const json = await response.json();
   const parsed = parseHubSpotOwnerResults(json);
   return parsed.results;
+}
+
+export async function getAllCompanies() {
+  return getAllHubSpotResource(
+    "https://api.hubapi.com/crm/v3/objects/companies/?limit=100&properties=customer_number",
+    (result) => {
+      const companyResource: CompanyResource = {
+        hubspotId: result.id,
+        customerNumber: result.properties.customer_number,
+      };
+      return companyResource;
+    }
+  );
+}
+
+export async function getAllContacts() {
+  return getAllHubSpotResource(
+    "https://api.hubapi.com/crm/v3/objects/contacts/?limit=100&properties=email",
+    (result) => {
+      const contactResource: ContactResource = {
+        hubspotId: result.id,
+        email: result.properties.email,
+      };
+      return contactResource;
+    }
+  );
+}
+
+export async function getAllDeals() {
+  return getAllHubSpotResource(
+    "https://api.hubapi.com/crm/v3/objects/deals/?limit=100&properties=dealname",
+    (result) => {
+      const dealResource: DealResource = {
+        hubspotId: result.id,
+        salesOrderNum: result.properties.dealname,
+      };
+      return dealResource;
+    }
+  );
+}
+
+export async function getAllProducts() {
+  return getAllHubSpotResource(
+    "https://api.hubapi.com/crm/v3/objects/products/?limit=100&properties=hs_sku",
+    (result) => {
+      const productResource: ProductResource = {
+        hubspotId: result.id,
+        sku: result.properties.hs_sku,
+      };
+      return productResource;
+    }
+  );
+}
+
+export async function getAllHubSpotResource<T>(
+  initialUrl: string,
+  pullResultData: (result: any) => T
+): Promise<T[]> {
+  let resources: T[] = [];
+  let url = initialUrl;
+  for (let i = 0; i < 9999; i++) {
+    const headers = standardHeaders();
+    const requestOptions = {
+      method: "GET",
+      headers,
+    };
+    const response = await fetch(url, requestOptions);
+
+    if (!response.ok) continue;
+    const json = await response.json();
+    const results = json.results;
+    if (!Array.isArray(results)) continue;
+    const resourcesThisPass: T[] = results.map(pullResultData);
+    resources = [...resources, ...resourcesThisPass];
+    if (json.paging === undefined) break;
+    url = json.paging.next.link;
+  }
+  return resources;
 }
