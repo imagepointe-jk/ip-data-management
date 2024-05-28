@@ -1,12 +1,14 @@
 import {
   CompanyResource,
   ContactResource,
+  Customer,
   DealResource,
   HubSpotOwner,
   ProductResource,
 } from "@/types/schema";
 import { SyncError } from "./error";
 import { parseHubSpotOwnerResults } from "@/types/validations";
+import { mapCustomerToCompany } from "./mapData";
 
 const accessToken = () => {
   const accessToken = process.env.HUBSPOT_ACCESS_TOKEN;
@@ -55,7 +57,7 @@ export async function getAllCompanies() {
     (result) => {
       const companyResource: CompanyResource = {
         hubspotId: result.id,
-        customerNumber: result.properties.customer_number,
+        customerNumber: +result.properties.customer_number,
       };
       return companyResource;
     }
@@ -98,6 +100,47 @@ export async function getAllProducts() {
       };
       return productResource;
     }
+  );
+}
+
+export function postCustomerAsCompany(customer: Customer) {
+  const headers = standardHeaders();
+
+  const raw = JSON.stringify({
+    properties: mapCustomerToCompany(customer),
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(
+    "https://api.hubapi.com/crm/v3/objects/companies",
+    requestOptions
+  );
+}
+
+export function updateCompanyWithCustomer(
+  hubspotId: number,
+  customer: Customer
+) {
+  const headers = standardHeaders();
+
+  const raw = JSON.stringify({
+    properties: mapCustomerToCompany(customer),
+  });
+
+  const requestOptions = {
+    method: "PATCH",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(
+    `https://api.hubapi.com/crm/v3/objects/companies/${hubspotId}`,
+    requestOptions
   );
 }
 

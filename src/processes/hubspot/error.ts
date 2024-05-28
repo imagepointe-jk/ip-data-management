@@ -1,4 +1,11 @@
-import { ImpressDataType } from "@/types/schema";
+import {
+  Contact,
+  Customer,
+  ImpressDataType,
+  LineItem,
+  Order,
+  Product,
+} from "@/types/schema";
 
 export class DataError extends Error {
   public readonly rowIdentifier;
@@ -54,4 +61,28 @@ export class SyncWarning {
     this.type = type;
     this.message = message;
   }
+}
+
+export function gatherAllIssues(data: {
+  customers: (Customer | DataError)[];
+  contacts: (Contact | DataError)[];
+  orders: (Order | DataError)[];
+  products: (Product | DataError)[];
+  lineItems: (LineItem | DataError)[];
+  syncErrors: SyncError[];
+}) {
+  const { contacts, customers, lineItems, orders, products, syncErrors } = data;
+  const impressData = [
+    ...customers,
+    ...contacts,
+    ...orders,
+    ...products,
+    ...lineItems,
+  ];
+  const dataErrors: DataError[] = [];
+  for (const data of impressData) {
+    if (data instanceof DataError) dataErrors.push(data);
+  }
+
+  return [...dataErrors, ...syncErrors];
 }

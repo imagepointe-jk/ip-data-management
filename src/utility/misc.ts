@@ -18,3 +18,33 @@ export function roundToDecimalPlaces(num: number, decimalPlaces: number) {
     Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)
   );
 }
+
+export function filterErrors<T>(arr: (Error | T)[]) {
+  const filtered: T[] = [];
+  for (const item of arr) {
+    if (!(item instanceof Error)) filtered.push(item);
+  }
+  return filtered;
+}
+
+export function batchArray<T>(arr: T[], batchSize: number) {
+  const batches: T[][] = [];
+  let batchIndex = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (i > 0 && i % batchSize === 0) {
+      batchIndex++;
+    }
+    if (batches[batchIndex] === undefined) {
+      const newBatch: T[] = [];
+      batches[batchIndex] = newBatch;
+    }
+    batches[batchIndex].push(arr[i]);
+  }
+  return batches;
+}
+
+export function waitForMs(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
