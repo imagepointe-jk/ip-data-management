@@ -1,5 +1,6 @@
 import {
   CompanyResource,
+  Contact,
   ContactResource,
   Customer,
   DealResource,
@@ -8,7 +9,7 @@ import {
 } from "@/types/schema";
 import { SyncError } from "./error";
 import { parseHubSpotOwnerResults } from "@/types/validations";
-import { mapCustomerToCompany } from "./mapData";
+import { mapContactToContact, mapCustomerToCompany } from "./mapData";
 
 const accessToken = () => {
   const accessToken = process.env.HUBSPOT_ACCESS_TOKEN;
@@ -140,6 +141,25 @@ export function updateCompanyWithCustomer(
 
   return fetch(
     `https://api.hubapi.com/crm/v3/objects/companies/${hubspotId}`,
+    requestOptions
+  );
+}
+
+export function postContact(contact: Contact) {
+  const headers = standardHeaders();
+
+  const raw = JSON.stringify({
+    properties: mapContactToContact(contact),
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers,
+    body: raw,
+  };
+
+  return fetch(
+    "https://api.hubapi.com/crm/v3/objects/contacts",
     requestOptions
   );
 }

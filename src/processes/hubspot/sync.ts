@@ -1,10 +1,19 @@
 import { completeHubSpotSync, createHubSpotSync } from "@/db/access/hubspot";
-import { CompanyResource, Customer } from "@/types/schema";
+import {
+  CompanyResource,
+  Contact,
+  ContactResource,
+  Customer,
+} from "@/types/schema";
 import { WorkSheet } from "xlsx";
 import { DataError, SyncError, gatherAllIssues } from "./error";
 import { handleData as handleInputData } from "./handleData";
 import { getHubspotState } from "./hubspotState";
-import { postCustomerAsCompany, updateCompanyWithCustomer } from "./fetch";
+import {
+  postContact,
+  postCustomerAsCompany,
+  updateCompanyWithCustomer,
+} from "./fetch";
 import { sendIssuesSheet } from "@/utility/mail";
 
 const syncErrors: SyncError[] = [];
@@ -23,13 +32,15 @@ export async function hubSpotSync(worksheetInput: {
 
   const { customers, contacts, lineItems, orders, po, products } =
     await handleInputData(worksheetInput);
-  const { existingCompanies } = await getHubspotState();
+  const { existingCompanies, existingContacts } = await getHubspotState();
   await syncResources({
     existing: {
       companies: existingCompanies,
+      contacts: existingContacts,
     },
     input: {
       customers,
+      contacts,
     },
   });
   const issues = gatherAllIssues({
@@ -47,12 +58,19 @@ export async function hubSpotSync(worksheetInput: {
 }
 
 async function syncResources(data: {
-  existing: { companies: CompanyResource[] };
-  input: { customers: (Customer | DataError)[] };
+  existing: { companies: CompanyResource[]; contacts: ContactResource[] };
+  input: {
+    customers: (Customer | DataError)[];
+    contacts: (Contact | DataError)[];
+  };
 }) {
   const syncedCompanies = await syncCustomersAsCompanies(
     data.input.customers,
     data.existing.companies
+  );
+  const syncedContacts = await syncContacts(
+    data.input.contacts,
+    data.existing.contacts
   );
 }
 
@@ -106,4 +124,54 @@ async function syncCustomersAsCompanies(
   }
 
   return syncedCompanies;
+}
+
+async function syncContacts(
+  contacts: (Contact | DataError)[],
+  existingContacts: ContactResource[]
+) {
+  console.log("Syncing contacts...");
+  const syncedContacts: ContactResource[] = [];
+
+  for (const contact of contacts) {
+    if (contact instanceof DataError) continue;
+
+    const alreadyInHubSpot = existingContacts.find(
+      (contact) =>
+        contact.email.toLocaleLowerCase() === contact.email.toLocaleLowerCase()
+    );
+
+    try {
+      if (!alreadyInHubSpot) {
+        const response = await postContact(contact);
+        const json = await response.json();
+        if (!response.ok) {
+          throw new SyncError(
+            "API",
+            "Contact",
+            `${contact.Email}`,
+            "Unknown error",
+            response.status,
+            `${JSON.stringify(json)}`
+          );
+        }
+        syncedContacts.push({
+          email: contact.Email,
+          hubspotId: json.id,
+        });
+      } else {
+      }
+    } catch (error) {
+      if (error instanceof SyncError) syncErrors.push(error);
+      else
+        syncErrors.push(
+          new SyncError(
+            "Unknown",
+            "Customer",
+            `${contact.Email}`,
+            error instanceof Error ? error.message : undefined
+          )
+        );
+    }
+  }
 }
