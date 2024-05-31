@@ -67,11 +67,14 @@ export async function getAllCompanies() {
 
 export async function getAllContacts() {
   return getAllHubSpotResource(
-    "https://api.hubapi.com/crm/v3/objects/contacts/?limit=100&properties=email",
+    "https://api.hubapi.com/crm/v3/objects/contacts/?limit=100&properties=email&associations=companies",
     (result) => {
       const contactResource: ContactResource = {
         hubspotId: result.id,
         email: result.properties.email,
+        companyId: result.associations
+          ? result.associations.companies.results[0].id
+          : undefined,
       };
       return contactResource;
     }
@@ -145,11 +148,26 @@ export function updateCompanyWithCustomer(
   );
 }
 
-export function postContact(contact: Contact) {
+export function postContact(contact: Contact, associatedCompanyId?: number) {
   const headers = standardHeaders();
 
   const raw = JSON.stringify({
     properties: mapContactToContact(contact),
+    associations: associatedCompanyId
+      ? [
+          {
+            to: {
+              id: associatedCompanyId,
+            },
+            types: [
+              {
+                associationCategory: "HUBSPOT_DEFINED",
+                associationTypeId: 279,
+              },
+            ],
+          },
+        ]
+      : undefined,
   });
 
   const requestOptions = {
@@ -160,6 +178,57 @@ export function postContact(contact: Contact) {
 
   return fetch(
     "https://api.hubapi.com/crm/v3/objects/contacts",
+    requestOptions
+  );
+}
+
+export function updateContact(contactId: number, contactData: Contact) {
+  const myHeaders = standardHeaders();
+
+  const mappedData = mapContactToContact(contactData);
+  const raw = JSON.stringify({
+    properties: { ...mappedData, email: undefined },
+  });
+
+  const requestOptions = {
+    method: "PATCH",
+    headers: myHeaders,
+    body: raw,
+  };
+
+  return fetch(
+    `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
+    requestOptions
+  );
+}
+
+export function associateContactWithCompany(
+  contactId: number,
+  companyId: number
+) {
+  const myHeaders = standardHeaders();
+
+  const raw = JSON.stringify({
+    inputs: [
+      {
+        from: {
+          id: `${contactId}`,
+        },
+        to: {
+          id: `${companyId}`,
+        },
+      },
+    ],
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+
+  return fetch(
+    "https://api.hubapi.com/crm/v4/associations/contacts/companies/batch/associate/default",
     requestOptions
   );
 }

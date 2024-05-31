@@ -70,8 +70,17 @@ export function gatherAllIssues(data: {
   products: (Product | DataError)[];
   lineItems: (LineItem | DataError)[];
   syncErrors: SyncError[];
+  syncWarnings: SyncWarning[];
 }) {
-  const { contacts, customers, lineItems, orders, products, syncErrors } = data;
+  const {
+    contacts,
+    customers,
+    lineItems,
+    orders,
+    products,
+    syncErrors,
+    syncWarnings,
+  } = data;
   const impressData = [
     ...customers,
     ...contacts,
@@ -84,5 +93,5 @@ export function gatherAllIssues(data: {
     if (data instanceof DataError) dataErrors.push(data);
   }
 
-  return [...dataErrors, ...syncErrors];
+  return [...dataErrors, ...syncErrors, ...syncWarnings];
 }

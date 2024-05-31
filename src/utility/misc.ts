@@ -48,3 +48,14 @@ export function waitForMs(ms: number) {
     setTimeout(resolve, ms);
   });
 }
+
+export function findInAnyArray<T>(
+  arrays: T[][],
+  predicate: (value: T, index: number, obj: T[]) => boolean
+): T | undefined {
+  let all: T[] = [];
+  for (const arr of arrays) {
+    all = all.concat(arr);
+  }
+  return all.find(predicate);
+}

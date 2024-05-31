@@ -4,7 +4,7 @@ import fs from "fs";
 import handlebars from "handlebars";
 import { QuoteRequest } from "@/types/schema";
 import { AppError } from "@/error";
-import { DataError, SyncError } from "@/processes/hubspot/error";
+import { DataError, SyncError, SyncWarning } from "@/processes/hubspot/error";
 import { dataToSheetBuffer } from "./spreadsheet";
 
 async function sendEmail(
@@ -65,7 +65,9 @@ export async function sendQuoteRequestEmail(quoteRequest: QuoteRequest) {
   }
 }
 
-export function sendIssuesSheet(issues: (DataError | SyncError)[]) {
+export function sendIssuesSheet(
+  issues: (DataError | SyncError | SyncWarning)[]
+) {
   const rows: {
     errorType: string;
     dataType?: string;
@@ -87,7 +89,7 @@ export function sendIssuesSheet(issues: (DataError | SyncError)[]) {
         ["rowNumber (approx)"]: issue.rowNumber,
         severity: "Error",
       });
-    } else {
+    } else if (issue instanceof SyncError) {
       rows.push({
         errorType: `Sync (${issue.type})`,
         dataType: issue.resourceType,
@@ -95,6 +97,12 @@ export function sendIssuesSheet(issues: (DataError | SyncError)[]) {
         statusCode: issue.statusCode,
         responseJsonString: issue.responseJsonString,
         severity: "Error",
+      });
+    } else if (issue instanceof SyncWarning) {
+      rows.push({
+        errorType: `Sync (${issue.type})`,
+        severity: "Warning",
+        message: issue.message,
       });
     }
   }
