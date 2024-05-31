@@ -4,17 +4,21 @@ import {
   Contact,
   ContactResource,
   Customer,
+  DealResource,
+  Order,
 } from "@/types/schema";
 import { WorkSheet } from "xlsx";
 import { DataError, SyncError, SyncWarning, gatherAllIssues } from "./error";
 import { handleData as handleInputData } from "./handleData";
 import { getHubspotState } from "./hubspotState";
 import {
-  associateContactWithCompany,
+  associateHubSpotResources,
   postContact,
   postCustomerAsCompany,
+  postOrderAsDeal,
   updateCompanyWithCustomer,
   updateContact,
+  updateDealWithOrder,
 } from "./fetch";
 import { sendIssuesSheet } from "@/utility/mail";
 import { findInAnyArray } from "@/utility/misc";
@@ -36,15 +40,18 @@ export async function hubSpotSync(worksheetInput: {
 
   const { customers, contacts, lineItems, orders, po, products } =
     await handleInputData(worksheetInput);
-  const { existingCompanies, existingContacts } = await getHubspotState();
+  const { existingCompanies, existingContacts, existingDeals } =
+    await getHubspotState();
   await syncResources({
     existing: {
       companies: existingCompanies,
       contacts: existingContacts,
+      deals: existingDeals,
     },
     input: {
       customers,
       contacts,
+      orders,
     },
   });
   const issues = gatherAllIssues({
@@ -63,10 +70,15 @@ export async function hubSpotSync(worksheetInput: {
 }
 
 async function syncResources(data: {
-  existing: { companies: CompanyResource[]; contacts: ContactResource[] };
+  existing: {
+    companies: CompanyResource[];
+    contacts: ContactResource[];
+    deals: DealResource[];
+  };
   input: {
     customers: (Customer | DataError)[];
     contacts: (Contact | DataError)[];
+    orders: (Order | DataError)[];
   };
 }) {
   const { existing, input } = data;
@@ -80,6 +92,14 @@ async function syncResources(data: {
     existing.contacts,
     existing.companies,
     syncedCompanies
+  );
+  const syncedDeals = await syncOrdersAsDeals(
+    input.orders,
+    existing.deals,
+    existing.companies,
+    syncedCompanies,
+    existing.contacts,
+    syncedContacts
   );
 }
 
@@ -168,7 +188,6 @@ async function syncContacts(
 
     try {
       if (!alreadyInHubSpot) {
-        if (contact.Email === "jsherman@smart-nerc.org") console.log(1);
         const createResponse = await postContact(
           contact,
           associatedCompany?.hubspotId
@@ -190,7 +209,6 @@ async function syncContacts(
           companyId: associatedCompany?.hubspotId,
         });
       } else {
-        if (contact.Email === "jsherman@smart-nerc.org") console.log(2);
         const updateResponse = await updateContact(
           alreadyInHubSpot.hubspotId,
           contact
@@ -206,13 +224,6 @@ async function syncContacts(
             `${JSON.stringify(updateJson)}`
           );
         }
-        if (contact.Email === "jsherman@smart-nerc.org")
-          console.log(
-            3,
-            alreadyInHubSpot.hubspotId,
-            alreadyInHubSpot.companyId,
-            associatedCompany
-          );
         syncedContacts.push({
           email: alreadyInHubSpot.email,
           hubspotId: alreadyInHubSpot.hubspotId,
@@ -220,11 +231,16 @@ async function syncContacts(
         });
 
         if (alreadyInHubSpot.companyId === undefined && associatedCompany) {
-          if (contact.Email === "jsherman@smart-nerc.org") console.log(4);
-          const associationResponse = await associateContactWithCompany(
-            alreadyInHubSpot.hubspotId,
-            associatedCompany.hubspotId
-          );
+          const associationResponse = await associateHubSpotResources({
+            from: {
+              id: alreadyInHubSpot.hubspotId,
+              type: "contacts",
+            },
+            to: {
+              id: associatedCompany.hubspotId,
+              type: "companies",
+            },
+          });
           const associationJson = await associationResponse.json();
           if (!associationResponse.ok) {
             throw new SyncError(
@@ -236,7 +252,6 @@ async function syncContacts(
               `${JSON.stringify(associationJson)}`
             );
           }
-          if (contact.Email === "jsherman@smart-nerc.org") console.log(5);
         }
       }
     } catch (error) {
@@ -252,4 +267,161 @@ async function syncContacts(
         );
     }
   }
+  return syncedContacts;
+}
+
+async function syncOrdersAsDeals(
+  orders: (Order | DataError)[],
+  existingDeals: DealResource[],
+  existingCompanies: CompanyResource[],
+  syncedCompanies: CompanyResource[],
+  existingContacts: ContactResource[],
+  syncedContacts: ContactResource[]
+) {
+  console.log("Syncing orders...");
+  const syncedDeals: DealResource[] = [];
+
+  for (const order of orders) {
+    if (order instanceof DataError) continue;
+
+    const alreadyInHubSpot = existingDeals.find(
+      (deal) => deal.salesOrderNum === order["Sales Order#"]
+    );
+
+    const associatedCompany = findInAnyArray(
+      [existingCompanies, syncedCompanies],
+      (company) => company.customerNumber === order["Customer Number"]
+    );
+    const associatedContact = findInAnyArray(
+      [existingContacts, syncedContacts],
+      (contact) =>
+        order["Buyer E-Mail"] !== undefined &&
+        contact.email.toLocaleLowerCase() ===
+          order["Buyer E-Mail"].toLocaleLowerCase()
+    );
+    if (!associatedCompany)
+      syncWarnings.push(
+        new SyncWarning(
+          "Data Integrity",
+          `Order with sales number ${order["Sales Order#"]} is associated with customer number ${order["Customer Number"]} in the input data, but the customer/company record could not be found. The association was skipped.`
+        )
+      );
+    if (!associatedContact)
+      syncWarnings.push(
+        new SyncWarning(
+          "Data Integrity",
+          `Order with sales number ${order["Sales Order#"]} is associated with the contact with email ${order["Buyer E-Mail"]} in the input data, but the contact record could not be found. The association was skipped.`
+        )
+      );
+
+    try {
+      if (!alreadyInHubSpot) {
+        const createResponse = await postOrderAsDeal(
+          order,
+          associatedCompany?.hubspotId,
+          associatedContact?.hubspotId
+        );
+        const createJson = await createResponse.json();
+        if (!createResponse.ok) {
+          throw new SyncError(
+            "API",
+            "Order",
+            `${order["Sales Order#"]}`,
+            "The POST request to create the deal failed.",
+            createResponse.status,
+            JSON.stringify(createJson)
+          );
+        }
+        syncedDeals.push({
+          hubspotId: createJson.id,
+          salesOrderNum: order["Sales Order#"],
+          companyId: associatedCompany?.hubspotId,
+          contactId: associatedContact?.hubspotId,
+        });
+      } else {
+        const updateResponse = await updateDealWithOrder(
+          alreadyInHubSpot.hubspotId,
+          order
+        );
+        const updateJson = await updateResponse.json();
+        if (!updateResponse.ok) {
+          throw new SyncError(
+            "API",
+            "Order",
+            `${order["Sales Order#"]}`,
+            "The PATCH request to update the deal failed.",
+            updateResponse.status,
+            JSON.stringify(updateJson)
+          );
+        }
+        syncedDeals.push({
+          hubspotId: alreadyInHubSpot.hubspotId,
+          salesOrderNum: alreadyInHubSpot.salesOrderNum,
+          companyId: associatedCompany?.hubspotId,
+          contactId: associatedContact?.hubspotId,
+        });
+
+        //associate updated deal with a company, if not already associated
+        if (alreadyInHubSpot.companyId === undefined && associatedCompany) {
+          const associationResponse = await associateHubSpotResources({
+            from: {
+              id: alreadyInHubSpot.hubspotId,
+              type: "deals",
+            },
+            to: {
+              id: associatedCompany.hubspotId,
+              type: "companies",
+            },
+          });
+          const associationJson = await associationResponse.json();
+          if (!associationResponse.ok) {
+            throw new SyncError(
+              "API",
+              "Order",
+              order["Sales Order#"],
+              "The POST request to associate the deal with the company failed.",
+              associationResponse.status,
+              JSON.stringify(associationJson)
+            );
+          }
+        }
+        //associate updated deal with a contact, if not already associated
+        if (alreadyInHubSpot.contactId === undefined && associatedContact) {
+          const associationResponse = await associateHubSpotResources({
+            from: {
+              id: alreadyInHubSpot.hubspotId,
+              type: "deals",
+            },
+            to: {
+              id: associatedContact.hubspotId,
+              type: "contacts",
+            },
+          });
+          const associationJson = await associationResponse.json();
+          if (!associationResponse.ok) {
+            throw new SyncError(
+              "API",
+              "Order",
+              order["Sales Order#"],
+              "The POST request to associate the deal with the contact failed.",
+              associationResponse.status,
+              JSON.stringify(associationJson)
+            );
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof SyncError) syncErrors.push(error);
+      else
+        syncErrors.push(
+          new SyncError(
+            "Unknown",
+            "Customer",
+            `${order["Sales Order#"]}`,
+            error instanceof Error ? error.message : undefined
+          )
+        );
+    }
+  }
+  return syncedDeals;
 }

@@ -11,4 +11,5 @@ export const easyCorsInit = {
 
 export const HUBSPOT_CONTACT_TO_COMPANY = 279,
   HUBSPOT_DEAL_TO_COMPANY = 341,
+  HUBSPOT_DEAL_TO_CONTACT = 3,
   LINE_ITEM_TO_DEAL = 20;

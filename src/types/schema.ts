@@ -185,6 +185,8 @@ export type ContactResource = {
 export type DealResource = {
   hubspotId: number;
   salesOrderNum: string;
+  companyId?: number;
+  contactId?: number;
 };
 
 //associates the ID of the product resource that got created in HubSpot with the Impress SKU

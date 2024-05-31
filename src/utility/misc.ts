@@ -5,7 +5,10 @@ export function convertDateToDefaultInputValue(date: Date) {
 export function makeStringTitleCase(str: string) {
   return str
     .split(" ")
-    .map((word) => `${word[0].toUpperCase()}${word.substring(1)}`)
+    .map(
+      (word) =>
+        `${word[0].toUpperCase()}${word.substring(1).toLocaleLowerCase()}`
+    )
     .join(" ");
 }
 

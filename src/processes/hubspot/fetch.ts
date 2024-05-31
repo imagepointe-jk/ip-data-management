@@ -5,11 +5,21 @@ import {
   Customer,
   DealResource,
   HubSpotOwner,
+  Order,
   ProductResource,
 } from "@/types/schema";
 import { SyncError } from "./error";
 import { parseHubSpotOwnerResults } from "@/types/validations";
-import { mapContactToContact, mapCustomerToCompany } from "./mapData";
+import {
+  mapContactToContact,
+  mapCustomerToCompany,
+  mapOrderToDeal,
+} from "./mapData";
+import {
+  HUBSPOT_CONTACT_TO_COMPANY,
+  HUBSPOT_DEAL_TO_COMPANY,
+  HUBSPOT_DEAL_TO_CONTACT,
+} from "@/constants";
 
 const accessToken = () => {
   const accessToken = process.env.HUBSPOT_ACCESS_TOKEN;
@@ -88,6 +98,8 @@ export async function getAllDeals() {
       const dealResource: DealResource = {
         hubspotId: result.id,
         salesOrderNum: result.properties.dealname,
+        companyId: result.associations?.companies?.results[0].id,
+        contactId: result.associations?.contacts?.results[0].id,
       };
       return dealResource;
     }
@@ -132,6 +144,7 @@ export function updateCompanyWithCustomer(
 ) {
   const headers = standardHeaders();
 
+  //TODO: ensure customer number is not modified when updating
   const raw = JSON.stringify({
     properties: mapCustomerToCompany(customer),
   });
@@ -162,7 +175,7 @@ export function postContact(contact: Contact, associatedCompanyId?: number) {
             types: [
               {
                 associationCategory: "HUBSPOT_DEFINED",
-                associationTypeId: 279,
+                associationTypeId: HUBSPOT_CONTACT_TO_COMPANY,
               },
             ],
           },
@@ -202,20 +215,28 @@ export function updateContact(contactId: number, contactData: Contact) {
   );
 }
 
-export function associateContactWithCompany(
-  contactId: number,
-  companyId: number
-) {
+type AssociationType = "companies" | "contacts" | "deals";
+export function associateHubSpotResources(params: {
+  from: {
+    type: AssociationType;
+    id: number;
+  };
+  to: {
+    type: AssociationType;
+    id: number;
+  };
+}) {
+  const { from, to } = params;
   const myHeaders = standardHeaders();
 
   const raw = JSON.stringify({
     inputs: [
       {
         from: {
-          id: `${contactId}`,
+          id: `${from.id}`,
         },
         to: {
-          id: `${companyId}`,
+          id: `${to.id}`,
         },
       },
     ],
@@ -228,7 +249,78 @@ export function associateContactWithCompany(
   };
 
   return fetch(
-    "https://api.hubapi.com/crm/v4/associations/contacts/companies/batch/associate/default",
+    `https://api.hubapi.com/crm/v4/associations/${from.type}/${to.type}/batch/associate/default`,
+    requestOptions
+  );
+}
+
+export function postOrderAsDeal(
+  order: Order,
+  associatedCompanyId?: number,
+  associatedContactId?: number
+) {
+  const myHeaders = standardHeaders();
+
+  const associations: any[] = [];
+
+  if (associatedCompanyId) {
+    associations.push({
+      to: {
+        id: associatedCompanyId,
+      },
+      types: [
+        {
+          associationCategory: "HUBSPOT_DEFINED",
+          associationTypeId: HUBSPOT_DEAL_TO_COMPANY,
+        },
+      ],
+    });
+  }
+
+  if (associatedContactId) {
+    associations.push({
+      to: {
+        id: associatedContactId,
+      },
+      types: [
+        {
+          associationCategory: "HUBSPOT_DEFINED",
+          associationTypeId: HUBSPOT_DEAL_TO_CONTACT,
+        },
+      ],
+    });
+  }
+
+  const raw = JSON.stringify({
+    properties: mapOrderToDeal(order),
+    associations: associations.length > 0 ? associations : undefined,
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+
+  return fetch("https://api.hubapi.com/crm/v3/objects/deals", requestOptions);
+}
+
+export function updateDealWithOrder(dealId: number, orderData: Order) {
+  const myHeaders = standardHeaders();
+
+  const mappedData = mapOrderToDeal(orderData);
+  const raw = JSON.stringify({
+    properties: { ...mappedData, dealname: undefined },
+  });
+
+  const requestOptions = {
+    method: "PATCH",
+    headers: myHeaders,
+    body: raw,
+  };
+
+  return fetch(
+    `https://api.hubapi.com/crm/v3/objects/deals/${dealId}`,
     requestOptions
   );
 }
