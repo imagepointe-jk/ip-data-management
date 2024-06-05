@@ -6,6 +6,7 @@ import {
   DealResource,
   HubSpotOwner,
   Order,
+  Product,
   ProductResource,
 } from "@/types/schema";
 import { SyncError } from "./error";
@@ -14,6 +15,7 @@ import {
   mapContactToContact,
   mapCustomerToCompany,
   mapOrderToDeal,
+  mapProductToProduct,
 } from "./mapData";
 import {
   HUBSPOT_CONTACT_TO_COMPANY,
@@ -321,6 +323,25 @@ export function updateDealWithOrder(dealId: number, orderData: Order) {
 
   return fetch(
     `https://api.hubapi.com/crm/v3/objects/deals/${dealId}`,
+    requestOptions
+  );
+}
+
+export function postProduct(product: Product) {
+  const headers = standardHeaders();
+
+  const raw = JSON.stringify({
+    properties: mapProductToProduct(product),
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(
+    "https://api.hubapi.com/crm/v3/objects/products",
     requestOptions
   );
 }

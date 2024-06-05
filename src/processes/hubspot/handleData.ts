@@ -166,8 +166,7 @@ function cleanupSalesOrderType(salesOrderType: string) {
 export function getProductsAndErrors(
   sheet: WorkSheet
 ): (Product | DataError)[] {
-  const cleaned = cleanupProductsSheet(sheet);
-  return parseSheetData(cleaned, "Product", parseProduct, (row) => row["Name"]);
+  return parseSheetData(sheet, "Product", parseProduct, (row) => row["Name"]);
 }
 
 export function cleanupProductsSheet(sheet: WorkSheet) {

@@ -6,6 +6,8 @@ import {
   Customer,
   DealResource,
   Order,
+  Product,
+  ProductResource,
 } from "@/types/schema";
 import { WorkSheet } from "xlsx";
 import { DataError, SyncError, SyncWarning, gatherAllIssues } from "./error";
@@ -16,6 +18,7 @@ import {
   postContact,
   postCustomerAsCompany,
   postOrderAsDeal,
+  postProduct,
   updateCompanyWithCustomer,
   updateContact,
   updateDealWithOrder,
@@ -40,18 +43,24 @@ export async function hubSpotSync(worksheetInput: {
 
   const { customers, contacts, lineItems, orders, po, products } =
     await handleInputData(worksheetInput);
-  const { existingCompanies, existingContacts, existingDeals } =
-    await getHubspotState();
+  const {
+    existingCompanies,
+    existingContacts,
+    existingDeals,
+    existingProducts,
+  } = await getHubspotState();
   await syncResources({
     existing: {
       companies: existingCompanies,
       contacts: existingContacts,
       deals: existingDeals,
+      products: existingProducts,
     },
     input: {
       customers,
       contacts,
       orders,
+      products,
     },
   });
   const issues = gatherAllIssues({
@@ -74,11 +83,13 @@ async function syncResources(data: {
     companies: CompanyResource[];
     contacts: ContactResource[];
     deals: DealResource[];
+    products: ProductResource[];
   };
   input: {
     customers: (Customer | DataError)[];
     contacts: (Contact | DataError)[];
     orders: (Order | DataError)[];
+    products: (Product | DataError)[];
   };
 }) {
   const { existing, input } = data;
@@ -101,6 +112,7 @@ async function syncResources(data: {
     existing.contacts,
     syncedContacts
   );
+  const syncedProducts = await syncProducts(input.products, existing.products);
 }
 
 async function syncCustomersAsCompanies(
@@ -424,4 +436,49 @@ async function syncOrdersAsDeals(
     }
   }
   return syncedDeals;
+}
+
+async function syncProducts(
+  products: (Product | DataError)[],
+  existingProducts: ProductResource[]
+) {
+  console.log("Syncing products...");
+  const syncedProducts: ProductResource[] = [];
+
+  for (const product of products) {
+    if (product instanceof DataError) continue;
+
+    const alreadyInHubSpot = existingProducts.find(
+      (existing) => existing.sku === product.SKU
+    );
+
+    if (alreadyInHubSpot) continue; //we likely won't need to update existing products
+
+    try {
+      const response = await postProduct(product);
+      const json = await response.json();
+      if (!response.ok)
+        throw new SyncError(
+          "API",
+          "Product",
+          product.SKU,
+          "The POST request to create the product failed.",
+          response.status,
+          JSON.stringify(json)
+        );
+    } catch (error) {
+      if (error instanceof SyncError) syncErrors.push(error);
+      else
+        syncErrors.push(
+          new SyncError(
+            "Unknown",
+            "Customer",
+            product.SKU,
+            error instanceof Error ? error.message : undefined
+          )
+        );
+    }
+  }
+
+  return syncedProducts;
 }
