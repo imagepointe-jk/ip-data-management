@@ -1,4 +1,8 @@
-import { completeHubSpotSync, createHubSpotSync } from "@/db/access/hubspot";
+import {
+  completeHubSpotSync,
+  createHubSpotSync,
+  updateHubSpotSyncProgress,
+} from "@/db/access/hubspot";
 import {
   CompanyResource,
   Contact,
@@ -26,11 +30,14 @@ import {
   updateDealWithOrder,
 } from "./fetch";
 import { sendIssuesSheet } from "@/utility/mail";
-import { findInAnyArray } from "@/utility/misc";
+import { filterErrors, findInAnyArray } from "@/utility/misc";
 import { RESOURCE_CONFLICT } from "@/utility/statusCodes";
+import { ProgressTracker } from "./progress";
 
 const syncErrors: SyncError[] = [];
 const syncWarnings: SyncWarning[] = [];
+let progressTracker = new ProgressTracker(0, 0);
+const dbUpdateMs = 1000;
 
 export async function hubSpotSync(worksheetInput: {
   customers: WorkSheet;
@@ -46,6 +53,19 @@ export async function hubSpotSync(worksheetInput: {
 
   const { customers, contacts, lineItems, orders, po, products } =
     await handleInputData(worksheetInput);
+  const nonErrorItems = filterErrors([
+    ...customers,
+    ...contacts,
+    ...lineItems,
+    ...orders,
+    ...products,
+  ]);
+  progressTracker = new ProgressTracker(
+    nonErrorItems.length,
+    dbUpdateMs,
+    (progress) => updateHubSpotSyncProgress(sync.id, progress)
+  );
+
   const {
     existingCompanies,
     existingContacts,
@@ -174,6 +194,7 @@ async function syncCustomersAsCompanies(
           )
         );
     }
+    progressTracker.update();
   }
 
   return syncedCompanies;
@@ -290,6 +311,7 @@ async function syncContacts(
           )
         );
     }
+    progressTracker.update();
   }
   return syncedContacts;
 }
@@ -446,6 +468,7 @@ async function syncOrdersAsDeals(
           )
         );
     }
+    progressTracker.update();
   }
   return syncedDeals;
 }
@@ -494,6 +517,7 @@ async function syncProducts(
           )
         );
     }
+    progressTracker.update();
   }
 
   return syncedProducts;
@@ -582,5 +606,6 @@ async function syncLineItems(
           )
         );
     }
+    progressTracker.update();
   }
 }
