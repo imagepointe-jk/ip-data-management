@@ -7,7 +7,7 @@ export function makeStringTitleCase(str: string) {
     .split(" ")
     .map(
       (word) =>
-        `${word[0].toUpperCase()}${word.substring(1).toLocaleLowerCase()}`
+        `${word[0]?.toUpperCase()}${word.substring(1).toLocaleLowerCase()}`
     )
     .join(" ");
 }
@@ -37,22 +37,6 @@ export function filterErrors<T>(arr: (Error | T)[]) {
     if (!(item instanceof Error)) filtered.push(item);
   }
   return filtered;
-}
-
-export function batchArray<T>(arr: T[], batchSize: number) {
-  const batches: T[][] = [];
-  let batchIndex = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (i > 0 && i % batchSize === 0) {
-      batchIndex++;
-    }
-    if (batches[batchIndex] === undefined) {
-      const newBatch: T[] = [];
-      batches[batchIndex] = newBatch;
-    }
-    batches[batchIndex].push(arr[i]);
-  }
-  return batches;
 }
 
 export function waitForMs(ms: number) {

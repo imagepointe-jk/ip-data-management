@@ -29,7 +29,9 @@ export function getSourceJson(path: string) {
 
 export function getSheetFromBuffer(buffer: Buffer, sheetName: string) {
   const workbook = xlsx.read(buffer, { type: "buffer" });
-  return workbook.Sheets[sheetName];
+  const sheet = workbook.Sheets[sheetName];
+  if (!sheet) throw new Error(`Sheet ${sheetName} not found in the workbook.`);
+  return sheet;
 }
 
 export function dataToSheetBuffer(data: Obj[], sheetName = "Sheet1"): Buffer {
