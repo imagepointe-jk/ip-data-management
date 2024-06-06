@@ -5,6 +5,7 @@ import {
   Customer,
   DealResource,
   HubSpotOwner,
+  LineItem,
   Order,
   Product,
   ProductResource,
@@ -14,6 +15,7 @@ import { parseHubSpotOwnerResults } from "@/types/validations";
 import {
   mapContactToContact,
   mapCustomerToCompany,
+  mapLineItemToLineItem,
   mapOrderToDeal,
   mapProductToProduct,
 } from "./mapData";
@@ -21,6 +23,7 @@ import {
   HUBSPOT_CONTACT_TO_COMPANY,
   HUBSPOT_DEAL_TO_COMPANY,
   HUBSPOT_DEAL_TO_CONTACT,
+  HUBSPOT_LINE_ITEM_TO_DEAL,
 } from "@/constants";
 
 const accessToken = () => {
@@ -370,4 +373,45 @@ export async function getAllHubSpotResource<T>(
     url = json.paging.next.link;
   }
   return resources;
+}
+
+export function postLineItem(
+  lineItem: LineItem,
+  dealId: number,
+  productId: number
+) {
+  const myHeaders = standardHeaders();
+
+  const mapped = mapLineItemToLineItem(lineItem);
+
+  const raw = JSON.stringify({
+    properties: {
+      ...mapped,
+      hs_product_id: productId,
+    },
+    associations: [
+      {
+        to: {
+          id: dealId,
+        },
+        types: [
+          {
+            associationCategory: "HUBSPOT_DEFINED",
+            associationTypeId: HUBSPOT_LINE_ITEM_TO_DEAL,
+          },
+        ],
+      },
+    ],
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+
+  return fetch(
+    "https://api.hubapi.com/crm/v3/objects/line_items",
+    requestOptions
+  );
 }

@@ -5,6 +5,7 @@ import {
   ContactResource,
   Customer,
   DealResource,
+  LineItem,
   Order,
   Product,
   ProductResource,
@@ -17,6 +18,7 @@ import {
   associateHubSpotResources,
   postContact,
   postCustomerAsCompany,
+  postLineItem,
   postOrderAsDeal,
   postProduct,
   updateCompanyWithCustomer,
@@ -25,6 +27,7 @@ import {
 } from "./fetch";
 import { sendIssuesSheet } from "@/utility/mail";
 import { findInAnyArray } from "@/utility/misc";
+import { RESOURCE_CONFLICT } from "@/utility/statusCodes";
 
 const syncErrors: SyncError[] = [];
 const syncWarnings: SyncWarning[] = [];
@@ -61,6 +64,7 @@ export async function hubSpotSync(worksheetInput: {
       contacts,
       orders,
       products,
+      lineItems,
     },
   });
   const issues = gatherAllIssues({
@@ -90,6 +94,7 @@ async function syncResources(data: {
     contacts: (Contact | DataError)[];
     orders: (Order | DataError)[];
     products: (Product | DataError)[];
+    lineItems: (LineItem | DataError)[];
   };
 }) {
   const { existing, input } = data;
@@ -113,6 +118,13 @@ async function syncResources(data: {
     syncedContacts
   );
   const syncedProducts = await syncProducts(input.products, existing.products);
+  await syncLineItems(
+    input.lineItems,
+    existing.deals,
+    syncedDeals,
+    existing.products,
+    syncedProducts
+  );
 }
 
 async function syncCustomersAsCompanies(
@@ -466,6 +478,10 @@ async function syncProducts(
           response.status,
           JSON.stringify(json)
         );
+      syncedProducts.push({
+        hubspotId: json.id,
+        sku: product.SKU,
+      });
     } catch (error) {
       if (error instanceof SyncError) syncErrors.push(error);
       else
@@ -481,4 +497,90 @@ async function syncProducts(
   }
 
   return syncedProducts;
+}
+
+async function syncLineItems(
+  lineItems: (LineItem | DataError)[],
+  existingDeals: DealResource[],
+  syncedDeals: DealResource[],
+  existingProducts: ProductResource[],
+  syncedProducts: ProductResource[]
+) {
+  console.log("Syncing line items...");
+
+  for (const lineItem of lineItems) {
+    if (lineItem instanceof DataError) continue;
+
+    const identifier = `Line item for SKU ${lineItem.SKU} on deal ${lineItem["Sales Order#"]}`;
+
+    try {
+      const associatedExistingDeal = existingDeals.find(
+        (deal) => deal.salesOrderNum === lineItem["Sales Order#"]
+      );
+      const maybeAlreadyInHubspot = associatedExistingDeal !== undefined;
+      //May need to implement line items for existing deals
+      if (maybeAlreadyInHubspot) {
+        throw new SyncError(
+          "Data Integrity",
+          "Line Item",
+          identifier,
+          `${identifier} references a deal that already existed in HubSpot before this sync. The line item was skipped to avoid the risk of duplicates..`,
+          RESOURCE_CONFLICT
+        );
+      }
+
+      const associatedDeal = syncedDeals.find(
+        (deal) => deal.salesOrderNum === lineItem["Sales Order#"]
+      );
+      if (!associatedDeal) {
+        throw new SyncError(
+          "Data Integrity",
+          "Line Item",
+          identifier,
+          `${identifier} references a deal that was not found in HubSpot.`
+        );
+      }
+
+      const associatedProduct = findInAnyArray(
+        [existingProducts, syncedProducts],
+        (product) => product.sku === lineItem.SKU
+      );
+      if (!associatedProduct) {
+        throw new SyncError(
+          "Data Integrity",
+          "Line Item",
+          identifier,
+          `${identifier} references a product that was not found in HubSpot.`
+        );
+      }
+
+      const response = await postLineItem(
+        lineItem,
+        associatedDeal.hubspotId,
+        associatedProduct.hubspotId
+      );
+      const json = await response.json();
+      if (!response.ok) {
+        throw new SyncError(
+          "API",
+          "Line Item",
+          identifier,
+          "The POST request to create the line item failed.",
+          response.status,
+          JSON.stringify(json)
+        );
+      }
+    } catch (error) {
+      if (error instanceof SyncError) syncErrors.push(error);
+      else
+        syncErrors.push(
+          new SyncError(
+            "Unknown",
+            "Line Item",
+            identifier,
+            error instanceof Error ? error.message : undefined
+          )
+        );
+    }
+  }
 }
