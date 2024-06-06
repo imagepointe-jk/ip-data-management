@@ -10,30 +10,43 @@ import {
 import { CalculatePriceParams, DecorationLocation } from "@/types/schema";
 
 export function calculatePrice(params: CalculatePriceParams) {
-  const { decorationType, productData, locations, quantity } = params;
-
-  if (productData.type !== "tshirt") return 0;
+  const {
+    productData: { type },
+  } = params;
 
   try {
-    const quantityToUse = roundDownToAllowedValue(
-      quantity,
-      markupTableHeaderNumbers
-    );
-    const markup = markupTable.get(
-      `${quantityToUse}`,
-      markupTableRowNames.tshirts
-    );
-    if (!markup)
-      throw new Error(`Markup not found for quantity ${quantityToUse}`);
-
-    const locationPrices = calculateTshirtLocationPrices(
-      quantityToUse,
-      locations
-    );
-    return productData.net * markup + locationPrices;
+    switch (type) {
+      case "tshirt":
+        return calculateTshirtPrice(params);
+      case "polo":
+        return calculatePoloPrice(params);
+      default:
+        return 0;
+    }
   } catch (error) {
     console.error(error);
   }
+}
+
+function calculateTshirtPrice(params: CalculatePriceParams) {
+  const { decorationType, productData, locations, quantity } = params;
+
+  const quantityToUse = roundDownToAllowedValue(
+    quantity,
+    markupTableHeaderNumbers
+  );
+  const markup = markupTable.get(
+    `${quantityToUse}`,
+    markupTableRowNames.tshirts
+  );
+  if (!markup)
+    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+
+  const locationPrices = calculateTshirtLocationPrices(
+    quantityToUse,
+    locations
+  );
+  return productData.net * markup + locationPrices;
 }
 
 function calculateTshirtLocationPrices(
@@ -83,4 +96,8 @@ function calculateTshirtLocationPrices(
   sum -= oneColorCost;
 
   return sum;
+}
+
+function calculatePoloPrice(params: CalculatePriceParams) {
+  return 0;
 }

@@ -8,3 +8,8 @@ export const easyCorsInit = {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   },
 };
+
+export const HUBSPOT_CONTACT_TO_COMPANY = 279,
+  HUBSPOT_DEAL_TO_COMPANY = 341,
+  HUBSPOT_DEAL_TO_CONTACT = 3,
+  HUBSPOT_LINE_ITEM_TO_DEAL = 20;

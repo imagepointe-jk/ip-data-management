@@ -1,5 +1,6 @@
 import fs from "fs";
-import xlsx, { WorkBook, WorkSheet } from "xlsx";
+import * as xlsx from "xlsx";
+import { WorkBook, WorkSheet } from "xlsx";
 
 export type Obj = {
   [key: string]: any;
@@ -28,7 +29,9 @@ export function getSourceJson(path: string) {
 
 export function getSheetFromBuffer(buffer: Buffer, sheetName: string) {
   const workbook = xlsx.read(buffer, { type: "buffer" });
-  return workbook.Sheets[sheetName];
+  const sheet = workbook.Sheets[sheetName];
+  if (!sheet) throw new Error(`Sheet ${sheetName} not found in the workbook.`);
+  return sheet;
 }
 
 export function dataToSheetBuffer(data: Obj[], sheetName = "Sheet1"): Buffer {
@@ -98,4 +101,12 @@ export function getSheetRawCells(
   }
 
   return rows;
+}
+
+export function getHeaderRowValues(sheet: WorkSheet): string[] {
+  const json = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+  const firstRow = json[0];
+  if (!Array.isArray(firstRow)) return [];
+
+  return firstRow.map((value) => `${value}`);
 }

@@ -60,6 +60,112 @@ export const calculatePriceParamsSchema = z.object({
   locations: z.array(decorationLocationSchema),
 });
 
+const excelSerialDate = z.number().transform((val) => {
+  // Excel serial date starts from January 1, 1900 (excluding leap year bug)
+  const excelStartDate = new Date("1899-12-30T00:00:00Z");
+
+  // Adjust for the 1900 leap year bug in Excel
+  if (val > 59) {
+    val++;
+  }
+
+  // Convert days to milliseconds
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+  // Calculate the equivalent JavaScript date
+  const jsDate = new Date(excelStartDate.getTime() + val * millisecondsPerDay);
+
+  return jsDate;
+});
+
+export const customerSchema = z.object({
+  ["Customer Number"]: z.number(),
+  ["Agent #1"]: z.number().optional(),
+  ["Customer Name"]: z.string(),
+  ["Street Address"]: z.string().optional(),
+  ["Address Line 2"]: z.string().optional(),
+  ["City"]: z.string().optional(),
+  ["State"]: z.string().optional(),
+  ["Zip Code"]: z.coerce.string().optional(),
+  ["Country"]: z.string().optional(),
+  ["Phone#"]: z.coerce.string().optional(),
+});
+
+export const contactSchema = z.object({
+  ["Customer Number"]: z.number(),
+  ["Address Code"]: z.number().optional(),
+  ["Name"]: z.string(),
+  ["Address Line 2"]: z.string().optional(),
+  ["City"]: z.string().optional(),
+  ["State"]: z.string().optional(),
+  ["Zip Code"]: z.coerce.string().optional(),
+  ["Country"]: z.string().optional(),
+  ["Phone#"]: z.string().optional(),
+  ["Fax#"]: z.string().optional(),
+  ["Email"]: z.string().email(),
+});
+
+export const orderSchema = z.object({
+  ["Customer Number"]: z.number(),
+  ["Sales Order Type"]: z.string().optional(),
+  ["Sales Order#"]: z.string(),
+  ["Entered Date"]: excelSerialDate.optional(),
+  ["Request Date"]: excelSerialDate.optional(),
+  ["Cancel Date"]: excelSerialDate.optional(),
+  ["Customer PO#"]: z.string().optional(),
+  ["Agent Name#1"]: z.string().optional(),
+  ["Purchaser"]: z.string().optional(),
+  ["Buyer E-Mail"]: z.string().email().optional(),
+  ["Shipping $Cost"]: z.number().optional(),
+  ["Tax $Total"]: z.number().optional(),
+  ["Order $Total"]: z.number().optional(),
+  ["Order $Cost"]: z.number().optional(),
+  ["Shorted"]: z.enum(["X"]).optional(),
+  ["Commission Amount"]: z.number().optional(),
+  ["Invoice Date"]: excelSerialDate.optional(),
+  ["Internal Comments"]: z.string().optional(),
+  ["Comments"]: z.string().optional(),
+  ["Ship Via"]: z.string().optional(),
+  ["Garment Design"]: z.string().optional(),
+  ["Garment Design Description"]: z.string().optional(),
+  ["Garment Design Instructions"]: z.string().optional(),
+  ["Pipeline"]: z.string().optional(),
+  ["Deal Stage"]: z.string().optional(),
+  ["PO#"]: z.string().optional(),
+  ["HubSpot Owner ID"]: z.string().optional(),
+});
+
+export const lineItemSchema = z.object({
+  ["Entered Date"]: excelSerialDate.optional(),
+  ["Size"]: z.string().optional(),
+  ["Size Qty Ordered"]: z.number().optional(),
+  ["Size Cost"]: z.number().optional(),
+  ["Unit Price"]: z.number().optional(),
+  ["SKU#"]: z.string().optional(), //comes from impress
+  ["SKU"]: z.string().optional(), //filled with Item# if it's defined, otherwise SKU#
+  ["Item#"]: z.string().optional(), //comes from impress
+  ["Name"]: z.string().optional(), //product name found from product spreadsheet based on "SKU" field
+  ["Sales Order#"]: z.string(),
+});
+
+export const poSchema = z.object({
+  ["Sales Order#"]: z.coerce.string(),
+  ["PO#"]: z.string().optional(),
+});
+
+export const productSchema = z.object({
+  ["Name"]: z.string().optional(),
+  ["SKU"]: z.string(),
+  ["Product Type"]: z.string().optional(),
+  ["Unit Price"]: z.number().optional(),
+});
+
+export const hubSpotOwnerSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+});
+
 export const sortingTypes = ["Design Number"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -72,3 +178,45 @@ export type QuoteRequest = z.infer<typeof quoteRequestSchema>;
 
 export type DecorationLocation = z.infer<typeof decorationLocationSchema>;
 export type CalculatePriceParams = z.infer<typeof calculatePriceParamsSchema>;
+
+export type Customer = z.infer<typeof customerSchema>;
+export type Contact = z.infer<typeof contactSchema>;
+export type Order = z.infer<typeof orderSchema>;
+export type Product = z.infer<typeof productSchema>;
+export type LineItem = z.infer<typeof lineItemSchema>;
+export type PO = z.infer<typeof poSchema>;
+export type HubSpotOwner = z.infer<typeof hubSpotOwnerSchema>;
+export type ImpressDataType =
+  | "Customer"
+  | "Contact"
+  | "Order"
+  | "Line Item"
+  | "PO"
+  | "Product";
+
+//associates the ID of the company resource that got created in HubSpot with the Impress customer number
+export type CompanyResource = {
+  hubspotId: number;
+  customerNumber: number;
+};
+
+//associates the ID of the contact resource that got created in HubSpot with the Impress contact email. Note that this is not a reliable association yet because many historical contacts have no listed email.
+export type ContactResource = {
+  hubspotId: number;
+  email: string;
+  companyId?: number;
+};
+
+//associates the ID of the deal resource that got created in HubSpot with the Impress sales order#.
+export type DealResource = {
+  hubspotId: number;
+  salesOrderNum: string;
+  companyId?: number;
+  contactId?: number;
+};
+
+//associates the ID of the product resource that got created in HubSpot with the Impress SKU
+export type ProductResource = {
+  hubspotId: number;
+  sku: string;
+};
