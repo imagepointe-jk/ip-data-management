@@ -213,7 +213,7 @@ export function cleanupProductsSheet(sheet: WorkSheet) {
       },
       sheet
     );
-    const firstVal = rows[0][0];
+    const firstVal = rows[0]![0];
     const noPage = firstVal === undefined;
     if (noPage) break;
 
