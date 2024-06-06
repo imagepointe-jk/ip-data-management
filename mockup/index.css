@@ -1,6 +1,8 @@
 * {
   --color-alpha: #006ac6;
-  --color-beta: #3889cf;
+  --color-alpha-hover: #3592e4;
+  --color-danger: rgb(228, 38, 38);
+  --color-danger-hover: rgb(255, 58, 58);
 }
 
 body {
@@ -63,14 +65,35 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-beta);
+  background-color: var(--color-alpha-hover);
 }
 
 .button-beta {
   background-color: white;
   color: var(--color-alpha);
+  border: 1px solid var(--color-alpha);
 }
 
 .button-beta:hover {
   background-color: rgb(230, 230, 230);
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+}
+
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+select {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+.content-frame {
+  background-color: rgb(235, 235, 235);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--color-alpha);
 }
