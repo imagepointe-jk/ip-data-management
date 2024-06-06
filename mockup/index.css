@@ -1,0 +1,76 @@
+* {
+  --color-alpha: #006ac6;
+  --color-beta: #3889cf;
+}
+
+body {
+  margin: 0;
+}
+
+nav {
+  background-color: var(--color-alpha);
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  padding-left: 15px;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  margin-bottom: 10px;
+}
+
+.links-row {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.links-row a {
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.links-row a:hover {
+  background-color: var(--color-beta);
+}
+
+.links-row a,
+.links-row a:visited {
+  color: white;
+}
+
+.ip-logo {
+  height: 50px;
+}
+
+.main-content {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+button {
+  border-radius: 5px;
+  border: none;
+  background-color: var(--color-alpha);
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: var(--color-beta);
+}
+
+.button-beta {
+  background-color: white;
+  color: var(--color-alpha);
+}
+
+.button-beta:hover {
+  background-color: rgb(230, 230, 230);
+}
