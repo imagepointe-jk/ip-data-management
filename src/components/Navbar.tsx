@@ -14,6 +14,9 @@ export default function Navbar() {
         <li>
           <Link href="/designs">Designs</Link>
         </li>
+        <li>
+          <Link href="/hubspot">HubSpot</Link>
+        </li>
       </ul>
       <AuthButton />
     </nav>

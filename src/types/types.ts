@@ -7,6 +7,7 @@ import {
   DesignType,
 } from "@prisma/client";
 import { SortingDirection, SortingType } from "./schema";
+import { AppError } from "@/error";
 
 export type DesignQuery = {
   perPage?: number;
@@ -48,4 +49,12 @@ export type DesignWithIncludes = Design & {
 export type DesignCategoryWithIncludes = DesignCategory & {
   designSubcategories: DesignSubcategory[];
   designType: DesignType;
+};
+
+export type ServerActionResult = {
+  message?: string;
+  error?: {
+    message: string;
+    statusCode: number;
+  };
 };

@@ -1,5 +1,6 @@
 import fs from "fs";
-import xlsx, { WorkBook, WorkSheet } from "xlsx";
+import * as xlsx from "xlsx";
+import { WorkBook, WorkSheet } from "xlsx";
 
 export type Obj = {
   [key: string]: any;
@@ -98,4 +99,12 @@ export function getSheetRawCells(
   }
 
   return rows;
+}
+
+export function getHeaderRowValues(sheet: WorkSheet): string[] {
+  const json = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+  const firstRow = json[0];
+  if (!Array.isArray(firstRow)) return [];
+
+  return firstRow.map((value) => `${value}`);
 }

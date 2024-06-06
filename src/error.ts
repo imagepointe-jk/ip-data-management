@@ -10,6 +10,7 @@ type AppErrorType =
   | "Environment"
   | "Client Request"
   | "Server State"
+  | "Database"
   | "Unknown";
 
 export class AppError extends Error {
@@ -45,6 +46,8 @@ function approximateErrorStatusCode(type: AppErrorType) {
       return NOT_AUTHENTICATED;
     case "Client Request":
       return BAD_REQUEST;
+    case "Database":
+      return INTERNAL_SERVER_ERROR;
     case "Environment":
       return INTERNAL_SERVER_ERROR;
     case "Server State":

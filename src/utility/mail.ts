@@ -1,14 +1,17 @@
 import nodemailer from "nodemailer";
-import Mail from "nodemailer/lib/mailer";
+import Mail, { Attachment } from "nodemailer/lib/mailer";
 import fs from "fs";
 import handlebars from "handlebars";
 import { QuoteRequest } from "@/types/schema";
 import { AppError } from "@/error";
+import { DataError, SyncError, SyncWarning } from "@/processes/hubspot/error";
+import { dataToSheetBuffer } from "./spreadsheet";
 
 async function sendEmail(
   recipientAddress: string,
   subject: string,
-  message: string
+  message: string,
+  attachments?: Attachment[]
 ) {
   const fromAddress = process.env.NODEMAILER_FROM_ADDRESS;
   const password = process.env.NODEMAILER_FROM_PASSWORD;
@@ -32,6 +35,7 @@ async function sendEmail(
     to: recipientAddress,
     subject,
     html: message,
+    attachments,
   };
   return transporter.sendMail(email);
 }
@@ -59,4 +63,55 @@ export async function sendQuoteRequestEmail(quoteRequest: QuoteRequest) {
       serverMessage: (error as Error).message,
     });
   }
+}
+
+export function sendIssuesSheet(
+  issues: (DataError | SyncError | SyncWarning)[]
+) {
+  const rows: {
+    errorType: string;
+    dataType?: string;
+    message?: string;
+    ["rowNumber (approx)"]?: number;
+    rowIdentifier?: string;
+    severity: "Error" | "Warning";
+    statusCode?: number;
+    responseJsonString?: string;
+  }[] = [];
+
+  for (const issue of issues) {
+    if (issue instanceof DataError) {
+      rows.push({
+        errorType: "Data",
+        dataType: issue.type,
+        message: issue.message,
+        rowIdentifier: issue.rowIdentifier,
+        ["rowNumber (approx)"]: issue.rowNumber,
+        severity: "Error",
+      });
+    } else if (issue instanceof SyncError) {
+      rows.push({
+        errorType: `Sync (${issue.type})`,
+        dataType: issue.resourceType,
+        message: issue.message,
+        statusCode: issue.statusCode,
+        responseJsonString: issue.responseJsonString,
+        severity: "Error",
+      });
+    } else if (issue instanceof SyncWarning) {
+      rows.push({
+        errorType: `Sync (${issue.type})`,
+        severity: "Warning",
+        message: issue.message,
+      });
+    }
+  }
+
+  const sheet = dataToSheetBuffer(rows, "Issues");
+  sendEmail(
+    "josh.klope@imagepointe.com",
+    "HubSpot Sync Results",
+    "Results of HubSpot sync",
+    [{ content: sheet, filename: "issues.xlsx" }]
+  );
 }

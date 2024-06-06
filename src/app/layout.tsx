@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { SessionProvider } from "next-auth/react";
+import { BASE_PATH, auth } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,16 +12,20 @@ export const metadata: Metadata = {
   description: "A hub for managing various IP data.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <Navbar />
-        {children}
+        <SessionProvider basePath={BASE_PATH} session={session}>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
