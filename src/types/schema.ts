@@ -54,6 +54,8 @@ export const calculatePriceParamsSchema = z.object({
   productData: z.object({
     type: z.enum(productTypes),
     net: z.number(),
+    isAllPoly: z.boolean().optional(),
+    isSweatshirt: z.boolean().optional(),
   }),
   decorationType: z.enum(decorationTypes),
   quantity: z.number(),

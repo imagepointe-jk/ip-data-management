@@ -1,8 +1,15 @@
-import { roundDownToAllowedValue } from "../utility/misc";
+import {
+  getGreatestSum,
+  getPermutations,
+  roundDownToAllowedValue,
+} from "../utility/misc";
 import {
   markupTable,
   markupTableHeaderNumbers,
   markupTableRowNames,
+  poloJacketSweatFleeceUpcharge,
+  poloJacketSweatPolyUpcharge,
+  polosJacketsSweatsPrintUpchargeTable,
   printUpchargeHeaderNumbers,
   printUpchargeRowNames,
   printUpchargeTable,
@@ -14,17 +21,12 @@ export function calculatePrice(params: CalculatePriceParams) {
     productData: { type },
   } = params;
 
-  try {
-    switch (type) {
-      case "tshirt":
-        return calculateTshirtPrice(params);
-      case "polo":
-        return calculatePoloPrice(params);
-      default:
-        return 0;
-    }
-  } catch (error) {
-    console.error(error);
+  if (type === "tshirt") {
+    return calculateTshirtPrice(params);
+  } else if (type === "polo" || type === "jacket" || type === "sweats") {
+    return calculatePoloPrice(params);
+  } else {
+    return 0;
   }
 }
 
@@ -99,5 +101,57 @@ function calculateTshirtLocationPrices(
 }
 
 function calculatePoloPrice(params: CalculatePriceParams) {
-  return 0;
+  const { quantity, productData } = params;
+
+  const quantityToUse = roundDownToAllowedValue(
+    quantity,
+    markupTableHeaderNumbers
+  );
+  const markup = markupTable.get(
+    `${quantityToUse}`,
+    markupTableRowNames.polosPrint
+  );
+  if (!markup)
+    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+
+  const locationPrices = calculatePoloLocationPrices(params);
+  const allPolyFee = productData.isAllPoly ? poloJacketSweatPolyUpcharge : 0;
+  const sweatshirtFee = productData.isSweatshirt
+    ? poloJacketSweatFleeceUpcharge
+    : 0;
+
+  return productData.net * markup + locationPrices + allPolyFee + sweatshirtFee;
+}
+
+function calculatePoloLocationPrices(params: CalculatePriceParams) {
+  const { locations } = params;
+  const locationNumbers = Array.from(
+    { length: locations.length },
+    (_, i) => i + 1
+  );
+  const indexPermutations = getPermutations(locationNumbers);
+  const costPermutations = indexPermutations.map((perm) =>
+    perm.map((locationNumber) => {
+      const tableHeaderName = `${locationNumber}`;
+      const colorCount = locations[locationNumber - 1]!.colorCount;
+      const tableRowName =
+        colorCount === 1
+          ? printUpchargeRowNames.oneColor
+          : colorCount === 2
+          ? printUpchargeRowNames.twoColor
+          : colorCount === 3 || colorCount === 4
+          ? printUpchargeRowNames.multiColor
+          : "not found";
+      const locationColorCountCost = polosJacketsSweatsPrintUpchargeTable.get(
+        tableHeaderName,
+        tableRowName
+      );
+      if (locationColorCountCost === undefined)
+        throw new Error(
+          `Location color count cost not found for location ${locationNumber} and color count ${colorCount}`
+        );
+      return locationColorCountCost;
+    })
+  );
+  return getGreatestSum(costPermutations);
 }
