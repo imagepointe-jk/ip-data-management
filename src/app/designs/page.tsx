@@ -16,18 +16,33 @@ export default async function Designs({ searchParams }: Props) {
 
   return (
     <>
-      <Link href="designs/0">Create Design</Link>
-      <Link href={`designs/?designType=${encodeURIComponent("Screen Print")}`}>
+      <Link href="designs/0" className="link-as-button">
+        Create Design
+      </Link>
+      <Link
+        href={`designs/?designType=${encodeURIComponent("Screen Print")}`}
+        className="link-as-button"
+      >
         Screen Print
       </Link>
-      <Link href="designs/?designType=Embroidery">Embroidery</Link>
+      <Link href="designs/?designType=Embroidery" className="link-as-button">
+        Embroidery
+      </Link>
       <table>
         <thead>
           <tr>
-            <th>Image</th>
-            <th>Design Number</th>
-            <th>Data 3</th>
-            <th>Data 4</th>
+            <th>
+              <div>Image</div>
+            </th>
+            <th>
+              <div>Design Number</div>
+            </th>
+            <th>
+              <div>Data 3</div>
+            </th>
+            <th>
+              <div>Data 4</div>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +76,8 @@ export default async function Designs({ searchParams }: Props) {
         curPageNumber={pageNumber}
         pageSizeChoices={pageSizeChoices}
         totalPages={totalResults / perPage}
+        buttonClassName="link-as-button"
+        activeButtonClassName="current"
       />
     </>
   );

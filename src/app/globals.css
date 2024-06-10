@@ -1,3 +1,176 @@
+* {
+  --color-alpha: #006ac6;
+  --color-alpha-hover: #3592e4;
+  --color-alpha-light: #8fc7f8;
+  --color-lightgray: rgb(235, 235, 235);
+  --color-danger: rgb(228, 38, 38);
+  --color-danger-hover: rgb(255, 58, 58);
+}
+
+body {
+  margin: 0;
+}
+
+nav {
+  background-color: var(--color-alpha);
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  padding-left: 15px;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  margin-bottom: 10px;
+}
+
+a.link-as-button {
+  background-color: var(--color-alpha);
+  display: inline-block;
+}
+
+.links-row {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+a.link-as-button,
+.links-row a {
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+a.link-as-button:hover,
+.links-row a:hover {
+  background-color: var(--color-alpha-hover);
+}
+
+a.link-as-button,
+.links-row a,
+.links-row a:visited {
+  color: white;
+}
+
+a.link-as-button.current {
+  border: 1px solid var(--color-alpha);
+}
+
+a.link-as-button.current,
+.links-row a.current {
+  background-color: white;
+  color: var(--color-alpha);
+  font-weight: bold;
+}
+
+.ip-logo {
+  height: 50px;
+}
+
+.main-content {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+button {
+  border-radius: 5px;
+  border: none;
+  background-color: var(--color-alpha);
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: var(--color-alpha-hover);
+}
+
+.button-beta {
+  background-color: white;
+  color: var(--color-alpha);
+  border: 1px solid var(--color-alpha);
+}
+
+.button-beta:hover {
+  background-color: var(--color-lightgray);
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+}
+
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+select,
+input[type="text"],
+input[type="number"] {
+  font-size: 0.9rem;
+  padding: 8px;
+}
+
+input[type="number"] {
+  width: 70px;
+}
+
+.content-frame {
+  background-color: rgb(235, 235, 235);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid var(--color-alpha);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table thead th {
+  border-bottom: 1px solid var(--color-alpha);
+  background-color: var(--color-lightgray);
+}
+
+table thead th > div {
+  display: flex;
+  align-items: center;
+}
+
+table thead th .clickable {
+  cursor: pointer;
+  gap: 5px;
+}
+
+table thead th .clickable:hover {
+  background-color: lightgray;
+}
+
+table thead th .clickable .sort-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+table thead th .clickable .sort-arrows .down {
+  rotate: 180deg;
+}
+
+table thead th > div,
+table tbody td {
+  padding: 10px;
+}
+
+table tbody tr:nth-child(even) td {
+  background-color: var(--color-lightgray);
+}
+
+table tbody tr.selected td {
+  background-color: var(--color-alpha-light);
+}
+
 .danger {
-  color: red;
+  color: var(--color-danger);
 }
