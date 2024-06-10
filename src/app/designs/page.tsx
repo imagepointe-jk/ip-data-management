@@ -2,6 +2,7 @@ import { PageControls } from "@/components/PageControls";
 import { defaultPerPage, pageSizeChoices } from "@/constants";
 import { getDesigns } from "@/db/access/designs";
 import Link from "next/link";
+import styles from "../../styles/designs.module.css";
 
 type Props = {
   searchParams?: any;
@@ -17,24 +18,31 @@ export default async function Designs({ searchParams }: Props) {
   return (
     <>
       <Link href="designs/0" className="link-as-button">
-        Create Design
+        + Create Design
       </Link>
       <Link
         href={`designs/?designType=${encodeURIComponent("Screen Print")}`}
-        className="link-as-button"
+        className={`link-as-button ${
+          designType === "Screen Print" ? "current" : ""
+        }`}
       >
         Screen Print
       </Link>
-      <Link href="designs/?designType=Embroidery" className="link-as-button">
+      <Link
+        href="designs/?designType=Embroidery"
+        className={`link-as-button ${
+          designType === "Embroidery" ? "current" : ""
+        }`}
+      >
         Embroidery
       </Link>
-      <table>
+      <table className={styles["design-table"]}>
         <thead>
           <tr>
-            <th>
+            <th className={styles["img-column"]}>
               <div>Image</div>
             </th>
-            <th>
+            <th className={styles["main-column"]}>
               <div>Design Number</div>
             </th>
             <th>
