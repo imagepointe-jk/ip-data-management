@@ -9,6 +9,8 @@ type PageControlsProps = {
   curPageNumber: number;
   curItemsPerPage: number;
   pageSizeChoices: number[];
+  buttonClassName?: string;
+  activeButtonClassName?: string;
 };
 
 export function PageControls({
@@ -16,17 +18,23 @@ export function PageControls({
   curPageNumber,
   pageSizeChoices,
   totalPages,
+  activeButtonClassName,
+  buttonClassName,
 }: PageControlsProps) {
   return (
     <div className={styles["main"]}>
       <PageNumberControl
         curPageNumber={curPageNumber}
         totalPages={totalPages}
+        buttonClassName={buttonClassName}
+        activeButtonClassName={activeButtonClassName}
       />
       <JumpToControl curPageNumber={curPageNumber} totalPages={totalPages} />
       <PageSizeControl
         curItemsPerPage={curItemsPerPage}
         pageSizeChoices={pageSizeChoices}
+        buttonClassName={buttonClassName}
+        activeButtonClassName={activeButtonClassName}
       />
     </div>
   );
@@ -35,11 +43,15 @@ export function PageControls({
 type PageNumberControlProps = {
   totalPages: number;
   curPageNumber: number;
+  buttonClassName?: string;
+  activeButtonClassName?: string;
 };
 
 function PageNumberControl({
   curPageNumber,
   totalPages,
+  activeButtonClassName,
+  buttonClassName,
 }: PageNumberControlProps) {
   const pageControlNumbers = addEllipsisToNumberArray(
     getPageControlNumbers(totalPages, curPageNumber)
@@ -58,11 +70,14 @@ function PageNumberControl({
         return (
           <Link
             key={i}
-            className={
-              curPageNumber === numberOrEllipsis
-                ? styles["page-active"]
-                : styles["page-inactive"]
-            }
+            // className={
+            //   curPageNumber === numberOrEllipsis
+            //     ? styles["page-active"]
+            //     : styles["page-inactive"]
+            // }
+            className={`${buttonClassName || ""} ${
+              curPageNumber === numberOrEllipsis ? activeButtonClassName : ""
+            }`}
             style={{
               pointerEvents:
                 curPageNumber === numberOrEllipsis ? "none" : "initial",
@@ -132,11 +147,15 @@ function JumpToControl({ curPageNumber, totalPages }: JumpToControlProps) {
 type PageSizeControlProps = {
   curItemsPerPage: number;
   pageSizeChoices: number[];
+  buttonClassName?: string;
+  activeButtonClassName?: string;
 };
 
 function PageSizeControl({
   curItemsPerPage,
   pageSizeChoices,
+  activeButtonClassName,
+  buttonClassName,
 }: PageSizeControlProps) {
   // const [searchParams] = useSearchParams();
   const searchParams = useSearchParams();
@@ -152,11 +171,16 @@ function PageSizeControl({
         return (
           <Link
             key={i}
-            className={
+            // className={
+            //   (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
+            //     ? ""
+            //     : "button-minor"
+            // }
+            className={`${buttonClassName} ${
               (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
-                ? ""
-                : "button-minor"
-            }
+                ? activeButtonClassName
+                : ""
+            }`}
             style={{
               pointerEvents:
                 (i === 0 && !curItemsPerPage) || curItemsPerPage === choice

@@ -39,20 +39,21 @@ export default function DesignDataForm({
       <div>
         Database ID: {existingDesign ? existingDesign.id : "(not created)"}
       </div>
-      <div
-        style={{ border: "1px solid black", width: "300px", height: "300px" }}
-      >
-        {existingDesign && (
-          <img
-            src={existingDesign.imageUrl}
-            alt="design image"
-            style={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: `#${existingDesign?.defaultBackgroundColor.hexCode}`,
-            }}
-          />
-        )}
+      <div>
+        <div
+          style={{ border: "1px solid black", width: "300px", height: "300px" }}
+        >
+          {existingDesign && (
+            <img
+              src={existingDesign.imageUrl}
+              alt="design image"
+              style={{
+                height: "100%",
+                backgroundColor: `#${existingDesign?.defaultBackgroundColor.hexCode}`,
+              }}
+            />
+          )}
+        </div>
         <input
           type="text"
           name="image-url"
