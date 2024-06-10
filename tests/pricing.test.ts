@@ -676,6 +676,554 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
 });
 
+describe("Hats/beanies (emb)", () => {
+  //correct markup at different quantities for >$10 net=================================
+  test("Quantity 24, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 32.78,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 26.18,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 23.98,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 22.99,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 22.33,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, net 11, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 21.78,
+      calcParams: {
+        productData: {
+          net: 11,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+  //correct markup at different quantities for 2.50-3.49 net=================================
+  test("Quantity 24, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 21,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 16.95,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 16.35,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 13.65,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 13.2,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, net 3, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 12.75,
+      calcParams: {
+        productData: {
+          net: 3,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+  //correct markup at different quantities for 3.50-4.99 net=================================
+  test("Quantity 24, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 22,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 18,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 17,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 14.6,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 13.8,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, net 4, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 13,
+      calcParams: {
+        productData: {
+          net: 4,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+  //correct markup at different quantities for 5.00-7.49 net=================================
+  test("Quantity 24, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 24.3,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 19.8,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 19.5,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 17.1,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 16.5,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, net 6, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 15.6,
+      calcParams: {
+        productData: {
+          net: 6,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+  //correct markup at different quantities for 7.50-10 net=================================
+  test("Quantity 24, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 26.8,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 22.8,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 22,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 19.6,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 19.2,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, net 8, location with 1000 stitches", () => {
+    checkResult({
+      expectedResult: 18.4,
+      calcParams: {
+        productData: {
+          net: 8,
+          type: "hat",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+});
+
 function checkResult(params: {
   expectedResult: number;
   calcParams: CalculatePriceParams;

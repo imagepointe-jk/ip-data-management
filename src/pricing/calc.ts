@@ -16,7 +16,11 @@ import {
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
-import { CalculatePriceParams, DecorationLocation } from "@/types/schema";
+import {
+  CalculatePriceParams,
+  DecorationLocation,
+  ProductCalcType,
+} from "@/types/schema";
 
 export function calculatePrice(params: CalculatePriceParams) {
   const {
@@ -29,7 +33,9 @@ export function calculatePrice(params: CalculatePriceParams) {
   } else if (type === "polo" || type === "jacket" || type === "sweats") {
     if (decorationType === "Screen Print")
       return calculatePoloPrintPrice(params);
-    else return calculatePoloEmbroideryPrice(params);
+    else return calculateEmbroideryPrice(params, "polo");
+  } else if (type === "beanie" || type === "hat") {
+    return calculateEmbroideryPrice(params, type);
   } else {
     return 0;
   }
@@ -161,21 +167,22 @@ function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
   return getGreatestSum(costPermutations);
 }
 
-function calculatePoloEmbroideryPrice(params: CalculatePriceParams) {
+function calculateEmbroideryPrice(
+  params: CalculatePriceParams,
+  type: ProductCalcType
+) {
   const { quantity, productData, locations } = params;
 
   const quantityToUse = roundDownToAllowedValue(
     quantity,
     markupTableHeaderNumbers
   );
-  const markup = markupTable.get(
-    `${quantityToUse}`,
-    markupTableRowNames.polosEmb
-  );
+  const rowNameToUse = chooseEmbTableRow(type, productData.net);
+  const markup = markupTable.get(`${quantityToUse}`, rowNameToUse);
   if (!markup)
     throw new Error(`Markup not found for quantity ${quantityToUse}`);
 
-  const locationStitchPrices = calculatePoloEmbroideryLocationPrices(params);
+  const locationStitchPrices = calculateEmbroideryLocationPrices(params);
   const secondLocationFee =
     locations.length > 1 ? poloJacketSweatEmbLocationFees.second : 0;
   const thirdLocationFee =
@@ -192,7 +199,25 @@ function calculatePoloEmbroideryPrice(params: CalculatePriceParams) {
   );
 }
 
-function calculatePoloEmbroideryLocationPrices(params: CalculatePriceParams) {
+function chooseEmbTableRow(type: ProductCalcType, net: number) {
+  if (type === "polo") return markupTableRowNames.polosEmb;
+  if (type === "hat" || type === "beanie") {
+    if (net >= 2.5 && net <= 3.49)
+      return markupTableRowNames.beanie250Min349Max;
+    if (net >= 3.5 && net <= 4.99)
+      return markupTableRowNames.beanie350Min499Max;
+    if (net >= 5.0 && net <= 7.49)
+      return markupTableRowNames.beanie500Min749Max;
+    if (net >= 7.5 && net <= 10.0) return markupTableRowNames.beanie750Min10Max;
+    if (net > 10) return markupTableRowNames.hatsBeanesOver10;
+  }
+
+  throw new Error(
+    `No valid markup table row for product type ${type} and net ${net}`
+  );
+}
+
+function calculateEmbroideryLocationPrices(params: CalculatePriceParams) {
   const locations = [...params.locations];
   if (locations.length === 4) locations.pop(); //4th location is a flat fee, so ignore it
 
