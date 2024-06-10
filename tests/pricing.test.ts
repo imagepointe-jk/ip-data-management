@@ -118,7 +118,7 @@ describe("T-shirt screen print pricing formula", () => {
   });
 });
 
-describe("Polos/jackets/sweats (emb)", () => {
+describe("Polos/jackets/sweats (print)", () => {
   //correctly choose same formula regardless of polo/jacket/sweat
   const net = 7.5;
   test("Quantity 48, location with 1 color, polo", () => {
@@ -430,6 +430,247 @@ describe("Polos/jackets/sweats (emb)", () => {
           },
         ],
         quantity: 150,
+      },
+    });
+  });
+});
+
+describe("Polos/jackets/sweats (emb)", () => {
+  const net = 7.5;
+  //correct markup at different quantities
+  test("Quantity 24, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 16.28,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 48, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 14.33,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 72, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 13.73,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 72,
+      },
+    });
+  });
+  test("Quantity 144, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 13.05,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 144,
+      },
+    });
+  });
+  test("Quantity 288, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 12.9,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 288,
+      },
+    });
+  });
+  test("Quantity 500, location with 1000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 12.38,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 500,
+      },
+    });
+  });
+  //correctly apply fees for additional locations
+  test("Quantity 24, 2 locations with 1000 stitches each, polo", () => {
+    checkResult({
+      expectedResult: 21.28,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 24, 3 locations with 1000 stitches each, polo", () => {
+    checkResult({
+      expectedResult: 26.28,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 24, 4 locations with 1000 stitches each, polo", () => {
+    checkResult({
+      expectedResult: 33.78,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+          {
+            stitchCount: 1000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  //correctly apply addtl. stitch count fees
+  test("Quantity 24, 1 location with 6000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 17.78,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 6000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 24, 1 location with 11000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 19.28,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 11000,
+          },
+        ],
+        quantity: 24,
+      },
+    });
+  });
+  test("Quantity 24, 1 location with 20000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 20.78,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 20000,
+          },
+        ],
+        quantity: 24,
       },
     });
   });

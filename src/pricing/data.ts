@@ -6,6 +6,7 @@ export const markupTableHeaderNumbers = [
 export const markupTableRowNames = {
   tshirts: "t-shirts",
   polosPrint: "polos/jackets/sweats (print)",
+  polosEmb: "polos/jackets/sweats (emb)",
 };
 export const markupTable = new SimpleTable({
   headers: markupTableHeaderNumbers.map((num) => `${num}`),
@@ -16,6 +17,7 @@ export const markupTable = new SimpleTable({
     [markupTableRowNames.polosPrint]: [
       2.44, 2.23, 1.97, 1.87, 1.78, 1.72, 1.65,
     ],
+    [markupTableRowNames.polosEmb]: [2.37, 2.17, 1.91, 1.83, 1.74, 1.72, 1.65],
   },
 });
 
@@ -44,3 +46,9 @@ export const polosJacketsSweatsPrintUpchargeTable = new SimpleTable({
 
 export const poloJacketSweatPolyUpcharge = 0.5;
 export const poloJacketSweatFleeceUpcharge = 0.5;
+export const poloJacketSweatEmbLocationFees = {
+  second: 5,
+  third: 5,
+  fourth: 7.5,
+};
+export const additional5kStitchPrice = 1.5;
