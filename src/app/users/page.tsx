@@ -11,7 +11,9 @@ export default async function Users() {
           <Link href={`/users/${user.id}`}>{user.name}</Link>
         </li>
       ))}
-      <Link href="users/0">Create User</Link>
+      <Link href="users/0" className="link-as-button">
+        Create User
+      </Link>
     </ul>
   );
 }

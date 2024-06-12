@@ -1,30 +1,43 @@
-import { roundDownToAllowedValue } from "../utility/misc";
 import {
+  getGreatestSum,
+  getPermutations,
+  roundDownToAllowedValue,
+} from "../utility/misc";
+import {
+  additional5kStitchPrice,
   markupTable,
   markupTableHeaderNumbers,
   markupTableRowNames,
+  poloJacketSweatEmbLocationFees,
+  poloJacketSweatFleeceUpcharge,
+  poloJacketSweatPolyUpcharge,
+  polosJacketsSweatsPrintUpchargeTable,
   printUpchargeHeaderNumbers,
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
-import { CalculatePriceParams, DecorationLocation } from "@/types/schema";
+import {
+  CalculatePriceParams,
+  DecorationLocation,
+  ProductCalcType,
+} from "@/types/schema";
 
 export function calculatePrice(params: CalculatePriceParams) {
   const {
     productData: { type },
+    decorationType,
   } = params;
 
-  try {
-    switch (type) {
-      case "tshirt":
-        return calculateTshirtPrice(params);
-      case "polo":
-        return calculatePoloPrice(params);
-      default:
-        return 0;
-    }
-  } catch (error) {
-    console.error(error);
+  if (type === "tshirt") {
+    return calculateTshirtPrice(params);
+  } else if (type === "polo" || type === "jacket" || type === "sweats") {
+    if (decorationType === "Screen Print")
+      return calculatePoloPrintPrice(params);
+    else return calculateEmbroideryPrice(params, "polo");
+  } else if (type === "beanie" || type === "hat") {
+    return calculateEmbroideryPrice(params, type);
+  } else {
+    return 0;
   }
 }
 
@@ -98,6 +111,124 @@ function calculateTshirtLocationPrices(
   return sum;
 }
 
-function calculatePoloPrice(params: CalculatePriceParams) {
-  return 0;
+function calculatePoloPrintPrice(params: CalculatePriceParams) {
+  const { quantity, productData } = params;
+
+  const quantityToUse = roundDownToAllowedValue(
+    quantity,
+    markupTableHeaderNumbers
+  );
+  const markup = markupTable.get(
+    `${quantityToUse}`,
+    markupTableRowNames.polosPrint
+  );
+  if (!markup)
+    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+
+  const locationPrices = calculatePoloPrintLocationPrices(params);
+  const allPolyFee = productData.isAllPoly ? poloJacketSweatPolyUpcharge : 0;
+  const sweatshirtFee = productData.isSweatshirt
+    ? poloJacketSweatFleeceUpcharge
+    : 0;
+
+  return productData.net * markup + locationPrices + allPolyFee + sweatshirtFee;
+}
+
+function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
+  const { locations } = params;
+  const locationNumbers = Array.from(
+    { length: locations.length },
+    (_, i) => i + 1
+  );
+  const indexPermutations = getPermutations(locationNumbers);
+  const costPermutations = indexPermutations.map((perm) =>
+    perm.map((locationNumber) => {
+      const tableHeaderName = `${locationNumber}`;
+      const colorCount = locations[locationNumber - 1]!.colorCount;
+      const tableRowName =
+        colorCount === 1
+          ? printUpchargeRowNames.oneColor
+          : colorCount === 2
+          ? printUpchargeRowNames.twoColor
+          : colorCount === 3 || colorCount === 4
+          ? printUpchargeRowNames.multiColor
+          : "not found";
+      const locationColorCountCost = polosJacketsSweatsPrintUpchargeTable.get(
+        tableHeaderName,
+        tableRowName
+      );
+      if (locationColorCountCost === undefined)
+        throw new Error(
+          `Location color count cost not found for location ${locationNumber} and color count ${colorCount}`
+        );
+      return locationColorCountCost;
+    })
+  );
+  return getGreatestSum(costPermutations);
+}
+
+function calculateEmbroideryPrice(
+  params: CalculatePriceParams,
+  type: ProductCalcType
+) {
+  const { quantity, productData, locations } = params;
+
+  const quantityToUse = roundDownToAllowedValue(
+    quantity,
+    markupTableHeaderNumbers
+  );
+  const rowNameToUse = chooseEmbTableRow(type, productData.net);
+  const markup = markupTable.get(`${quantityToUse}`, rowNameToUse);
+  if (!markup)
+    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+
+  const locationStitchPrices = calculateEmbroideryLocationPrices(params);
+  const secondLocationFee =
+    locations.length > 1 ? poloJacketSweatEmbLocationFees.second : 0;
+  const thirdLocationFee =
+    locations.length > 2 ? poloJacketSweatEmbLocationFees.third : 0;
+  const fourthLocationFee =
+    locations.length > 3 ? poloJacketSweatEmbLocationFees.fourth : 0;
+
+  return (
+    productData.net * markup +
+    locationStitchPrices +
+    secondLocationFee +
+    thirdLocationFee +
+    fourthLocationFee
+  );
+}
+
+function chooseEmbTableRow(type: ProductCalcType, net: number) {
+  if (type === "polo") return markupTableRowNames.polosEmb;
+  if (type === "hat" || type === "beanie") {
+    if (net >= 2.5 && net <= 3.49)
+      return markupTableRowNames.beanie250Min349Max;
+    if (net >= 3.5 && net <= 4.99)
+      return markupTableRowNames.beanie350Min499Max;
+    if (net >= 5.0 && net <= 7.49)
+      return markupTableRowNames.beanie500Min749Max;
+    if (net >= 7.5 && net <= 10.0) return markupTableRowNames.beanie750Min10Max;
+    if (net > 10) return markupTableRowNames.hatsBeanesOver10;
+  }
+
+  throw new Error(
+    `No valid markup table row for product type ${type} and net ${net}`
+  );
+}
+
+function calculateEmbroideryLocationPrices(params: CalculatePriceParams) {
+  const locations = [...params.locations];
+  if (locations.length === 4) locations.pop(); //4th location is a flat fee, so ignore it
+
+  const total = locations.reduce((accum, location) => {
+    const stitchesToCharge = location.stitchCount
+      ? location.stitchCount - 5000
+      : 0; //5000 per location is included at no extra charge
+    const priceThisLocation =
+      Math.ceil(stitchesToCharge / 5000) * additional5kStitchPrice;
+    return accum + priceThisLocation;
+  }, 0);
+
+  return total;
 }

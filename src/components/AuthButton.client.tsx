@@ -17,7 +17,9 @@ export default function AuthButton() {
   }
 
   return session.data?.user ? (
-    <button onClick={clickSignOut}>Sign Out {session.data.user.email}</button>
+    <button onClick={clickSignOut} className="button-beta">
+      Sign Out {session.data.user.email}
+    </button>
   ) : (
     <button onClick={clickSignIn}>Sign In</button>
   );

@@ -170,7 +170,3 @@ table tbody tr:nth-child(even) td {
 table tbody tr.selected td {
   background-color: var(--color-alpha-light);
 }
-
-.danger {
-  color: var(--color-danger);
-}

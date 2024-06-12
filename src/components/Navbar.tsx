@@ -1,22 +1,16 @@
 import Link from "next/link";
 import AuthButton from "./AuthButton.server";
+import { usePathname } from "next/navigation";
+import NavbarLinks from "./NavbarLinks";
 
 export default function Navbar() {
   return (
     <nav>
-      <ul>
+      <ul className="links-row">
         <li>
-          <Link href="/">Home</Link>
+          <img src="/ip-logo.png" class="ip-logo" />
         </li>
-        <li>
-          <Link href="/users">Users</Link>
-        </li>
-        <li>
-          <Link href="/designs">Designs</Link>
-        </li>
-        <li>
-          <Link href="/hubspot">HubSpot</Link>
-        </li>
+        <NavbarLinks />
       </ul>
       <AuthButton />
     </nav>
