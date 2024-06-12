@@ -140,10 +140,10 @@ function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
     { length: locations.length },
     (_, i) => i + 1
   );
-  const indexPermutations = getPermutations(locationNumbers);
-  const costPermutations = indexPermutations.map((perm) =>
-    perm.map((locationNumber) => {
-      const tableHeaderName = `${locationNumber}`;
+  const colorCountPermutations = getPermutations(locationNumbers);
+  const costPermutations = colorCountPermutations.map((perm) =>
+    perm.map((locationNumber, i) => {
+      const tableHeaderName = `${i + 1}`;
       const colorCount = locations[locationNumber - 1]!.colorCount;
       const tableRowName =
         colorCount === 1
