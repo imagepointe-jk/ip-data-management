@@ -272,6 +272,27 @@ describe("Polos/jackets/sweats (print)", () => {
       },
     });
   });
+  test("Quantity 48, location with 1 color, location with 2 colors, polo", () => {
+    checkResult({
+      expectedResult: 16.88,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Screen Print",
+        locations: [
+          {
+            colorCount: 2,
+          },
+          {
+            colorCount: 1,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
   test("Quantity 48, location with 3 colors, location with 3 colors, polo", () => {
     checkResult({
       expectedResult: 18.03,
@@ -311,6 +332,30 @@ describe("Polos/jackets/sweats (print)", () => {
           },
           {
             colorCount: 3,
+          },
+        ],
+        quantity: 48,
+      },
+    });
+  });
+  test("Quantity 48, location with 1 color, location with 2 colors, location with 3 colors, polo", () => {
+    checkResult({
+      expectedResult: 19.63,
+      calcParams: {
+        productData: {
+          net,
+          type: "polo",
+        },
+        decorationType: "Screen Print",
+        locations: [
+          {
+            colorCount: 3,
+          },
+          {
+            colorCount: 2,
+          },
+          {
+            colorCount: 1,
           },
         ],
         quantity: 48,
