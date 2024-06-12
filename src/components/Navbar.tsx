@@ -8,7 +8,7 @@ export default function Navbar() {
     <nav>
       <ul className="links-row">
         <li>
-          <img src="/ip-logo.png" class="ip-logo" />
+          <img src="/ip-logo.png" className="ip-logo" />
         </li>
         <NavbarLinks />
       </ul>
