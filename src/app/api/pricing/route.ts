@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const parsed = validatePricingRequest(body);
-    const result = calculatePrice(parsed);
-    return Response.json({ result }, easyCorsInit);
+    const results = calculatePrice(parsed);
+    return Response.json({ results }, easyCorsInit);
   } catch (error) {
     console.error(error);
     if (error instanceof ZodError) {
