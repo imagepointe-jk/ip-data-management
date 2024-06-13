@@ -59,7 +59,7 @@ export const calculatePriceParamsSchema = z.object({
     isSweatshirt: z.boolean().optional(),
   }),
   decorationType: z.enum(decorationTypes),
-  quantity: z.number(),
+  quantities: z.array(z.number()),
   locations: z.array(decorationLocationSchema),
 });
 
