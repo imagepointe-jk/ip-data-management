@@ -99,11 +99,13 @@ button:hover {
   background-color: var(--color-lightgray);
 }
 
-.button-danger {
+a.button-danger,
+button.button-danger {
   background-color: var(--color-danger);
 }
 
-.button-danger:hover {
+a.button-danger:hover,
+button.button-danger:hover {
   background-color: var(--color-danger-hover);
 }
 
