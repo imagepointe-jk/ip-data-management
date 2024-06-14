@@ -1,4 +1,10 @@
-import { CustomGarmentSettings } from "@prisma/client";
+import {
+  Color,
+  CustomGarmentDecorationLocation,
+  CustomGarmentSettings,
+  CustomGarmentSettingsVariation,
+  CustomGarmentView,
+} from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 
 export type GarmentSettingListing = CustomGarmentSettings & {
@@ -31,4 +37,33 @@ export async function getGarmentSettings(): Promise<GarmentSettingListing[]> {
   });
 
   return listings;
+}
+
+export type FullGarmentSettings = CustomGarmentSettings & {
+  variations: (CustomGarmentSettingsVariation & { color: Color } & {
+    views: (CustomGarmentView & {
+      locations: CustomGarmentDecorationLocation[];
+    })[];
+  })[];
+};
+export async function getFullGarmentSettings(
+  id: number
+): Promise<FullGarmentSettings | null> {
+  return prisma.customGarmentSettings.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      variations: {
+        include: {
+          views: {
+            include: {
+              locations: true,
+            },
+          },
+          color: true,
+        },
+      },
+    },
+  });
 }
