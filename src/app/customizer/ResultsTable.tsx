@@ -1,10 +1,11 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
+import { WooCommerceProduct } from "@/types/schema";
 import { CustomGarmentSettings } from "@prisma/client";
 
 type Props = {
-  garmentSettings: CustomGarmentSettings[];
+  garmentSettings: (CustomGarmentSettings & { product?: WooCommerceProduct })[];
 };
 export default function ResultsTable({ garmentSettings }: Props) {
   return (
@@ -15,8 +16,9 @@ export default function ResultsTable({ garmentSettings }: Props) {
           createCell: (data) => data.id,
         },
         {
-          header: "WooCommerce ID",
-          createCell: (data) => data.wooCommerceId,
+          header: "Product Name",
+          createCell: (data) =>
+            data.product ? data.product.name : "(Product not found)",
         },
       ]}
       dataset={garmentSettings}
