@@ -65,11 +65,11 @@ model DesignTag {
 }
 
 model Color {
-  id                    Int                     @id @default(autoincrement())
-  name                  String                  @unique
-  hexCode               String                  @unique
+  id                    Int                              @id @default(autoincrement())
+  name                  String                           @unique
+  hexCode               String                           @unique
   designs               Design[]
-  customGarmentSettings CustomGarmentSettings[]
+  customGarmentSettings CustomGarmentSettingsVariation[]
 }
 
 model HubSpotSync {
@@ -82,13 +82,12 @@ model HubSpotSync {
 }
 
 model CustomGarmentSettings {
-  id         Int                              @id @default(autoincrement())
-  createdAt  DateTime                         @default(now())
-  updatedAt  DateTime                         @updatedAt
-  published  Boolean                          @default(false)
-  color      Color                            @relation(fields: [colorId], references: [id])
-  colorId    Int
-  variations CustomGarmentSettingsVariation[]
+  id            Int                              @id @default(autoincrement())
+  createdAt     DateTime                         @default(now())
+  updatedAt     DateTime                         @updatedAt
+  published     Boolean                          @default(false)
+  variations    CustomGarmentSettingsVariation[]
+  wooCommerceId Int
 }
 
 model CustomGarmentSettingsVariation {
@@ -96,6 +95,8 @@ model CustomGarmentSettingsVariation {
   parentSettings   CustomGarmentSettings @relation(fields: [parentSettingsId], references: [id])
   parentSettingsId Int
   views            CustomGarmentView[]
+  color            Color                 @relation(fields: [colorId], references: [id])
+  colorId          Int
 }
 
 model CustomGarmentView {
@@ -103,10 +104,12 @@ model CustomGarmentView {
   parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
   parentVariationId Int
   locations         CustomGarmentDecorationLocation[]
+  imageUrl          String
 }
 
 model CustomGarmentDecorationLocation {
   id           Int               @id @default(autoincrement())
+  name         String
   positionX    Decimal
   positionY    Decimal
   width        Decimal

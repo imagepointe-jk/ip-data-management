@@ -28,6 +28,14 @@ export default function NavbarLinks() {
           HubSpot
         </Link>
       </li>
+      <li>
+        <Link
+          href="/customizer"
+          className={path === "/customizer" ? "current" : ""}
+        >
+          Customizer
+        </Link>
+      </li>
     </>
   );
 }
