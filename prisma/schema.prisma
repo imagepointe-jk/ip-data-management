@@ -101,6 +101,7 @@ model CustomGarmentSettingsVariation {
 
 model CustomGarmentView {
   id                Int                               @id @default(autoincrement())
+  name              String
   parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
   parentVariationId Int
   locations         CustomGarmentDecorationLocation[]

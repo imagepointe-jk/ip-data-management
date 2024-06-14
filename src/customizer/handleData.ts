@@ -1,13 +1,14 @@
+import { GarmentSettingListing } from "@/db/access/customizer";
 import { getProduct } from "@/fetch/woocommerce";
 import { WooCommerceProduct } from "@/types/schema";
 import { parseWooCommerceProduct } from "@/types/validations";
 import { CustomGarmentSettings } from "@prisma/client";
 
 export async function populateGarmentData(
-  settingsArr: CustomGarmentSettings[]
+  settingsArr: GarmentSettingListing[]
 ) {
   //implement with parallel fetching
-  const populated: (CustomGarmentSettings & {
+  const populated: (GarmentSettingListing & {
     product?: WooCommerceProduct;
   })[] = [];
   for (const settings of settingsArr) {

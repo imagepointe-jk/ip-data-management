@@ -6,5 +6,5 @@ export default async function Customizer() {
   const garmentSettings = await getGarmentSettings();
   const populatedGarments = await populateGarmentData(garmentSettings);
 
-  return <ResultsTable garmentSettings={populatedGarments} />;
+  return <ResultsTable garmentListings={populatedGarments} />;
 }

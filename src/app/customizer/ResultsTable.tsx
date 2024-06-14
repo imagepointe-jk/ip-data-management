@@ -1,19 +1,27 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
+import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { GarmentSettingListing } from "@/db/access/customizer";
 import { WooCommerceProduct } from "@/types/schema";
 import { CustomGarmentSettings } from "@prisma/client";
+import styles from "../../styles/CustomizerResultsTable.module.css";
 
 type Props = {
-  garmentSettings: (CustomGarmentSettings & { product?: WooCommerceProduct })[];
+  garmentListings: (GarmentSettingListing & { product?: WooCommerceProduct })[];
 };
-export default function ResultsTable({ garmentSettings }: Props) {
+export default function ResultsTable({ garmentListings }: Props) {
   return (
     <GenericTable
       columns={[
         {
-          header: "ID",
-          createCell: (data) => data.id,
+          header: "Image",
+          createCell: (data) => (
+            <img
+              className={styles["garment-img"]}
+              src={data.imageUrl ? data.imageUrl : IMAGE_NOT_FOUND_URL}
+            />
+          ),
         },
         {
           header: "Product Name",
@@ -21,7 +29,7 @@ export default function ResultsTable({ garmentSettings }: Props) {
             data.product ? data.product.name : "(Product not found)",
         },
       ]}
-      dataset={garmentSettings}
+      dataset={garmentListings}
     />
   );
 }
