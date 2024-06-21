@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "../../styles/designs.module.css";
 import { DesignQuery } from "@/types/types";
 import Search from "./Search";
+import ResultsTable from "./ResultsTable";
 
 type Props = {
   searchParams?: any;
@@ -41,49 +42,7 @@ export default async function Designs({ searchParams }: Props) {
         Embroidery
       </Link>
       <Search />
-      <table className={styles["design-table"]}>
-        <thead>
-          <tr>
-            <th className={styles["img-column"]}>
-              <div>Image</div>
-            </th>
-            <th className={styles["main-column"]}>
-              <div>Design Number</div>
-            </th>
-            <th>
-              <div>Data 3</div>
-            </th>
-            <th>
-              <div>Data 4</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {designs.map((design) => (
-            <tr key={design.id}>
-              <td>
-                <div style={{ height: "50px", width: "50px" }}>
-                  <img
-                    style={{
-                      height: "100%",
-                      backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
-                    }}
-                    src={design.imageUrl}
-                    alt="Design Image"
-                  />
-                </div>
-              </td>
-              <td>
-                <Link href={`designs/${design.id}`}>
-                  #{design.designNumber}
-                </Link>
-              </td>
-              <td>Data 3</td>
-              <td>Data 4</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <ResultsTable designs={designs} />
       {totalResults === 0 && <h2>No results</h2>}
       {totalResults > 0 && (
         <PageControls
