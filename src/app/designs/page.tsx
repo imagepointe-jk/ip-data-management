@@ -12,8 +12,15 @@ type Props = {
   searchParams?: any;
 };
 export default async function Designs({ searchParams }: Props) {
-  const { pageNumber, perPage, designType, keyword, subcategory, status } =
-    parseSearchParams(searchParams);
+  const {
+    pageNumber,
+    perPage,
+    designType,
+    keyword,
+    subcategory,
+    status,
+    featuredOnly,
+  } = parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
     perPage,
@@ -21,6 +28,7 @@ export default async function Designs({ searchParams }: Props) {
     keyword,
     subcategory,
     status,
+    featuredOnly,
   });
   const categories = await getDesignCategoryHierarchy();
 
@@ -89,6 +97,7 @@ function parseSearchParams(searchParams: any): Omit<
   const keyword = searchParams.keywords;
   const subcategory = searchParams.subcategory;
   const status = searchParams.status;
+  const featuredOnly = searchParams.featuredOnly === "true" ? true : undefined;
 
   return {
     pageNumber,
@@ -97,5 +106,6 @@ function parseSearchParams(searchParams: any): Omit<
     keyword,
     subcategory,
     status,
+    featuredOnly,
   };
 }

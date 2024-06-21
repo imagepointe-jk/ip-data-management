@@ -33,6 +33,16 @@ export default function Filter({ categories }: Props) {
     router.push(`designs?${newSearchParams}`);
   }
 
+  function onChangeFeaturedOnly(e: ChangeEvent<HTMLInputElement>) {
+    const checked = e.target.checked;
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (checked) newSearchParams.set("featuredOnly", "true");
+    else newSearchParams.delete("featuredOnly");
+
+    router.push(`designs?${newSearchParams}`);
+  }
+
   return (
     <div>
       <select onChange={onChangeCategory}>
@@ -52,6 +62,15 @@ export default function Filter({ categories }: Props) {
         <option value="Published">Published</option>
         <option value="Draft">Draft</option>
       </select>
+      <label htmlFor="featured">
+        <input
+          type="checkbox"
+          name="featured"
+          id="featured"
+          onChange={onChangeFeaturedOnly}
+        />
+        Featured Only
+      </label>
     </div>
   );
 }
