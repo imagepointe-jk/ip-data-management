@@ -7,21 +7,26 @@ type HasId = {
 type GenericTableColumn<T> = {
   header: string;
   createCell: (data: T) => ReactNode;
+  className?: string;
 };
 type Props<T> = {
   dataset: T[];
   columns: GenericTableColumn<T>[];
+  className?: string;
 };
 export default function GenericTable<T extends HasId>({
   columns,
   dataset,
+  className,
 }: Props<T>) {
   return (
-    <table>
+    <table className={className}>
       <thead>
         <tr>
           {columns.map((column, i) => (
-            <th key={i}>{column.header}</th>
+            <th key={i} className={column.className}>
+              {column.header}
+            </th>
           ))}
         </tr>
       </thead>
