@@ -23,10 +23,20 @@ export default function Filter({ categories }: Props) {
     router.push(`designs?${newSearchParams}`);
   }
 
+  function onChangeStatus(e: ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (value === "none") newSearchParams.delete("status");
+    else newSearchParams.set("status", value);
+
+    router.push(`designs?${newSearchParams}`);
+  }
+
   return (
     <div>
       <select onChange={onChangeCategory}>
-        <option value="none">No Category</option>
+        <option value="none">Any Category</option>
         {categories.map((cat) => (
           <optgroup key={cat.id} label={cat.name}>
             {cat.designSubcategories.map((sub) => (
@@ -36,6 +46,11 @@ export default function Filter({ categories }: Props) {
             ))}
           </optgroup>
         ))}
+      </select>
+      <select onChange={onChangeStatus}>
+        <option value="none">Any Status</option>
+        <option value="Published">Published</option>
+        <option value="Draft">Draft</option>
       </select>
     </div>
   );
