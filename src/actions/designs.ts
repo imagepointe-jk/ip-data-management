@@ -61,3 +61,14 @@ export async function updateDesign(formData: FormData) {
   revalidatePath("/designs");
   redirect("/designs");
 }
+
+export async function deleteDesign(id: number) {
+  await prisma.design.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}

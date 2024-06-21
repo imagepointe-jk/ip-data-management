@@ -4,6 +4,7 @@ import {
 } from "@/db/access/designs";
 import DesignDataForm from "./DesignDataForm";
 import { prisma } from "../../../../prisma/client";
+import DesignDelete from "./DesignDelete";
 
 type Props = {
   params: {
@@ -30,6 +31,7 @@ export default async function Design({ params }: Props) {
         categories={categories}
         tags={tags}
       />
+      {existingDesign && <DesignDelete design={existingDesign} />}
       {/* <div>
         <img
           src={existingDesign.image?.url}

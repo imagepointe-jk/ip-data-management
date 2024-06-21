@@ -5,6 +5,7 @@
   --color-lightgray: rgb(235, 235, 235);
   --color-danger: rgb(228, 38, 38);
   --color-danger-hover: rgb(255, 58, 58);
+  --color-danger-inactive: rgb(202, 121, 121);
 }
 
 body {
@@ -107,6 +108,11 @@ button.button-danger {
 a.button-danger:hover,
 button.button-danger:hover {
   background-color: var(--color-danger-hover);
+}
+
+button.button-danger:disabled {
+  background-color: var(--color-danger-inactive);
+  pointer-events: none;
 }
 
 select,
