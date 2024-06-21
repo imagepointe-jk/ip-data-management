@@ -1,24 +1,27 @@
 import { PageControls } from "@/components/PageControls";
 import { defaultPerPage, pageSizeChoices } from "@/constants";
-import { getDesigns } from "@/db/access/designs";
+import { getDesignCategoryHierarchy, getDesigns } from "@/db/access/designs";
 import Link from "next/link";
 import styles from "../../styles/designs.module.css";
 import { DesignQuery } from "@/types/types";
 import Search from "./Search";
 import ResultsTable from "./ResultsTable";
+import Filter from "./Filter";
 
 type Props = {
   searchParams?: any;
 };
 export default async function Designs({ searchParams }: Props) {
-  const { pageNumber, perPage, designType, keyword } =
+  const { pageNumber, perPage, designType, keyword, subcategory } =
     parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
     perPage,
     designType,
     keyword,
+    subcategory,
   });
+  const categories = await getDesignCategoryHierarchy();
 
   return (
     <>
@@ -42,6 +45,7 @@ export default async function Designs({ searchParams }: Props) {
         Embroidery
       </Link>
       <Search />
+      <Filter categories={categories} />
       <ResultsTable designs={designs} />
       {totalResults === 0 && <h2>No results</h2>}
       {totalResults > 0 && (
@@ -82,11 +86,13 @@ function parseSearchParams(searchParams: any): Omit<
   const designType =
     searchParams.designType === "Embroidery" ? "Embroidery" : "Screen Print";
   const keyword = searchParams.keywords;
+  const subcategory = searchParams.subcategory;
 
   return {
     pageNumber,
     perPage,
     designType,
     keyword,
+    subcategory,
   };
 }

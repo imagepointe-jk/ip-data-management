@@ -58,3 +58,5 @@ export type ServerActionResult = {
     statusCode: number;
   };
 };
+
+export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
