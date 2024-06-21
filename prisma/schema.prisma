@@ -20,7 +20,7 @@ model User {
 
 model Design {
   id                       Int                 @id @default(autoincrement())
-  designNumber             Int
+  designNumber             String
   name                     String?
   description              String?
   featured                 Boolean             @default(false)

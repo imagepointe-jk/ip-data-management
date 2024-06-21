@@ -117,7 +117,7 @@ async function createDesigns() {
   }
 
   async function createDesign(designType: string, designRow: any) {
-    const designNumber = +`${designRow["Design Number"]}`.replace(/[^\d]/g, "");
+    const designNumber = `${designRow["Design Number"]}`;
     const date = new Date(designRow.Date);
     const url = `${designRow["Image URL"]}`;
     const status = designRow.Status;
