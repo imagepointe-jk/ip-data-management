@@ -3,6 +3,7 @@
 import GenericTable from "@/components/GenericTable";
 import { DesignWithIncludes } from "@/types/types";
 import Link from "next/link";
+import styles from "../../styles/designs.module.css";
 
 type Props = {
   designs: DesignWithIncludes[];
@@ -10,10 +11,12 @@ type Props = {
 export default function ResultsTable({ designs }: Props) {
   return (
     <GenericTable
+      className={styles["design-table"]}
       dataset={designs}
       columns={[
         {
           header: "Image",
+          className: styles["img-column"],
           createCell: (data) => (
             <div style={{ height: "50px", width: "50px" }}>
               <img
@@ -28,6 +31,7 @@ export default function ResultsTable({ designs }: Props) {
         },
         {
           header: "Design Number",
+          className: styles["main-column"],
           createCell: (design) => (
             <Link href={`designs/${design.id}`}>{design.designNumber}</Link>
           ),
