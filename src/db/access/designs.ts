@@ -70,11 +70,13 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
           {
             name: {
               contains: keyword,
+              mode: "insensitive",
             },
           },
           {
             description: {
               contains: keyword,
+              mode: "insensitive",
             },
           },
           {
@@ -82,6 +84,7 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
               some: {
                 name: {
                   contains: keyword,
+                  mode: "insensitive",
                 },
               },
             },
@@ -91,6 +94,7 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
               some: {
                 name: {
                   contains: keyword,
+                  mode: "insensitive",
                 },
               },
             },

@@ -3,16 +3,20 @@ import { defaultPerPage, pageSizeChoices } from "@/constants";
 import { getDesigns } from "@/db/access/designs";
 import Link from "next/link";
 import styles from "../../styles/designs.module.css";
+import { DesignQuery } from "@/types/types";
+import Search from "./Search";
 
 type Props = {
   searchParams?: any;
 };
 export default async function Designs({ searchParams }: Props) {
-  const { pageNumber, perPage, designType } = parseSearchParams(searchParams);
+  const { pageNumber, perPage, designType, keyword } =
+    parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
     perPage,
     designType,
+    keyword,
   });
 
   return (
@@ -36,6 +40,7 @@ export default async function Designs({ searchParams }: Props) {
       >
         Embroidery
       </Link>
+      <Search />
       <table className={styles["design-table"]}>
         <thead>
           <tr>
@@ -79,35 +84,50 @@ export default async function Designs({ searchParams }: Props) {
           ))}
         </tbody>
       </table>
-      <PageControls
-        curItemsPerPage={perPage}
-        curPageNumber={pageNumber}
-        pageSizeChoices={pageSizeChoices}
-        totalPages={totalResults / perPage}
-        buttonClassName="link-as-button"
-        activeButtonClassName="current"
-      />
+      {totalResults === 0 && <h2>No results</h2>}
+      {totalResults > 0 && (
+        <PageControls
+          curItemsPerPage={perPage}
+          curPageNumber={pageNumber}
+          pageSizeChoices={pageSizeChoices}
+          totalPages={totalResults / perPage}
+          buttonClassName="link-as-button"
+          activeButtonClassName="current"
+        />
+      )}
     </>
   );
 }
 
-function parseSearchParams(searchParams: any) {
+function parseSearchParams(searchParams: any): Omit<
+  DesignQuery,
+  "pageNumber" | "perPage"
+> & {
+  pageNumber: number;
+  perPage: number;
+} {
+  if (!searchParams)
+    return {
+      pageNumber: 1,
+      perPage: defaultPerPage,
+    };
+
   const pageNumber =
-    searchParams && searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
+    searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
       ? +searchParams.pageNumber
       : 1;
   const perPage =
-    searchParams && searchParams.perPage && !isNaN(+searchParams.perPage)
+    searchParams.perPage && !isNaN(+searchParams.perPage)
       ? +searchParams.perPage
       : defaultPerPage;
   const designType =
-    searchParams && searchParams.designType === "Embroidery"
-      ? "Embroidery"
-      : "Screen Print";
+    searchParams.designType === "Embroidery" ? "Embroidery" : "Screen Print";
+  const keyword = searchParams.keywords;
 
   return {
     pageNumber,
     perPage,
     designType,
+    keyword,
   };
 }
