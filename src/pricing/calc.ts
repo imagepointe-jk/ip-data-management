@@ -22,6 +22,10 @@ import {
   ProductCalcType,
 } from "@/types/schema";
 
+type QuantityPriceEstimate = {
+  quantity: number;
+  result: number;
+};
 export function calculatePrice(params: CalculatePriceParams) {
   const {
     productData: { type },
@@ -41,25 +45,29 @@ export function calculatePrice(params: CalculatePriceParams) {
   }
 }
 
-function calculateTshirtPrice(params: CalculatePriceParams) {
-  const { decorationType, productData, locations, quantity } = params;
+function calculateTshirtPrice(
+  params: CalculatePriceParams
+): QuantityPriceEstimate[] {
+  const { decorationType, productData, locations, quantities } = params;
 
-  const quantityToUse = roundDownToAllowedValue(
-    quantity,
-    markupTableHeaderNumbers
-  );
-  const markup = markupTable.get(
-    `${quantityToUse}`,
-    markupTableRowNames.tshirts
-  );
-  if (!markup)
-    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+  return quantities.map((quantity) => {
+    const quantityToUse = roundDownToAllowedValue(
+      quantity,
+      markupTableHeaderNumbers
+    );
+    const markup = markupTable.get(
+      `${quantityToUse}`,
+      markupTableRowNames.tshirts
+    );
+    if (!markup)
+      throw new Error(`Markup not found for quantity ${quantityToUse}`);
 
-  const locationPrices = calculateTshirtLocationPrices(
-    quantityToUse,
-    locations
-  );
-  return productData.net * markup + locationPrices;
+    const locationPrices = calculateTshirtLocationPrices(
+      quantityToUse,
+      locations
+    );
+    return { quantity, result: productData.net * markup + locationPrices };
+  });
 }
 
 function calculateTshirtLocationPrices(
@@ -111,27 +119,35 @@ function calculateTshirtLocationPrices(
   return sum;
 }
 
-function calculatePoloPrintPrice(params: CalculatePriceParams) {
-  const { quantity, productData } = params;
+function calculatePoloPrintPrice(
+  params: CalculatePriceParams
+): QuantityPriceEstimate[] {
+  const { quantities, productData } = params;
 
-  const quantityToUse = roundDownToAllowedValue(
-    quantity,
-    markupTableHeaderNumbers
-  );
-  const markup = markupTable.get(
-    `${quantityToUse}`,
-    markupTableRowNames.polosPrint
-  );
-  if (!markup)
-    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+  return quantities.map((quantity) => {
+    const quantityToUse = roundDownToAllowedValue(
+      quantity,
+      markupTableHeaderNumbers
+    );
+    const markup = markupTable.get(
+      `${quantityToUse}`,
+      markupTableRowNames.polosPrint
+    );
+    if (!markup)
+      throw new Error(`Markup not found for quantity ${quantityToUse}`);
 
-  const locationPrices = calculatePoloPrintLocationPrices(params);
-  const allPolyFee = productData.isAllPoly ? poloJacketSweatPolyUpcharge : 0;
-  const sweatshirtFee = productData.isSweatshirt
-    ? poloJacketSweatFleeceUpcharge
-    : 0;
+    const locationPrices = calculatePoloPrintLocationPrices(params);
+    const allPolyFee = productData.isAllPoly ? poloJacketSweatPolyUpcharge : 0;
+    const sweatshirtFee = productData.isSweatshirt
+      ? poloJacketSweatFleeceUpcharge
+      : 0;
 
-  return productData.net * markup + locationPrices + allPolyFee + sweatshirtFee;
+    return {
+      quantity,
+      result:
+        productData.net * markup + locationPrices + allPolyFee + sweatshirtFee,
+    };
+  });
 }
 
 function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
@@ -140,10 +156,10 @@ function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
     { length: locations.length },
     (_, i) => i + 1
   );
-  const indexPermutations = getPermutations(locationNumbers);
-  const costPermutations = indexPermutations.map((perm) =>
-    perm.map((locationNumber) => {
-      const tableHeaderName = `${locationNumber}`;
+  const colorCountPermutations = getPermutations(locationNumbers);
+  const costPermutations = colorCountPermutations.map((perm) =>
+    perm.map((locationNumber, i) => {
+      const tableHeaderName = `${i + 1}`;
       const colorCount = locations[locationNumber - 1]!.colorCount;
       const tableRowName =
         colorCount === 1
@@ -170,33 +186,37 @@ function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {
 function calculateEmbroideryPrice(
   params: CalculatePriceParams,
   type: ProductCalcType
-) {
-  const { quantity, productData, locations } = params;
+): QuantityPriceEstimate[] {
+  const { quantities, productData, locations } = params;
 
-  const quantityToUse = roundDownToAllowedValue(
-    quantity,
-    markupTableHeaderNumbers
-  );
-  const rowNameToUse = chooseEmbTableRow(type, productData.net);
-  const markup = markupTable.get(`${quantityToUse}`, rowNameToUse);
-  if (!markup)
-    throw new Error(`Markup not found for quantity ${quantityToUse}`);
+  return quantities.map((quantity) => {
+    const quantityToUse = roundDownToAllowedValue(
+      quantity,
+      markupTableHeaderNumbers
+    );
+    const rowNameToUse = chooseEmbTableRow(type, productData.net);
+    const markup = markupTable.get(`${quantityToUse}`, rowNameToUse);
+    if (!markup)
+      throw new Error(`Markup not found for quantity ${quantityToUse}`);
 
-  const locationStitchPrices = calculateEmbroideryLocationPrices(params);
-  const secondLocationFee =
-    locations.length > 1 ? poloJacketSweatEmbLocationFees.second : 0;
-  const thirdLocationFee =
-    locations.length > 2 ? poloJacketSweatEmbLocationFees.third : 0;
-  const fourthLocationFee =
-    locations.length > 3 ? poloJacketSweatEmbLocationFees.fourth : 0;
+    const locationStitchPrices = calculateEmbroideryLocationPrices(params);
+    const secondLocationFee =
+      locations.length > 1 ? poloJacketSweatEmbLocationFees.second : 0;
+    const thirdLocationFee =
+      locations.length > 2 ? poloJacketSweatEmbLocationFees.third : 0;
+    const fourthLocationFee =
+      locations.length > 3 ? poloJacketSweatEmbLocationFees.fourth : 0;
 
-  return (
-    productData.net * markup +
-    locationStitchPrices +
-    secondLocationFee +
-    thirdLocationFee +
-    fourthLocationFee
-  );
+    return {
+      quantity,
+      result:
+        productData.net * markup +
+        locationStitchPrices +
+        secondLocationFee +
+        thirdLocationFee +
+        fourthLocationFee,
+    };
+  });
 }
 
 function chooseEmbTableRow(type: ProductCalcType, net: number) {

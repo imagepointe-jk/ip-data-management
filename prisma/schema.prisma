@@ -65,10 +65,11 @@ model DesignTag {
 }
 
 model Color {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  hexCode String   @unique
-  designs Design[]
+  id                    Int                              @id @default(autoincrement())
+  name                  String                           @unique
+  hexCode               String                           @unique
+  designs               Design[]
+  customGarmentSettings CustomGarmentSettingsVariation[]
 }
 
 model HubSpotSync {
@@ -78,4 +79,42 @@ model HubSpotSync {
   startedAt   DateTime
   finishedAt  DateTime?
   progress    Decimal //0 is no progress, 1 is complete
+}
+
+model CustomGarmentSettings {
+  id            Int                              @id @default(autoincrement())
+  createdAt     DateTime                         @default(now())
+  updatedAt     DateTime                         @updatedAt
+  published     Boolean                          @default(false)
+  variations    CustomGarmentSettingsVariation[]
+  wooCommerceId Int
+}
+
+model CustomGarmentSettingsVariation {
+  id               Int                   @id @default(autoincrement())
+  parentSettings   CustomGarmentSettings @relation(fields: [parentSettingsId], references: [id])
+  parentSettingsId Int
+  views            CustomGarmentView[]
+  color            Color                 @relation(fields: [colorId], references: [id])
+  colorId          Int
+}
+
+model CustomGarmentView {
+  id                Int                               @id @default(autoincrement())
+  name              String
+  parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
+  parentVariationId Int
+  locations         CustomGarmentDecorationLocation[]
+  imageUrl          String
+}
+
+model CustomGarmentDecorationLocation {
+  id           Int               @id @default(autoincrement())
+  name         String
+  positionX    Decimal
+  positionY    Decimal
+  width        Decimal
+  height       Decimal
+  parentView   CustomGarmentView @relation(fields: [parentViewId], references: [id])
+  parentViewId Int
 }

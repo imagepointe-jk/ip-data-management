@@ -59,7 +59,7 @@ export const calculatePriceParamsSchema = z.object({
     isSweatshirt: z.boolean().optional(),
   }),
   decorationType: z.enum(decorationTypes),
-  quantity: z.number(),
+  quantities: z.array(z.number()),
   locations: z.array(decorationLocationSchema),
 });
 
@@ -169,6 +169,11 @@ export const hubSpotOwnerSchema = z.object({
   lastName: z.string(),
 });
 
+export const wooCommerceProductSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
 export const sortingTypes = ["Design Number"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -224,3 +229,5 @@ export type ProductResource = {
   hubspotId: number;
   sku: string;
 };
+
+export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
