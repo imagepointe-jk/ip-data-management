@@ -5,6 +5,7 @@ import { DesignWithIncludes } from "@/types/types";
 import Link from "next/link";
 import styles from "../../styles/designs.module.css";
 
+//TODO: Fix broken design updating due to design number type switch
 type Props = {
   designs: DesignWithIncludes[];
 };
@@ -37,12 +38,26 @@ export default function ResultsTable({ designs }: Props) {
           ),
         },
         {
-          header: "Data 3",
-          createCell: () => "Data 3",
+          header: "Status",
+          createCell: (design) => (
+            <span
+              className={
+                design.status === "Published"
+                  ? styles["published"]
+                  : styles["draft"]
+              }
+            >
+              {design.status}
+            </span>
+          ),
         },
         {
-          header: "Data 4",
-          createCell: () => "Data 4",
+          header: "Featured",
+          createCell: (design) => (design.featured ? "✅" : "❌"),
+        },
+        {
+          header: "Design Date",
+          createCell: (design) => design.date.toLocaleDateString(),
         },
       ]}
     />

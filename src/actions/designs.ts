@@ -10,7 +10,7 @@ export async function createDesign(formData: FormData) {
 
   await prisma.design.create({
     data: {
-      designNumber: +parsed.designNumber,
+      designNumber: parsed.designNumber,
       description: parsed.description,
       featured: parsed.featured,
       date: parsed.date || new Date(),
@@ -41,7 +41,7 @@ export async function updateDesign(formData: FormData) {
       id: parsed.existingDesignId,
     },
     data: {
-      designNumber: +parsed.designNumber,
+      designNumber: parsed.designNumber,
       description: parsed.description,
       featured: parsed.featured,
       date: parsed.date,
