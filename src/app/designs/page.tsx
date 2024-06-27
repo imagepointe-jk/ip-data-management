@@ -34,7 +34,6 @@ export default async function Designs({ searchParams }: Props) {
     before,
     after,
   });
-  console.log(`before ${before}, after ${after}, results ${designs.length}`);
   const categories = await getDesignCategoryHierarchy();
 
   return (

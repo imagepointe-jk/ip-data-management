@@ -24,6 +24,7 @@ export async function createDesign(formData: FormData) {
       designTypeId: +parsed.designTypeId,
       defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
       imageUrl: parsed.imageUrl,
+      priority: parsed.priority,
     },
   });
 
@@ -55,6 +56,7 @@ export async function updateDesign(formData: FormData) {
       designTypeId: +parsed.designTypeId,
       defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
       imageUrl: parsed.imageUrl,
+      priority: parsed.priority,
     },
   });
 

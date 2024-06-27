@@ -5,7 +5,6 @@ import { DesignWithIncludes } from "@/types/types";
 import Link from "next/link";
 import styles from "../../styles/designs.module.css";
 
-//TODO: Fix broken design updating due to design number type switch
 type Props = {
   designs: DesignWithIncludes[];
 };

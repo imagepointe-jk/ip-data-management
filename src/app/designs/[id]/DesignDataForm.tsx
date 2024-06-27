@@ -95,6 +95,13 @@ export default function DesignDataForm({
         <option value="Published">Published</option>
         <option value="Draft">Draft</option>
       </select>
+      <h4>Priority</h4>
+      <input
+        type="number"
+        name="priority"
+        id="priority"
+        defaultValue={existingDesign?.priority}
+      />
       <h4>Categories</h4>
       {categories.map((cat) => (
         <div key={cat.id}>

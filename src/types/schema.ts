@@ -19,6 +19,7 @@ export const designFormDataSchema = z.object({
   defaultBackgroundColorId: z.string(),
   imageUrl: z.string(),
   existingDesignId: z.number().optional(),
+  priority: z.number().optional(),
 });
 
 const quoteRequestDesignSchema = z.object({
