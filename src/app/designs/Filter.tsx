@@ -12,6 +12,11 @@ type Props = {
 export default function Filter({ categories }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const subcategoryInParams = decodeURIComponent(
+    `${searchParams.get("subcategory")}`
+  );
+  const statusInParams = decodeURIComponent(`${searchParams.get("status")}`);
+  const featuredOnlyInParams = searchParams.get("featuredOnly") === "true";
 
   function onChangeCategory(e: ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
@@ -53,7 +58,7 @@ export default function Filter({ categories }: Props) {
 
   return (
     <div>
-      <select onChange={onChangeCategory}>
+      <select onChange={onChangeCategory} defaultValue={subcategoryInParams}>
         <option value="none">Any Category</option>
         {categories.map((cat) => (
           <optgroup key={cat.id} label={cat.name}>
@@ -65,7 +70,7 @@ export default function Filter({ categories }: Props) {
           </optgroup>
         ))}
       </select>
-      <select onChange={onChangeStatus}>
+      <select onChange={onChangeStatus} defaultValue={statusInParams}>
         <option value="none">Any Status</option>
         <option value="Published">Published</option>
         <option value="Draft">Draft</option>
@@ -76,6 +81,7 @@ export default function Filter({ categories }: Props) {
           name="featured"
           id="featured"
           onChange={onChangeFeaturedOnly}
+          defaultChecked={featuredOnlyInParams}
         />
         Featured Only
       </label>
