@@ -56,17 +56,16 @@ export default async function Designs({ searchParams }: Props) {
       <Search />
       <Filter categories={categories} />
       <ResultsTable designs={designs} />
-      {totalResults === 0 && <h2>No results</h2>}
-      {totalResults > 0 && (
-        <PageControls
-          curItemsPerPage={perPage}
-          curPageNumber={pageNumber}
-          pageSizeChoices={pageSizeChoices}
-          totalPages={totalResults / perPage}
-          buttonClassName="link-as-button"
-          activeButtonClassName="current"
-        />
-      )}
+      {designs.length === 0 && <h2>No results</h2>}
+
+      <PageControls
+        curItemsPerPage={perPage}
+        curPageNumber={designs.length === 0 ? 1 : pageNumber}
+        pageSizeChoices={pageSizeChoices}
+        totalPages={designs.length === 0 ? 1 : totalResults / perPage}
+        buttonClassName="link-as-button"
+        activeButtonClassName="current"
+      />
     </>
   );
 }

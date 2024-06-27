@@ -18,7 +18,10 @@ export default function Filter({ categories }: Props) {
 
     const newSearchParams = new URLSearchParams(searchParams);
     if (value === "none") newSearchParams.delete("subcategory");
-    else newSearchParams.set("subcategory", encodeURIComponent(value));
+    else {
+      newSearchParams.set("subcategory", encodeURIComponent(value));
+      newSearchParams.delete("pageNumber");
+    }
 
     router.push(`designs?${newSearchParams}`);
   }
@@ -28,7 +31,10 @@ export default function Filter({ categories }: Props) {
 
     const newSearchParams = new URLSearchParams(searchParams);
     if (value === "none") newSearchParams.delete("status");
-    else newSearchParams.set("status", value);
+    else {
+      newSearchParams.set("status", value);
+      newSearchParams.delete("pageNumber");
+    }
 
     router.push(`designs?${newSearchParams}`);
   }
@@ -37,8 +43,10 @@ export default function Filter({ categories }: Props) {
     const checked = e.target.checked;
 
     const newSearchParams = new URLSearchParams(searchParams);
-    if (checked) newSearchParams.set("featuredOnly", "true");
-    else newSearchParams.delete("featuredOnly");
+    if (checked) {
+      newSearchParams.set("featuredOnly", "true");
+      newSearchParams.delete("pageNumber");
+    } else newSearchParams.delete("featuredOnly");
 
     router.push(`designs?${newSearchParams}`);
   }
