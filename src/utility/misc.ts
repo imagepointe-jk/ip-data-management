@@ -117,3 +117,10 @@ export function getGreatestSum(nums: number[][]) {
   sums.sort((a, b) => b - a);
   return sums[0] || 0;
 }
+
+//gets the timestamp of the date X years before the current date.
+export function getTimeStampYearsAgo(yearsAgo: number) {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - yearsAgo);
+  return date.getTime();
+}

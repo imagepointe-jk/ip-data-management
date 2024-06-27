@@ -20,6 +20,8 @@ export default async function Designs({ searchParams }: Props) {
     subcategory,
     status,
     featuredOnly,
+    before,
+    after,
   } = parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
@@ -29,7 +31,10 @@ export default async function Designs({ searchParams }: Props) {
     subcategory,
     status,
     featuredOnly,
+    before,
+    after,
   });
+  console.log(`before ${before}, after ${after}, results ${designs.length}`);
   const categories = await getDesignCategoryHierarchy();
 
   return (
@@ -97,6 +102,8 @@ function parseSearchParams(searchParams: any): Omit<
   const subcategory = searchParams.subcategory;
   const status = searchParams.status;
   const featuredOnly = searchParams.featuredOnly === "true" ? true : undefined;
+  const before = searchParams.before ? +searchParams.before : undefined;
+  const after = searchParams.after ? +searchParams.after : undefined;
 
   return {
     pageNumber,
@@ -106,5 +113,7 @@ function parseSearchParams(searchParams: any): Omit<
     subcategory,
     status,
     featuredOnly,
+    before,
+    after,
   };
 }

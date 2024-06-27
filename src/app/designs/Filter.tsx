@@ -2,6 +2,7 @@
 
 import { getDesignCategoryHierarchy } from "@/db/access/designs";
 import { UnwrapPromise } from "@/types/types";
+import { getTimeStampYearsAgo } from "@/utility/misc";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { ChangeEvent } from "react";
@@ -46,6 +47,24 @@ export default function Filter({ categories }: Props) {
     router.refresh();
   }
 
+  function onChangeAge(e: ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete("before");
+    newSearchParams.delete("after");
+    if (value === "new") {
+      newSearchParams.set("after", `${getTimeStampYearsAgo(2)}`);
+      newSearchParams.delete("pageNumber");
+    } else if (value === "old") {
+      newSearchParams.set("before", `${getTimeStampYearsAgo(2)}`);
+      newSearchParams.delete("pageNumber");
+    }
+
+    router.push(`designs?${newSearchParams}`);
+    router.refresh();
+  }
+
   function onChangeFeaturedOnly(e: ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked;
 
@@ -77,6 +96,11 @@ export default function Filter({ categories }: Props) {
         <option value="none">Any Status</option>
         <option value="Published">Published</option>
         <option value="Draft">Draft</option>
+      </select>
+      <select onChange={onChangeAge}>
+        <option value={"none"}>Any Age</option>
+        <option value={"new"}>New Designs</option>
+        <option value={"old"}>Classics</option>
       </select>
       <label htmlFor="featured">
         <input
