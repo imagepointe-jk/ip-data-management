@@ -14,7 +14,7 @@ export default function ResultsTable({ garmentListings }: Props) {
     <GenericTable
       columns={[
         {
-          header: "Image",
+          headerName: "Image",
           createCell: (data) => (
             <img
               className={styles["garment-img"]}
@@ -23,7 +23,7 @@ export default function ResultsTable({ garmentListings }: Props) {
           ),
         },
         {
-          header: "Product Name",
+          headerName: "Product Name",
           createCell: (data) =>
             data.product ? data.product.name : "(Product not found)",
         },

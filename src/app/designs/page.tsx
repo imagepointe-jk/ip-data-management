@@ -7,6 +7,7 @@ import { DesignQuery } from "@/types/types";
 import Search from "./Search";
 import ResultsTable from "./ResultsTable";
 import Filter from "./Filter";
+import { SortingDirection, SortingType } from "@/types/schema";
 
 type Props = {
   searchParams?: any;
@@ -22,6 +23,7 @@ export default async function Designs({ searchParams }: Props) {
     featuredOnly,
     before,
     after,
+    sortBy,
   } = parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
@@ -33,6 +35,7 @@ export default async function Designs({ searchParams }: Props) {
     featuredOnly,
     before,
     after,
+    sortBy,
   });
   const categories = await getDesignCategoryHierarchy();
 
@@ -103,6 +106,10 @@ function parseSearchParams(searchParams: any): Omit<
   const featuredOnly = searchParams.featuredOnly === "true" ? true : undefined;
   const before = searchParams.before ? +searchParams.before : undefined;
   const after = searchParams.after ? +searchParams.after : undefined;
+  const sortBy = decodeURIComponent(searchParams.sortBy) as SortingType;
+  const sortDirection = decodeURIComponent(
+    searchParams.sortDirection
+  ) as SortingDirection;
 
   return {
     pageNumber,
@@ -114,5 +121,9 @@ function parseSearchParams(searchParams: any): Omit<
     featuredOnly,
     before,
     after,
+    sortBy: {
+      type: sortBy,
+      direction: sortDirection,
+    },
   };
 }

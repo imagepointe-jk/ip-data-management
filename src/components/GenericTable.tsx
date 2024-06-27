@@ -5,7 +5,8 @@ type HasId = {
   id: number;
 };
 type GenericTableColumn<T> = {
-  header: string;
+  headerName: string;
+  createHeader?: () => ReactNode;
   createCell: (data: T) => ReactNode;
   className?: string;
 };
@@ -25,7 +26,7 @@ export default function GenericTable<T extends HasId>({
         <tr>
           {columns.map((column, i) => (
             <th key={i} className={column.className}>
-              {column.header}
+              {column.createHeader ? column.createHeader() : column.headerName}
             </th>
           ))}
         </tr>

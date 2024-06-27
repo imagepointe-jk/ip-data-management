@@ -116,6 +116,37 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
     return where;
   }
 
+  function buildOrderBy(): any {
+    const defaultSort = [
+      {
+        priority: "desc",
+      },
+      {
+        designNumber: "desc",
+      },
+    ];
+    const dir = sortBy?.direction === "Ascending" ? "asc" : "desc";
+    if (!sortBy) return defaultSort;
+
+    if (sortBy.type === "Design Number") {
+      return {
+        designNumber: dir,
+      };
+    }
+    if (sortBy.type === "Priority") {
+      return {
+        priority: dir,
+      };
+    }
+    if (sortBy.type === "Date") {
+      return {
+        date: dir,
+      };
+    }
+
+    return defaultSort;
+  }
+
   const [matchingDesigns, paginatedMatchingDesigns] = await prisma.$transaction(
     [
       prisma.design.findMany({
@@ -128,17 +159,7 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
         distinct: !allowDuplicates ? ["designNumber"] : undefined,
         take: countPerPage,
         skip: pageNumber ? countPerPage * (pageNumber - 1) : 0,
-        orderBy: sortBy
-          ? {
-              designNumber:
-                sortBy.type === "Design Number" &&
-                sortBy.direction === "Ascending"
-                  ? "asc"
-                  : "desc",
-            }
-          : {
-              designNumber: "desc",
-            },
+        orderBy: buildOrderBy(),
       }),
     ]
   );

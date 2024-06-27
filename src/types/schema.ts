@@ -175,7 +175,7 @@ export const wooCommerceProductSchema = z.object({
   name: z.string(),
 });
 
-export const sortingTypes = ["Design Number"] as const;
+export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
 export const sortingDirections = ["Ascending", "Descending"] as const;
