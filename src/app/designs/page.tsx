@@ -2,7 +2,6 @@ import { PageControls } from "@/components/PageControls";
 import { defaultPerPage, pageSizeChoices } from "@/constants";
 import { getDesignCategoryHierarchy, getDesigns } from "@/db/access/designs";
 import Link from "next/link";
-import styles from "../../styles/designs.module.css";
 import { DesignQuery } from "@/types/types";
 import Search from "./Search";
 import ResultsTable from "./ResultsTable";

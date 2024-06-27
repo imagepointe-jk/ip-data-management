@@ -3,7 +3,7 @@
 import GenericTable from "@/components/GenericTable";
 import { DesignWithIncludes } from "@/types/types";
 import Link from "next/link";
-import styles from "../../styles/designs.module.css";
+import styles from "@/styles/designs/designs.module.css";
 import SortIcon from "@/components/SortIcon";
 import { useRouter, useSearchParams } from "next/navigation";
 

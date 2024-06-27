@@ -3,6 +3,7 @@
 import { deleteDesign } from "@/actions/designs";
 import { Design } from "@prisma/client";
 import { useState } from "react";
+import styles from "@/styles/designs/DesignPage.module.css";
 
 type Props = {
   design: Design;
@@ -21,7 +22,7 @@ export default function DesignDelete({ design }: Props) {
   }
 
   return (
-    <div className="content-frame" style={{ width: "300px;" }}>
+    <div className={`${styles["danger-box"]} content-frame`}>
       <details>
         <summary>Danger Zone</summary>
         <div>

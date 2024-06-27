@@ -1,0 +1,44 @@
+.main-flex {
+  display: flex;
+  gap: 20px;
+}
+
+.main-flex h4 {
+  margin: 0;
+}
+
+.main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input.design-number {
+  font-size: 2rem;
+  width: 200px;
+}
+
+.secondary-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 700px;
+  align-content: start;
+}
+
+.featured-checkbox {
+  scale: 200%;
+  translate: 5px 5px;
+}
+
+.scroll-box {
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.danger-box {
+  margin-top: 20px;
+  width: 600px;
+}
