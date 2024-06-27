@@ -29,6 +29,7 @@ export default function Filter({ categories }: Props) {
     }
 
     router.push(`designs?${newSearchParams}`);
+    router.refresh();
   }
 
   function onChangeStatus(e: ChangeEvent<HTMLSelectElement>) {
@@ -42,6 +43,7 @@ export default function Filter({ categories }: Props) {
     }
 
     router.push(`designs?${newSearchParams}`);
+    router.refresh();
   }
 
   function onChangeFeaturedOnly(e: ChangeEvent<HTMLInputElement>) {
@@ -54,6 +56,7 @@ export default function Filter({ categories }: Props) {
     } else newSearchParams.delete("featuredOnly");
 
     router.push(`designs?${newSearchParams}`);
+    router.refresh();
   }
 
   return (
