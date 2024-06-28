@@ -3,8 +3,9 @@ import { DesignCategoryWithIncludes, DesignWithIncludes } from "@/types/types";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
 import styles from "@/styles/designs/DesignPage.module.css";
+import { DesignVariations } from "./DesignVariations";
 
-type DesignDataFormProps = {
+export type DesignDataFormProps = {
   existingDesign: DesignWithIncludes | null;
   designTypes: DesignType[];
   colors: Color[];
@@ -142,6 +143,7 @@ function SecondarySection({
   designTypes,
   existingDesign,
   tags,
+  colors,
 }: DesignDataFormProps) {
   const selectedSubcategoryIds = existingDesign
     ? existingDesign.designSubcategories.map((cat) => cat.id)
@@ -273,6 +275,18 @@ function SecondarySection({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Tags section */}
+
+      <div>
+        <DesignVariations
+          existingDesign={existingDesign}
+          categories={categories}
+          colors={colors}
+          designTypes={designTypes}
+          tags={tags}
+        />
       </div>
     </div>
   );

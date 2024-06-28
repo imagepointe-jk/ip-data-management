@@ -34,6 +34,16 @@ model Design {
   defaultBackgroundColorId Int
   imageUrl                 String              @default("none")
   priority                 Int                 @default(0)
+  variations               DesignVariation[]
+}
+
+model DesignVariation {
+  id             Int    @id @default(autoincrement())
+  parentDesign   Design @relation(fields: [parentDesignId], references: [id])
+  parentDesignId Int
+  imageUrl       String @default("none")
+  color          Color  @relation(fields: [colorId], references: [id])
+  colorId        Int
 }
 
 model DesignType {
@@ -70,6 +80,7 @@ model Color {
   name                  String                           @unique
   hexCode               String                           @unique
   designs               Design[]
+  designVariations      DesignVariation[]
   customGarmentSettings CustomGarmentSettingsVariation[]
 }
 

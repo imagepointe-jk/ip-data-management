@@ -8,6 +8,11 @@ const standardDesignIncludes = {
   designTags: true,
   designType: true,
   defaultBackgroundColor: true,
+  variations: {
+    include: {
+      color: true,
+    },
+  },
 };
 
 export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
