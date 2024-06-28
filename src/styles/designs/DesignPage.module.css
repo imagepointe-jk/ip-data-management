@@ -54,12 +54,16 @@ input.design-number {
   gap: 10px;
 }
 
-.variation-card {
+.variation-card,
+.add-variation-container {
   width: 250px;
-  border-radius: 10px;
-  padding: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.variation-card {
+  border-radius: 10px;
+  padding: 10px;
   border: 1px solid black;
 }
 
@@ -67,4 +71,21 @@ input.design-number {
   display: block;
   width: 100%;
   aspect-ratio: 1;
+}
+
+.add-variation-container {
+  justify-content: center;
+  align-items: center;
+}
+
+.add-variation-container button {
+  display: block;
+  width: 50px;
+  height: 50px;
+}
+
+.add-variation-container button div {
+  font-weight: bold;
+  font-size: 2rem;
+  translate: 0 -6px;
 }

@@ -277,17 +277,19 @@ function SecondarySection({
         </div>
       </div>
 
-      {/* Tags section */}
+      {/* Variations section */}
 
-      <div>
-        <DesignVariations
-          existingDesign={existingDesign}
-          categories={categories}
-          colors={colors}
-          designTypes={designTypes}
-          tags={tags}
-        />
-      </div>
+      {existingDesign && (
+        <div>
+          <DesignVariations
+            existingDesign={existingDesign}
+            categories={categories}
+            colors={colors}
+            designTypes={designTypes}
+            tags={tags}
+          />
+        </div>
+      )}
     </div>
   );
 }

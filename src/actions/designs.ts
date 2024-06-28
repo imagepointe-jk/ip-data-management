@@ -74,3 +74,26 @@ export async function deleteDesign(id: number) {
   revalidatePath("/designs");
   redirect("/designs");
 }
+
+export async function createDesignVariation(parentDesignId: number) {
+  const parentDesign = await prisma.design.findUnique({
+    where: {
+      id: parentDesignId,
+    },
+    include: {
+      defaultBackgroundColor: true,
+    },
+  });
+
+  if (!parentDesign) {
+    throw new Error(`Parent design with id ${parentDesignId} not found.`);
+  }
+
+  await prisma.designVariation.create({
+    data: {
+      colorId: parentDesign.defaultBackgroundColor.id,
+      parentDesignId,
+      imageUrl: parentDesign.imageUrl,
+    },
+  });
+}

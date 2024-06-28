@@ -1,8 +1,22 @@
+"use client";
+
 import { DesignVariationWithIncludes } from "@/types/types";
 import { DesignDataFormProps } from "./DesignDataForm";
 import styles from "@/styles/designs/DesignPage.module.css";
+import { createDesignVariation } from "@/actions/designs";
+import { useRouter } from "next/navigation";
 
 export function DesignVariations({ existingDesign }: DesignDataFormProps) {
+  const router = useRouter();
+
+  async function onClickAddVariation() {
+    if (!existingDesign) return;
+
+    await createDesignVariation(existingDesign.id);
+
+    router.refresh();
+  }
+
   return (
     <div>
       <h4>Variations</h4>
@@ -11,9 +25,17 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
           "No varaitions"}
         {existingDesign &&
           existingDesign.variations.map((variation) => (
-            //   <div key={variation.id}>{variation.color.name} variation</div>
             <VariationCard key={variation.id} variation={variation} />
           ))}
+        <div className={styles["add-variation-container"]}>
+          <button
+            type="button"
+            onClick={onClickAddVariation}
+            className={styles["add-variation-button"]}
+          >
+            <div>+</div>
+          </button>
+        </div>
       </div>
     </div>
   );
