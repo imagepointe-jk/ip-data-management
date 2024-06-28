@@ -37,6 +37,20 @@ export async function updateDesign(formData: FormData) {
   if (!parsed.existingDesignId)
     throw new Error("No existing design id provided. This is a bug.");
 
+  await Promise.all(
+    parsed.variationData.map((variationData) =>
+      prisma.designVariation.update({
+        where: {
+          id: variationData.id,
+        },
+        data: {
+          colorId: variationData.colorId,
+          imageUrl: variationData.imageUrl,
+        },
+      })
+    )
+  );
+
   await prisma.design.update({
     where: {
       id: parsed.existingDesignId,

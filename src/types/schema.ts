@@ -7,6 +7,12 @@ export const userFormDataSchema = z.object({
   existingUserId: z.number().optional(),
 });
 
+const designVariationFormDataSchema = z.object({
+  id: z.number(),
+  imageUrl: z.string(),
+  colorId: z.number(),
+});
+
 export const designFormDataSchema = z.object({
   designNumber: z.string(),
   description: z.string(),
@@ -20,6 +26,7 @@ export const designFormDataSchema = z.object({
   imageUrl: z.string(),
   existingDesignId: z.number().optional(),
   priority: z.number().optional(),
+  variationData: z.array(designVariationFormDataSchema),
 });
 
 const quoteRequestDesignSchema = z.object({

@@ -10,9 +10,16 @@ import {
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Color } from "@prisma/client";
+import { ChangeEvent, useState } from "react";
 
-export function DesignVariations({ existingDesign }: DesignDataFormProps) {
+export function DesignVariations({
+  existingDesign,
+  colors,
+}: DesignDataFormProps) {
   const router = useRouter();
+  const sorted = existingDesign ? [...existingDesign.variations] : [];
+  sorted.sort((a, b) => a.id - b.id);
 
   async function onClickAddVariation() {
     if (!existingDesign) return;
@@ -34,10 +41,11 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
         {(!existingDesign || existingDesign.variations.length === 0) &&
           "No varaitions"}
         {existingDesign &&
-          existingDesign.variations.map((variation) => (
+          sorted.map((variation) => (
             <VariationCard
               key={variation.id}
               variation={variation}
+              colors={colors}
               onClickDelete={onClickDeleteVariation}
             />
           ))}
@@ -57,16 +65,60 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
 
 type VariationCardProps = {
   variation: DesignVariationWithIncludes;
+  colors: Color[];
   onClickDelete: (id: number) => void;
 };
-function VariationCard({ variation, onClickDelete }: VariationCardProps) {
+function VariationCard({
+  variation,
+  onClickDelete,
+  colors,
+}: VariationCardProps) {
+  const [bgColorId, setBgColorId] = useState(variation.color.id);
+  const [imageUrl, setImageUrl] = useState(variation.imageUrl);
+
+  function onChangeColor(e: ChangeEvent<HTMLSelectElement>) {
+    setBgColorId(+e.target.value);
+  }
+
+  function onChangeImageUrl(e: ChangeEvent<HTMLInputElement>) {
+    setImageUrl(e.target.value);
+  }
+
+  const bgColorToShow = colors.find((color) => color.id === bgColorId);
+
   return (
     <div className={styles["variation-card"]}>
       <img
-        src={variation.imageUrl}
-        style={{ backgroundColor: `#${variation.color.hexCode}` }}
+        src={imageUrl}
+        style={{
+          backgroundColor: `#${
+            bgColorToShow ? bgColorToShow.hexCode : "ffffff"
+          }`,
+        }}
       />
-      Color: {variation.color.name}
+      <div>
+        <h4>Image URL</h4>
+        <input
+          type="text"
+          name={`image-url-variation-${variation.id}`}
+          id={`image-url-variation-${variation.id}`}
+          onChange={onChangeImageUrl}
+          value={imageUrl}
+        />
+      </div>
+      <h4>Default Background Color</h4>
+      <select
+        name={`bg-color-variation-${variation.id}`}
+        id={`bg-color-variation-${variation.id}`}
+        value={bgColorId}
+        onChange={onChangeColor}
+      >
+        {colors.map((color) => (
+          <option key={color.id} value={color.id}>
+            {color.name}
+          </option>
+        ))}
+      </select>
       <button
         type="button"
         className={styles["variation-x"]}

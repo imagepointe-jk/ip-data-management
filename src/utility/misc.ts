@@ -124,3 +124,15 @@ export function getTimeStampYearsAgo(yearsAgo: number) {
   date.setFullYear(date.getFullYear() - yearsAgo);
   return date.getTime();
 }
+
+export function findAllFormValues(
+  formData: FormData,
+  testFn: (fieldName: string, fieldValue: FormDataEntryValue) => boolean
+) {
+  const entries: { fieldName: string; fieldValue: FormDataEntryValue }[] = [];
+  for (const entry of formData.entries()) {
+    if (testFn(entry[0], entry[1]))
+      entries.push({ fieldName: entry[0], fieldValue: entry[1] });
+  }
+  return entries;
+}

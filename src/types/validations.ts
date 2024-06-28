@@ -18,6 +18,53 @@ import {
 } from "./schema";
 import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
 import { z } from "zod";
+import { findAllFormValues } from "@/utility/misc";
+
+const c = [
+  {
+    fieldName: "bg-color-variation-5",
+    fieldValue: "1",
+  },
+  {
+    fieldName: "bg-color-variation-2",
+    fieldValue: "1",
+  },
+  {
+    fieldName: "bg-color-variation-3",
+    fieldValue: "1",
+  },
+];
+const u = [
+  {
+    fieldName: "bg-color-variation-5",
+    fieldValue: "http://",
+  },
+  {
+    fieldName: "bg-color-variation-2",
+    fieldValue: "http://",
+  },
+  {
+    fieldName: "bg-color-variation-3",
+    fieldValue: "http://",
+  },
+];
+const final = [
+  {
+    id: 5,
+    imageUrl: "http://",
+    colorId: 1,
+  },
+  {
+    id: 2,
+    imageUrl: "http://",
+    colorId: 1,
+  },
+  {
+    id: 3,
+    imageUrl: "http://",
+    colorId: 1,
+  },
+];
 
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
@@ -31,11 +78,49 @@ export function validateUserFormData(formData: FormData) {
   });
 }
 
+function extractDesignVariationFormData(formData: FormData) {
+  const variationColorFields = findAllFormValues(formData, (name) =>
+    name.includes("bg-color-variation")
+  );
+  const variationUrlFields = findAllFormValues(formData, (name) =>
+    name.includes("image-url-variation")
+  );
+  if (variationColorFields.length !== variationUrlFields.length)
+    throw new Error(
+      "Unequal lengths of color and url fields for design variations. This is a bug."
+    );
+
+  const extracted: { id: number; imageUrl: string; colorId: number }[] = [];
+
+  for (let i = 0; i < variationColorFields.length; i++) {
+    const colorField = variationColorFields[i];
+    if (colorField === undefined) break;
+
+    const id = +`${colorField.fieldName.match(/\d+$/)}`;
+    if (isNaN(id)) break;
+
+    const matchingUrlField = variationUrlFields.find((field) => {
+      const idHere = +`${field.fieldName.match(/\d+$/)}`;
+      return !isNaN(idHere) && idHere === id;
+    });
+    extracted.push({
+      id,
+      colorId: +colorField.fieldValue,
+      imageUrl: matchingUrlField ? `${matchingUrlField.fieldValue}` : "",
+    });
+  }
+
+  return extracted;
+}
+
 export function validateDesignFormData(formData: FormData) {
   const existingDesignId = formData.get("existingDesignId");
   const existingDesignIdNum = existingDesignId ? +existingDesignId : undefined;
   const date = new Date(`${formData.get("date")}`);
   const priority = +`${formData.get("priority")}`;
+  const variationData = existingDesignId
+    ? extractDesignVariationFormData(formData)
+    : [];
 
   return designFormDataSchema.parse({
     designNumber: formData.get("design-number"),
@@ -50,6 +135,7 @@ export function validateDesignFormData(formData: FormData) {
     imageUrl: formData.get("image-url"),
     existingDesignId: existingDesignIdNum,
     priority: !isNaN(priority) ? priority : undefined,
+    variationData,
   });
 }
 
