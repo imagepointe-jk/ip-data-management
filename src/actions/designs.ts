@@ -97,3 +97,11 @@ export async function createDesignVariation(parentDesignId: number) {
     },
   });
 }
+
+export async function deleteDesignVariation(id: number) {
+  await prisma.designVariation.delete({
+    where: {
+      id,
+    },
+  });
+}

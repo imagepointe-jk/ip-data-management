@@ -12,6 +12,8 @@
     "test": "npx jest"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@prisma/client": "^5.13.0",
     "bcryptjs": "^2.4.3",
     "handlebars": "^4.7.8",

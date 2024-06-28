@@ -3,8 +3,13 @@
 import { DesignVariationWithIncludes } from "@/types/types";
 import { DesignDataFormProps } from "./DesignDataForm";
 import styles from "@/styles/designs/DesignPage.module.css";
-import { createDesignVariation } from "@/actions/designs";
+import {
+  createDesignVariation,
+  deleteDesignVariation,
+} from "@/actions/designs";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export function DesignVariations({ existingDesign }: DesignDataFormProps) {
   const router = useRouter();
@@ -17,6 +22,11 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
     router.refresh();
   }
 
+  async function onClickDeleteVariation(id: number) {
+    await deleteDesignVariation(id);
+    router.refresh();
+  }
+
   return (
     <div>
       <h4>Variations</h4>
@@ -25,7 +35,11 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
           "No varaitions"}
         {existingDesign &&
           existingDesign.variations.map((variation) => (
-            <VariationCard key={variation.id} variation={variation} />
+            <VariationCard
+              key={variation.id}
+              variation={variation}
+              onClickDelete={onClickDeleteVariation}
+            />
           ))}
         <div className={styles["add-variation-container"]}>
           <button
@@ -43,8 +57,9 @@ export function DesignVariations({ existingDesign }: DesignDataFormProps) {
 
 type VariationCardProps = {
   variation: DesignVariationWithIncludes;
+  onClickDelete: (id: number) => void;
 };
-function VariationCard({ variation }: VariationCardProps) {
+function VariationCard({ variation, onClickDelete }: VariationCardProps) {
   return (
     <div className={styles["variation-card"]}>
       <img
@@ -52,6 +67,13 @@ function VariationCard({ variation }: VariationCardProps) {
         style={{ backgroundColor: `#${variation.color.hexCode}` }}
       />
       Color: {variation.color.name}
+      <button
+        type="button"
+        className={styles["variation-x"]}
+        onClick={() => onClickDelete(variation.id)}
+      >
+        <FontAwesomeIcon icon={faXmark} />
+      </button>
     </div>
   );
 }
