@@ -6,6 +6,7 @@ import { getSourceJson } from "../src/utility/spreadsheet";
 const data = getSourceJson("./seed/Design Data 2-7-24.xlsx");
 
 async function erase() {
+  await prisma.designVariation.deleteMany();
   await prisma.design.deleteMany();
   await prisma.designSubcategory.deleteMany();
   await prisma.designCategory.deleteMany();
@@ -89,12 +90,19 @@ async function createDesignSubcategories() {
 }
 async function createDesigns() {
   if (!data) return;
+  const usedDesignNumbersWithIds: { [key: string]: number } = {};
 
   const screenPrintDesigns = data["Screen Print Designs"]!;
   for (const design of screenPrintDesigns) {
     if (!design["Design Number"]) continue;
     try {
-      await createDesign("Screen Print", design);
+      const existingId = usedDesignNumbersWithIds[design["Design Number"]];
+      if (existingId !== undefined) {
+        createDesignVariation(existingId, design);
+      } else {
+        const created = await createDesign("Screen Print", design);
+        usedDesignNumbersWithIds[created.designNumber] = created.id;
+      }
     } catch (error) {
       console.error(
         `Failed to create design ${design["Design Number"]}`,
@@ -107,7 +115,13 @@ async function createDesigns() {
   for (const design of embroideryDesigns) {
     if (!design["Design Number"]) continue;
     try {
-      await createDesign("Embroidery", design);
+      const existingId = usedDesignNumbersWithIds[design["Design Number"]];
+      if (existingId !== undefined) {
+        createDesignVariation(existingId, design);
+      } else {
+        const created = await createDesign("Embroidery", design);
+        usedDesignNumbersWithIds[created.designNumber] = created.id;
+      }
     } catch (error) {
       console.error(
         `Failed to create design ${design["Design Number"]}`,
@@ -120,8 +134,6 @@ async function createDesigns() {
     const designNumber = `${designRow["Design Number"]}`;
     const date = new Date(designRow.Date);
     const url = `${designRow["Image URL"]}`;
-    const status = designRow.Status;
-    if (status === "Draft") return;
 
     const featured = `${designRow.Featured}` === "Yes" ? true : false;
     const colorSplit = `${designRow["Default Background Color"]}`.split(" - ");
@@ -173,7 +185,7 @@ async function createDesigns() {
       if (foundTag) tagIds.push(foundTag.id);
     }
 
-    await prisma.design.create({
+    return prisma.design.create({
       data: {
         designNumber,
         date,
@@ -198,6 +210,23 @@ async function createDesigns() {
           connect: tagIds.map((id) => ({ id })),
         },
         imageUrl: url,
+      },
+    });
+  }
+
+  async function createDesignVariation(designId: number, designRow: any) {
+    const colorSplit = `${designRow["Default Background Color"]}`.split(" - ");
+    const colorName = colorSplit[1];
+    const color = await prisma.color.findUnique({
+      where: {
+        name: colorName,
+      },
+    });
+    await prisma.designVariation.create({
+      data: {
+        parentDesignId: designId,
+        imageUrl: `${designRow["Image URL"]}`,
+        colorId: color ? color.id : 0,
       },
     });
   }
