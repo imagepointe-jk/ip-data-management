@@ -73,13 +73,7 @@ function MainSection({ colors, existingDesign }: DesignDataFormProps) {
       {/* Image section */}
 
       <div>
-        <div
-          style={{
-            border: "1px solid black",
-            width: "300px",
-            height: "300px",
-          }}
-        >
+        <div className={styles["main-image-container"]}>
           {existingDesign && (
             <img
               src={existingDesign.imageUrl}

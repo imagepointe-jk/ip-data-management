@@ -19,6 +19,7 @@ export function DesignVariations({
 }: DesignDataFormProps) {
   const router = useRouter();
   const sorted = existingDesign ? [...existingDesign.variations] : [];
+  //ensures that the variations always appear in a stable order (the specific order doesn't matter)
   sorted.sort((a, b) => a.id - b.id);
 
   async function onClickAddVariation() {
@@ -38,8 +39,6 @@ export function DesignVariations({
     <div>
       <h4>Variations</h4>
       <div className={styles["variations-container"]}>
-        {(!existingDesign || existingDesign.variations.length === 0) &&
-          "No varaitions"}
         {existingDesign &&
           sorted.map((variation) => (
             <VariationCard
@@ -88,14 +87,16 @@ function VariationCard({
 
   return (
     <div className={styles["variation-card"]}>
-      <img
-        src={imageUrl}
-        style={{
-          backgroundColor: `#${
-            bgColorToShow ? bgColorToShow.hexCode : "ffffff"
-          }`,
-        }}
-      />
+      <div className={styles["variation-image-container"]}>
+        <img
+          src={imageUrl}
+          style={{
+            backgroundColor: `#${
+              bgColorToShow ? bgColorToShow.hexCode : "ffffff"
+            }`,
+          }}
+        />
+      </div>
       <div>
         <h4>Image URL</h4>
         <input

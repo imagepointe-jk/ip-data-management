@@ -18,6 +18,31 @@ input.design-number {
   width: 200px;
 }
 
+.main-image-container,
+.variation-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image-container {
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
+}
+
+.variation-image-container {
+  width: 240px;
+  height: 240px;
+}
+
+.main-image-container img,
+.variation-image-container img {
+  max-height: 100%;
+  max-width: 100%;
+  display: block;
+}
+
 .secondary-section {
   display: flex;
   flex-wrap: wrap;
@@ -54,11 +79,19 @@ input.design-number {
   gap: 10px;
 }
 
+.variations-container input,
+.variations-container select {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 .variation-card,
 .add-variation-container {
   width: 250px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 
 .variation-card {
@@ -66,12 +99,6 @@ input.design-number {
   padding: 10px;
   border: 1px solid black;
   position: relative;
-}
-
-.variation-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
 }
 
 .add-variation-container {
