@@ -45,6 +45,7 @@ function extractDesignVariationFormData(formData: FormData) {
   const variationTagFields = findAllFormValues(formData, (name) =>
     name.includes("tags-variation")
   );
+  //assume that the number of color fields and url fields accurately reflects the number of variations on the design
   if (variationColorFields.length !== variationUrlFields.length)
     throw new Error(
       "Unequal lengths of design variation fields. This is a bug."

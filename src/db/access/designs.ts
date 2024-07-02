@@ -82,6 +82,12 @@ export async function getDesigns(query: DesignQuery): Promise<DesignResults> {
             },
           },
           {
+            designNumber: {
+              contains: keyword,
+              mode: "insensitive",
+            },
+          },
+          {
             description: {
               contains: keyword,
               mode: "insensitive",
