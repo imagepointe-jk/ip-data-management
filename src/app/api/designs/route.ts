@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const featured = params.get("featured");
   const subcategory = params.get("subcategory");
-  const keywords = params.get("keywords");
-  const designType = params.get("designType");
+  const keyword = params.get("keyword");
+  const designType = decodeURIComponent(`${params.get("designType")}`);
   const allowDuplicateDesignNumbers = params.get("allowDuplicateDesignNumbers");
   // const getRelatedToId = params.get("getRelatedToId");
   const sortBy = params.get("sortBy");
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       ? allowDuplicateDesignNumbers === "true"
       : false,
     designType: designType ? makeStringTitleCase(designType) : "Screen Print",
-    keyword: keywords || undefined,
+    keyword: keyword || undefined,
     similarToId: similarTo ? +similarTo : undefined,
     subcategory: subcategory || undefined,
     after: after && !isNaN(+after) ? +after : undefined,
