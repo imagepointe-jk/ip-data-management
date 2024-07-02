@@ -145,6 +145,10 @@ function SecondarySection({
   const selectedTagIds = existingDesign
     ? existingDesign.designTags.map((tag) => tag.id)
     : [];
+  const categoriesToShow = categories.filter(
+    (cat) =>
+      existingDesign && existingDesign.designType.id === cat.designType.id
+  );
 
   return (
     <div className={styles["secondary-section"]}>
@@ -231,7 +235,7 @@ function SecondarySection({
       <div>
         <h4>Categories</h4>
         <div className={styles["scroll-box"]}>
-          {categories.map((cat) => (
+          {categoriesToShow.map((cat) => (
             <div key={cat.id}>
               <h5>{cat.name}</h5>
               {cat.designSubcategories.map((sub) => (

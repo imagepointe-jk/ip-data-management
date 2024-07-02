@@ -18,6 +18,14 @@ export default function Filter({ categories }: Props) {
   );
   const statusInParams = decodeURIComponent(`${searchParams.get("status")}`);
   const featuredOnlyInParams = searchParams.get("featuredOnly") === "true";
+  const designTypeInParams = searchParams.get("designType");
+  const categoriesToShow = categories.filter(
+    (cat) =>
+      (cat.designType.name === "Embroidery" &&
+        designTypeInParams === "Embroidery") ||
+      (designTypeInParams !== "Embroidery" &&
+        cat.designType.name !== "Embroidery")
+  );
 
   function onChangeCategory(e: ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
@@ -82,7 +90,7 @@ export default function Filter({ categories }: Props) {
     <div>
       <select onChange={onChangeCategory} defaultValue={subcategoryInParams}>
         <option value="none">Any Category</option>
-        {categories.map((cat) => (
+        {categoriesToShow.map((cat) => (
           <optgroup key={cat.id} label={cat.name}>
             {cat.designSubcategories.map((sub) => (
               <option key={sub.id} value={sub.name}>
