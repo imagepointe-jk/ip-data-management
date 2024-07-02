@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
   const featured = params.get("featured");
   const subcategory = params.get("subcategory");
   const keyword = params.get("keyword");
-  const designType = decodeURIComponent(`${params.get("designType")}`);
+  const designType =
+    params.get("designType") === null
+      ? "Screen Print"
+      : decodeURIComponent(`${params.get("designType")}`);
   const allowDuplicateDesignNumbers = params.get("allowDuplicateDesignNumbers");
   // const getRelatedToId = params.get("getRelatedToId");
   const sortBy = params.get("sortBy");
