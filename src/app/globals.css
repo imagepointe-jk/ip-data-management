@@ -92,6 +92,11 @@ button:hover {
   background-color: var(--color-alpha-hover);
 }
 
+button:disabled {
+  background-color: lightgray;
+  cursor: initial;
+}
+
 .button-beta {
   background-color: white;
   color: var(--color-alpha);

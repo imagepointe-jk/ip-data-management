@@ -42,6 +42,8 @@ export type DesignResults = ResultsPagination & {
 
 export type DesignVariationWithIncludes = DesignVariation & {
   color: Color;
+  designSubcategories: DesignSubcategory[];
+  designTags: DesignTag[];
 };
 
 export type DesignWithIncludes = Design & {

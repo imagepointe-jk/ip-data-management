@@ -2,6 +2,7 @@ import { DesignQuery, DesignResults } from "@/types/types";
 import { prisma } from "../../../prisma/client";
 import { defaultPerPage } from "@/constants";
 import { makeStringTitleCase } from "@/utility/misc";
+import { designSubcategories } from "../../../seed/seedData";
 
 const standardDesignIncludes = {
   designSubcategories: true,
@@ -11,6 +12,8 @@ const standardDesignIncludes = {
   variations: {
     include: {
       color: true,
+      designSubcategories: true,
+      designTags: true,
     },
   },
 };

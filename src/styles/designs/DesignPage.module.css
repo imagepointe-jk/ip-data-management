@@ -68,18 +68,35 @@ input.design-number {
   width: 600px;
 }
 
-.variations-container {
-  border: 1px solid black;
-  width: 580px;
-  height: 300px;
-  overflow-y: auto;
+.variations-heading-container {
   display: flex;
-  flex-wrap: wrap;
-  padding: 10px;
-  gap: 10px;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
-.variations-container input,
+.variations-heading-container button {
+  display: block;
+}
+
+.variations-scroll-button,
+button.variations-add {
+  padding: 0 14px;
+}
+
+button.variations-add {
+  padding: 3px 14px;
+  font-size: 0.8rem;
+}
+
+.variations-container {
+  border: 1px solid black;
+  width: 610px;
+  height: 380px;
+  position: relative;
+}
+
+.variations-container input[type="text"],
 .variations-container select {
   display: block;
   box-sizing: border-box;
@@ -88,51 +105,30 @@ input.design-number {
 
 .variation-card,
 .add-variation-container {
-  width: 250px;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  gap: 10px;
 }
 
 .variation-card {
-  border-radius: 10px;
   padding: 10px;
-  border: 1px solid black;
-  position: relative;
-}
-
-.add-variation-container {
-  justify-content: center;
-  align-items: center;
-}
-
-.add-variation-container button {
-  display: block;
-  width: 50px;
-  height: 50px;
-}
-
-.add-variation-container button div {
-  font-weight: bold;
-  font-size: 2rem;
-  translate: 0 -6px;
-}
-
-button.variation-x {
-  background-color: var(--color-danger);
   position: absolute;
-  color: white;
-  padding: 2px;
-  border-radius: 100px;
-  width: 23px;
-  text-align: center;
-  right: -6px;
-  top: -6px;
-  cursor: pointer;
-  display: block;
+  left: 0;
+  top: 0;
 }
 
-button.variation-x:hover {
-  scale: 120%;
-  background-color: var(--color-danger);
+.variation-scroll-boxes {
+  display: flex;
+  gap: 5px;
+}
+
+.variation-scroll-box {
+  border: 1px solid black;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  height: 300px;
+}
+
+button.variation-delete {
+  margin-top: 5px;
+  font-size: 0.8rem;
 }

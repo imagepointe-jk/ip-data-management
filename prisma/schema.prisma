@@ -38,12 +38,14 @@ model Design {
 }
 
 model DesignVariation {
-  id             Int    @id @default(autoincrement())
-  parentDesign   Design @relation(fields: [parentDesignId], references: [id])
-  parentDesignId Int
-  imageUrl       String @default("none")
-  color          Color  @relation(fields: [colorId], references: [id])
-  colorId        Int
+  id                  Int                 @id @default(autoincrement())
+  parentDesign        Design              @relation(fields: [parentDesignId], references: [id])
+  parentDesignId      Int
+  imageUrl            String              @default("none")
+  color               Color               @relation(fields: [colorId], references: [id])
+  colorId             Int
+  designSubcategories DesignSubcategory[]
+  designTags          DesignTag[]
 }
 
 model DesignType {
@@ -62,17 +64,19 @@ model DesignCategory {
 }
 
 model DesignSubcategory {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   name             String
   designs          Design[]
-  designCategory   DesignCategory @relation(fields: [designCategoryId], references: [id])
+  designVariations DesignVariation[]
+  designCategory   DesignCategory    @relation(fields: [designCategoryId], references: [id])
   designCategoryId Int
 }
 
 model DesignTag {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  designs Design[]
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  designs          Design[]
+  designVariations DesignVariation[]
 }
 
 model Color {
