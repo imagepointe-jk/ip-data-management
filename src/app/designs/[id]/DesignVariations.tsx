@@ -187,7 +187,9 @@ function VariationCard({
                         value={sub.id}
                         defaultChecked={selectedSubcategoryIds.includes(sub.id)}
                       />
-                      <label htmlFor={`subcategory-${sub.id}`}>
+                      <label
+                        htmlFor={`subcategory-${sub.id}-variation-${variation.id}`}
+                      >
                         {sub.name}
                       </label>
                     </div>
@@ -209,7 +211,9 @@ function VariationCard({
                       value={`${tag.id}`}
                       defaultChecked={selectedTagIds.includes(tag.id)}
                     />
-                    <label htmlFor={`tag-${tag.id}`}>{tag.name}</label>
+                    <label htmlFor={`tag-${tag.id}-variation-${variation.id}`}>
+                      {tag.name}
+                    </label>
                   </div>
                 ))}
               </div>

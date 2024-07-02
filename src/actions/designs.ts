@@ -46,6 +46,12 @@ export async function updateDesign(formData: FormData) {
         data: {
           colorId: variationData.colorId,
           imageUrl: variationData.imageUrl,
+          designSubcategories: {
+            set: variationData.subcategoryIds.map((id) => ({ id })),
+          },
+          designTags: {
+            set: variationData.tagIds.map((id) => ({ id })),
+          },
         },
       })
     )

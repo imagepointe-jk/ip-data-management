@@ -20,52 +20,6 @@ import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
 import { z } from "zod";
 import { findAllFormValues } from "@/utility/misc";
 
-const c = [
-  {
-    fieldName: "bg-color-variation-5",
-    fieldValue: "1",
-  },
-  {
-    fieldName: "bg-color-variation-2",
-    fieldValue: "1",
-  },
-  {
-    fieldName: "bg-color-variation-3",
-    fieldValue: "1",
-  },
-];
-const u = [
-  {
-    fieldName: "bg-color-variation-5",
-    fieldValue: "http://",
-  },
-  {
-    fieldName: "bg-color-variation-2",
-    fieldValue: "http://",
-  },
-  {
-    fieldName: "bg-color-variation-3",
-    fieldValue: "http://",
-  },
-];
-const final = [
-  {
-    id: 5,
-    imageUrl: "http://",
-    colorId: 1,
-  },
-  {
-    id: 2,
-    imageUrl: "http://",
-    colorId: 1,
-  },
-  {
-    id: 3,
-    imageUrl: "http://",
-    colorId: 1,
-  },
-];
-
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
   const existingUserIdNum = existingUserId ? +existingUserId : undefined;
@@ -85,28 +39,51 @@ function extractDesignVariationFormData(formData: FormData) {
   const variationUrlFields = findAllFormValues(formData, (name) =>
     name.includes("image-url-variation")
   );
+  const variationCategoryFields = findAllFormValues(formData, (name) =>
+    name.includes("subcategories-variation")
+  );
+  const variationTagFields = findAllFormValues(formData, (name) =>
+    name.includes("tags-variation")
+  );
   if (variationColorFields.length !== variationUrlFields.length)
     throw new Error(
-      "Unequal lengths of color and url fields for design variations. This is a bug."
+      "Unequal lengths of design variation fields. This is a bug."
     );
 
-  const extracted: { id: number; imageUrl: string; colorId: number }[] = [];
+  const extracted: {
+    id: number;
+    imageUrl: string;
+    colorId: number;
+    subcategoryIds: number[];
+    tagIds: number[];
+  }[] = [];
+  const totalVariations = variationColorFields.length;
 
-  for (let i = 0; i < variationColorFields.length; i++) {
+  for (let i = 0; i < totalVariations; i++) {
     const colorField = variationColorFields[i];
     if (colorField === undefined) break;
 
-    const id = +`${colorField.fieldName.match(/\d+$/)}`;
-    if (isNaN(id)) break;
+    const variationId = +`${colorField.fieldName.match(/\d+$/)}`;
+    if (isNaN(variationId)) break;
 
     const matchingUrlField = variationUrlFields.find((field) => {
-      const idHere = +`${field.fieldName.match(/\d+$/)}`;
-      return !isNaN(idHere) && idHere === id;
+      const variationIdHere = +`${field.fieldName.match(/\d+$/)}`;
+      return !isNaN(variationIdHere) && variationIdHere === variationId;
+    });
+    const matchingCategoryFields = variationCategoryFields.filter((field) => {
+      const variationIdHere = +`${field.fieldName.match(/\d+$/)}`;
+      return !isNaN(variationIdHere) && variationIdHere === variationId;
+    });
+    const matchingTagFields = variationTagFields.filter((field) => {
+      const variationIdHere = +`${field.fieldName.match(/\d+$/)}`;
+      return !isNaN(variationIdHere) && variationIdHere === variationId;
     });
     extracted.push({
-      id,
+      id: variationId,
       colorId: +colorField.fieldValue,
       imageUrl: matchingUrlField ? `${matchingUrlField.fieldValue}` : "",
+      subcategoryIds: matchingCategoryFields.map((field) => +field.fieldValue),
+      tagIds: matchingTagFields.map((field) => +field.fieldValue),
     });
   }
 

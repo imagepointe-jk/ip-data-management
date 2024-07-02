@@ -11,6 +11,8 @@ const designVariationFormDataSchema = z.object({
   id: z.number(),
   imageUrl: z.string(),
   colorId: z.number(),
+  subcategoryIds: z.array(z.number()),
+  tagIds: z.array(z.number()),
 });
 
 export const designFormDataSchema = z.object({
