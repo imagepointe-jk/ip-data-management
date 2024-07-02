@@ -102,6 +102,8 @@ export async function createDesignVariation(parentDesignId: number) {
     },
     include: {
       defaultBackgroundColor: true,
+      designSubcategories: true,
+      designTags: true,
     },
   });
 
@@ -114,6 +116,10 @@ export async function createDesignVariation(parentDesignId: number) {
       colorId: parentDesign.defaultBackgroundColor.id,
       parentDesignId,
       imageUrl: parentDesign.imageUrl,
+      designSubcategories: {
+        connect: parentDesign.designSubcategories,
+      },
+      designTags: { connect: parentDesign.designTags },
     },
   });
 }
