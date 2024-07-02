@@ -5,7 +5,7 @@ import { UnwrapPromise } from "@/types/types";
 import { getTimeStampYearsAgo } from "@/utility/misc";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type Props = {
   categories: UnwrapPromise<ReturnType<typeof getDesignCategoryHierarchy>>;
@@ -13,18 +13,13 @@ type Props = {
 export default function Filter({ categories }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const subcategoryInParams = decodeURIComponent(
-    `${searchParams.get("subcategory")}`
-  );
-  const statusInParams = decodeURIComponent(`${searchParams.get("status")}`);
-  const featuredOnlyInParams = searchParams.get("featuredOnly") === "true";
-  const designTypeInParams = searchParams.get("designType");
+  const { age, designType, featuredOnly, status, subcategory } =
+    getSearchValues();
+
   const categoriesToShow = categories.filter(
     (cat) =>
-      (cat.designType.name === "Embroidery" &&
-        designTypeInParams === "Embroidery") ||
-      (designTypeInParams !== "Embroidery" &&
-        cat.designType.name !== "Embroidery")
+      (cat.designType.name === "Embroidery" && designType === "Embroidery") ||
+      (designType !== "Embroidery" && cat.designType.name !== "Embroidery")
   );
 
   function onChangeCategory(e: ChangeEvent<HTMLSelectElement>) {
@@ -86,9 +81,34 @@ export default function Filter({ categories }: Props) {
     router.refresh();
   }
 
+  function getSearchValues() {
+    const beforeInParams = searchParams.get("before");
+    const afterInParams = searchParams.get("after");
+    const featuredOnlyInParams = searchParams.get("featuredOnly");
+    const designTypeInParams = searchParams.get("designType");
+    const subcategoryInParams = searchParams.get("subcategory");
+    const statusInParams = searchParams.get("status");
+
+    return {
+      subcategory:
+        subcategoryInParams === null
+          ? "none"
+          : decodeURIComponent(subcategoryInParams),
+      status: statusInParams === null ? "none" : statusInParams,
+      age:
+        beforeInParams !== null
+          ? "old"
+          : afterInParams !== null
+          ? "new"
+          : "none",
+      featuredOnly: featuredOnlyInParams === null ? false : true,
+      designType: `${designTypeInParams}`,
+    };
+  }
+
   return (
     <div>
-      <select onChange={onChangeCategory} defaultValue={subcategoryInParams}>
+      <select onChange={onChangeCategory} value={subcategory}>
         <option value="none">Any Category</option>
         {categoriesToShow.map((cat) => (
           <optgroup key={cat.id} label={cat.name}>
@@ -100,12 +120,12 @@ export default function Filter({ categories }: Props) {
           </optgroup>
         ))}
       </select>
-      <select onChange={onChangeStatus} defaultValue={statusInParams}>
+      <select onChange={onChangeStatus} value={status}>
         <option value="none">Any Status</option>
         <option value="Published">Published</option>
         <option value="Draft">Draft</option>
       </select>
-      <select onChange={onChangeAge}>
+      <select onChange={onChangeAge} value={age}>
         <option value={"none"}>Any Age</option>
         <option value={"new"}>New Designs</option>
         <option value={"old"}>Classics</option>
@@ -116,7 +136,7 @@ export default function Filter({ categories }: Props) {
           name="featured"
           id="featured"
           onChange={onChangeFeaturedOnly}
-          defaultChecked={featuredOnlyInParams}
+          checked={featuredOnly}
         />
         Featured Only
       </label>
