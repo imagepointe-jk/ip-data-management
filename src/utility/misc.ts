@@ -136,3 +136,12 @@ export function findAllFormValues(
   }
   return entries;
 }
+
+export function getArrayPage<T>(
+  array: T[],
+  pageNumber: number,
+  countPerPage: number
+) {
+  const startIndex = countPerPage * (pageNumber - 1);
+  return array.slice(startIndex, startIndex + countPerPage);
+}

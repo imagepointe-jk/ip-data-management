@@ -100,12 +100,16 @@ function parseSearchParams(searchParams: any): Omit<
   const designType =
     searchParams.designType === "Embroidery" ? "Embroidery" : "Screen Print";
   const keyword = searchParams.keywords;
-  const subcategory = searchParams.subcategory;
+  const subcategory = searchParams.subcategory
+    ? decodeURIComponent(searchParams.subcategory)
+    : undefined;
   const status = searchParams.status;
   const featuredOnly = searchParams.featuredOnly === "true" ? true : undefined;
   const before = searchParams.before ? +searchParams.before : undefined;
   const after = searchParams.after ? +searchParams.after : undefined;
-  const sortBy = decodeURIComponent(searchParams.sortBy) as SortingType;
+  const sortBy = searchParams.sortBy
+    ? (decodeURIComponent(searchParams.sortBy) as SortingType)
+    : undefined;
   const sortDirection = decodeURIComponent(
     searchParams.sortDirection
   ) as SortingDirection;
@@ -120,9 +124,11 @@ function parseSearchParams(searchParams: any): Omit<
     featuredOnly,
     before,
     after,
-    sortBy: {
-      type: sortBy,
-      direction: sortDirection,
-    },
+    sortBy: sortBy
+      ? {
+          type: sortBy,
+          direction: sortDirection,
+        }
+      : undefined,
   };
 }
