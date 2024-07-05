@@ -1,9 +1,12 @@
+"use client";
+
 import { createDesign, updateDesign } from "@/actions/designs";
 import { DesignCategoryWithIncludes, DesignWithIncludes } from "@/types/types";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
 import styles from "@/styles/designs/DesignPage.module.css";
 import { DesignVariations } from "./DesignVariations";
+import { useState } from "react";
 
 export type DesignDataFormProps = {
   existingDesign: DesignWithIncludes | null;
@@ -51,6 +54,14 @@ export default function DesignDataForm({
 }
 
 function MainSection({ colors, existingDesign }: DesignDataFormProps) {
+  const [imageUrl, setImageUrl] = useState(
+    existingDesign ? existingDesign.imageUrl : "none"
+  );
+  const [bgColorId, setBgColorId] = useState(
+    existingDesign?.defaultBackgroundColor.id
+  );
+  const bgColor = colors.find((color) => color.id === bgColorId);
+
   return (
     <div className={styles["main-section"]}>
       {/* Head section */}
@@ -76,11 +87,11 @@ function MainSection({ colors, existingDesign }: DesignDataFormProps) {
         <div className={styles["main-image-container"]}>
           {existingDesign && (
             <img
-              src={existingDesign.imageUrl}
+              src={imageUrl}
               alt="design image"
               style={{
                 height: "100%",
-                backgroundColor: `#${existingDesign?.defaultBackgroundColor.hexCode}`,
+                backgroundColor: `#${bgColor ? bgColor.hexCode : "ffffff"}`,
               }}
             />
           )}
@@ -92,6 +103,7 @@ function MainSection({ colors, existingDesign }: DesignDataFormProps) {
           defaultValue={existingDesign ? existingDesign.imageUrl : ""}
           placeholder="Image URL"
           size={34}
+          onChange={(e) => setImageUrl(e.target.value)}
         />
       </div>
 
@@ -107,6 +119,7 @@ function MainSection({ colors, existingDesign }: DesignDataFormProps) {
               ? existingDesign.defaultBackgroundColor.id
               : undefined
           }
+          onChange={(e) => setBgColorId(+e.target.value)}
         >
           {colors.map((color) => (
             <option key={color.id} value={color.id}>
