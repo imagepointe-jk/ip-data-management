@@ -31,8 +31,9 @@ export const designFormDataSchema = z.object({
   variationData: z.array(designVariationFormDataSchema),
 });
 
-const quoteRequestDesignSchema = z.object({
-  id: z.number(),
+const quoteRequestItemSchema = z.object({
+  designId: z.number(),
+  variationId: z.number().optional(),
   designNumber: z.string(),
   garmentColor: z.string(),
 });
@@ -44,7 +45,7 @@ export const quoteRequestSchema = z.object({
   phone: z.number(),
   union: z.string(),
   comments: z.string(),
-  designs: z.array(quoteRequestDesignSchema),
+  items: z.array(quoteRequestItemSchema),
 });
 
 const productTypes = [
