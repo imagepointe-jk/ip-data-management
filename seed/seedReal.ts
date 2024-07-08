@@ -1,16 +1,22 @@
-//seed with real data from the design library, sampled on 2-7-24.
+//seed with real data from the design library, sampled on 7-8-24.
 
 import { prisma } from "../prisma/client";
 import { getSourceJson } from "../src/utility/spreadsheet";
 
-const data = getSourceJson("./seed/Design Data 2-7-24.xlsx");
+const data = getSourceJson("./seed/Design Data 7-8-24.xlsx");
 
 async function erase() {
+  await prisma.customGarmentDecorationLocation.deleteMany();
+  await prisma.customGarmentView.deleteMany();
+  await prisma.customGarmentSettingsVariation.deleteMany();
+  await prisma.customGarmentSettings.deleteMany();
+
   await prisma.designVariation.deleteMany();
   await prisma.design.deleteMany();
   await prisma.designSubcategory.deleteMany();
   await prisma.designCategory.deleteMany();
   await prisma.designTag.deleteMany();
+
   await prisma.color.deleteMany();
 }
 
@@ -23,12 +29,16 @@ async function createColors() {
     const hexCode = split[0]!.replace("#", "");
     const name = split[1];
     if (!name || !hexCode) continue;
-    await prisma.color.create({
-      data: {
-        name,
-        hexCode,
-      },
-    });
+    try {
+      await prisma.color.create({
+        data: {
+          name,
+          hexCode,
+        },
+      });
+    } catch (error) {
+      console.error(`Did not create color ${name}`);
+    }
   }
 }
 async function createTags() {
@@ -105,7 +115,7 @@ async function createDesigns() {
       }
     } catch (error) {
       console.error(
-        `Failed to create design ${design["Design Number"]}`,
+        `Failed to create design ${design["Design Number"]} with background color ${design["Default Background Color"]}`,
         error
       );
     }
@@ -124,7 +134,7 @@ async function createDesigns() {
       }
     } catch (error) {
       console.error(
-        `Failed to create design ${design["Design Number"]}`,
+        `Failed to create design ${design["Design Number"]} with background color ${design["Default Background Color"]}`,
         error
       );
     }
@@ -136,54 +146,13 @@ async function createDesigns() {
     const url = `${designRow["Image URL"]}`;
 
     const featured = `${designRow.Featured}` === "Yes" ? true : false;
+    const priority = isNaN(+`${designRow["Priority"]}`)
+      ? 0
+      : +`${designRow["Priority"]}`;
     const colorSplit = `${designRow["Default Background Color"]}`.split(" - ");
     const colorName = colorSplit[1];
-    const subcategoryHierarchies = [
-      designRow["Subcategory1 - Union"],
-      designRow["Subcategory2 - Holiday/Event"],
-      designRow["Subcategory3"],
-      designRow["Subcategory4"],
-      designRow["Subcategory5"],
-    ];
-    const subcategoryIds = [];
-    for (const hierarchy of subcategoryHierarchies) {
-      const split = `${hierarchy}`.split(" > ");
-      const parent = split[0];
-      const subcat = split[1];
-      const foundSubcat = await prisma.designSubcategory.findFirst({
-        where: {
-          designCategory: {
-            name: parent,
-          },
-          name: subcat,
-        },
-      });
-      if (foundSubcat) subcategoryIds.push(foundSubcat.id);
-    }
-    const tags = [
-      designRow["Tag1"],
-      designRow["Tag2"],
-      designRow["Tag3"],
-      designRow["Tag4"],
-      designRow["Tag5"],
-      designRow["Tag6"],
-      designRow["Tag7"],
-      designRow["Tag8"],
-      designRow["Tag9"],
-      designRow["Tag10"],
-      designRow["Tag11"],
-      designRow["Tag12"],
-      designRow["Tag13"],
-      designRow["Tag14"],
-      designRow["Tag15"],
-    ].filter((tag) => tag !== undefined);
-    const tagIds = [];
-    for (const tag of tags) {
-      const foundTag = await prisma.designTag.findUnique({
-        where: { name: tag },
-      });
-      if (foundTag) tagIds.push(foundTag.id);
-    }
+    const tagIds = await getDesignRowTagIds(designRow);
+    const subcategoryIds = await getDesignRowSubcategoryIds(designRow);
 
     return prisma.design.create({
       data: {
@@ -210,8 +179,63 @@ async function createDesigns() {
           connect: tagIds.map((id) => ({ id })),
         },
         imageUrl: url,
+        priority,
       },
     });
+  }
+
+  async function getDesignRowTagIds(row: any) {
+    const tags = [
+      row["Tag1"],
+      row["Tag2"],
+      row["Tag3"],
+      row["Tag4"],
+      row["Tag5"],
+      row["Tag6"],
+      row["Tag7"],
+      row["Tag8"],
+      row["Tag9"],
+      row["Tag10"],
+      row["Tag11"],
+      row["Tag12"],
+      row["Tag13"],
+      row["Tag14"],
+      row["Tag15"],
+    ].filter((tag) => tag !== undefined);
+    const tagIds = [];
+    for (const tag of tags) {
+      const foundTag = await prisma.designTag.findUnique({
+        where: { name: tag },
+      });
+      if (foundTag) tagIds.push(foundTag.id);
+    }
+    return tagIds;
+  }
+
+  async function getDesignRowSubcategoryIds(row: any) {
+    const subcategoryHierarchies = [
+      row["Subcategory1 - Union"],
+      row["Subcategory2 - Holiday/Event"],
+      row["Subcategory3"],
+      row["Subcategory4"],
+      row["Subcategory5"],
+    ];
+    const subcategoryIds = [];
+    for (const hierarchy of subcategoryHierarchies) {
+      const split = `${hierarchy}`.split(" > ");
+      const parent = split[0];
+      const subcat = split[1];
+      const foundSubcat = await prisma.designSubcategory.findFirst({
+        where: {
+          designCategory: {
+            name: parent,
+          },
+          name: subcat,
+        },
+      });
+      if (foundSubcat) subcategoryIds.push(foundSubcat.id);
+    }
+    return subcategoryIds;
   }
 
   async function createDesignVariation(designId: number, designRow: any) {
@@ -222,11 +246,23 @@ async function createDesigns() {
         name: colorName,
       },
     });
+    if (!color) {
+      console.error("Couldn't find color", colorName);
+      return;
+    }
+    const tagIds = await getDesignRowTagIds(designRow);
+    const subcategoryIds = await getDesignRowSubcategoryIds(designRow);
     await prisma.designVariation.create({
       data: {
         parentDesignId: designId,
         imageUrl: `${designRow["Image URL"]}`,
-        colorId: color ? color.id : 0,
+        colorId: color.id,
+        designTags: {
+          connect: tagIds.map((id) => ({ id })),
+        },
+        designSubcategories: {
+          connect: subcategoryIds.map((id) => ({ id })),
+        },
       },
     });
   }
