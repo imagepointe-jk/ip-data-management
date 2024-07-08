@@ -84,14 +84,18 @@ function MainSection({ colors, existingDesign }: DesignDataFormProps) {
       {/* Image section */}
 
       <div>
-        <div className={styles["main-image-container"]}>
+        <div
+          className={styles["main-image-container"]}
+          style={{
+            backgroundColor: `#${bgColor ? bgColor.hexCode : "ffffff"}`,
+          }}
+        >
           {existingDesign && (
             <img
               src={imageUrl}
               alt="design image"
               style={{
                 height: "100%",
-                backgroundColor: `#${bgColor ? bgColor.hexCode : "ffffff"}`,
               }}
             />
           )}
