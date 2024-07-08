@@ -37,6 +37,7 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/567-15.png",
     tags: [tough, fist],
+    priority: 0,
   },
   {
     designNumber: "105",
@@ -51,6 +52,7 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
   {
     designNumber: "106",
@@ -65,6 +67,7 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
   {
     designNumber: "107",
@@ -79,6 +82,7 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
 ];
 type SeedDesignCategory = Omit<DesignCategory, "id">;
