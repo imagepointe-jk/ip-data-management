@@ -30,7 +30,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each designs}}
+          {{#each items}}
             <tr>
               <td
                 style="border: 1px solid black; padding: 8px;"
@@ -39,7 +39,7 @@
                 style="border: 1px solid black; padding: 8px;"
               >{{garmentColor}}</td>
               <td style="border: 1px solid black; padding: 8px;"><a
-                  href="https://www.imagepointe.com/design-library/?viewDesign={{id}}"
+                  href="https://www.imagepointe.com/design-library/?viewDesign={{designId}}&viewVariation={{variationId}}"
                 >View Design</a></td>
             </tr>
           {{/each}}

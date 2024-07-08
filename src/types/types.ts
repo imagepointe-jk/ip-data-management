@@ -5,6 +5,7 @@ import {
   DesignSubcategory,
   DesignTag,
   DesignType,
+  DesignVariation,
 } from "@prisma/client";
 import { SortingDirection, SortingType } from "./schema";
 import { AppError } from "@/error";
@@ -39,11 +40,18 @@ export type DesignResults = ResultsPagination & {
   designs: DesignWithIncludes[];
 };
 
+export type DesignVariationWithIncludes = DesignVariation & {
+  color: Color;
+  designSubcategories: DesignSubcategory[];
+  designTags: DesignTag[];
+};
+
 export type DesignWithIncludes = Design & {
   designSubcategories: DesignSubcategory[];
   designTags: DesignTag[];
   designType: DesignType;
   defaultBackgroundColor: Color;
+  variations: DesignVariationWithIncludes[];
 };
 
 export type DesignCategoryWithIncludes = DesignCategory & {
@@ -58,3 +66,5 @@ export type ServerActionResult = {
     statusCode: number;
   };
 };
+
+export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;

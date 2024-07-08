@@ -1,81 +1,74 @@
 import { PageControls } from "@/components/PageControls";
 import { defaultPerPage, pageSizeChoices } from "@/constants";
-import { getDesigns } from "@/db/access/designs";
+import { getDesignCategoryHierarchy, getDesigns } from "@/db/access/designs";
 import Link from "next/link";
+import { DesignQuery } from "@/types/types";
+import Search from "./Search";
+import ResultsTable from "./ResultsTable";
+import Filter from "./Filter";
+import { SortingDirection, SortingType } from "@/types/schema";
 
 type Props = {
   searchParams?: any;
 };
 export default async function Designs({ searchParams }: Props) {
-  const { pageNumber, perPage, designType } = parseSearchParams(searchParams);
+  const {
+    pageNumber,
+    perPage,
+    designType,
+    keyword,
+    subcategory,
+    status,
+    featuredOnly,
+    before,
+    after,
+    sortBy,
+  } = parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
     perPage,
     designType,
+    keyword,
+    subcategory,
+    status,
+    featuredOnly,
+    before,
+    after,
+    sortBy,
   });
+  const categories = await getDesignCategoryHierarchy();
 
   return (
     <>
       <Link href="designs/0" className="link-as-button">
-        Create Design
+        + Create Design
       </Link>
       <Link
         href={`designs/?designType=${encodeURIComponent("Screen Print")}`}
-        className="link-as-button"
+        className={`link-as-button ${
+          designType === "Screen Print" ? "current" : ""
+        }`}
       >
         Screen Print
       </Link>
-      <Link href="designs/?designType=Embroidery" className="link-as-button">
+      <Link
+        href="designs/?designType=Embroidery"
+        className={`link-as-button ${
+          designType === "Embroidery" ? "current" : ""
+        }`}
+      >
         Embroidery
       </Link>
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <div>Image</div>
-            </th>
-            <th>
-              <div>Design Number</div>
-            </th>
-            <th>
-              <div>Data 3</div>
-            </th>
-            <th>
-              <div>Data 4</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {designs.map((design) => (
-            <tr key={design.id}>
-              <td>
-                <div style={{ height: "50px", width: "50px" }}>
-                  <img
-                    style={{
-                      height: "100%",
-                      backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
-                    }}
-                    src={design.imageUrl}
-                    alt="Design Image"
-                  />
-                </div>
-              </td>
-              <td>
-                <Link href={`designs/${design.id}`}>
-                  #{design.designNumber}
-                </Link>
-              </td>
-              <td>Data 3</td>
-              <td>Data 4</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Search />
+      <Filter categories={categories} />
+      <ResultsTable designs={designs} />
+      {designs.length === 0 && <h2>No results</h2>}
+
       <PageControls
         curItemsPerPage={perPage}
-        curPageNumber={pageNumber}
+        curPageNumber={designs.length === 0 ? 1 : pageNumber}
         pageSizeChoices={pageSizeChoices}
-        totalPages={totalResults / perPage}
+        totalPages={designs.length === 0 ? 1 : totalResults / perPage}
         buttonClassName="link-as-button"
         activeButtonClassName="current"
       />
@@ -83,23 +76,59 @@ export default async function Designs({ searchParams }: Props) {
   );
 }
 
-function parseSearchParams(searchParams: any) {
+function parseSearchParams(searchParams: any): Omit<
+  DesignQuery,
+  "pageNumber" | "perPage"
+> & {
+  pageNumber: number;
+  perPage: number;
+} {
+  if (!searchParams)
+    return {
+      pageNumber: 1,
+      perPage: defaultPerPage,
+    };
+
   const pageNumber =
-    searchParams && searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
+    searchParams.pageNumber && !isNaN(+searchParams.pageNumber)
       ? +searchParams.pageNumber
       : 1;
   const perPage =
-    searchParams && searchParams.perPage && !isNaN(+searchParams.perPage)
+    searchParams.perPage && !isNaN(+searchParams.perPage)
       ? +searchParams.perPage
       : defaultPerPage;
   const designType =
-    searchParams && searchParams.designType === "Embroidery"
-      ? "Embroidery"
-      : "Screen Print";
+    searchParams.designType === "Embroidery" ? "Embroidery" : "Screen Print";
+  const keyword = searchParams.keywords;
+  const subcategory = searchParams.subcategory
+    ? decodeURIComponent(searchParams.subcategory)
+    : undefined;
+  const status = searchParams.status;
+  const featuredOnly = searchParams.featuredOnly === "true" ? true : undefined;
+  const before = searchParams.before ? +searchParams.before : undefined;
+  const after = searchParams.after ? +searchParams.after : undefined;
+  const sortBy = searchParams.sortBy
+    ? (decodeURIComponent(searchParams.sortBy) as SortingType)
+    : undefined;
+  const sortDirection = decodeURIComponent(
+    searchParams.sortDirection
+  ) as SortingDirection;
 
   return {
     pageNumber,
     perPage,
     designType,
+    keyword,
+    subcategory,
+    status,
+    featuredOnly,
+    before,
+    after,
+    sortBy: sortBy
+      ? {
+          type: sortBy,
+          direction: sortDirection,
+        }
+      : undefined,
   };
 }

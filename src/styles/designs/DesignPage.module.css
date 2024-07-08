@@ -1,0 +1,134 @@
+.main-flex {
+  display: flex;
+  gap: 20px;
+}
+
+.main-flex h4 {
+  margin: 0;
+}
+
+.main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input.design-number {
+  font-size: 2rem;
+  width: 200px;
+}
+
+.main-image-container,
+.variation-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image-container {
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
+}
+
+.variation-image-container {
+  width: 240px;
+  height: 240px;
+}
+
+.main-image-container img,
+.variation-image-container img {
+  max-height: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.secondary-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 700px;
+  align-content: start;
+}
+
+.featured-checkbox {
+  scale: 200%;
+  translate: 5px 5px;
+}
+
+.scroll-box {
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.danger-box {
+  margin-top: 20px;
+  width: 600px;
+}
+
+.variations-heading-container {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.variations-heading-container button {
+  display: block;
+}
+
+.variations-scroll-button,
+button.variations-add {
+  padding: 0 14px;
+}
+
+button.variations-add {
+  padding: 3px 14px;
+  font-size: 0.8rem;
+}
+
+.variations-container {
+  border: 1px solid black;
+  width: 610px;
+  height: 380px;
+  position: relative;
+}
+
+.variations-container input[type="text"],
+.variations-container select {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.variation-card,
+.add-variation-container {
+  display: flex;
+  gap: 10px;
+}
+
+.variation-card {
+  padding: 10px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.variation-scroll-boxes {
+  display: flex;
+  gap: 5px;
+}
+
+.variation-scroll-box {
+  border: 1px solid black;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  height: 300px;
+}
+
+button.variation-delete {
+  margin-top: 5px;
+  font-size: 0.8rem;
+}

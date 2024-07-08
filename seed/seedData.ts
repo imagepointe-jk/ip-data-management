@@ -25,7 +25,7 @@ export type SeedDesign = Omit<
 
 export const designs: SeedDesign[] = [
   {
-    designNumber: 104,
+    designNumber: "104",
     name: "Test Design",
     description: "Test Description",
     featured: false,
@@ -39,7 +39,7 @@ export const designs: SeedDesign[] = [
     tags: [tough, fist],
   },
   {
-    designNumber: 105,
+    designNumber: "105",
     name: "Test Design",
     description: "Test Description",
     featured: true,
@@ -53,7 +53,7 @@ export const designs: SeedDesign[] = [
     tags: [tough, fist],
   },
   {
-    designNumber: 106,
+    designNumber: "106",
     name: "Test Design",
     description: "Test Description",
     featured: true,
@@ -67,7 +67,7 @@ export const designs: SeedDesign[] = [
     tags: [tough, fist],
   },
   {
-    designNumber: 107,
+    designNumber: "107",
     name: "Test Design",
     description: "Test Description",
     featured: true,
