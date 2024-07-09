@@ -7,6 +7,14 @@ export const userFormDataSchema = z.object({
   existingUserId: z.number().optional(),
 });
 
+const designVariationFormDataSchema = z.object({
+  id: z.number(),
+  imageUrl: z.string(),
+  colorId: z.number(),
+  subcategoryIds: z.array(z.number()),
+  tagIds: z.array(z.number()),
+});
+
 export const designFormDataSchema = z.object({
   designNumber: z.string(),
   description: z.string(),
@@ -19,10 +27,13 @@ export const designFormDataSchema = z.object({
   defaultBackgroundColorId: z.string(),
   imageUrl: z.string(),
   existingDesignId: z.number().optional(),
+  priority: z.number().optional(),
+  variationData: z.array(designVariationFormDataSchema),
 });
 
-const quoteRequestDesignSchema = z.object({
-  id: z.number(),
+const quoteRequestItemSchema = z.object({
+  designId: z.number(),
+  variationId: z.number().optional(),
   designNumber: z.string(),
   garmentColor: z.string(),
 });
@@ -34,7 +45,7 @@ export const quoteRequestSchema = z.object({
   phone: z.number(),
   union: z.string(),
   comments: z.string(),
-  designs: z.array(quoteRequestDesignSchema),
+  items: z.array(quoteRequestItemSchema),
 });
 
 const productTypes = [
@@ -59,7 +70,7 @@ export const calculatePriceParamsSchema = z.object({
     isSweatshirt: z.boolean().optional(),
   }),
   decorationType: z.enum(decorationTypes),
-  quantity: z.number(),
+  quantities: z.array(z.number()),
   locations: z.array(decorationLocationSchema),
 });
 
@@ -169,7 +180,12 @@ export const hubSpotOwnerSchema = z.object({
   lastName: z.string(),
 });
 
-export const sortingTypes = ["Design Number"] as const;
+export const wooCommerceProductSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
 export const sortingDirections = ["Ascending", "Descending"] as const;
@@ -224,3 +240,5 @@ export type ProductResource = {
   hubspotId: number;
   sku: string;
 };
+
+export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;

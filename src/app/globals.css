@@ -5,6 +5,7 @@
   --color-lightgray: rgb(235, 235, 235);
   --color-danger: rgb(228, 38, 38);
   --color-danger-hover: rgb(255, 58, 58);
+  --color-danger-inactive: rgb(202, 121, 121);
 }
 
 body {
@@ -21,6 +22,7 @@ nav {
   position: sticky;
   top: 0;
   margin-bottom: 10px;
+  z-index: 100;
 }
 
 a.link-as-button {
@@ -83,10 +85,17 @@ button {
   padding: 10px;
   cursor: pointer;
   font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 button:hover {
   background-color: var(--color-alpha-hover);
+}
+
+button:disabled {
+  background-color: lightgray;
+  cursor: initial;
 }
 
 .button-beta {
@@ -99,12 +108,19 @@ button:hover {
   background-color: var(--color-lightgray);
 }
 
-.button-danger {
+a.button-danger,
+button.button-danger {
   background-color: var(--color-danger);
 }
 
-.button-danger:hover {
+a.button-danger:hover,
+button.button-danger:hover {
   background-color: var(--color-danger-hover);
+}
+
+button.button-danger:disabled {
+  background-color: var(--color-danger-inactive);
+  pointer-events: none;
 }
 
 select,

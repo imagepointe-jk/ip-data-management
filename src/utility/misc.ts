@@ -117,3 +117,31 @@ export function getGreatestSum(nums: number[][]) {
   sums.sort((a, b) => b - a);
   return sums[0] || 0;
 }
+
+//gets the timestamp of the date X years before the current date.
+export function getTimeStampYearsAgo(yearsAgo: number) {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - yearsAgo);
+  return date.getTime();
+}
+
+export function findAllFormValues(
+  formData: FormData,
+  testFn: (fieldName: string, fieldValue: FormDataEntryValue) => boolean
+) {
+  const entries: { fieldName: string; fieldValue: FormDataEntryValue }[] = [];
+  for (const entry of formData.entries()) {
+    if (testFn(entry[0], entry[1]))
+      entries.push({ fieldName: entry[0], fieldValue: entry[1] });
+  }
+  return entries;
+}
+
+export function getArrayPage<T>(
+  array: T[],
+  pageNumber: number,
+  countPerPage: number
+) {
+  const startIndex = countPerPage * (pageNumber - 1);
+  return array.slice(startIndex, startIndex + countPerPage);
+}

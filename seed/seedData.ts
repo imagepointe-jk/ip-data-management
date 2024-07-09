@@ -25,7 +25,7 @@ export type SeedDesign = Omit<
 
 export const designs: SeedDesign[] = [
   {
-    designNumber: 104,
+    designNumber: "104",
     name: "Test Design",
     description: "Test Description",
     featured: false,
@@ -37,9 +37,10 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/567-15.png",
     tags: [tough, fist],
+    priority: 0,
   },
   {
-    designNumber: 105,
+    designNumber: "105",
     name: "Test Design",
     description: "Test Description",
     featured: true,
@@ -51,9 +52,10 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
   {
-    designNumber: 106,
+    designNumber: "106",
     name: "Test Design",
     description: "Test Description",
     featured: true,
@@ -65,9 +67,10 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
   {
-    designNumber: 107,
+    designNumber: "107",
     name: "Test Design",
     description: "Test Description",
     featured: true,
@@ -79,6 +82,7 @@ export const designs: SeedDesign[] = [
     imageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2024/02/758-6.jpg",
     tags: [tough, fist],
+    priority: 0,
   },
 ];
 type SeedDesignCategory = Omit<DesignCategory, "id">;

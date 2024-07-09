@@ -10,7 +10,7 @@ export async function createDesign(formData: FormData) {
 
   await prisma.design.create({
     data: {
-      designNumber: +parsed.designNumber,
+      designNumber: parsed.designNumber,
       description: parsed.description,
       featured: parsed.featured,
       date: parsed.date || new Date(),
@@ -24,6 +24,7 @@ export async function createDesign(formData: FormData) {
       designTypeId: +parsed.designTypeId,
       defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
       imageUrl: parsed.imageUrl,
+      priority: parsed.priority,
     },
   });
 
@@ -36,12 +37,32 @@ export async function updateDesign(formData: FormData) {
   if (!parsed.existingDesignId)
     throw new Error("No existing design id provided. This is a bug.");
 
+  await Promise.all(
+    parsed.variationData.map((variationData) =>
+      prisma.designVariation.update({
+        where: {
+          id: variationData.id,
+        },
+        data: {
+          colorId: variationData.colorId,
+          imageUrl: variationData.imageUrl,
+          designSubcategories: {
+            set: variationData.subcategoryIds.map((id) => ({ id })),
+          },
+          designTags: {
+            set: variationData.tagIds.map((id) => ({ id })),
+          },
+        },
+      })
+    )
+  );
+
   await prisma.design.update({
     where: {
       id: parsed.existingDesignId,
     },
     data: {
-      designNumber: +parsed.designNumber,
+      designNumber: parsed.designNumber,
       description: parsed.description,
       featured: parsed.featured,
       date: parsed.date,
@@ -55,9 +76,58 @@ export async function updateDesign(formData: FormData) {
       designTypeId: +parsed.designTypeId,
       defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
       imageUrl: parsed.imageUrl,
+      priority: parsed.priority,
     },
   });
 
   revalidatePath("/designs");
   redirect("/designs");
+}
+
+export async function deleteDesign(id: number) {
+  await prisma.design.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath("/designs");
+  redirect("/designs");
+}
+
+export async function createDesignVariation(parentDesignId: number) {
+  const parentDesign = await prisma.design.findUnique({
+    where: {
+      id: parentDesignId,
+    },
+    include: {
+      defaultBackgroundColor: true,
+      designSubcategories: true,
+      designTags: true,
+    },
+  });
+
+  if (!parentDesign) {
+    throw new Error(`Parent design with id ${parentDesignId} not found.`);
+  }
+
+  await prisma.designVariation.create({
+    data: {
+      colorId: parentDesign.defaultBackgroundColor.id,
+      parentDesignId,
+      imageUrl: parentDesign.imageUrl,
+      designSubcategories: {
+        connect: parentDesign.designSubcategories,
+      },
+      designTags: { connect: parentDesign.designTags },
+    },
+  });
+}
+
+export async function deleteDesignVariation(id: number) {
+  await prisma.designVariation.delete({
+    where: {
+      id,
+    },
+  });
 }

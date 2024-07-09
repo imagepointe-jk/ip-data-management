@@ -20,7 +20,7 @@ model User {
 
 model Design {
   id                       Int                 @id @default(autoincrement())
-  designNumber             Int
+  designNumber             String
   name                     String?
   description              String?
   featured                 Boolean             @default(false)
@@ -33,6 +33,19 @@ model Design {
   defaultBackgroundColor   Color               @relation(fields: [defaultBackgroundColorId], references: [id])
   defaultBackgroundColorId Int
   imageUrl                 String              @default("none")
+  priority                 Int                 @default(0)
+  variations               DesignVariation[]
+}
+
+model DesignVariation {
+  id                  Int                 @id @default(autoincrement())
+  parentDesign        Design              @relation(fields: [parentDesignId], references: [id])
+  parentDesignId      Int
+  imageUrl            String              @default("none")
+  color               Color               @relation(fields: [colorId], references: [id])
+  colorId             Int
+  designSubcategories DesignSubcategory[]
+  designTags          DesignTag[]
 }
 
 model DesignType {
@@ -51,24 +64,28 @@ model DesignCategory {
 }
 
 model DesignSubcategory {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   name             String
   designs          Design[]
-  designCategory   DesignCategory @relation(fields: [designCategoryId], references: [id])
+  designVariations DesignVariation[]
+  designCategory   DesignCategory    @relation(fields: [designCategoryId], references: [id])
   designCategoryId Int
 }
 
 model DesignTag {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  designs Design[]
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  designs          Design[]
+  designVariations DesignVariation[]
 }
 
 model Color {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  hexCode String   @unique
-  designs Design[]
+  id                    Int                              @id @default(autoincrement())
+  name                  String                           @unique
+  hexCode               String                           @unique
+  designs               Design[]
+  designVariations      DesignVariation[]
+  customGarmentSettings CustomGarmentSettingsVariation[]
 }
 
 model HubSpotSync {
@@ -78,4 +95,42 @@ model HubSpotSync {
   startedAt   DateTime
   finishedAt  DateTime?
   progress    Decimal //0 is no progress, 1 is complete
+}
+
+model CustomGarmentSettings {
+  id            Int                              @id @default(autoincrement())
+  createdAt     DateTime                         @default(now())
+  updatedAt     DateTime                         @updatedAt
+  published     Boolean                          @default(false)
+  variations    CustomGarmentSettingsVariation[]
+  wooCommerceId Int
+}
+
+model CustomGarmentSettingsVariation {
+  id               Int                   @id @default(autoincrement())
+  parentSettings   CustomGarmentSettings @relation(fields: [parentSettingsId], references: [id])
+  parentSettingsId Int
+  views            CustomGarmentView[]
+  color            Color                 @relation(fields: [colorId], references: [id])
+  colorId          Int
+}
+
+model CustomGarmentView {
+  id                Int                               @id @default(autoincrement())
+  name              String
+  parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
+  parentVariationId Int
+  locations         CustomGarmentDecorationLocation[]
+  imageUrl          String
+}
+
+model CustomGarmentDecorationLocation {
+  id           Int               @id @default(autoincrement())
+  name         String
+  positionX    Decimal
+  positionY    Decimal
+  width        Decimal
+  height       Decimal
+  parentView   CustomGarmentView @relation(fields: [parentViewId], references: [id])
+  parentViewId Int
 }
