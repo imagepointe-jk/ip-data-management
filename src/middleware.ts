@@ -3,7 +3,7 @@ import { BASE_PATH, auth } from "./auth";
 
 export const config = {
   //regex. run the middleware for anything BESIDES these.
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/(admin.*)"],
 };
 
 export default auth((req) => {

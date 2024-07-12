@@ -4,7 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { GarmentSettingListing } from "@/db/access/customizer";
 import { WooCommerceProduct } from "@/types/schema";
-import styles from "../../styles/CustomizerResultsTable.module.css";
+import styles from "@/styles/CustomizerResultsTable.module.css";
 
 type Props = {
   garmentListings: (GarmentSettingListing & { product?: WooCommerceProduct })[];

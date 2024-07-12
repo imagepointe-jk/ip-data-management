@@ -1,4 +1,4 @@
-import { prisma } from "../../../../prisma/client";
+import { prisma } from "@/../prisma/client";
 import { UserDataForm } from "./UserDataForm";
 
 type Props = {

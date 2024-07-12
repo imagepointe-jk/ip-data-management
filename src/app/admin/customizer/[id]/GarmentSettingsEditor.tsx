@@ -1,7 +1,7 @@
 "use client";
 
 import { FullGarmentSettings } from "@/db/access/customizer";
-import styles from "../../../styles/CustomGarmentEditor.module.css";
+import styles from "@/styles/CustomGarmentEditor.module.css";
 
 type Props = {
   settings: FullGarmentSettings;

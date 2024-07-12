@@ -3,7 +3,7 @@ import {
   getSingleDesign,
 } from "@/db/access/designs";
 import DesignDataForm from "./DesignDataForm";
-import { prisma } from "../../../../prisma/client";
+import { prisma } from "../../../../../prisma/client";
 import DesignDelete from "./DesignDelete";
 
 type Props = {
