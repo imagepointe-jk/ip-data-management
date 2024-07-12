@@ -359,6 +359,14 @@ async function syncOrdersAsDeals(
           `Order with sales number ${order["Sales Order#"]} is associated with the contact with email ${order["Buyer E-Mail"]} in the input data, but the contact record could not be found. The association was skipped.`
         )
       );
+    if (order["HubSpot Owner ID"] === undefined) {
+      syncWarnings.push(
+        new SyncWarning(
+          "Data Integrity",
+          `Order with sales number ${order["Sales Order#"]} has Deal Owner ${order["Agent Name#1"]} in the input data, but that user could not be found in HubSpot.`
+        )
+      );
+    }
 
     try {
       if (!alreadyInHubSpot) {
