@@ -136,14 +136,18 @@ model CustomGarmentDecorationLocation {
 }
 
 model Webstore {
-  id               Int                 @id @default(autoincrement())
-  name             String
-  organizationName String
-  url              String              @unique
-  apiKey           String
-  apiSecret        String
-  workflows        OrderWorkflow[]
-  users            OrderWorkflowUser[]
+  id                  Int                 @id @default(autoincrement())
+  name                String
+  organizationName    String
+  url                 String              @unique
+  apiKey              String //encrypted
+  apiKeyEncryptIv     String
+  apiKeyEncryptTag    String
+  apiSecret           String //encrypted
+  apiSecretEncryptIv  String
+  apiSecretEncryptTag String
+  workflows           OrderWorkflow[]
+  users               OrderWorkflowUser[]
 }
 
 model OrderWorkflow {
