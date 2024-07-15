@@ -193,6 +193,7 @@ export const wooCommerceWebhookRequestSchema = z.object({
     id: z.number(),
     billing: z.object({
       first_name: z.string(),
+      last_name: z.string(),
       email: z.string(),
     }),
   }),

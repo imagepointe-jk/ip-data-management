@@ -20,6 +20,7 @@ import {
 import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
 import { z } from "zod";
 import { findAllFormValues } from "@/utility/misc";
+import { NextRequest } from "next/server";
 
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
@@ -260,9 +261,15 @@ export function parseWooCommerceProduct(json: any) {
   return wooCommerceProductSchema.parse(json);
 }
 
-export function parseWooCommerceWebhookRequest(req: any) {
-  req.headers.webhookSource = req.headers["x-wc-webhook-source"];
-  return wooCommerceWebhookRequestSchema.parse(req);
+export async function parseWooCommerceWebhookRequest(req: NextRequest) {
+  const body = await req.json();
+  const data = {
+    headers: {
+      webhookSource: req.headers.get("x-wc-webhook-source"),
+    },
+    body,
+  };
+  return wooCommerceWebhookRequestSchema.parse(data);
 }
 
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {
