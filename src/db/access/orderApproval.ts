@@ -1,18 +1,18 @@
 import { prisma } from "@/../prisma/client";
 
-export async function getOrganization(url: string) {
-  return prisma.organization.findUnique({
+export async function getWebstore(url: string) {
+  return prisma.webstore.findUnique({
     where: {
       url,
     },
   });
 }
 
-export async function getUser(organizationId: number, email: string) {
+export async function getUser(webstoreId: number, email: string) {
   return prisma.orderWorkflowUser.findFirst({
     where: {
       email,
-      organizationId,
+      webstoreId,
     },
   });
 }
@@ -20,21 +20,21 @@ export async function getUser(organizationId: number, email: string) {
 export async function createUser(
   email: string,
   name: string,
-  organizationId: number
+  webstoreId: number
 ) {
   return prisma.orderWorkflowUser.create({
     data: {
       email,
       name,
-      organizationId,
+      webstoreId,
     },
   });
 }
 
-export async function getFirstWorkflowForOrganization(organizationId: number) {
+export async function getFirstWorkflowForWebstore(webstoreId: number) {
   return prisma.orderWorkflow.findFirst({
     where: {
-      organizationId,
+      webstoreId,
     },
   });
 }

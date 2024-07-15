@@ -2,8 +2,8 @@ import {
   createAccessCode,
   createUser,
   createWorkflowInstance,
-  getFirstWorkflowForOrganization,
-  getOrganization,
+  getFirstWorkflowForWebstore,
+  getWebstore,
   getUser,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
@@ -42,7 +42,7 @@ export async function startOrderWorkflow(params: StartWorkflowParams) {
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { email, firstName, lastName, orderId, webhookSource } = params;
   console.log("=====================started workflow");
-  const organization = await getOrganization(webhookSource);
+  const organization = await getWebstore(webhookSource);
   if (!organization)
     throw new Error(`No organization was found with url ${webhookSource}`);
 
@@ -59,7 +59,7 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     );
 
   //! assume for now that an organization will only have one workflow for all orders
-  const workflow = await getFirstWorkflowForOrganization(organization.id);
+  const workflow = await getFirstWorkflowForWebstore(organization.id);
   if (!workflow)
     throw new Error(`No workflow found for organization ${organization.name}`);
 

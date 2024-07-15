@@ -135,31 +135,34 @@ model CustomGarmentDecorationLocation {
   parentViewId Int
 }
 
-model Organization {
-  id        Int                 @id @default(autoincrement())
-  name      String              @unique
-  url       String              @unique
-  workflows OrderWorkflow[]
-  users     OrderWorkflowUser[]
+model Webstore {
+  id               Int                 @id @default(autoincrement())
+  name             String
+  organizationName String
+  url              String              @unique
+  apiKey           String
+  apiSecret        String
+  workflows        OrderWorkflow[]
+  users            OrderWorkflowUser[]
 }
 
 model OrderWorkflow {
-  id             Int                     @id @default(autoincrement())
-  name           String
-  organizationId Int
-  organization   Organization            @relation(fields: [organizationId], references: [id])
-  steps          OrderWorkflowStep[]
-  instances      OrderWorkflowInstance[]
+  id         Int                     @id @default(autoincrement())
+  name       String
+  webstoreId Int
+  webstore   Webstore                @relation(fields: [webstoreId], references: [id])
+  steps      OrderWorkflowStep[]
+  instances  OrderWorkflowInstance[]
 }
 
 model OrderWorkflowUser {
-  id             Int                       @id @default(autoincrement())
-  name           String
-  email          String                    @unique
-  organizationId Int
-  organization   Organization              @relation(fields: [organizationId], references: [id])
-  comments       OrderWorkflowComment[]
-  accessCodes    OrderWorkflowAccessCode[]
+  id          Int                       @id @default(autoincrement())
+  name        String
+  email       String                    @unique
+  webstoreId  Int
+  webstore    Webstore                  @relation(fields: [webstoreId], references: [id])
+  comments    OrderWorkflowComment[]
+  accessCodes OrderWorkflowAccessCode[]
 }
 
 model OrderWorkflowStep {
