@@ -266,6 +266,8 @@ export async function parseWooCommerceWebhookRequest(req: NextRequest) {
   const data = {
     headers: {
       webhookSource: req.headers.get("x-wc-webhook-source"),
+      webhookEvent: req.headers.get("x-wc-webhook-event"),
+      webhookResource: req.headers.get("x-wc-webhook-resource"),
     },
     body,
   };

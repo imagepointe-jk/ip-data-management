@@ -188,6 +188,8 @@ export const wooCommerceProductSchema = z.object({
 export const wooCommerceWebhookRequestSchema = z.object({
   headers: z.object({
     webhookSource: z.string(),
+    webhookEvent: z.string(),
+    webhookResource: z.string(),
   }),
   body: z.object({
     id: z.number(),

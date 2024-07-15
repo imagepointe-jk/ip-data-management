@@ -137,17 +137,19 @@ model CustomGarmentDecorationLocation {
 
 model Organization {
   id        Int                 @id @default(autoincrement())
-  name      String
+  name      String              @unique
+  url       String              @unique
   workflows OrderWorkflow[]
   users     OrderWorkflowUser[]
 }
 
 model OrderWorkflow {
-  id             Int                 @id @default(autoincrement())
+  id             Int                     @id @default(autoincrement())
   name           String
   organizationId Int
-  organization   Organization        @relation(fields: [organizationId], references: [id])
+  organization   Organization            @relation(fields: [organizationId], references: [id])
   steps          OrderWorkflowStep[]
+  instances      OrderWorkflowInstance[]
 }
 
 model OrderWorkflowUser {
@@ -163,6 +165,7 @@ model OrderWorkflowUser {
 model OrderWorkflowStep {
   id                   Int                                @id @default(autoincrement())
   name                 String
+  order                Int
   actionTarget         String?
   actionType           String
   actionMessage        String?
@@ -187,10 +190,13 @@ model OrderWorkflowStepProceedListener {
 }
 
 model OrderWorkflowInstance {
-  id          Int                       @id @default(autoincrement())
-  status      String
-  accessCodes OrderWorkflowAccessCode[]
-  comments    OrderWorkflowComment[]
+  id                 Int                       @id @default(autoincrement())
+  status             String
+  wooCommerceOrderId Int                       @unique
+  accessCodes        OrderWorkflowAccessCode[]
+  comments           OrderWorkflowComment[]
+  parentWorkflowId   Int
+  parentWorkflow     OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
 }
 
 model OrderWorkflowComment {
@@ -207,7 +213,7 @@ model OrderWorkflowAccessCode {
   instanceId       Int
   user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
   workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
-  guid             String
+  guid             String                @default(uuid())
   userRole         String
 
   @@id([userId, instanceId])
