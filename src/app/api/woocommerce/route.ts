@@ -14,6 +14,10 @@ export async function POST(request: NextRequest) {
       "======================referer: ",
       request.headers.get("referer")
     );
+    console.log(
+      "======================source: ",
+      request.headers.get("x-wc-webhook-source")
+    );
     console.log("======================full headers: ", request.headers);
 
     return Response.json({}, easyCorsInit);
