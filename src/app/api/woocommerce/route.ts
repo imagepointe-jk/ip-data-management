@@ -1,15 +1,11 @@
 import { easyCorsInit } from "@/constants";
+import { parseWooCommerceWebhookRequest } from "@/types/validations";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const webhookSource = request.headers.get("x-wc-webhook-source");
-    if (!webhookSource)
-      throw new Error(
-        "A request reached the WooCommerce webhook endpoint with no source specified."
-      );
-
-    console.log("RECEIVED REQUEST FROM ", webhookSource);
+    const parsed = parseWooCommerceWebhookRequest(request);
+    console.log(JSON.stringify(parsed));
   } catch (error) {
     console.error(error);
   }

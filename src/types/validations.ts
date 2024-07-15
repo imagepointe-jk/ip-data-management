@@ -15,6 +15,7 @@ import {
   quoteRequestSchema,
   userFormDataSchema,
   wooCommerceProductSchema,
+  wooCommerceWebhookRequestSchema,
 } from "./schema";
 import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
 import { z } from "zod";
@@ -257,6 +258,11 @@ export function parseHubSpotOwnerResults(json: any) {
 
 export function parseWooCommerceProduct(json: any) {
   return wooCommerceProductSchema.parse(json);
+}
+
+export function parseWooCommerceWebhookRequest(req: any) {
+  req.headers.webhookSource = req.headers["x-wc-webhook-source"];
+  return wooCommerceWebhookRequestSchema.parse(req);
 }
 
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {

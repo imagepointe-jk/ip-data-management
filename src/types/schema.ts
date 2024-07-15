@@ -185,6 +185,19 @@ export const wooCommerceProductSchema = z.object({
   name: z.string(),
 });
 
+export const wooCommerceWebhookRequestSchema = z.object({
+  headers: z.object({
+    webhookSource: z.string(),
+  }),
+  body: z.object({
+    id: z.number(),
+    billing: z.object({
+      first_name: z.string(),
+      email: z.string(),
+    }),
+  }),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
