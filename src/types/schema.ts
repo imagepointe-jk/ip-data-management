@@ -201,6 +201,30 @@ export const wooCommerceWebhookRequestSchema = z.object({
   }),
 });
 
+export const wooCommerceLineItemSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  quantity: z.number(),
+  total: z.string(),
+  totalTax: z.string(),
+});
+
+export const wooCommerceFeeLineSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  total: z.string(),
+});
+
+//WC returns a lot of order data. only include what's necessary in the schema.
+export const wooCommerceOrderDataSchema = z.object({
+  id: z.number(),
+  total: z.string(),
+  totalTax: z.string(),
+  shippingTotal: z.string(),
+  lineItems: z.array(wooCommerceLineItemSchema),
+  feeLines: z.array(wooCommerceFeeLineSchema),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 

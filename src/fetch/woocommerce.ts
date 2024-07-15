@@ -30,3 +30,24 @@ export async function getProduct(id: number) {
     requestOptions
   );
 }
+
+export async function getOrder(
+  id: number,
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "GET",
+    headers: headers,
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, requestOptions);
+}

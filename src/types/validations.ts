@@ -14,6 +14,8 @@ import {
   productSchema,
   quoteRequestSchema,
   userFormDataSchema,
+  wooCommerceLineItemSchema,
+  wooCommerceOrderDataSchema,
   wooCommerceProductSchema,
   wooCommerceWebhookRequestSchema,
 } from "./schema";
@@ -272,6 +274,41 @@ export async function parseWooCommerceWebhookRequest(req: NextRequest) {
     body,
   };
   return wooCommerceWebhookRequestSchema.parse(data);
+}
+
+function parseWooCommerceLineItem(lineItem: any) {
+  //the data that comes from WC is very messy and deeply nested.
+  //this helper function can be used to pull data from each line item
+  //and restructure it in a more helpful way.
+  const quantity = lineItem.quantity;
+  const total = lineItem.total;
+  const totalTax = lineItem.total_tax;
+
+  return wooCommerceLineItemSchema.parse({
+    id: lineItem.id,
+    name: lineItem.name,
+    quantity,
+    total,
+    totalTax,
+  });
+}
+
+export function parseWooCommerceOrderJson(json: any) {
+  const lineItemsUnparsed: any[] = json["line_items"];
+  if (!lineItemsUnparsed) {
+    console.error("No line items array in WC order");
+    throw new Error();
+  }
+  const lineItemsParsed = lineItemsUnparsed.map((item) =>
+    parseWooCommerceLineItem(item)
+  );
+
+  json.lineItems = lineItemsParsed;
+  json.totalTax = json.total_tax;
+  json.feeLines = json.fee_lines;
+  json.shippingTotal = json.shipping_total;
+
+  return wooCommerceOrderDataSchema.parse(json);
 }
 
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {

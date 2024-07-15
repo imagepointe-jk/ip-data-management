@@ -6,6 +6,9 @@ import {
   getOrganization,
   getUser,
 } from "@/db/access/orderApproval";
+import { getOrder } from "@/fetch/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations";
+import { OrderWorkflowUser } from "@prisma/client";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -25,12 +28,20 @@ export async function startOrderWorkflow(params: StartWorkflowParams) {
   } = await setupOrderWorkflow(params);
 
   console.log(
-    `Started workflow instance ${workflowInstance.id} for organization ${organization.id}.`
+    `Finished setup on workflow instance ${workflowInstance.id} for organization ${organization.id}.`
+  );
+
+  await sendInitialEmails(
+    purchaser,
+    approver,
+    params.orderId,
+    organization.url
   );
 }
 
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { email, firstName, lastName, orderId, webhookSource } = params;
+  console.log("=====================started workflow");
   const organization = await getOrganization(webhookSource);
   if (!organization)
     throw new Error(`No organization was found with url ${webhookSource}`);
@@ -72,4 +83,20 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     purchaserAccessCode,
     approverAccessCode,
   };
+}
+
+async function sendInitialEmails(
+  purchaser: OrderWorkflowUser,
+  approver: OrderWorkflowUser,
+  wooCommerceOrderId: number,
+  storeUrl: string
+) {
+  const orderResponse = await getOrder(
+    wooCommerceOrderId,
+    storeUrl,
+    "key_here",
+    "secret_here"
+  );
+  const orderJson = await orderResponse.json();
+  const orderParsed = parseWooCommerceOrderJson(orderJson);
 }
