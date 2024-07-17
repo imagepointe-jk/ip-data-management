@@ -52,6 +52,49 @@ export async function createWorkflowInstance(
   });
 }
 
+export async function getWorkflowInstance(id: number) {
+  const instance = await prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!instance) throw new Error(`No workflow instance with id ${id}`);
+
+  const parent = await prisma.orderWorkflow.findUnique({
+    where: {
+      id: instance.parentWorkflowId,
+    },
+    include: {
+      steps: {
+        include: {
+          proceedListeners: true,
+        },
+      },
+    },
+  });
+  if (!parent)
+    throw new Error(`No workflow with id ${instance.parentWorkflowId}`);
+
+  return {
+    ...instance,
+    steps: parent.steps,
+  };
+}
+
+export async function setWorkflowInstanceCurrentStep(
+  id: number,
+  value: number
+) {
+  return prisma.orderWorkflowInstance.update({
+    where: {
+      id,
+    },
+    data: {
+      currentStep: value,
+    },
+  });
+}
+
 export async function createAccessCode(
   workflowInstanceId: number,
   userId: number,

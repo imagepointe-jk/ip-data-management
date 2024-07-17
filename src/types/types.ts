@@ -59,6 +59,9 @@ export type DesignCategoryWithIncludes = DesignCategory & {
   designType: DesignType;
 };
 
+export type OrderWorkflowEventType = "proceed" | "approve" | "deny";
+export type OrderWorkflowUserRole = "approver" | "purchaser";
+
 export type ServerActionResult = {
   message?: string;
   error?: {

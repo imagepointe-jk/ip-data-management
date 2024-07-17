@@ -200,6 +200,7 @@ model OrderWorkflowInstance {
   id                 Int                       @id @default(autoincrement())
   status             String
   wooCommerceOrderId Int                       @unique
+  currentStep        Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
   accessCodes        OrderWorkflowAccessCode[]
   comments           OrderWorkflowComment[]
   parentWorkflowId   Int
