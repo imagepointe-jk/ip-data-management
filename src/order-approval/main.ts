@@ -87,38 +87,6 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   };
 }
 
-async function sendInitialEmails(
-  purchaser: OrderWorkflowUser,
-  approver: OrderWorkflowUser,
-  wooCommerceOrderId: number,
-  webstore: Webstore
-) {
-  const decryptedKey = decrypt(
-    webstore.apiKey,
-    webstore.apiKeyEncryptIv,
-    webstore.apiKeyEncryptTag
-  );
-  const decryptedSecret = decrypt(
-    webstore.apiSecret,
-    webstore.apiSecretEncryptIv,
-    webstore.apiSecretEncryptTag
-  );
-  const orderResponse = await getOrder(
-    wooCommerceOrderId,
-    webstore.url,
-    decryptedKey,
-    decryptedSecret
-  );
-  if (!orderResponse.ok) {
-    throw new Error(
-      `There was a problem retrieving WooCommerce order ${wooCommerceOrderId}`
-    );
-  }
-  const orderJson = await orderResponse.json();
-  const orderParsed = parseWooCommerceOrderJson(orderJson);
-  console.log(orderParsed.lineItems.length);
-}
-
 //! This function is recursive and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
 async function handleCurrentStep(workflowInstanceId: number) {

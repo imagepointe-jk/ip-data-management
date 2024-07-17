@@ -108,3 +108,23 @@ export async function createAccessCode(
     },
   });
 }
+
+export async function getAccessCodeWithIncludes(accessCode: string) {
+  return prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      guid: accessCode,
+    },
+    include: {
+      user: true,
+      workflowInstance: {
+        include: {
+          parentWorkflow: {
+            include: {
+              webstore: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
