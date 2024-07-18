@@ -1,4 +1,5 @@
 import { prisma } from "@/../prisma/client";
+import { OrderWorkflowInstance } from "@prisma/client";
 
 export async function getWebstore(url: string) {
   return prisma.webstore.findUnique({
@@ -13,6 +14,15 @@ export async function getUser(webstoreId: number, email: string) {
     where: {
       email,
       webstoreId,
+    },
+  });
+}
+
+export async function getFirstApproverFor(webstoreId: number) {
+  return prisma.orderWorkflowUser.findFirst({
+    where: {
+      webstoreId,
+      isApprover: true,
     },
   });
 }
@@ -53,16 +63,17 @@ export async function createWorkflowInstance(
 }
 
 export async function getWorkflowInstance(id: number) {
-  const instance = await prisma.orderWorkflowInstance.findUnique({
+  return prisma.orderWorkflowInstance.findUnique({
     where: {
       id,
     },
   });
-  if (!instance) throw new Error(`No workflow instance with id ${id}`);
+}
 
-  const parent = await prisma.orderWorkflow.findUnique({
+export async function getWorkflowWithSteps(id: number) {
+  return prisma.orderWorkflow.findUnique({
     where: {
-      id: instance.parentWorkflowId,
+      id,
     },
     include: {
       steps: {
@@ -72,13 +83,30 @@ export async function getWorkflowInstance(id: number) {
       },
     },
   });
-  if (!parent)
-    throw new Error(`No workflow with id ${instance.parentWorkflowId}`);
+}
 
-  return {
-    ...instance,
-    steps: parent.steps,
-  };
+export async function getWorkflowInstanceCurrentStep(
+  workflowInstanceId: number
+) {
+  const instance = await getWorkflowInstance(workflowInstanceId);
+  if (!instance)
+    throw new Error(`Workflow instance ${workflowInstanceId} not found`);
+
+  const workflowWithSteps = await getWorkflowWithSteps(
+    instance.parentWorkflowId
+  );
+  if (!workflowWithSteps)
+    throw new Error(`No parent workflow found for ${workflowInstanceId}`);
+
+  const currentStep = workflowWithSteps.steps.find(
+    (step) => step.order === instance.currentStep
+  );
+  if (!currentStep)
+    throw new Error(
+      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
+    );
+
+  return currentStep;
 }
 
 export async function setWorkflowInstanceCurrentStep(

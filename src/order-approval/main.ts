@@ -7,6 +7,9 @@ import {
   getUser,
   getWorkflowInstance,
   setWorkflowInstanceCurrentStep,
+  getFirstApproverFor,
+  getWorkflowWithSteps,
+  getWorkflowInstanceCurrentStep,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/types";
@@ -27,83 +30,61 @@ type StartWorkflowParams = {
   email: string;
 };
 export async function startOrderWorkflow(params: StartWorkflowParams) {
-  const {
-    approver,
-    approverAccessCode,
-    webstore,
-    purchaser,
-    purchaserAccessCode,
-    workflowInstance,
-  } = await setupOrderWorkflow(params);
-
-  console.log(
-    `Finished setup on workflow instance ${workflowInstance.id} for webstore ${webstore.id}.`
-  );
-
-  handleCurrentStep(workflowInstance.id);
+  const { workflowInstance } = await setupOrderWorkflow(params);
+  handleCurrentStep(workflowInstance);
 }
 
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { email, firstName, lastName, orderId, webhookSource } = params;
-  console.log("=====================started workflow");
+
   const webstore = await getWebstore(webhookSource);
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
+  //try to get a user, or immediately create one if not found.
   const purchaser =
     (await getUser(webstore.id, email)) ||
     (await createUser(email, `${firstName} ${lastName}`, webstore.id));
 
-  //! approver will need to no longer be hard-coded if we decide to use this with different organizations
-  //! This has not been implemented now because of too many uncertainties (will webstores have multiple approvers, etc.)
-  const approver = await getUser(webstore.id, "approver-email@example.com");
+  //Assume for now that a webstore will only have one approver
+  const approver = await getFirstApproverFor(webstore.id);
   if (!approver)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
-  //! assume for now that a webstore will only have one workflow for all orders
+  //assume for now that a webstore will only have one workflow for all orders
   const workflow = await getFirstWorkflowForWebstore(webstore.id);
   if (!workflow)
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
-  const purchaserAccessCode = await createAccessCode(
-    workflowInstance.id,
-    purchaser.id,
-    "purchaser"
-  );
-  const approverAccessCode = await createAccessCode(
-    workflowInstance.id,
-    approver.id,
-    "approver"
-  );
+  await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
+  await createAccessCode(workflowInstance.id, approver.id, "approver");
 
+  console.log(
+    `Finished setup on workflow instance ${workflowInstance.id} for webstore ${webstore.id}.`
+  );
   return {
-    webstore,
-    purchaser,
-    approver,
     workflowInstance,
-    purchaserAccessCode,
-    approverAccessCode,
   };
 }
 
-//! This function is recursive and assumes there will be no circularity in the workflow step sequence.
+//! This function is recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
-async function handleCurrentStep(workflowInstanceId: number) {
-  const workflowInstance = await getWorkflowInstance(workflowInstanceId);
-  const currentStep = workflowInstance.steps.find(
-    (step) => step.order === workflowInstance.currentStep
-  );
-  if (!currentStep) {
-    console.log(
-      `========================Reached the end of workflow ${workflowInstanceId}`
-    );
+async function handleCurrentStep(workflowInstance: OrderWorkflowInstance) {
+  const currentStep = await getWorkflowInstanceCurrentStep(workflowInstance.id);
+  doStepAction(currentStep, workflowInstance);
+
+  if (currentStep.proceedImmediatelyTo !== null) {
+    handleWorkflowProceed(workflowInstance, currentStep.proceedImmediatelyTo);
     return;
   }
+}
 
-  const { actionMessage, actionTarget, actionType, proceedImmediatelyTo } =
-    currentStep;
-
+function doStepAction(
+  step: OrderWorkflowStep,
+  workflowInstance: OrderWorkflowInstance
+) {
+  const { actionMessage, actionTarget, actionType } = step;
   if (actionType === "email") {
     if (actionTarget === "approver") {
       console.log(
@@ -117,7 +98,7 @@ async function handleCurrentStep(workflowInstanceId: number) {
       );
     } else {
       throw new Error(
-        `Unrecognized email target "${actionTarget}" of step ${currentStep.id} in workflow instance ${workflowInstance.id}`
+        `Unrecognized email target "${actionTarget}" of step ${step.id} in workflow instance ${workflowInstance.id}`
       );
     }
   } else if (actionType === "mark workflow approved") {
@@ -128,13 +109,8 @@ async function handleCurrentStep(workflowInstanceId: number) {
     console.log("canceling woocommerce order");
   } else {
     throw new Error(
-      `Unrecognized action type "${actionType}" of step ${currentStep.id} in workflow instance ${workflowInstance.id}`
+      `Unrecognized action type "${actionType}" of step ${step.id} in workflow instance ${workflowInstance.id}`
     );
-  }
-
-  if (proceedImmediatelyTo !== null) {
-    handleWorkflowProceed(workflowInstance, proceedImmediatelyTo);
-    return;
   }
 }
 
@@ -144,27 +120,26 @@ export async function handleWorkflowEvent(
   source: OrderWorkflowUserRole
 ) {
   const workflowInstance = await getWorkflowInstance(workflowInstanceId);
+  if (!workflowInstance)
+    throw new Error(`Workflow instance ${workflowInstanceId} not found`);
+
   if (workflowInstance.status === "finished") {
     console.warn(
       `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished; ignoring.`
     );
+    return;
   }
 
-  const currentStep = workflowInstance.steps.find(
-    (step) => step.order === workflowInstance.currentStep
-  );
-  if (!currentStep) {
-    throw new Error(
-      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
-    );
-  }
-
+  const currentStep = await getWorkflowInstanceCurrentStep(workflowInstanceId);
   const matchingListener = currentStep.proceedListeners.find(
     (listener) => listener.type === type && listener.from === source
   );
   if (matchingListener)
     handleWorkflowProceed(workflowInstance, matchingListener.goto);
   else if (source === "approver" || source === "purchaser") {
+    //There may be more sources in the future, but anytime the source is a user and we reach this point,
+    //it means the user tried to move the workflow along and it failed, so we need to know.
+    //This might happen when we forget to add all the necessary event listeners to a step.
     throw new Error(
       `The workflow instance ${workflowInstance.id} received an unhandled event of type ${type} from ${source}.`
     );
@@ -184,5 +159,5 @@ async function handleWorkflowProceed(
   }
 
   await setWorkflowInstanceCurrentStep(workflowInstance.id, newCurrentStep);
-  handleCurrentStep(workflowInstance.id);
+  handleCurrentStep(workflowInstance);
 }

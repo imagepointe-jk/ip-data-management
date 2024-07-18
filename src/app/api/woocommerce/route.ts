@@ -30,5 +30,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error(error);
   }
+  //Always send a 200 response back to WooCommerce; the webhook seems to break otherwise
   return Response.json({}, easyCorsInit);
 }
