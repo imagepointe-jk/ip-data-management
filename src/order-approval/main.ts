@@ -95,7 +95,9 @@ async function handleCurrentStep(workflowInstanceId: number) {
     (step) => step.order === workflowInstance.currentStep
   );
   if (!currentStep) {
-    console.log(`Reached the end of workflow ${workflowInstanceId}`);
+    console.log(
+      `========================Reached the end of workflow ${workflowInstanceId}`
+    );
     return;
   }
 
@@ -104,9 +106,15 @@ async function handleCurrentStep(workflowInstanceId: number) {
 
   if (actionType === "email") {
     if (actionTarget === "approver") {
-      console.log("Emailing all approvers: ", actionMessage);
+      console.log(
+        "====================Emailing all approvers: ",
+        actionMessage
+      );
     } else if (actionTarget === "purchaser") {
-      console.log("Emailing the purchaser: ", actionMessage);
+      console.log(
+        "=====================Emailing the purchaser: ",
+        actionMessage
+      );
     } else {
       throw new Error(
         `Unrecognized email target "${actionTarget}" of step ${currentStep.id} in workflow instance ${workflowInstance.id}`
@@ -125,20 +133,56 @@ async function handleCurrentStep(workflowInstanceId: number) {
   }
 
   if (proceedImmediatelyTo !== null) {
-    const newCurrentStep =
-      proceedImmediatelyTo === "next"
-        ? workflowInstance.currentStep + 1
-        : +proceedImmediatelyTo;
-    if (isNaN(newCurrentStep)) {
-      throw new Error(
-        `Invalid proceed value "${proceedImmediatelyTo}" for workflow step ${currentStep.id} in workflow instance ${workflowInstance.id}`
-      );
-    }
-
-    await setWorkflowInstanceCurrentStep(workflowInstance.id, newCurrentStep);
-    handleCurrentStep(workflowInstanceId);
+    handleWorkflowProceed(workflowInstance, proceedImmediatelyTo);
     return;
-  } else {
-    console.log("check event listeners and wait");
   }
+}
+
+export async function handleWorkflowEvent(
+  workflowInstanceId: number,
+  type: OrderWorkflowEventType,
+  source: OrderWorkflowUserRole
+) {
+  const workflowInstance = await getWorkflowInstance(workflowInstanceId);
+  if (workflowInstance.status === "finished") {
+    console.warn(
+      `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished; ignoring.`
+    );
+  }
+
+  const currentStep = workflowInstance.steps.find(
+    (step) => step.order === workflowInstance.currentStep
+  );
+  if (!currentStep) {
+    throw new Error(
+      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
+    );
+  }
+
+  const matchingListener = currentStep.proceedListeners.find(
+    (listener) => listener.type === type && listener.from === source
+  );
+  if (matchingListener)
+    handleWorkflowProceed(workflowInstance, matchingListener.goto);
+  else if (source === "approver" || source === "purchaser") {
+    throw new Error(
+      `The workflow instance ${workflowInstance.id} received an unhandled event of type ${type} from ${source}.`
+    );
+  }
+}
+
+async function handleWorkflowProceed(
+  workflowInstance: OrderWorkflowInstance,
+  goto: string
+) {
+  const newCurrentStep =
+    goto === "next" ? workflowInstance.currentStep + 1 : +goto;
+  if (isNaN(newCurrentStep)) {
+    throw new Error(
+      `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
+    );
+  }
+
+  await setWorkflowInstanceCurrentStep(workflowInstance.id, newCurrentStep);
+  handleCurrentStep(workflowInstance.id);
 }
