@@ -92,7 +92,7 @@ export async function getWorkflowInstance(id: number) {
   });
 }
 
-export async function getWorkflowWithSteps(id: number) {
+export async function getWorkflowWithIncludes(id: number) {
   return prisma.orderWorkflow.findUnique({
     where: {
       id,
@@ -103,6 +103,7 @@ export async function getWorkflowWithSteps(id: number) {
           proceedListeners: true,
         },
       },
+      instances: true,
     },
   });
 }
@@ -114,7 +115,7 @@ export async function getWorkflowInstanceCurrentStep(
   if (!instance)
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
-  const workflowWithSteps = await getWorkflowWithSteps(
+  const workflowWithSteps = await getWorkflowWithIncludes(
     instance.parentWorkflowId
   );
   if (!workflowWithSteps)

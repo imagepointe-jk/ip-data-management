@@ -8,7 +8,7 @@ import {
   getWorkflowInstance,
   setWorkflowInstanceCurrentStep,
   getFirstApproverFor,
-  getWorkflowWithSteps,
+  getWorkflowWithIncludes,
   getWorkflowInstanceCurrentStep,
   markWorkflowInstanceFinished,
 } from "@/db/access/orderApproval";
@@ -155,7 +155,7 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
   if (goto === "next") {
-    const parentWorkflow = await getWorkflowWithSteps(
+    const parentWorkflow = await getWorkflowWithIncludes(
       workflowInstance.parentWorkflowId
     );
     if (!parentWorkflow)
