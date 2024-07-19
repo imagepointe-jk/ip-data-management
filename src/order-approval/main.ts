@@ -10,6 +10,7 @@ import {
   getFirstApproverFor,
   getWorkflowWithSteps,
   getWorkflowInstanceCurrentStep,
+  markWorkflowInstanceFinished,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/types";
@@ -68,15 +69,17 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   };
 }
 
-//! This function is recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
+//! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
 async function handleCurrentStep(workflowInstance: OrderWorkflowInstance) {
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstance.id);
   doStepAction(currentStep, workflowInstance);
 
   if (currentStep.proceedImmediatelyTo !== null) {
-    handleWorkflowProceed(workflowInstance, currentStep.proceedImmediatelyTo);
-    return;
+    handleWorkflowProceed(
+      workflowInstance.id,
+      currentStep.proceedImmediatelyTo
+    );
   }
 }
 
@@ -135,29 +138,50 @@ export async function handleWorkflowEvent(
     (listener) => listener.type === type && listener.from === source
   );
   if (matchingListener)
-    handleWorkflowProceed(workflowInstance, matchingListener.goto);
+    handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
   else if (source === "approver" || source === "purchaser") {
     //There may be more sources in the future, but anytime the source is a user and we reach this point,
     //it means the user tried to move the workflow along and it failed, so we need to know.
     //This might happen when we forget to add all the necessary event listeners to a step.
     throw new Error(
-      `The workflow instance ${workflowInstance.id} received an unhandled event of type ${type} from ${source}.`
+      `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`
     );
   }
 }
 
-async function handleWorkflowProceed(
-  workflowInstance: OrderWorkflowInstance,
-  goto: string
-) {
-  const newCurrentStep =
-    goto === "next" ? workflowInstance.currentStep + 1 : +goto;
-  if (isNaN(newCurrentStep)) {
+async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
+  const workflowInstance = await getWorkflowInstance(workflowInstanceId);
+  if (!workflowInstance)
+    throw new Error(`Workflow instance ${workflowInstanceId} not found`);
+
+  if (goto === "next") {
+    const parentWorkflow = await getWorkflowWithSteps(
+      workflowInstance.parentWorkflowId
+    );
+    if (!parentWorkflow)
+      throw new Error(`No parent workflow found for ${workflowInstance.id}`);
+    const nextStep = parentWorkflow.steps.find(
+      (step) => step.order > workflowInstance.currentStep
+    );
+
+    if (!nextStep) {
+      console.log("Marking finished");
+      await markWorkflowInstanceFinished(workflowInstance.id);
+    } else {
+      console.log("Setting to ", workflowInstance.currentStep + 1);
+      await setWorkflowInstanceCurrentStep(
+        workflowInstance.id,
+        workflowInstance.currentStep + 1
+      );
+      handleCurrentStep(workflowInstance);
+    }
+  } else if (!isNaN(+goto)) {
+    console.log("Setting to ", goto);
+    await setWorkflowInstanceCurrentStep(workflowInstance.id, +goto);
+    handleCurrentStep(workflowInstance);
+  } else {
     throw new Error(
       `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
     );
   }
-
-  await setWorkflowInstanceCurrentStep(workflowInstance.id, newCurrentStep);
-  handleCurrentStep(workflowInstance);
 }

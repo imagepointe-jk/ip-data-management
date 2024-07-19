@@ -156,3 +156,14 @@ export async function getAccessCodeWithIncludes(accessCode: string) {
     },
   });
 }
+
+export async function markWorkflowInstanceFinished(id: number) {
+  return prisma.orderWorkflowInstance.update({
+    where: {
+      id,
+    },
+    data: {
+      status: "finished",
+    },
+  });
+}
