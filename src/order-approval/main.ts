@@ -165,10 +165,8 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     );
 
     if (!nextStep) {
-      console.log("Marking finished");
       await markWorkflowInstanceFinished(workflowInstance.id);
     } else {
-      console.log("Setting to ", workflowInstance.currentStep + 1);
       await setWorkflowInstanceCurrentStep(
         workflowInstance.id,
         workflowInstance.currentStep + 1
@@ -176,7 +174,6 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
       handleCurrentStep(workflowInstance);
     }
   } else if (!isNaN(+goto)) {
-    console.log("Setting to ", goto);
     await setWorkflowInstanceCurrentStep(workflowInstance.id, +goto);
     handleCurrentStep(workflowInstance);
   } else {
