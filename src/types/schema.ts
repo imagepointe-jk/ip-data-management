@@ -225,6 +225,18 @@ export const wooCommerceOrderDataSchema = z.object({
   feeLines: z.array(wooCommerceFeeLineSchema),
 });
 
+export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
+const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
+export const orderWorkflowActionTypes = [
+  "email",
+  "mark workflow approved",
+  "mark workflow denied",
+  "cancel woocommerce order",
+] as const;
+const orderWorkflowActionTypeSchema = z.enum(orderWorkflowActionTypes);
+export const orderWorkflowEventTypes = ["approve", "deny", "proceed"] as const;
+const orderWorkflowEventTypeSchema = z.enum(orderWorkflowEventTypes);
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -253,6 +265,13 @@ export type ImpressDataType =
   | "Line Item"
   | "PO"
   | "Product";
+export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
+export type OrderWorkflowActionType = z.infer<
+  typeof orderWorkflowActionTypeSchema
+>;
+export type OrderWorkflowEventType = z.infer<
+  typeof orderWorkflowEventTypeSchema
+>;
 
 //associates the ID of the company resource that got created in HubSpot with the Impress customer number
 export type CompanyResource = {

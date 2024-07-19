@@ -13,7 +13,11 @@ import {
   markWorkflowInstanceFinished,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
-import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/types";
+import {
+  OrderWorkflowActionType,
+  OrderWorkflowEventType,
+  OrderWorkflowUserRole,
+} from "@/types/schema";
 import { parseWooCommerceOrderJson } from "@/types/validations";
 import { decrypt } from "@/utility/misc";
 import {
@@ -87,7 +91,8 @@ function doStepAction(
   step: OrderWorkflowStep,
   workflowInstance: OrderWorkflowInstance
 ) {
-  const { actionMessage, actionTarget, actionType } = step;
+  const { actionMessage, actionTarget, actionType: a } = step;
+  const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
     if (actionTarget === "approver") {
       console.log(

@@ -1,8 +1,8 @@
 "use server";
 
-import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/types";
 import { prisma } from "../../prisma/client";
 import { handleWorkflowEvent } from "@/order-approval/main";
+import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/schema";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({

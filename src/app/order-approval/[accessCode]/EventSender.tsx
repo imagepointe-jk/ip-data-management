@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { receiveWorkflowEvent } from "@/actions/orderWorkflow";
 import { useEffect, useState } from "react";
-import { OrderWorkflowEventType } from "@/types/types";
+import { OrderWorkflowEventType } from "@/types/schema";
 
 type Props = {
   type: OrderWorkflowEventType;
