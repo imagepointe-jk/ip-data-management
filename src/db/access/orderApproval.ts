@@ -62,6 +62,16 @@ export async function createWorkflowInstance(
   });
 }
 
+export async function getWorkflowsWithIncludes() {
+  return prisma.orderWorkflow.findMany({
+    include: {
+      webstore: true,
+      instances: true,
+      steps: true,
+    },
+  });
+}
+
 export async function getWorkflowInstance(id: number) {
   return prisma.orderWorkflowInstance.findUnique({
     where: {
