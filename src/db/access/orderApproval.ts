@@ -9,6 +9,18 @@ export async function getWebstore(url: string) {
   });
 }
 
+export async function getWebstoresWithIncludes() {
+  return prisma.webstore.findMany({
+    include: {
+      workflows: {
+        include: {
+          instances: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getUser(webstoreId: number, email: string) {
   return prisma.orderWorkflowUser.findFirst({
     where: {
