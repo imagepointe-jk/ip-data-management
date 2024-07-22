@@ -97,6 +97,8 @@ model HubSpotSync {
   progress    Decimal //0 is no progress, 1 is complete
 }
 
+//TODO: These tables should ideally be renamed to something more generic like "CustomProduct".
+//TODO: We may want to use the customizer app for more than just garments in the future.
 model CustomGarmentSettings {
   id            Int                              @id @default(autoincrement())
   createdAt     DateTime                         @default(now())
