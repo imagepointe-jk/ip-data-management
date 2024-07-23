@@ -350,7 +350,7 @@ export function validateWorkflowFormData(formData: FormData) {
     const allListenerIdsThisStep = allListenerNames
       .filter((field) => field.fieldName.includes(`step-${id}`))
       .map(
-        (field) => `${field.fieldName.match(`(?<=step-${id}-listener-)\\d+`)}`
+        (field) => +`${field.fieldName.match(`(?<=step-${id}-listener-)\\d+`)}`
       );
     return {
       id,
@@ -368,18 +368,26 @@ export function validateWorkflowFormData(formData: FormData) {
         ?.fieldValue.toString(),
       proceedListeners: allListenerIdsThisStep.map((listenerId) => ({
         id: listenerId,
-        name: allListenerNames.find((field) =>
-          field.fieldName.match(`step-${id}-listener-${listenerId}-name`)
-        )?.fieldValue,
-        type: allListenerTypes.find((field) =>
-          field.fieldName.match(`step-${id}-listener-${listenerId}-type`)
-        )?.fieldValue,
-        from: allListenerFrom.find((field) =>
-          field.fieldName.match(`step-${id}-listener-${listenerId}-from`)
-        )?.fieldValue,
-        goto: allListenerGoto.find((field) =>
-          field.fieldName.match(`step-${id}-listener-${listenerId}-goto`)
-        )?.fieldValue,
+        name: allListenerNames
+          .find((field) =>
+            field.fieldName.match(`step-${id}-listener-${listenerId}-name`)
+          )
+          ?.fieldValue.toString(),
+        type: allListenerTypes
+          .find((field) =>
+            field.fieldName.match(`step-${id}-listener-${listenerId}-type`)
+          )
+          ?.fieldValue.toString(),
+        from: allListenerFrom
+          .find((field) =>
+            field.fieldName.match(`step-${id}-listener-${listenerId}-from`)
+          )
+          ?.fieldValue.toString(),
+        goto: allListenerGoto
+          .find((field) =>
+            field.fieldName.match(`step-${id}-listener-${listenerId}-goto`)
+          )
+          ?.fieldValue.toString(),
       })),
     };
   });

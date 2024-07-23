@@ -69,5 +69,20 @@ export async function updateWorkflow(formData: FormData) {
           proceedImmediatelyTo !== undefined ? proceedImmediatelyTo : null,
       },
     });
+
+    for (const listener of step.proceedListeners) {
+      const { from, goto, id, name, type } = listener;
+      await prisma.orderWorkflowStepProceedListener.update({
+        where: {
+          id,
+        },
+        data: {
+          from,
+          goto,
+          name,
+          type,
+        },
+      });
+    }
   }
 }
