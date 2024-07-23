@@ -48,5 +48,26 @@ export async function updateWorkflow(formData: FormData) {
   const parsed = validateWorkflowFormData(formData);
   if (!parsed.existingWorkflowId)
     throw new Error("No existing workflow id provided. This is a bug.");
-  console.log("updating", parsed.existingWorkflowId);
+
+  for (const step of parsed.steps) {
+    const {
+      actionMessage,
+      actionTarget,
+      actionType,
+      id,
+      proceedImmediatelyTo,
+    } = step;
+    await prisma.orderWorkflowStep.update({
+      where: {
+        id,
+      },
+      data: {
+        actionType,
+        actionTarget,
+        actionMessage,
+        proceedImmediatelyTo:
+          proceedImmediatelyTo !== undefined ? proceedImmediatelyTo : null,
+      },
+    });
+  }
 }

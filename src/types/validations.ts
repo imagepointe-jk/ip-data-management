@@ -346,7 +346,7 @@ export function validateWorkflowFormData(formData: FormData) {
   const stepIds = allActionTypes.map(
     (field) => +`${field.fieldName.match(/\d+/)}`
   );
-  const data = stepIds.map((id) => {
+  const steps = stepIds.map((id) => {
     const allListenerIdsThisStep = allListenerNames
       .filter((field) => field.fieldName.includes(`step-${id}`))
       .map(
@@ -354,20 +354,20 @@ export function validateWorkflowFormData(formData: FormData) {
       );
     return {
       id,
-      actionType: allActionTypes.find((field) =>
-        field.fieldName.includes(`${id}`)
-      )?.fieldValue,
-      actionTarget: allActionTargets.find((field) =>
-        field.fieldName.includes(`${id}`)
-      )?.fieldValue,
-      actionMessage: allActionMessages.find((field) =>
-        field.fieldName.includes(`${id}`)
-      )?.fieldValue,
-      proceedImmediatelyTo: allProceedImmediately.find((field) =>
-        field.fieldName.includes(`${id}`)
-      )?.fieldValue,
+      actionType: allActionTypes
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
+      actionTarget: allActionTargets
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
+      actionMessage: allActionMessages
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
+      proceedImmediatelyTo: allProceedImmediately
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
       proceedListeners: allListenerIdsThisStep.map((listenerId) => ({
-        id,
+        id: listenerId,
         name: allListenerNames.find((field) =>
           field.fieldName.match(`step-${id}-listener-${listenerId}-name`)
         )?.fieldValue,
@@ -383,80 +383,10 @@ export function validateWorkflowFormData(formData: FormData) {
       })),
     };
   });
-  // const allFor1Ids = allListenerNames
-  //   .filter((field) => field.fieldName.includes(`step-${1}`))
-  //   .map((field) => `${field.fieldName.match(`(?<=step-${1}-listener-)\\d+`)}`);
-  // const allFor1 = allFor1Ids.map((id) => ({
-  //   id,
-  //   name: allListenerNames.find((field) =>
-  //     field.fieldName.match(`step-${1}-listener-${id}-name`)
-  //   )?.fieldValue,
-  //   type: allListenerTypes.find((field) =>
-  //     field.fieldName.match(`step-${1}-listener-${id}-type`)
-  //   )?.fieldValue,
-  //   from: allListenerFrom.find((field) =>
-  //     field.fieldName.match(`step-${1}-listener-${id}-from`)
-  //   )?.fieldValue,
-  //   goto: allListenerGoto.find((field) =>
-  //     field.fieldName.match(`step-${1}-listener-${id}-goto`)
-  //   )?.fieldValue,
-  // }));
-  // console.log(allFor1);
-
-  console.log(
-    "==========================",
-    inspect(data, {
-      depth: null,
-      compact: false,
-    })
-  );
-  //step-3-listener-1-name
-  //step-3-listener-2-name
-  //step-3-listener-3-name
-  //step-4-listener-1-name
-  //step-4-listener-2-name
-  //step-4-listener-3-name
-  //step-4-listener-4-name
-  const a = [
-    {
-      id: 1,
-      name: "name",
-    },
-  ];
-
-  const ex = [
-    {
-      id: 1,
-      actionType: "email",
-      actionTarget: "approver",
-      actionMessage: "message",
-      proceedImmediatelyTo: "next",
-    },
-    {
-      id: 2,
-      actionType: "email",
-      actionTarget: "approver",
-      actionMessage: "message",
-      proceedImmediatelyTo: "next",
-      proceedListeners: [
-        {
-          name: "listen 1",
-          type: "approve",
-          from: "approver",
-          goto: "4",
-        },
-        {
-          name: "listen 2",
-          type: "deny",
-          from: "approver",
-          goto: "next",
-        },
-      ],
-    },
-  ];
 
   return {
     existingWorkflowId: existingWorkflowId ? +existingWorkflowId : undefined,
+    steps,
   };
 }
 
