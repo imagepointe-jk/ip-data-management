@@ -176,4 +176,15 @@ export async function updateWebstore(formData: FormData) {
   });
 }
 
+export async function setUserIsApprover(id: number, isApprover: boolean) {
+  await prisma.orderWorkflowUser.update({
+    where: {
+      id,
+    },
+    data: {
+      isApprover,
+    },
+  });
+}
+
 //TODO: "Restart Workflow Instance" function
