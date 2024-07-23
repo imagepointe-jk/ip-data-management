@@ -86,3 +86,15 @@ export async function updateWorkflow(formData: FormData) {
     }
   }
 }
+
+export async function createEventListener(parentStepId: number) {
+  await prisma.orderWorkflowStepProceedListener.create({
+    data: {
+      stepId: parentStepId,
+      name: "New Listener",
+      type: "approve",
+      from: "approver",
+      goto: "next",
+    },
+  });
+}

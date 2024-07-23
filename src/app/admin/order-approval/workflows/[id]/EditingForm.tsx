@@ -14,7 +14,8 @@ import {
 } from "@/types/schema";
 import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
-import { updateWorkflow } from "@/actions/orderWorkflow";
+import { createEventListener, updateWorkflow } from "@/actions/orderWorkflow";
+import { useRouter } from "next/navigation";
 
 type Props = {
   existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
@@ -69,6 +70,7 @@ function Step({ step }: StepProps) {
   const [proceedImmediatelyType, setProceedImmediatelyType] = useState(
     step.proceedImmediatelyTo === "next" ? "next" : "step"
   );
+  const router = useRouter();
 
   const showActionTarget = stepState.actionType === "email";
   const actionTypeField = `step-${step.id}-actionType`;
@@ -89,6 +91,11 @@ function Step({ step }: StepProps) {
 
   function onChangeProceedImmediatelyType(e: ChangeEvent<HTMLSelectElement>) {
     setProceedImmediatelyType(e.target.value === "next" ? "next" : "step");
+  }
+
+  async function onClickAddListener() {
+    await createEventListener(step.id);
+    router.refresh();
   }
 
   return (
@@ -198,6 +205,7 @@ function Step({ step }: StepProps) {
           {step.proceedListeners.map((listener) => (
             <EventListener key={listener.id} listener={listener} />
           ))}
+          <button onClick={onClickAddListener}>+ Add Listener</button>
         </div>
       )}
     </div>
