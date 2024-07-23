@@ -23,6 +23,7 @@ import { cleanupProductsSheet } from "@/processes/hubspot/handleData";
 import { z } from "zod";
 import { findAllFormValues } from "@/utility/misc";
 import { NextRequest } from "next/server";
+import { inspect } from "node:util";
 
 export function validateUserFormData(formData: FormData) {
   const existingUserId = formData.get("existingUserId");
@@ -309,6 +310,154 @@ export function parseWooCommerceOrderJson(json: any) {
   json.shippingTotal = json.shipping_total;
 
   return wooCommerceOrderDataSchema.parse(json);
+}
+
+export function validateWorkflowFormData(formData: FormData) {
+  const existingWorkflowId = formData.get("existingWorkflowId");
+  const allActionTypes = findAllFormValues(formData, (name) =>
+    name.includes("actionType")
+  );
+  const allActionTargets = findAllFormValues(formData, (name) =>
+    name.includes("actionTarget")
+  );
+  const allActionMessages = findAllFormValues(formData, (name) =>
+    name.includes("actionMessage")
+  );
+  const allProceedImmediately = findAllFormValues(formData, (name) =>
+    name.includes("proceedImmediately")
+  );
+  const allListenerNames = findAllFormValues(
+    formData,
+    (name) => !!name.match(/step-\d+-listener-\d+-name/)
+  );
+  const allListenerTypes = findAllFormValues(
+    formData,
+    (name) => !!name.match(/step-\d+-listener-\d+-type/)
+  );
+  const allListenerFrom = findAllFormValues(
+    formData,
+    (name) => !!name.match(/step-\d+-listener-\d+-from/)
+  );
+  const allListenerGoto = findAllFormValues(
+    formData,
+    (name) => !!name.match(/step-\d-listener-\d+-goto/)
+  );
+
+  const stepIds = allActionTypes.map(
+    (field) => +`${field.fieldName.match(/\d+/)}`
+  );
+  const data = stepIds.map((id) => {
+    const allListenerIdsThisStep = allListenerNames
+      .filter((field) => field.fieldName.includes(`step-${id}`))
+      .map(
+        (field) => `${field.fieldName.match(`(?<=step-${id}-listener-)\\d+`)}`
+      );
+    return {
+      id,
+      actionType: allActionTypes.find((field) =>
+        field.fieldName.includes(`${id}`)
+      )?.fieldValue,
+      actionTarget: allActionTargets.find((field) =>
+        field.fieldName.includes(`${id}`)
+      )?.fieldValue,
+      actionMessage: allActionMessages.find((field) =>
+        field.fieldName.includes(`${id}`)
+      )?.fieldValue,
+      proceedImmediatelyTo: allProceedImmediately.find((field) =>
+        field.fieldName.includes(`${id}`)
+      )?.fieldValue,
+      proceedListeners: allListenerIdsThisStep.map((listenerId) => ({
+        id,
+        name: allListenerNames.find((field) =>
+          field.fieldName.match(`step-${id}-listener-${listenerId}-name`)
+        )?.fieldValue,
+        type: allListenerTypes.find((field) =>
+          field.fieldName.match(`step-${id}-listener-${listenerId}-type`)
+        )?.fieldValue,
+        from: allListenerFrom.find((field) =>
+          field.fieldName.match(`step-${id}-listener-${listenerId}-from`)
+        )?.fieldValue,
+        goto: allListenerGoto.find((field) =>
+          field.fieldName.match(`step-${id}-listener-${listenerId}-goto`)
+        )?.fieldValue,
+      })),
+    };
+  });
+  // const allFor1Ids = allListenerNames
+  //   .filter((field) => field.fieldName.includes(`step-${1}`))
+  //   .map((field) => `${field.fieldName.match(`(?<=step-${1}-listener-)\\d+`)}`);
+  // const allFor1 = allFor1Ids.map((id) => ({
+  //   id,
+  //   name: allListenerNames.find((field) =>
+  //     field.fieldName.match(`step-${1}-listener-${id}-name`)
+  //   )?.fieldValue,
+  //   type: allListenerTypes.find((field) =>
+  //     field.fieldName.match(`step-${1}-listener-${id}-type`)
+  //   )?.fieldValue,
+  //   from: allListenerFrom.find((field) =>
+  //     field.fieldName.match(`step-${1}-listener-${id}-from`)
+  //   )?.fieldValue,
+  //   goto: allListenerGoto.find((field) =>
+  //     field.fieldName.match(`step-${1}-listener-${id}-goto`)
+  //   )?.fieldValue,
+  // }));
+  // console.log(allFor1);
+
+  console.log(
+    "==========================",
+    inspect(data, {
+      depth: null,
+      compact: false,
+    })
+  );
+  //step-3-listener-1-name
+  //step-3-listener-2-name
+  //step-3-listener-3-name
+  //step-4-listener-1-name
+  //step-4-listener-2-name
+  //step-4-listener-3-name
+  //step-4-listener-4-name
+  const a = [
+    {
+      id: 1,
+      name: "name",
+    },
+  ];
+
+  const ex = [
+    {
+      id: 1,
+      actionType: "email",
+      actionTarget: "approver",
+      actionMessage: "message",
+      proceedImmediatelyTo: "next",
+    },
+    {
+      id: 2,
+      actionType: "email",
+      actionTarget: "approver",
+      actionMessage: "message",
+      proceedImmediatelyTo: "next",
+      proceedListeners: [
+        {
+          name: "listen 1",
+          type: "approve",
+          from: "approver",
+          goto: "4",
+        },
+        {
+          name: "listen 2",
+          type: "deny",
+          from: "approver",
+          goto: "next",
+        },
+      ],
+    },
+  ];
+
+  return {
+    existingWorkflowId: existingWorkflowId ? +existingWorkflowId : undefined,
+  };
 }
 
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {

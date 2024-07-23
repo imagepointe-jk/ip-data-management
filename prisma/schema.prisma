@@ -187,14 +187,13 @@ model OrderWorkflowStep {
 //if one is found matching in "type" and "from", the workflow will try to proceed to
 //whatever is specified by "goto" (usually a stringified step index or something like "next")
 model OrderWorkflowStepProceedListener {
+  id     Int               @id() @default(autoincrement())
   name   String
   type   String
   from   String
   goto   String
   stepId Int
   step   OrderWorkflowStep @relation(fields: [stepId], references: [id])
-
-  @@id([type, from])
 }
 
 model OrderWorkflowInstance {

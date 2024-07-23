@@ -3,6 +3,7 @@
 import { prisma } from "../../prisma/client";
 import { handleWorkflowEvent } from "@/order-approval/main";
 import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/schema";
+import { validateWorkflowFormData } from "@/types/validations";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({
@@ -39,4 +40,13 @@ export async function receiveWorkflowEvent(
     //don't send the full error details to the client
     throw new Error("Server error.");
   }
+}
+
+export async function createWorkflow(formData: FormData) {}
+
+export async function updateWorkflow(formData: FormData) {
+  const parsed = validateWorkflowFormData(formData);
+  if (!parsed.existingWorkflowId)
+    throw new Error("No existing workflow id provided. This is a bug.");
+  console.log("updating", parsed.existingWorkflowId);
 }

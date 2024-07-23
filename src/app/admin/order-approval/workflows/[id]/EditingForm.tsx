@@ -14,6 +14,7 @@ import {
 } from "@/types/schema";
 import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
+import { updateWorkflow } from "@/actions/orderWorkflow";
 
 type Props = {
   existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
@@ -23,7 +24,7 @@ export function EditingForm({ existingWorkflow }: Props) {
   sorted.sort((a, b) => a.order - b.order);
 
   return (
-    <>
+    <form action={updateWorkflow}>
       <h2>
         Name:{" "}
         <input
@@ -38,7 +39,15 @@ export function EditingForm({ existingWorkflow }: Props) {
           <Step key={step.id} step={step} />
         ))}
       </div>
-    </>
+      {
+        <input
+          type="hidden"
+          name="existingWorkflowId"
+          value={existingWorkflow ? existingWorkflow.id : undefined}
+        />
+      }
+      <button type="submit">Save Changes</button>
+    </form>
   );
 }
 
@@ -189,10 +198,7 @@ function Step({ step }: StepProps) {
       >
         <h4>Event Listeners</h4>
         {step.proceedListeners.map((listener) => (
-          <EventListener
-            key={`${listener.type}-${listener.from}`}
-            listener={listener}
-          />
+          <EventListener key={listener.id} listener={listener} />
         ))}
       </div>
     </div>
@@ -208,10 +214,10 @@ function EventListener({ listener }: EventListenerProps) {
   const [showGoToField, setShowGoToField] = useState(
     !goToNextIsInitiallySelected
   );
-  const nameField = `step-${listener.stepId}-listener-${listener.type}-${listener.from}-name`;
-  const typeField = `step-${listener.stepId}-listener-${listener.type}-${listener.from}-type`;
-  const fromField = `step-${listener.stepId}-listener-${listener.type}-${listener.from}-from`;
-  const gotoField = `step-${listener.stepId}-listener-${listener.type}-${listener.from}-goto`;
+  const nameField = `step-${listener.stepId}-listener-${listener.id}-name`;
+  const typeField = `step-${listener.stepId}-listener-${listener.id}-type`;
+  const fromField = `step-${listener.stepId}-listener-${listener.id}-from`;
+  const gotoField = `step-${listener.stepId}-listener-${listener.id}-goto`;
 
   function onChangeGoToOption(e: ChangeEvent<HTMLSelectElement>) {
     if (e.target.value === "next") setShowGoToField(false);
