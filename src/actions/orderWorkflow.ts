@@ -51,6 +51,7 @@ export async function updateWorkflow(formData: FormData) {
 
   for (const step of parsed.steps) {
     const {
+      name,
       actionMessage,
       actionTarget,
       actionType,
@@ -62,6 +63,7 @@ export async function updateWorkflow(formData: FormData) {
         id,
       },
       data: {
+        name,
         actionType,
         actionTarget,
         actionMessage,

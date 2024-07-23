@@ -79,6 +79,7 @@ function Step({ step }: StepProps) {
   const router = useRouter();
 
   const showActionTarget = stepState.actionType === "email";
+  const nameField = `step-${step.id}-name`;
   const actionTypeField = `step-${step.id}-actionType`;
   const actionTargetField = `step-${step.id}-actionTarget`;
   const actionMessageField = `step-${step.id}-actionMessage`;
@@ -106,7 +107,15 @@ function Step({ step }: StepProps) {
 
   return (
     <div className={styles["single-step-container"]}>
-      <h3>{step.name}</h3>
+      <h3>
+        Name:{" "}
+        <input
+          type="text"
+          name={nameField}
+          id={nameField}
+          defaultValue={step.name}
+        />
+      </h3>
       <div>
         {/* Action Type */}
 
@@ -249,7 +258,12 @@ function EventListener({ listener }: EventListenerProps) {
     <div className={styles["step-subcontainer"]}>
       <div>
         <label htmlFor={nameField}>Name</label>
-        <input type="text" name={nameField} id={nameField} />
+        <input
+          type="text"
+          name={nameField}
+          id={nameField}
+          defaultValue={listener.name}
+        />
       </div>
       <div>
         <div>

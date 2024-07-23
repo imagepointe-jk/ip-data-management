@@ -314,6 +314,10 @@ export function parseWooCommerceOrderJson(json: any) {
 
 export function validateWorkflowFormData(formData: FormData) {
   const existingWorkflowId = formData.get("existingWorkflowId");
+  const allStepNames = findAllFormValues(
+    formData,
+    (name) => !!name.match(/step-\d-name/)
+  );
   const allActionTypes = findAllFormValues(formData, (name) =>
     name.includes("actionType")
   );
@@ -354,6 +358,9 @@ export function validateWorkflowFormData(formData: FormData) {
       );
     return {
       id,
+      name: allStepNames
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
       actionType: allActionTypes
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
