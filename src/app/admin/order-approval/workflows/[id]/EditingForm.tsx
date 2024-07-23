@@ -14,8 +14,14 @@ import {
 } from "@/types/schema";
 import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
-import { createEventListener, updateWorkflow } from "@/actions/orderWorkflow";
+import {
+  createEventListener,
+  deleteEventListener,
+  updateWorkflow,
+} from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
@@ -205,7 +211,9 @@ function Step({ step }: StepProps) {
           {step.proceedListeners.map((listener) => (
             <EventListener key={listener.id} listener={listener} />
           ))}
-          <button onClick={onClickAddListener}>+ Add Listener</button>
+          <button onClick={onClickAddListener} type="button">
+            + Add Listener
+          </button>
         </div>
       )}
     </div>
@@ -221,6 +229,7 @@ function EventListener({ listener }: EventListenerProps) {
   const [showGoToField, setShowGoToField] = useState(
     !goToNextIsInitiallySelected
   );
+  const router = useRouter();
   const nameField = `step-${listener.stepId}-listener-${listener.id}-name`;
   const typeField = `step-${listener.stepId}-listener-${listener.id}-type`;
   const fromField = `step-${listener.stepId}-listener-${listener.id}-from`;
@@ -229,6 +238,11 @@ function EventListener({ listener }: EventListenerProps) {
   function onChangeGoToOption(e: ChangeEvent<HTMLSelectElement>) {
     if (e.target.value === "next") setShowGoToField(false);
     else setShowGoToField(true);
+  }
+
+  async function onClickDelete() {
+    await deleteEventListener(listener.id);
+    router.refresh();
   }
 
   return (
@@ -291,6 +305,13 @@ function EventListener({ listener }: EventListenerProps) {
             />
           )}
         </div>
+        <button
+          className="button-danger button-small"
+          onClick={onClickDelete}
+          type="button"
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

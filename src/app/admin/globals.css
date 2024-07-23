@@ -123,6 +123,12 @@ button.button-danger:disabled {
   pointer-events: none;
 }
 
+a.button-small,
+button.button-small {
+  font-size: 0.8rem;
+  padding: 5px;
+}
+
 select,
 input[type="text"],
 input[type="number"] {

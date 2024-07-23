@@ -98,3 +98,11 @@ export async function createEventListener(parentStepId: number) {
     },
   });
 }
+
+export async function deleteEventListener(id: number) {
+  await prisma.orderWorkflowStepProceedListener.delete({
+    where: {
+      id,
+    },
+  });
+}
