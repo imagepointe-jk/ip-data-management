@@ -316,7 +316,7 @@ export function validateWorkflowFormData(formData: FormData) {
   const existingWorkflowId = formData.get("existingWorkflowId");
   const allStepNames = findAllFormValues(
     formData,
-    (name) => !!name.match(/step-\d-name/)
+    (name) => !!name.match(/step-\d+-name/)
   );
   const allActionTypes = findAllFormValues(formData, (name) =>
     name.includes("actionType")
