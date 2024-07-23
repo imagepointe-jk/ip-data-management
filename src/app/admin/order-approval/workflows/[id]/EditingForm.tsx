@@ -61,38 +61,34 @@ function Step({ step }: StepProps) {
     step.proceedImmediatelyTo !== null;
   const isProceedImmediatelyInitiallyNext =
     step.proceedImmediatelyTo === "next";
-  const userTargetableActionInitiallySelected = isActionTypeTargetable(
-    step.actionType
-  ); //was an action type initially selected for which an action target makes sense?
-  const [showActionTarget, setShowActionTarget] = useState(
-    userTargetableActionInitiallySelected
+
+  const [stepState, setStepState] = useState(step);
+  const [waitForEvent, setWaitForEvent] = useState(
+    !isProceedImmediatelyInitiallySelected
   );
-  const [showImmediateProceedType, setShowImmediateProceedType] = useState(
-    isProceedImmediatelyInitiallySelected
+  const [proceedImmediatelyType, setProceedImmediatelyType] = useState(
+    step.proceedImmediatelyTo === "next" ? "next" : "step"
   );
-  const [showGoToStepNumber, setShowGoToStepNumber] = useState(
-    isProceedImmediatelyInitiallySelected && !isProceedImmediatelyInitiallyNext
-  );
+
+  const showActionTarget = stepState.actionType === "email";
   const actionTypeField = `step-${step.id}-actionType`;
   const actionTargetField = `step-${step.id}-actionTarget`;
   const actionMessageField = `step-${step.id}-actionMessage`;
   const proceedImmediatelyField = `step-${step.id}-proceedImmediatelyTo`;
 
-  function isActionTypeTargetable(type: string) {
-    //there may eventually be more than one "targetable" action type
-    return type === "email";
-  }
-
   function onChangeActionType(e: ChangeEvent<HTMLSelectElement>) {
-    setShowActionTarget(isActionTypeTargetable(e.target.value));
+    setStepState({
+      ...stepState,
+      actionType: e.target.value,
+    });
   }
 
   function onChangeWaitOrGo(e: ChangeEvent<HTMLSelectElement>) {
-    setShowImmediateProceedType(e.target.value === "goto");
+    setWaitForEvent(e.target.value === "wait");
   }
 
   function onChangeProceedImmediatelyType(e: ChangeEvent<HTMLSelectElement>) {
-    setShowGoToStepNumber(e.target.value === "step");
+    setProceedImmediatelyType(e.target.value === "next" ? "next" : "step");
   }
 
   return (
@@ -120,7 +116,11 @@ function Step({ step }: StepProps) {
 
       <div style={{ display: !showActionTarget ? "none" : undefined }}>
         <label htmlFor={actionTargetField}>Action Target</label>
-        <select name={actionTargetField} id={actionTargetField}>
+        <select
+          name={actionTargetField}
+          id={actionTargetField}
+          defaultValue={step.actionTarget || undefined}
+        >
           {orderWorkflowUserRoles.map((role) => (
             <option key={role} value={role}>
               {makeStringTitleCase(role)}
@@ -153,29 +153,29 @@ function Step({ step }: StepProps) {
           <option value="wait">wait for an event</option>
           <option value="goto">go to</option>
         </select>
-        <select
-          onChange={onChangeProceedImmediatelyType}
-          defaultValue={
-            isProceedImmediatelyInitiallySelected &&
-            isProceedImmediatelyInitiallyNext
-              ? "next"
-              : "step"
-          }
-          style={{ display: !showImmediateProceedType ? "none" : undefined }}
-        >
-          <option value="next">the next step</option>
-          <option value="step">step number</option>
-        </select>
-        {showGoToStepNumber && (
+        {!waitForEvent && (
+          <select
+            onChange={onChangeProceedImmediatelyType}
+            defaultValue={
+              isProceedImmediatelyInitiallySelected &&
+              isProceedImmediatelyInitiallyNext
+                ? "next"
+                : "step"
+            }
+          >
+            <option value="next">the next step</option>
+            <option value="step">step number</option>
+          </select>
+        )}
+        {!waitForEvent && proceedImmediatelyType === "step" && (
           <input
             name={proceedImmediatelyField}
             id={proceedImmediatelyField}
             type="number"
             defaultValue={step.proceedImmediatelyTo || undefined}
-            style={{ display: !showImmediateProceedType ? "none" : undefined }}
           />
         )}
-        {!showGoToStepNumber && (
+        {!waitForEvent && proceedImmediatelyType === "next" && (
           // A hidden input field that passes along the value of "next".
           // It shares an id with the other "goto" field and they should be mutually exclusive,
           // based on whether "the next step" option is selected.
@@ -192,15 +192,14 @@ function Step({ step }: StepProps) {
 
       {/* Event Listener Section */}
 
-      <div
-        className={styles["step-subcontainer"]}
-        style={{ display: showImmediateProceedType ? "none" : undefined }}
-      >
-        <h4>Event Listeners</h4>
-        {step.proceedListeners.map((listener) => (
-          <EventListener key={listener.id} listener={listener} />
-        ))}
-      </div>
+      {waitForEvent && (
+        <div className={styles["step-subcontainer"]}>
+          <h4>Event Listeners</h4>
+          {step.proceedListeners.map((listener) => (
+            <EventListener key={listener.id} listener={listener} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
