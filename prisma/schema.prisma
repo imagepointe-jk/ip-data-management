@@ -193,7 +193,7 @@ model OrderWorkflowStepProceedListener {
   from   String
   goto   String
   stepId Int
-  step   OrderWorkflowStep @relation(fields: [stepId], references: [id])
+  step   OrderWorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
 }
 
 model OrderWorkflowInstance {
