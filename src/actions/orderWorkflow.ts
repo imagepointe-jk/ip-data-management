@@ -122,3 +122,11 @@ export async function createStep(parentWorkflowId: number, order?: number) {
     },
   });
 }
+
+export async function deleteStep(id: number) {
+  await prisma.orderWorkflowStep.delete({
+    where: {
+      id,
+    },
+  });
+}

@@ -18,6 +18,7 @@ import {
   createEventListener,
   createStep,
   deleteEventListener,
+  deleteStep,
   updateWorkflow,
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
@@ -114,6 +115,11 @@ function Step({ step }: StepProps) {
 
   async function onClickAddListener() {
     await createEventListener(step.id);
+    router.refresh();
+  }
+
+  async function onClickDeleteStep() {
+    await deleteStep(step.id);
     router.refresh();
   }
 
@@ -237,6 +243,13 @@ function Step({ step }: StepProps) {
           </button>
         </div>
       )}
+      <button
+        type="button"
+        className="button-danger"
+        onClick={onClickDeleteStep}
+      >
+        Delete &quot;{step.name}&quot;
+      </button>
     </div>
   );
 }
