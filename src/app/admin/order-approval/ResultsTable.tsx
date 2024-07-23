@@ -4,6 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { getWorkflowsWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
+import Link from "next/link";
 
 type Props = {
   workflows: UnwrapPromise<ReturnType<typeof getWorkflowsWithIncludes>>;
@@ -16,7 +17,11 @@ export function ResultsTable({ workflows }: Props) {
       columns={[
         {
           headerName: "Name",
-          createCell: (workflow) => workflow.name,
+          createCell: (workflow) => (
+            <Link href={`order-approval/workflows/${workflow.id}`}>
+              {workflow.name}
+            </Link>
+          ),
         },
         {
           headerName: "Webstore",
