@@ -9,6 +9,14 @@ export async function getWebstore(url: string) {
   });
 }
 
+export async function getWebstoreById(id: number) {
+  return prisma.webstore.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
 export async function getWebstoresWithIncludes() {
   return prisma.webstore.findMany({
     include: {

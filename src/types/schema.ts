@@ -237,6 +237,15 @@ const orderWorkflowActionTypeSchema = z.enum(orderWorkflowActionTypes);
 export const orderWorkflowEventTypes = ["approve", "deny", "proceed"] as const;
 const orderWorkflowEventTypeSchema = z.enum(orderWorkflowEventTypes);
 
+export const webstoreFormDataSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  orgName: z.string(),
+  url: z.string(),
+  changeApiKey: z.string(),
+  changeApiSecret: z.string(),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 

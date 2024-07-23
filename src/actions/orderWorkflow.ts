@@ -3,7 +3,11 @@
 import { prisma } from "../../prisma/client";
 import { handleWorkflowEvent } from "@/order-approval/main";
 import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/schema";
-import { validateWorkflowFormData } from "@/types/validations";
+import {
+  validateWebstoreFormData,
+  validateWorkflowFormData,
+} from "@/types/validations";
+import { encrypt } from "@/utility/misc";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({
@@ -127,6 +131,47 @@ export async function deleteStep(id: number) {
   await prisma.orderWorkflowStep.delete({
     where: {
       id,
+    },
+  });
+}
+
+export async function updateWebstore(formData: FormData) {
+  const { changeApiKey, changeApiSecret, id, name, orgName, url } =
+    validateWebstoreFormData(formData);
+  if (isNaN(+`${id}`))
+    throw new Error(`Invalid webstore id ${id}. This is a bug.`);
+  const changingApiKey = changeApiKey !== "";
+  const changingApiSecret = changeApiSecret !== "";
+
+  const {
+    ciphertext: apiKey,
+    iv: apiKeyEncryptIv,
+    tag: apiKeyEncryptTag,
+  } = encrypt(changeApiKey);
+  const {
+    ciphertext: apiSecret,
+    iv: apiSecretEncryptIv,
+    tag: apiSecretEncryptTag,
+  } = encrypt(changeApiSecret);
+
+  await prisma.webstore.update({
+    where: {
+      id: +`${id}`,
+    },
+    data: {
+      name,
+      organizationName: orgName,
+      url,
+      apiKey: changingApiKey ? apiKey : undefined,
+      apiKeyEncryptIv: changingApiKey ? apiKeyEncryptIv : undefined,
+      apiKeyEncryptTag: changingApiKey
+        ? apiKeyEncryptTag.toString("base64")
+        : undefined,
+      apiSecret: changingApiSecret ? apiSecret : undefined,
+      apiSecretEncryptIv: changingApiSecret ? apiSecretEncryptIv : undefined,
+      apiSecretEncryptTag: changingApiSecret
+        ? apiSecretEncryptTag.toString("base64")
+        : undefined,
     },
   });
 }

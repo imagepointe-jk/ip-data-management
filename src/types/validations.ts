@@ -14,6 +14,7 @@ import {
   productSchema,
   quoteRequestSchema,
   userFormDataSchema,
+  webstoreFormDataSchema,
   wooCommerceLineItemSchema,
   wooCommerceOrderDataSchema,
   wooCommerceProductSchema,
@@ -403,6 +404,17 @@ export function validateWorkflowFormData(formData: FormData) {
     existingWorkflowId: existingWorkflowId ? +existingWorkflowId : undefined,
     steps,
   };
+}
+
+export function validateWebstoreFormData(formData: FormData) {
+  return webstoreFormDataSchema.parse({
+    id: formData.get("id"),
+    name: formData.get("name"),
+    orgName: formData.get("org-name"),
+    url: formData.get("url"),
+    changeApiKey: formData.get("api-key"),
+    changeApiSecret: formData.get("api-secret"),
+  });
 }
 
 function validateArray<T>(requiredValues: T[], inputArray: T[]) {
