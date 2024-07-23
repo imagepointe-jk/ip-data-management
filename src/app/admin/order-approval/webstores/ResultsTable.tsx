@@ -48,6 +48,15 @@ export function ResultsTable({ webstores }: Props) {
               0
             ),
         },
+        {
+          headerName: "Associated Users",
+          createCell: (webstore) => (
+            <>
+              {webstore.users.length}{" "}
+              <Link href={`webstores/${webstore.id}/users`}>(View)</Link>
+            </>
+          ),
+        },
       ]}
       className={styles["basic-table"]}
     />

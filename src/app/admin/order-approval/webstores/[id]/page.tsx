@@ -1,5 +1,6 @@
 import { updateWebstore } from "@/actions/orderWorkflow";
 import { getWebstoreById } from "@/db/access/orderApproval";
+import Link from "next/link";
 
 type Props = {
   params: {
@@ -14,6 +15,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <h1>Editing Webstore Data</h1>
+      <Link href={`${params.id}/users`}>View Users</Link>
       <form action={updateWebstore}>
         <h2>
           Name{" "}

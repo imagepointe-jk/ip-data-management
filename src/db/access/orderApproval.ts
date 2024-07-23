@@ -9,6 +9,14 @@ export async function getWebstore(url: string) {
   });
 }
 
+const webstoreIncludes = {
+  workflows: {
+    include: {
+      instances: true,
+    },
+  },
+  users: true,
+};
 export async function getWebstoreById(id: number) {
   return prisma.webstore.findUnique({
     where: {
@@ -17,15 +25,18 @@ export async function getWebstoreById(id: number) {
   });
 }
 
+export async function getWebstoreWithIncludes(id: number) {
+  return prisma.webstore.findUnique({
+    where: {
+      id,
+    },
+    include: webstoreIncludes,
+  });
+}
+
 export async function getWebstoresWithIncludes() {
   return prisma.webstore.findMany({
-    include: {
-      workflows: {
-        include: {
-          instances: true,
-        },
-      },
-    },
+    include: webstoreIncludes,
   });
 }
 
