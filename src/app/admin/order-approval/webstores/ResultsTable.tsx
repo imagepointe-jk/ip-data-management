@@ -4,6 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
+import Link from "next/link";
 
 type Props = {
   webstores: UnwrapPromise<ReturnType<typeof getWebstoresWithIncludes>>;
@@ -15,7 +16,9 @@ export function ResultsTable({ webstores }: Props) {
       columns={[
         {
           headerName: "Name",
-          createCell: (webstore) => webstore.name,
+          createCell: (webstore) => (
+            <Link href={`webstores/${webstore.id}`}>{webstore.name}</Link>
+          ),
         },
         {
           headerName: "URL",
