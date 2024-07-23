@@ -1,5 +1,6 @@
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
+import Link from "next/link";
 
 type Props = {
   params: {
@@ -13,6 +14,7 @@ export default async function Page({ params: { id } }: Props) {
   return (
     <>
       <h1>Instances of {workflow.name}</h1>
+      <Link href={`../${workflow.id}`}>{`< Back to ${workflow.name}`}</Link>
       <ResultsTable workflow={workflow} />
     </>
   );

@@ -22,6 +22,7 @@ import {
   updateWorkflow,
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Props = {
   existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
@@ -42,6 +43,11 @@ export function EditingForm({ existingWorkflow }: Props) {
 
   return (
     <form action={updateWorkflow}>
+      {existingWorkflow && existingWorkflow.instances.length > 0 && (
+        <Link href={`${existingWorkflow.id}/instances`}>
+          View {existingWorkflow.instances.length} instance(s)
+        </Link>
+      )}
       <h2>
         Name:{" "}
         <input

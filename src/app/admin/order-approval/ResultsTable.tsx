@@ -36,7 +36,14 @@ export function ResultsTable({ workflows }: Props) {
         },
         {
           headerName: "Total Instances",
-          createCell: (workflow) => workflow.instances.length,
+          createCell: (workflow) => (
+            <>
+              {workflow.instances.length}{" "}
+              <Link href={`order-approval/workflows/${workflow.id}/instances`}>
+                (View)
+              </Link>
+            </>
+          ),
         },
         {
           headerName: "Total Steps",
