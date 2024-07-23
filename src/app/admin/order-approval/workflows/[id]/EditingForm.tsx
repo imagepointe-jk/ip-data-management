@@ -16,19 +16,28 @@ import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
 import {
   createEventListener,
+  createStep,
   deleteEventListener,
   updateWorkflow,
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
 };
 export function EditingForm({ existingWorkflow }: Props) {
+  const router = useRouter();
   const sorted = existingWorkflow ? [...existingWorkflow.steps] : [];
   sorted.sort((a, b) => a.order - b.order);
+
+  async function onClickAddStep() {
+    if (!existingWorkflow) return;
+    const currentLastStep = sorted[sorted.length - 1];
+    const orderToUse = currentLastStep ? currentLastStep.order + 1 : 0;
+
+    await createStep(existingWorkflow.id, orderToUse);
+    router.refresh();
+  }
 
   return (
     <form action={updateWorkflow}>
@@ -53,6 +62,9 @@ export function EditingForm({ existingWorkflow }: Props) {
           value={existingWorkflow ? existingWorkflow.id : undefined}
         />
       }
+      <button type="button" onClick={onClickAddStep}>
+        + Add Step
+      </button>
       <button type="submit">Save Changes</button>
     </form>
   );

@@ -108,3 +108,17 @@ export async function deleteEventListener(id: number) {
     },
   });
 }
+
+export async function createStep(parentWorkflowId: number, order?: number) {
+  await prisma.orderWorkflowStep.create({
+    data: {
+      workflowId: parentWorkflowId,
+      name: "New Step",
+      actionType: "email",
+      order: order || 0,
+      actionMessage: "Your message here",
+      actionTarget: "approver",
+      proceedImmediatelyTo: "next",
+    },
+  });
+}
