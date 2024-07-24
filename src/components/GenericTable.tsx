@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 
 type HasId = {
-  id: number;
+  id: number | string;
 };
 type GenericTableColumn<T> = {
   headerName: string;
