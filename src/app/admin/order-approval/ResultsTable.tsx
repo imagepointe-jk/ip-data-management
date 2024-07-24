@@ -25,7 +25,11 @@ export function ResultsTable({ workflows }: Props) {
         },
         {
           headerName: "Webstore",
-          createCell: (workflow) => workflow.webstore.name,
+          createCell: (workflow) => (
+            <Link href={`order-approval/webstores/${workflow.webstore.id}`}>
+              {workflow.webstore.name}
+            </Link>
+          ),
         },
         {
           headerName: "Active Instances",
@@ -39,9 +43,13 @@ export function ResultsTable({ workflows }: Props) {
           createCell: (workflow) => (
             <>
               {workflow.instances.length}{" "}
-              <Link href={`order-approval/workflows/${workflow.id}/instances`}>
-                (View)
-              </Link>
+              {workflow.instances.length > 0 && (
+                <Link
+                  href={`order-approval/workflows/${workflow.id}/instances`}
+                >
+                  (View)
+                </Link>
+              )}
             </>
           ),
         },
