@@ -1,6 +1,7 @@
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
 import { CreateUser } from "./CreateUser";
+import Link from "next/link";
 
 type Props = {
   params: {
@@ -14,6 +15,7 @@ export default async function Page({ params: { id } }: Props) {
   return (
     <>
       <h1>{webstore.name} Users</h1>
+      <Link href={`../${id}`}>&lt; Back to {webstore.name}</Link>
       {webstore.users.length > 0 && <ResultsTable webstore={webstore} />}
       {webstore.users.length === 0 && <p>No users.</p>}
       <CreateUser webstoreId={webstore.id} />

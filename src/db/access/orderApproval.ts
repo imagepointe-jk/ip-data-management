@@ -115,6 +115,21 @@ export async function getWorkflowInstance(id: number) {
   });
 }
 
+export async function getWorkflowInstanceWithIncludes(id: number) {
+  return prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      accessCodes: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getWorkflowWithIncludes(id: number) {
   return prisma.orderWorkflow.findUnique({
     where: {
