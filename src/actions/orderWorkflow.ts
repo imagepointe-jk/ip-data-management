@@ -8,6 +8,9 @@ import {
   validateWorkflowFormData,
 } from "@/types/validations";
 import { encrypt } from "@/utility/misc";
+import { createWebstore as createDbWebstore } from "@/db/access/orderApproval";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({
@@ -181,6 +184,41 @@ export async function updateWebstore(formData: FormData) {
         : undefined,
     },
   });
+}
+
+export async function createWebstore(formData: FormData) {
+  const {
+    changeApiKey,
+    changeApiSecret,
+    name,
+    orgName: organizationName,
+    url,
+  } = validateWebstoreFormData(formData);
+  const {
+    ciphertext: apiKey,
+    iv: apiKeyEncryptIv,
+    tag: apiKeyEncryptTag,
+  } = encrypt(changeApiKey);
+  const {
+    ciphertext: apiSecret,
+    iv: apiSecretEncryptIv,
+    tag: apiSecretEncryptTag,
+  } = encrypt(changeApiSecret);
+
+  await createDbWebstore({
+    apiKey,
+    apiKeyEncryptIv,
+    apiKeyEncryptTag: apiKeyEncryptTag.toString("base64"),
+    apiSecret,
+    apiSecretEncryptIv,
+    apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
+    name,
+    organizationName,
+    url,
+  });
+
+  revalidatePath("/admin/order-approval/webstores");
+  redirect("/admin/order-approval/webstores");
 }
 
 export async function setUserIsApprover(id: number, isApprover: boolean) {

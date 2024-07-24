@@ -1,4 +1,4 @@
-import { updateWebstore } from "@/actions/orderWorkflow";
+import { createWebstore, updateWebstore } from "@/actions/orderWorkflow";
 import { getWebstoreById } from "@/db/access/orderApproval";
 import Link from "next/link";
 
@@ -8,22 +8,26 @@ type Props = {
   };
 };
 export default async function Page({ params }: Props) {
-  const webstore = await getWebstoreById(+params.id);
+  const existingWebstore = await getWebstoreById(+params.id);
 
-  if (!webstore) return <h1>Webstore {params.id} not found.</h1>;
+  if (!existingWebstore && params.id !== "0")
+    return <h1>Webstore {params.id} not found.</h1>;
 
   return (
     <>
-      <h1>Editing Webstore Data</h1>
-      <Link href={`${params.id}/users`}>View Users</Link>
-      <form action={updateWebstore}>
+      <h1>
+        {existingWebstore ? "Editing Webstore Data" : "Creating Webstore Data"}
+      </h1>
+      {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
+      <form action={existingWebstore ? updateWebstore : createWebstore}>
         <h2>
           Name{" "}
           <input
             type="text"
             name="name"
             id="name"
-            defaultValue={webstore.name}
+            defaultValue={existingWebstore?.name}
+            required
           />
         </h2>
         <div>
@@ -32,22 +36,42 @@ export default async function Page({ params }: Props) {
             type="text"
             name="org-name"
             id="org-name"
-            defaultValue={webstore.organizationName}
+            defaultValue={existingWebstore?.organizationName}
+            required
           />
         </div>
         <div>
           URL{" "}
-          <input type="text" name="url" id="url" defaultValue={webstore.url} />
+          <input
+            type="text"
+            name="url"
+            id="url"
+            defaultValue={existingWebstore?.url}
+            required
+          />
         </div>
         <div>
-          Change API Key <input type="text" name="api-key" id="api-key" />
+          {existingWebstore ? "Change API Key " : "Set API Key "}{" "}
+          <input
+            type="text"
+            name="api-key"
+            id="api-key"
+            required={!existingWebstore}
+          />
         </div>
         <div>
-          Change API Secret{" "}
-          <input type="text" name="api-secret" id="api-secret" />
+          {existingWebstore ? "Change API Secret " : "Set API Secret "}
+          <input
+            type="text"
+            name="api-secret"
+            id="api-secret"
+            required={!existingWebstore}
+          />
         </div>
-        <input type="hidden" name="id" value={webstore.id} readOnly />
-        <button type="submit">Save Changes</button>
+        <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
+        <button type="submit">
+          {existingWebstore ? "Save Changes" : "Create Webstore"}
+        </button>
       </form>
     </>
   );

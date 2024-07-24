@@ -1,5 +1,5 @@
 import { prisma } from "@/../prisma/client";
-import { OrderWorkflowInstance } from "@prisma/client";
+import { OrderWorkflowInstance, Webstore } from "@prisma/client";
 
 export async function getWebstore(url: string) {
   return prisma.webstore.findUnique({
@@ -211,5 +211,13 @@ export async function markWorkflowInstanceFinished(id: number) {
     data: {
       status: "finished",
     },
+  });
+}
+
+export async function createWebstore(data: Omit<Webstore, "id">) {
+  // const {apiKey, apiKeyEncryptIv, apiKeyEncryptTag, apiSecret, apiSecretEncryptIv, apiSecretEncryptTag, name, organizationName, url} = data;
+
+  return prisma.webstore.create({
+    data,
   });
 }
