@@ -46,7 +46,14 @@ export async function receiveWorkflowEvent(
   }
 }
 
-export async function createWorkflow(formData: FormData) {}
+export async function createWorkflow(webstoreId: number, name: string) {
+  await prisma.orderWorkflow.create({
+    data: {
+      name,
+      webstoreId,
+    },
+  });
+}
 
 export async function updateWorkflow(formData: FormData) {
   const parsed = validateWorkflowFormData(formData);

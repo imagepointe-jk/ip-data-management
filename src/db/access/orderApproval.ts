@@ -34,6 +34,10 @@ export async function getWebstoreWithIncludes(id: number) {
   });
 }
 
+export async function getWebstores() {
+  return prisma.webstore.findMany();
+}
+
 export async function getWebstoresWithIncludes() {
   return prisma.webstore.findMany({
     include: webstoreIncludes,

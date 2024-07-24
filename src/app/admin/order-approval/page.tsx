@@ -1,9 +1,14 @@
-import { getWorkflowsWithIncludes } from "@/db/access/orderApproval";
+import {
+  getWebstores,
+  getWorkflowsWithIncludes,
+} from "@/db/access/orderApproval";
 import GenericTable from "@/components/GenericTable";
 import { ResultsTable } from "./ResultsTable";
+import { CreateWorkflow } from "./CreateWorkflow";
 
 export default async function OrderApproval() {
   const workflows = await getWorkflowsWithIncludes();
+  const webstores = await getWebstores();
 
   return (
     <>
@@ -13,6 +18,12 @@ export default async function OrderApproval() {
         placed.
       </p>
       <ResultsTable workflows={workflows} />
+      <div
+        className="content-frame"
+        style={{ width: "400px", marginTop: "20px" }}
+      >
+        <CreateWorkflow webstores={webstores} />
+      </div>
     </>
   );
 }
