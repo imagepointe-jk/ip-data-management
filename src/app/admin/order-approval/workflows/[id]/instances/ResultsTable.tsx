@@ -46,10 +46,14 @@ export function ResultsTable({ workflow }: Props) {
           createCell: (instance) => instance.currentStep,
         },
         {
-          headerName: "Started On",
+          headerName: "Created On",
+          createCell: (instance) => instance.createdAt.toLocaleString(),
+        },
+        {
+          headerName: "Last Started On",
           createCell: (instance) => (
             <>
-              {instance.createdAt.toLocaleString()}
+              {instance.lastStartedAt.toLocaleString()}
               <button onClick={() => onClickRestart(instance.id)}>
                 Restart
               </button>

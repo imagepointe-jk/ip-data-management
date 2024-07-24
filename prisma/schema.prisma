@@ -206,6 +206,7 @@ model OrderWorkflowInstance {
   parentWorkflowId   Int
   parentWorkflow     OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
   createdAt          DateTime                  @default(now())
+  lastStartedAt      DateTime                  @default(now())
 }
 
 model OrderWorkflowComment {

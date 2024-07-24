@@ -232,6 +232,17 @@ export async function setWorkflowInstanceStatus(
   });
 }
 
+export async function updateWorkflowInstanceLastStartedDate(id: number) {
+  await prisma.orderWorkflowInstance.update({
+    where: {
+      id,
+    },
+    data: {
+      lastStartedAt: new Date(),
+    },
+  });
+}
+
 export async function createWebstore(data: Omit<Webstore, "id">) {
   // const {apiKey, apiKeyEncryptIv, apiKeyEncryptTag, apiSecret, apiSecretEncryptIv, apiSecretEncryptTag, name, organizationName, url} = data;
 

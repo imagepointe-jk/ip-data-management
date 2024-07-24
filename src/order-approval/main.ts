@@ -11,6 +11,7 @@ import {
   getWorkflowWithIncludes,
   getWorkflowInstanceCurrentStep,
   setWorkflowInstanceStatus,
+  updateWorkflowInstanceLastStartedDate,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import {
@@ -46,6 +47,7 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
 
   await setWorkflowInstanceCurrentStep(instance.id, 0);
   await setWorkflowInstanceStatus(instance.id, "waiting");
+  await updateWorkflowInstanceLastStartedDate(instance.id);
   handleCurrentStep(instance);
 }
 
