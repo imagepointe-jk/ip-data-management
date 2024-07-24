@@ -10,7 +10,7 @@ import {
   getFirstApproverFor,
   getWorkflowWithIncludes,
   getWorkflowInstanceCurrentStep,
-  markWorkflowInstanceFinished,
+  setWorkflowInstanceStatus,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import {
@@ -36,7 +36,17 @@ type StartWorkflowParams = {
 };
 export async function startOrderWorkflow(params: StartWorkflowParams) {
   const { workflowInstance } = await setupOrderWorkflow(params);
-  handleCurrentStep(workflowInstance);
+  // handleCurrentStep(workflowInstance);
+  startWorkflowInstanceFromBeginning(workflowInstance.id);
+}
+
+export async function startWorkflowInstanceFromBeginning(id: number) {
+  const instance = await getWorkflowInstance(id);
+  if (!instance) throw new Error(`Workflow instance ${id} not found.`);
+
+  await setWorkflowInstanceCurrentStep(instance.id, 0);
+  await setWorkflowInstanceStatus(instance.id, "waiting");
+  handleCurrentStep(instance);
 }
 
 async function setupOrderWorkflow(params: StartWorkflowParams) {
@@ -170,7 +180,7 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     );
 
     if (!nextStep) {
-      await markWorkflowInstanceFinished(workflowInstance.id);
+      await setWorkflowInstanceStatus(workflowInstance.id, "finished");
     } else {
       await setWorkflowInstanceCurrentStep(
         workflowInstance.id,

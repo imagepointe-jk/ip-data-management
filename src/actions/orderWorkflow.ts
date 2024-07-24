@@ -1,7 +1,10 @@
 "use server";
 
 import { prisma } from "../../prisma/client";
-import { handleWorkflowEvent } from "@/order-approval/main";
+import {
+  handleWorkflowEvent,
+  startWorkflowInstanceFromBeginning,
+} from "@/order-approval/main";
 import { OrderWorkflowEventType, OrderWorkflowUserRole } from "@/types/schema";
 import {
   validateWebstoreFormData,
@@ -257,4 +260,6 @@ export async function createUserForWebstore(
   });
 }
 
-//TODO: "Restart Workflow Instance" function
+export async function restartWorkflow(id: number) {
+  await startWorkflowInstanceFromBeginning(id);
+}
