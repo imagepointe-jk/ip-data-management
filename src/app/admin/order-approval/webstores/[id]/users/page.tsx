@@ -14,6 +14,7 @@ export default async function Page({ params: { id } }: Props) {
     <>
       <h1>{webstore.name} Users</h1>
       <ResultsTable webstore={webstore} />
+      <button>+ Add User</button>
     </>
   );
 }

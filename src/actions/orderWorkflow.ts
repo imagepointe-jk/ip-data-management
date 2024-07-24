@@ -187,4 +187,15 @@ export async function setUserIsApprover(id: number, isApprover: boolean) {
   });
 }
 
+export async function setUserEmail(id: number, email: string) {
+  await prisma.orderWorkflowUser.update({
+    where: {
+      id,
+    },
+    data: {
+      email,
+    },
+  });
+}
+
 //TODO: "Restart Workflow Instance" function
