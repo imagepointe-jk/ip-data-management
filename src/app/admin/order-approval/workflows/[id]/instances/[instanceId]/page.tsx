@@ -1,5 +1,6 @@
 import { getWorkflowInstanceWithIncludes } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
+import Link from "next/link";
 
 type Props = {
   params: {
@@ -16,8 +17,9 @@ export default async function Page({ params: { id, instanceId } }: Props) {
       <h1>
         Instance {instance.id} of Workflow {id}
       </h1>
+      <Link href="../instances">&lt; Back to instances</Link>
       <ul>
-        <li>Started on (date)</li>
+        <li>Started on: {instance.createdAt.toLocaleString()}</li>
         <li>WooCommerce Order ID: {instance.wooCommerceOrderId}</li>
         <li>Status: {instance.status}</li>
         <li>Current Step: {instance.currentStep}</li>

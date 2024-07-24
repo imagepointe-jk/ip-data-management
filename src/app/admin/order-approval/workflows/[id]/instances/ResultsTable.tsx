@@ -4,6 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
+import Link from "next/link";
 
 type Props = {
   workflow: Exclude<
@@ -19,7 +20,9 @@ export function ResultsTable({ workflow }: Props) {
       columns={[
         {
           headerName: "ID",
-          createCell: (instance) => instance.id,
+          createCell: (instance) => (
+            <Link href={`instances/${instance.id}`}>{instance.id}</Link>
+          ),
         },
         {
           headerName: "Status",
@@ -32,6 +35,10 @@ export function ResultsTable({ workflow }: Props) {
         {
           headerName: "Current Step",
           createCell: (instance) => instance.currentStep,
+        },
+        {
+          headerName: "Started On",
+          createCell: (instance) => instance.createdAt.toLocaleString(),
         },
       ]}
     />
