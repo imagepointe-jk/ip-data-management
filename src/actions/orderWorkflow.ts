@@ -243,4 +243,18 @@ export async function setUserEmail(id: number, email: string) {
   });
 }
 
+export async function createUserForWebstore(
+  webstoreId: number,
+  name: string,
+  email: string
+) {
+  await prisma.orderWorkflowUser.create({
+    data: {
+      webstoreId,
+      name,
+      email,
+    },
+  });
+}
+
 //TODO: "Restart Workflow Instance" function
