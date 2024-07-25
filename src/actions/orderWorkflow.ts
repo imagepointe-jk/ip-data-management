@@ -106,13 +106,16 @@ export async function updateWorkflow(formData: FormData) {
   }
 }
 
-export async function createEventListener(parentStepId: number) {
+export async function createEventListener(
+  parentStepId: number,
+  fromValue: string
+) {
   await prisma.orderWorkflowStepProceedListener.create({
     data: {
       stepId: parentStepId,
       name: "New Listener",
       type: "approve",
-      from: "approver",
+      from: fromValue,
       goto: "next",
     },
   });
@@ -134,7 +137,6 @@ export async function createStep(parentWorkflowId: number, order?: number) {
       actionType: "email",
       order: order || 0,
       actionMessage: "Your message here",
-      actionTarget: "approver",
       proceedImmediatelyTo: "next",
     },
   });

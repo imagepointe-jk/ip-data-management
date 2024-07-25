@@ -5,12 +5,12 @@ import { UnwrapPromise } from "@/types/types";
 import {
   OrderWorkflowStep,
   OrderWorkflowStepProceedListener,
+  OrderWorkflowUser,
 } from "@prisma/client";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import {
   orderWorkflowActionTypes,
   orderWorkflowEventTypes,
-  orderWorkflowUserRoles,
 } from "@/types/schema";
 import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
@@ -25,50 +25,45 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type Props = {
-  existingWorkflow: UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>;
+  workflow: Exclude<
+    UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
+    null
+  >;
 };
-export function EditingForm({ existingWorkflow }: Props) {
+export function EditingForm({ workflow }: Props) {
   const router = useRouter();
-  const sorted = existingWorkflow ? [...existingWorkflow.steps] : [];
+  const sorted = [...workflow.steps];
   sorted.sort((a, b) => a.order - b.order);
 
   async function onClickAddStep() {
-    if (!existingWorkflow) return;
     const currentLastStep = sorted[sorted.length - 1];
     const orderToUse = currentLastStep ? currentLastStep.order + 1 : 0;
 
-    await createStep(existingWorkflow.id, orderToUse);
+    await createStep(workflow.id, orderToUse);
     router.refresh();
   }
 
   return (
     <form action={updateWorkflow}>
-      {existingWorkflow && existingWorkflow.instances.length > 0 && (
-        <Link href={`${existingWorkflow.id}/instances`}>
-          View {existingWorkflow.instances.length} instance(s)
+      {workflow.instances.length > 0 && (
+        <Link href={`${workflow.id}/instances`}>
+          View {workflow.instances.length} instance(s)
         </Link>
       )}
       <h2>
         Name:{" "}
-        <input
-          type="text"
-          name="name"
-          id="name"
-          defaultValue={existingWorkflow ? existingWorkflow.name : undefined}
-        />
+        <input type="text" name="name" id="name" defaultValue={workflow.name} />
       </h2>
       <div className={styles["steps-container"]}>
         {sorted.map((step) => (
-          <Step key={step.id} step={step} />
+          <Step
+            key={step.id}
+            step={step}
+            workflowUsers={workflow.webstore.users}
+          />
         ))}
       </div>
-      {
-        <input
-          type="hidden"
-          name="existingWorkflowId"
-          value={existingWorkflow ? existingWorkflow.id : undefined}
-        />
-      }
+      {<input type="hidden" name="existingWorkflowId" value={workflow.id} />}
       <button type="button" onClick={onClickAddStep}>
         + Add Step
       </button>
@@ -78,11 +73,12 @@ export function EditingForm({ existingWorkflow }: Props) {
 }
 
 type StepProps = {
+  workflowUsers: OrderWorkflowUser[];
   step: OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
 };
-function Step({ step }: StepProps) {
+function Step({ step, workflowUsers }: StepProps) {
   const isProceedImmediatelyInitiallySelected =
     step.proceedImmediatelyTo !== null;
   const isProceedImmediatelyInitiallyNext =
@@ -120,7 +116,7 @@ function Step({ step }: StepProps) {
   }
 
   async function onClickAddListener() {
-    await createEventListener(step.id);
+    await createEventListener(step.id, workflowUsers[0]?.email || "(none)");
     router.refresh();
   }
 
@@ -167,11 +163,16 @@ function Step({ step }: StepProps) {
           id={actionTargetField}
           defaultValue={step.actionTarget || undefined}
         >
-          {orderWorkflowUserRoles.map((role) => (
-            <option key={role} value={role}>
-              {makeStringTitleCase(role)}
-            </option>
-          ))}
+          {[
+            <option key={-1} value={undefined}>
+              (none)
+            </option>,
+            ...workflowUsers.map((user) => (
+              <option key={user.id} value={user.email}>
+                {user.name}
+              </option>
+            )),
+          ]}
         </select>
       </div>
 
@@ -242,7 +243,11 @@ function Step({ step }: StepProps) {
         <div className={styles["step-subcontainer"]}>
           <h4>Event Listeners</h4>
           {step.proceedListeners.map((listener) => (
-            <EventListener key={listener.id} listener={listener} />
+            <EventListener
+              key={listener.id}
+              listener={listener}
+              workflowUsers={workflowUsers}
+            />
           ))}
           <button onClick={onClickAddListener} type="button">
             + Add Listener
@@ -262,8 +267,9 @@ function Step({ step }: StepProps) {
 
 type EventListenerProps = {
   listener: OrderWorkflowStepProceedListener;
+  workflowUsers: OrderWorkflowUser[];
 };
-function EventListener({ listener }: EventListenerProps) {
+function EventListener({ listener, workflowUsers }: EventListenerProps) {
   const goToNextIsInitiallySelected =
     !listener.goto || listener.goto === "next";
   const [showGoToField, setShowGoToField] = useState(
@@ -311,9 +317,9 @@ function EventListener({ listener }: EventListenerProps) {
         <div>
           from{" "}
           <select name={fromField} id={fromField} defaultValue={listener.from}>
-            {orderWorkflowUserRoles.map((role) => (
-              <option key={role} value={role}>
-                {role}
+            {workflowUsers.map((user) => (
+              <option key={user.id} value={user.email}>
+                {user.name}
               </option>
             ))}
           </select>{" "}

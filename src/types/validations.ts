@@ -357,6 +357,16 @@ export function validateWorkflowFormData(formData: FormData) {
       .map(
         (field) => +`${field.fieldName.match(`(?<=step-${id}-listener-)\\d+`)}`
       );
+    //handle case where form data is submitted without an "action target" value selected
+    const actionTargetValue = allActionTargets.find((field) =>
+      field.fieldName.includes(`${id}`)
+    )?.fieldValue;
+    const actionTarget = !actionTargetValue
+      ? null
+      : actionTargetValue.toString().includes("none")
+      ? null
+      : actionTargetValue.toString();
+
     return {
       id,
       name: allStepNames
@@ -365,9 +375,7 @@ export function validateWorkflowFormData(formData: FormData) {
       actionType: allActionTypes
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
-      actionTarget: allActionTargets
-        .find((field) => field.fieldName.includes(`${id}`))
-        ?.fieldValue.toString(),
+      actionTarget,
       actionMessage: allActionMessages
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
@@ -399,6 +407,8 @@ export function validateWorkflowFormData(formData: FormData) {
       })),
     };
   });
+
+  console.log("received", steps);
 
   return {
     existingWorkflowId: existingWorkflowId ? +existingWorkflowId : undefined,

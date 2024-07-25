@@ -8,12 +8,12 @@ type Props = {
 };
 export default async function Page({ params: { id } }: Props) {
   const workflow = await getWorkflowWithIncludes(+id);
-  if (!workflow && id !== "0") return <h1>Workflow {id} not found.</h1>;
+  if (!workflow) return <h1>Workflow {id} not found.</h1>;
 
   return (
     <>
       <h1>Editing Workflow</h1>
-      <EditingForm existingWorkflow={workflow} />
+      <EditingForm workflow={workflow} />
     </>
   );
 }

@@ -142,6 +142,11 @@ export async function getWorkflowWithIncludes(id: number) {
         },
       },
       instances: true,
+      webstore: {
+        include: {
+          users: true,
+        },
+      },
     },
   });
 }

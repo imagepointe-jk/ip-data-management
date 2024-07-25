@@ -106,21 +106,10 @@ function doStepAction(
   const { actionMessage, actionTarget, actionType: a } = step;
   const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
-    if (actionTarget === "approver") {
-      console.log(
-        "====================Emailing all approvers: ",
-        actionMessage
-      );
-    } else if (actionTarget === "purchaser") {
-      console.log(
-        "=====================Emailing the purchaser: ",
-        actionMessage
-      );
-    } else {
-      throw new Error(
-        `Unrecognized email target "${actionTarget}" of step ${step.id} in workflow instance ${workflowInstance.id}`
-      );
-    }
+    console.log(
+      `=====================Emailing address ${actionTarget}`,
+      actionMessage
+    );
   } else if (actionType === "mark workflow approved") {
     console.log("marking workflow approved");
   } else if (actionType === "mark workflow denied") {
