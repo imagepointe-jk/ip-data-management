@@ -1,5 +1,6 @@
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import { EditingForm } from "./EditingForm";
+import { WorkflowPreview } from "./WorkflowPreview";
 
 type Props = {
   params: {
@@ -14,6 +15,7 @@ export default async function Page({ params: { id } }: Props) {
     <>
       <h1>Editing Workflow</h1>
       <EditingForm workflow={workflow} />
+      <WorkflowPreview />
     </>
   );
 }
