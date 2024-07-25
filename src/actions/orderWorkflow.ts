@@ -268,3 +268,47 @@ export async function createUserForWebstore(
 export async function restartWorkflow(id: number) {
   await startWorkflowInstanceFromBeginning(id);
 }
+
+export async function moveWorkflowStep(
+  id: number,
+  direction: "earlier" | "later"
+) {
+  const step = await prisma.orderWorkflowStep.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!step) throw new Error(`Step ${id} not found.`);
+  const otherStep = await prisma.orderWorkflowStep.findFirst({
+    where: {
+      order: {
+        gt: direction === "later" ? step.order : undefined,
+        lt: direction === "earlier" ? step.order : undefined,
+      },
+    },
+    orderBy: {
+      order: direction === "later" ? "asc" : "desc",
+    },
+  });
+  if (!otherStep)
+    throw new Error(
+      `Failed to move step ${id} ${direction} because another step was not found to swap it with.`
+    );
+
+  await prisma.orderWorkflowStep.update({
+    where: {
+      id: step.id,
+    },
+    data: {
+      order: otherStep.order,
+    },
+  });
+  await prisma.orderWorkflowStep.update({
+    where: {
+      id: otherStep.id,
+    },
+    data: {
+      order: step.order,
+    },
+  });
+}

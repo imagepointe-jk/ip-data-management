@@ -19,6 +19,7 @@ import {
   createStep,
   deleteEventListener,
   deleteStep,
+  moveWorkflowStep,
   updateWorkflow,
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
@@ -34,6 +35,8 @@ export function EditingForm({ workflow }: Props) {
   const router = useRouter();
   const sorted = [...workflow.steps];
   sorted.sort((a, b) => a.order - b.order);
+  const first = sorted[0];
+  const last = sorted[sorted.length - 1];
 
   async function onClickAddStep() {
     const currentLastStep = sorted[sorted.length - 1];
@@ -60,6 +63,8 @@ export function EditingForm({ workflow }: Props) {
             key={step.id}
             step={step}
             workflowUsers={workflow.webstore.users}
+            canBeMovedDown={step.id !== last?.id}
+            canBeMovedUp={step.id !== first?.id}
           />
         ))}
       </div>
@@ -77,8 +82,15 @@ type StepProps = {
   step: OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
+  canBeMovedUp: boolean;
+  canBeMovedDown: boolean;
 };
-function Step({ step, workflowUsers }: StepProps) {
+function Step({
+  step,
+  workflowUsers,
+  canBeMovedDown,
+  canBeMovedUp,
+}: StepProps) {
   const isProceedImmediatelyInitiallySelected =
     step.proceedImmediatelyTo !== null;
   const isProceedImmediatelyInitiallyNext =
@@ -125,8 +137,29 @@ function Step({ step, workflowUsers }: StepProps) {
     router.refresh();
   }
 
+  async function onClickMove(direction: "earlier" | "later") {
+    await moveWorkflowStep(step.id, direction);
+    router.refresh();
+  }
+
   return (
     <div className={styles["single-step-container"]}>
+      <div>
+        Step #{step.order}
+        {canBeMovedUp && (
+          <button
+            className="button-small"
+            onClick={() => onClickMove("earlier")}
+          >
+            ^ Move Up
+          </button>
+        )}
+        {canBeMovedDown && (
+          <button className="button-small" onClick={() => onClickMove("later")}>
+            v Move Down
+          </button>
+        )}
+      </div>
       <h3>
         Name:{" "}
         <input
