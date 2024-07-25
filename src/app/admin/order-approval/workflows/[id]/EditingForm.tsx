@@ -172,6 +172,9 @@ function Step({ step, workflowUsers }: StepProps) {
                 {user.name}
               </option>
             )),
+            <option key="purchaser" value="purchaser">
+              Purchaser
+            </option>,
           ]}
         </select>
       </div>
@@ -317,11 +320,16 @@ function EventListener({ listener, workflowUsers }: EventListenerProps) {
         <div>
           from{" "}
           <select name={fromField} id={fromField} defaultValue={listener.from}>
-            {workflowUsers.map((user) => (
-              <option key={user.id} value={user.email}>
-                {user.name}
-              </option>
-            ))}
+            {[
+              ...workflowUsers.map((user) => (
+                <option key={user.id} value={user.email}>
+                  {user.name}
+                </option>
+              )),
+              <option key="purchaser" value="purchaser">
+                Purchaser
+              </option>,
+            ]}
           </select>{" "}
           ...
         </div>
