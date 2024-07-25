@@ -112,12 +112,9 @@ async function doStepAction(
   step: OrderWorkflowStep,
   workflowInstance: OrderWorkflowInstance
 ) {
-  const { actionMessage, actionTarget, actionType: a } = step;
+  const { actionMessage, actionTarget, actionType: a, actionSubject } = step;
   const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
-    console.log(
-      `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget}`
-    );
     const targetToUse =
       actionTarget === "purchaser"
         ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
@@ -126,7 +123,14 @@ async function doStepAction(
       throw new Error(
         `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
       );
-    await sendEmail(targetToUse, "SUBJECT LINE HERE", `${actionMessage}`);
+    console.log(
+      `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget} (${targetToUse})`
+    );
+    await sendEmail(
+      targetToUse,
+      actionSubject || "Order Update",
+      `${actionMessage}`
+    );
   } else if (actionType === "mark workflow approved") {
     console.log("marking workflow approved");
   } else if (actionType === "mark workflow denied") {

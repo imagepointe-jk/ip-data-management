@@ -176,6 +176,7 @@ model OrderWorkflowStep {
   order                Int
   actionTarget         String?
   actionType           String
+  actionSubject        String?
   actionMessage        String?
   proceedImmediatelyTo String? //if defined, will proceed to the specified step without waiting for events
   proceedListeners     OrderWorkflowStepProceedListener[]

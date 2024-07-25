@@ -73,6 +73,7 @@ export async function updateWorkflow(formData: FormData) {
     const {
       name,
       actionMessage,
+      actionSubject,
       actionTarget,
       actionType,
       id,
@@ -86,6 +87,7 @@ export async function updateWorkflow(formData: FormData) {
         name,
         actionType,
         actionTarget,
+        actionSubject,
         actionMessage,
         proceedImmediatelyTo:
           proceedImmediatelyTo !== undefined ? proceedImmediatelyTo : null,
@@ -140,6 +142,7 @@ export async function createStep(parentWorkflowId: number, order?: number) {
       actionType: "email",
       order: order || 0,
       actionMessage: "Your message here",
+      actionSubject: "Your Subject Here",
       proceedImmediatelyTo: "next",
     },
   });
