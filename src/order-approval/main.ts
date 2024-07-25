@@ -44,8 +44,15 @@ export async function startOrderWorkflow(params: StartWorkflowParams) {
 export async function startWorkflowInstanceFromBeginning(id: number) {
   const instance = await getWorkflowInstance(id);
   if (!instance) throw new Error(`Workflow instance ${id} not found.`);
+  const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);
+  if (!workflow)
+    throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
 
-  await setWorkflowInstanceCurrentStep(instance.id, 0);
+  const sortedSteps = [...workflow.steps];
+  sortedSteps.sort((a, b) => a.order - b.order);
+  const lowestStep = sortedSteps[0];
+  const lowestStepOrder = lowestStep ? lowestStep.order : 0;
+  await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
   await setWorkflowInstanceStatus(instance.id, "waiting");
   await updateWorkflowInstanceLastStartedDate(instance.id);
   handleCurrentStep(instance);
