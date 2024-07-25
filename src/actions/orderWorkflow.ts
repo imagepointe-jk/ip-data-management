@@ -37,13 +37,16 @@ export async function receiveWorkflowEvent(
       where: {
         guid: accessCode,
       },
+      include: {
+        user: true,
+      },
     });
     if (!foundAccessCode) throw new Error("Access code not found.");
 
     await handleWorkflowEvent(
       foundAccessCode.instanceId,
       type,
-      foundAccessCode.userRole as OrderWorkflowUserRole
+      foundAccessCode.user.email
     );
   } catch (error) {
     console.error(error);

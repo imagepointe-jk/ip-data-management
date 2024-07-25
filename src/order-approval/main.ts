@@ -126,7 +126,7 @@ function doStepAction(
 export async function handleWorkflowEvent(
   workflowInstanceId: number,
   type: OrderWorkflowEventType,
-  source: OrderWorkflowUserRole
+  source: string
 ) {
   const workflowInstance = await getWorkflowInstance(workflowInstanceId);
   if (!workflowInstance)
@@ -145,7 +145,7 @@ export async function handleWorkflowEvent(
   );
   if (matchingListener)
     handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
-  else if (source === "approver" || source === "purchaser") {
+  else {
     //There may be more sources in the future, but anytime the source is a user and we reach this point,
     //it means the user tried to move the workflow along and it failed, so we need to know.
     //This might happen when we forget to add all the necessary event listeners to a step.
