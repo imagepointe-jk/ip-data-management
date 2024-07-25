@@ -255,3 +255,15 @@ export async function createWebstore(data: Omit<Webstore, "id">) {
     data,
   });
 }
+
+export async function getWorkflowStepByNumber(
+  workflowId: number,
+  stepNumber: number
+) {
+  return await prisma.orderWorkflowStep.findFirst({
+    where: {
+      workflowId,
+      order: stepNumber,
+    },
+  });
+}
