@@ -6,10 +6,16 @@ import { getOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "../encryption";
 import { parseWooCommerceOrderJson } from "@/types/validations";
 import { WooCommerceOrder } from "@/types/schema";
+import { rootUrl } from "@/utility/url";
 
 type Replacer = {
   description: string;
-  fn: (text: string, wcOrder: WooCommerceOrder, userName: string) => string;
+  fn: (
+    text: string,
+    wcOrder: WooCommerceOrder,
+    userName: string,
+    accessCode: string
+  ) => string;
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
 };
@@ -32,6 +38,26 @@ const replacers: Replacer[] = [
     automatic: false,
     fn: (text, _, userEmail) => text.replace(/\{user\}/gi, () => userEmail),
   },
+  {
+    description: "Approver's 'approve' link",
+    shortcode: "{approve}",
+    automatic: false,
+    fn: (text, _, __, accessCode) =>
+      text.replace(
+        /\{approve\}/gi,
+        `<a href="${rootUrl()}/order-approval/${accessCode}/approve">Approve</a>`
+      ),
+  },
+  {
+    description: "Approver's 'deny' link",
+    shortcode: "{deny}",
+    automatic: false,
+    fn: (text, _, __, accessCode) =>
+      text.replace(
+        /\{deny\}/gi,
+        `<a href="${rootUrl()}/order-approval/${accessCode}/deny">Deny</a>`
+      ),
+  },
 ];
 
 export async function processFormattedText(
@@ -50,6 +76,13 @@ export async function processFormattedText(
       (user) => user.email === userEmail
     );
     if (!user) throw new Error(`User with email ${userEmail} not found.`);
+    const accessCode = instance.accessCodes.find(
+      (code) => code.user.email === userEmail
+    );
+    if (!accessCode)
+      throw new Error(
+        `Access code not found for user ${userEmail} on workflow instance ${instance.id}.`
+      );
 
     const { key, secret } = decryptWebstoreData(workflow.webstore);
     const orderResponse = await getOrder(
@@ -65,7 +98,12 @@ export async function processFormattedText(
 
     let processed = text;
     for (const replacer of replacers) {
-      processed = replacer.fn(processed, parsedOrder, user.name);
+      processed = replacer.fn(
+        processed,
+        parsedOrder,
+        user.name,
+        accessCode.guid
+      );
     }
     return processed;
   } catch (error) {
