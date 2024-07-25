@@ -29,6 +29,7 @@ import {
   OrderWorkflowUser,
   Webstore,
 } from "@prisma/client";
+import { processFormattedText } from "./mail/mail";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -126,10 +127,15 @@ async function doStepAction(
     console.log(
       `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget} (${targetToUse})`
     );
+    const processedMessage = await processFormattedText(
+      `${actionMessage}`,
+      workflowInstance.id,
+      targetToUse
+    );
     await sendEmail(
       targetToUse,
       actionSubject || "Order Update",
-      `${actionMessage}`
+      processedMessage
     );
   } else if (actionType === "mark workflow approved") {
     console.log("marking workflow approved");

@@ -310,3 +310,4 @@ export type ProductResource = {
 };
 
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
+export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;
