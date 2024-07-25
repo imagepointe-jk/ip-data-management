@@ -345,7 +345,7 @@ export function validateWorkflowFormData(formData: FormData) {
   );
   const allListenerGoto = findAllFormValues(
     formData,
-    (name) => !!name.match(/step-\d-listener-\d+-goto/)
+    (name) => !!name.match(/step-\d+-listener-\d+-goto/)
   );
 
   const stepIds = allActionTypes.map(
@@ -407,8 +407,6 @@ export function validateWorkflowFormData(formData: FormData) {
       })),
     };
   });
-
-  console.log("received", steps);
 
   return {
     existingWorkflowId: existingWorkflowId ? +existingWorkflowId : undefined,
