@@ -12,6 +12,7 @@ import {
   getWorkflowInstanceCurrentStep,
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
+  getWorkflowInstancePurchaser,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import {
@@ -20,6 +21,7 @@ import {
   OrderWorkflowUserRole,
 } from "@/types/schema";
 import { parseWooCommerceOrderJson } from "@/types/validations";
+import { sendEmail } from "@/utility/mail";
 import { decrypt } from "@/utility/misc";
 import {
   OrderWorkflowInstance,
@@ -96,7 +98,7 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 //! There should be a check in place for this somewhere.
 async function handleCurrentStep(workflowInstance: OrderWorkflowInstance) {
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstance.id);
-  doStepAction(currentStep, workflowInstance);
+  await doStepAction(currentStep, workflowInstance);
 
   if (currentStep.proceedImmediatelyTo !== null) {
     handleWorkflowProceed(
@@ -106,7 +108,7 @@ async function handleCurrentStep(workflowInstance: OrderWorkflowInstance) {
   }
 }
 
-function doStepAction(
+async function doStepAction(
   step: OrderWorkflowStep,
   workflowInstance: OrderWorkflowInstance
 ) {
@@ -114,9 +116,17 @@ function doStepAction(
   const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
     console.log(
-      `=====================Emailing address ${actionTarget}`,
-      actionMessage
+      `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget}`
     );
+    const targetToUse =
+      actionTarget === "purchaser"
+        ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
+        : actionTarget;
+    if (!targetToUse)
+      throw new Error(
+        `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
+      );
+    await sendEmail(targetToUse, "SUBJECT LINE HERE", `${actionMessage}`);
   } else if (actionType === "mark workflow approved") {
     console.log("marking workflow approved");
   } else if (actionType === "mark workflow denied") {

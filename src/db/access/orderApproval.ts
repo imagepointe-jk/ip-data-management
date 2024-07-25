@@ -267,3 +267,25 @@ export async function getWorkflowStepByNumber(
     },
   });
 }
+
+export async function getWorkflowInstancePurchaser(instanceId: number) {
+  //assume for now that a workflow instance will only have one purchaser
+  return prisma.orderWorkflowUser.findFirst({
+    where: {
+      accessCodes: {
+        some: {
+          AND: [
+            {
+              instanceId,
+            },
+            {
+              user: {
+                isApprover: false,
+              },
+            },
+          ],
+        },
+      },
+    },
+  });
+}
