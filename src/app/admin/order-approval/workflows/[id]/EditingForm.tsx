@@ -148,6 +148,7 @@ function Step({
         Step #{step.order}
         {canBeMovedUp && (
           <button
+            type="button"
             className="button-small"
             onClick={() => onClickMove("earlier")}
           >
@@ -155,7 +156,11 @@ function Step({
           </button>
         )}
         {canBeMovedDown && (
-          <button className="button-small" onClick={() => onClickMove("later")}>
+          <button
+            type="button"
+            className="button-small"
+            onClick={() => onClickMove("later")}
+          >
             v Move Down
           </button>
         )}
