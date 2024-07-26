@@ -30,7 +30,8 @@ export async function deleteWorkflowInstance(id: number) {
 
 export async function receiveWorkflowEvent(
   accessCode: string,
-  type: OrderWorkflowEventType
+  type: OrderWorkflowEventType,
+  message?: string
 ) {
   try {
     const foundAccessCode = await prisma.orderWorkflowAccessCode.findFirst({
@@ -46,7 +47,8 @@ export async function receiveWorkflowEvent(
     await handleWorkflowEvent(
       foundAccessCode.instanceId,
       type,
-      foundAccessCode.user.email
+      foundAccessCode.user.email,
+      message
     );
   } catch (error) {
     console.error(error);

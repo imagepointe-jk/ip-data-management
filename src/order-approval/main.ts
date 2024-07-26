@@ -153,7 +153,8 @@ async function doStepAction(
 export async function handleWorkflowEvent(
   workflowInstanceId: number,
   type: OrderWorkflowEventType,
-  source: string
+  source: string,
+  message?: string
 ) {
   const workflowInstance = await getWorkflowInstance(workflowInstanceId);
   if (!workflowInstance)
