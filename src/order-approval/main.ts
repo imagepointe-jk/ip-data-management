@@ -21,7 +21,6 @@ import {
   OrderWorkflowEventType,
   OrderWorkflowUserRole,
 } from "@/types/schema";
-import { parseWooCommerceOrderJson } from "@/types/validations";
 import { sendEmail } from "@/utility/mail";
 import { decrypt } from "@/utility/misc";
 import {

@@ -224,6 +224,15 @@ export const wooCommerceOrderDataSchema = z.object({
   shippingTotal: z.string(),
   lineItems: z.array(wooCommerceLineItemSchema),
   feeLines: z.array(wooCommerceFeeLineSchema),
+  dateCreated: z.date(),
+  shipping: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    address1: z.string(),
+    city: z.string(),
+    state: z.string(),
+    postcode: z.string(),
+  }),
 });
 
 export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;

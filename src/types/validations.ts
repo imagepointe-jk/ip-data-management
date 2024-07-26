@@ -278,44 +278,6 @@ export async function parseWooCommerceWebhookRequest(req: NextRequest) {
   return wooCommerceWebhookRequestSchema.parse(data);
 }
 
-function parseWooCommerceLineItem(lineItem: any) {
-  //the data that comes from WC is very messy and deeply nested.
-  //this helper function can be used to pull data from each line item
-  //and restructure it in a more helpful way.
-  const quantity = lineItem.quantity;
-  const total = lineItem.total;
-  const totalTax = lineItem.total_tax;
-
-  return wooCommerceLineItemSchema.parse({
-    id: lineItem.id,
-    name: lineItem.name,
-    quantity,
-    total,
-    totalTax,
-  });
-}
-
-export function parseWooCommerceOrderJson(json: any) {
-  const lineItemsUnparsed: any[] = json["line_items"];
-  if (!lineItemsUnparsed) {
-    console.error("No line items array in WC order");
-    throw new Error();
-  }
-  const lineItemsParsed = lineItemsUnparsed.map((item) =>
-    parseWooCommerceLineItem(item)
-  );
-
-  json.lineItems = lineItemsParsed;
-  json.totalTax = json.total_tax;
-  json.feeLines = json.fee_lines;
-  json.shippingTotal = json.shipping_total;
-  json.subtotal = lineItemsParsed
-    .reduce((accum, item) => accum + +item.total, 0)
-    .toFixed(2);
-
-  return wooCommerceOrderDataSchema.parse(json);
-}
-
 export function validateWorkflowFormData(formData: FormData) {
   const existingWorkflowId = formData.get("existingWorkflowId");
   const allStepNames = findAllFormValues(

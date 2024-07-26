@@ -1,0 +1,57 @@
+.main {
+  border-radius: 10px;
+  border: 1px solid gray;
+  background-color: lightgray;
+  padding: 10px;
+  max-width: 500px;
+}
+
+.main table {
+  text-align: left;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.main th {
+  position: sticky;
+  top: 0;
+  background-color: lightgray;
+}
+
+.main th,
+.main td {
+  padding: 10px;
+}
+
+.main tbody {
+  background-color: white;
+}
+
+.main tr:nth-child(even) td {
+  background-color: rgb(235, 235, 235);
+}
+
+.table-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid gray;
+  margin: 10px 0;
+}
+
+.extra-details-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.extra-details-flex h3 {
+  margin: 0;
+}
+
+.totals {
+  text-align: right;
+}
+
+.grand-total {
+  font-size: 1.125rem;
+  font-weight: bold;
+}

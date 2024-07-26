@@ -4,12 +4,12 @@ import {
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "../encryption";
-import { parseWooCommerceOrderJson } from "@/types/validations";
 import { WooCommerceOrder } from "@/types/schema";
 import { rootUrl } from "@/utility/url";
 import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 type Replacer = {
   description: string;
