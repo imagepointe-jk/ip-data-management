@@ -15,11 +15,9 @@ type Props = {
 export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   async function loadOrder() {
     setLoading(true);
-    setError(false);
     try {
       const orderResponse = await getOrder(
         orderId,
@@ -31,7 +29,6 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
       const parsed = parseWooCommerceOrderJson(orderJson);
       setOrder(parsed);
     } catch (error) {
-      setError(true);
       console.error(error);
     }
     setLoading(false);
@@ -75,12 +72,67 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
             <div>
               <h3>Shipping</h3>
               <div>
-                {order.shipping.firstName} {order.shipping.lastName}
+                <label htmlFor="first-name">First Name</label>
+                <input
+                  type="text"
+                  name="first-name"
+                  id="first-name"
+                  defaultValue={order.shipping.firstName}
+                />
               </div>
-              <div>{order.shipping.address1}</div>
               <div>
-                {order.shipping.city}, {order.shipping.state}{" "}
-                {order.shipping.postcode}
+                <label htmlFor="last-name">Last Name</label>
+                <input
+                  type="text"
+                  name="last-name"
+                  id="last-name"
+                  defaultValue={order.shipping.lastName}
+                />
+              </div>
+              <div>
+                <label htmlFor="address1">Street Address (Line 1)</label>
+                <input
+                  type="text"
+                  name="address1"
+                  id="address1"
+                  defaultValue={order.shipping.address1}
+                />
+              </div>
+              <div>
+                <label htmlFor="address2">Street Address (Line 2)</label>
+                <input
+                  type="text"
+                  name="address2"
+                  id="address2"
+                  defaultValue={order.shipping.address2}
+                />
+              </div>
+              <div>
+                <label htmlFor="city">City</label>
+                <input
+                  type="text"
+                  name="city"
+                  id="city"
+                  defaultValue={order.shipping.city}
+                />
+              </div>
+              <div>
+                <label htmlFor="state">State</label>
+                <input
+                  type="text"
+                  name="state"
+                  id="state"
+                  defaultValue={order.shipping.state}
+                />
+              </div>
+              <div>
+                <label htmlFor="zip">Zip Code</label>
+                <input
+                  type="text"
+                  name="zip"
+                  id="zip"
+                  defaultValue={order.shipping.postcode}
+                />
               </div>
             </div>
             <div className={styles["totals"]}>
@@ -91,6 +143,9 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                 Grand Total: ${order.total}
               </div>
             </div>
+          </div>
+          <div>
+            <button className={styles["submit"]}>Save All Changes</button>
           </div>
         </>
       )}

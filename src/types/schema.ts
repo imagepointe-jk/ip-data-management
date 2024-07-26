@@ -229,6 +229,7 @@ export const wooCommerceOrderDataSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     address1: z.string(),
+    address2: z.string(),
     city: z.string(),
     state: z.string(),
     postcode: z.string(),

@@ -55,3 +55,24 @@
   font-size: 1.125rem;
   font-weight: bold;
 }
+
+.main input {
+  display: block;
+  font-size: 1.125rem;
+  padding: 5px;
+}
+
+.submit {
+  font-size: 1.25rem;
+  padding: 10px;
+  background-color: #006ac6;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #2c91e9;
+}
