@@ -7,6 +7,9 @@ import { decryptWebstoreData } from "../encryption";
 import { parseWooCommerceOrderJson } from "@/types/validations";
 import { WooCommerceOrder } from "@/types/schema";
 import { rootUrl } from "@/utility/url";
+import fs from "fs";
+import handlebars from "handlebars";
+import path from "path";
 
 type Replacer = {
   description: string;
@@ -30,7 +33,18 @@ const replacers: Replacer[] = [
     shortcode: "{order}",
     automatic: false,
     fn: (text, wcOrder) =>
-      text.replace(/\{order\}/gi, () => `Order Total $${wcOrder.total}`),
+      text.replace(/\{order\}/gi, () => {
+        const templateSource = fs.readFileSync(
+          path.resolve(
+            process.cwd(),
+            "src/order-approval/mail/orderDetails.hbs"
+          ),
+          "utf-8"
+        );
+        const template = handlebars.compile(templateSource);
+        const message = template(wcOrder);
+        return message;
+      }),
   },
   {
     description: "Insert user's name",

@@ -309,6 +309,9 @@ export function parseWooCommerceOrderJson(json: any) {
   json.totalTax = json.total_tax;
   json.feeLines = json.fee_lines;
   json.shippingTotal = json.shipping_total;
+  json.subtotal = lineItemsParsed
+    .reduce((accum, item) => accum + +item.total, 0)
+    .toFixed(2);
 
   return wooCommerceOrderDataSchema.parse(json);
 }
