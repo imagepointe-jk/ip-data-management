@@ -13,6 +13,7 @@ import {
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
   getWorkflowInstancePurchaser,
+  setWorkflowInstanceDeniedReason,
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import {
@@ -171,12 +172,16 @@ export async function handleWorkflowEvent(
   const matchingListener = currentStep.proceedListeners.find(
     (listener) => listener.type === type && listener.from === source
   );
-  if (matchingListener)
+  if (matchingListener) {
+    if (matchingListener.type === "deny") {
+      await setWorkflowInstanceStatus(workflowInstanceId, "finished");
+      await setWorkflowInstanceDeniedReason(
+        workflowInstanceId,
+        message || "(NO REASON GIVEN. This is a bug.)"
+      );
+    }
     handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
-  else {
-    //There may be more sources in the future, but anytime the source is a user and we reach this point,
-    //it means the user tried to move the workflow along and it failed, so we need to know.
-    //This might happen when we forget to add all the necessary event listeners to a step.
+  } else {
     throw new Error(
       `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`
     );

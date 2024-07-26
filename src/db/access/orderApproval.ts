@@ -237,6 +237,20 @@ export async function setWorkflowInstanceStatus(
   });
 }
 
+export async function setWorkflowInstanceDeniedReason(
+  id: number,
+  reason: string
+) {
+  return prisma.orderWorkflowInstance.update({
+    where: {
+      id,
+    },
+    data: {
+      deniedReason: reason,
+    },
+  });
+}
+
 export async function updateWorkflowInstanceLastStartedDate(id: number) {
   await prisma.orderWorkflowInstance.update({
     where: {
