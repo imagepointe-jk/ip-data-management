@@ -72,6 +72,16 @@ const replacers: Replacer[] = [
         `<a href="${rootUrl()}/order-approval/${accessCode}/deny">Deny</a>`
       ),
   },
+  {
+    description: "Approver's link to review/edit order",
+    shortcode: "{edit}",
+    automatic: false,
+    fn: (text, _, __, accessCode) =>
+      text.replace(
+        /\{edit\}/gi,
+        `<a href="${rootUrl()}/order-approval/${accessCode}">Review Order</a>`
+      ),
+  },
 ];
 
 export async function processFormattedText(
