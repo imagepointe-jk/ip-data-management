@@ -162,10 +162,9 @@ export async function handleWorkflowEvent(
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
   if (workflowInstance.status === "finished") {
-    console.warn(
-      `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished; ignoring.`
+    throw new Error(
+      `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished.`
     );
-    return;
   }
 
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstanceId);
