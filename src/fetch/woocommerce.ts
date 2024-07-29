@@ -51,3 +51,29 @@ export async function getOrder(
 
   return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, requestOptions);
 }
+
+type OrderUpdateData = {
+  id: number;
+  line_items: { id: number; quantity?: number; total?: string }[];
+};
+export async function updateOrder(
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string,
+  data: OrderUpdateData
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "PUT",
+    headers: headers,
+    body: JSON.stringify(data),
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${data.id}`, requestOptions);
+}

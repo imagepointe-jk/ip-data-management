@@ -207,6 +207,7 @@ export const wooCommerceLineItemSchema = z.object({
   quantity: z.number(),
   total: z.string(),
   totalTax: z.string(),
+  price: z.number(),
 });
 
 export const wooCommerceFeeLineSchema = z.object({

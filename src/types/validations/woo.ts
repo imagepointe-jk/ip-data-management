@@ -20,6 +20,7 @@ function parseWooCommerceLineItem(lineItem: any) {
     quantity,
     total,
     totalTax,
+    price: lineItem.price,
   });
 }
 

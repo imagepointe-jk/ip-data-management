@@ -1,10 +1,12 @@
 "use client";
 
-import { getOrder } from "@/fetch/woocommerce";
+import { getOrder, updateOrder } from "@/fetch/woocommerce";
 import { WooCommerceOrder } from "@/types/schema";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   orderId: number;
@@ -15,6 +17,41 @@ type Props = {
 export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
+  const [changesMade, setChangesMade] = useState(false);
+
+  function onChangeLineItemQuantity(id: number, valueStr: string) {
+    if (!order) return;
+
+    const newOrder = { ...order };
+    const item = newOrder.lineItems.find((item) => item.id === id);
+    if (!item) return;
+
+    item.quantity = +valueStr;
+    item.total = (item.quantity * item.price).toFixed(2);
+
+    setChangesMade(true);
+    setOrder(newOrder);
+  }
+
+  async function onClickSave() {
+    if (!order) return;
+
+    setLoading(true);
+    try {
+      const updateResponse = await updateOrder(storeUrl, apiKey, apiSecret, {
+        ...order,
+        line_items: order.lineItems,
+      });
+      const updateJson = await updateResponse.json();
+      const parsed = parseWooCommerceOrderJson(updateJson);
+      setOrder(parsed);
+      setChangesMade(false);
+    } catch (error) {
+      setOrder(null);
+      console.error(error);
+    }
+    setLoading(false);
+  }
 
   async function loadOrder() {
     setLoading(true);
@@ -42,6 +79,11 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
     <div className={styles["main"]}>
       {!order && loading && <div>Loading order...</div>}
       {!order && !loading && <div>Error finding order.</div>}
+      {order && loading && (
+        <div className={styles["update-overlay"]}>
+          <div>Updating order...</div>
+        </div>
+      )}
       {order && (
         <>
           <h2>Order {orderId}</h2>
@@ -60,7 +102,15 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                 {order.lineItems.map((item) => (
                   <tr key={item.id}>
                     <td>{item.name}</td>
-                    <td>{item.quantity}</td>
+                    <td>
+                      <input
+                        type="number"
+                        onChange={(e) =>
+                          onChangeLineItemQuantity(item.id, e.target.value)
+                        }
+                        defaultValue={item.quantity}
+                      />
+                    </td>
                     <td>${item.total}</td>
                     <td>${item.totalTax}</td>
                   </tr>
@@ -144,8 +194,18 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
               </div>
             </div>
           </div>
-          <div>
-            <button className={styles["submit"]}>Save All Changes</button>
+          <div className={styles["submit-row"]}>
+            <button className={styles["submit"]} onClick={onClickSave}>
+              Save All Changes
+            </button>
+            {changesMade && (
+              <FontAwesomeIcon
+                icon={faInfoCircle}
+                className={styles["info-circle"]}
+                size="2x"
+                title="Some values may be out-of-sync. Save changes to update."
+              />
+            )}
           </div>
         </>
       )}
