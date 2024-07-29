@@ -3,7 +3,7 @@
 import { getOrder, updateOrder } from "@/fetch/woocommerce";
 import { WooCommerceOrder } from "@/types/schema";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +17,7 @@ type Props = {
 export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
-  const [changesMade, setChangesMade] = useState(false);
+  const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
 
   function onChangeLineItemQuantity(id: number, valueStr: string) {
     if (!order) return;
@@ -29,8 +29,35 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
     item.quantity = +valueStr;
     item.total = (item.quantity * item.price).toFixed(2);
 
-    setChangesMade(true);
+    setValuesMaybeUnsynced(true);
     setOrder(newOrder);
+  }
+
+  function onChangeShippingFirstName(e: ChangeEvent<HTMLInputElement>) {
+    if (!order) return;
+
+    setOrder({
+      ...order,
+      shipping: { ...order.shipping, firstName: e.target.value },
+    });
+  }
+
+  function onChangeShippingInfo(
+    changes: {
+      firstName?: string;
+      lastName?: string;
+      address1?: string;
+      address2?: string;
+      city?: string;
+      state?: string;
+      postcode?: string;
+    },
+    mayUnsyncValues = false
+  ) {
+    if (!order) return;
+
+    setOrder({ ...order, shipping: { ...order.shipping, ...changes } });
+    if (mayUnsyncValues) setValuesMaybeUnsynced(true);
   }
 
   async function onClickSave() {
@@ -41,11 +68,18 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
       const updateResponse = await updateOrder(storeUrl, apiKey, apiSecret, {
         ...order,
         line_items: order.lineItems,
+        shipping: {
+          ...order.shipping,
+          first_name: order.shipping.firstName,
+          last_name: order.shipping.lastName,
+          address_1: order.shipping.address1,
+          address_2: order.shipping.address2,
+        },
       });
       const updateJson = await updateResponse.json();
       const parsed = parseWooCommerceOrderJson(updateJson);
       setOrder(parsed);
-      setChangesMade(false);
+      setValuesMaybeUnsynced(false);
     } catch (error) {
       setOrder(null);
       console.error(error);
@@ -127,7 +161,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="first-name"
                   id="first-name"
-                  defaultValue={order.shipping.firstName}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ firstName: e.target.value })
+                  }
+                  value={order.shipping.firstName}
                 />
               </div>
               <div>
@@ -136,7 +173,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="last-name"
                   id="last-name"
-                  defaultValue={order.shipping.lastName}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ lastName: e.target.value })
+                  }
+                  value={order.shipping.lastName}
                 />
               </div>
               <div>
@@ -145,7 +185,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="address1"
                   id="address1"
-                  defaultValue={order.shipping.address1}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ address1: e.target.value }, true)
+                  }
+                  value={order.shipping.address1}
                 />
               </div>
               <div>
@@ -154,7 +197,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="address2"
                   id="address2"
-                  defaultValue={order.shipping.address2}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ address2: e.target.value }, true)
+                  }
+                  value={order.shipping.address2}
                 />
               </div>
               <div>
@@ -163,7 +209,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="city"
                   id="city"
-                  defaultValue={order.shipping.city}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ city: e.target.value }, true)
+                  }
+                  value={order.shipping.city}
                 />
               </div>
               <div>
@@ -172,7 +221,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="state"
                   id="state"
-                  defaultValue={order.shipping.state}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ state: e.target.value }, true)
+                  }
+                  value={order.shipping.state}
                 />
               </div>
               <div>
@@ -181,7 +233,10 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   type="text"
                   name="zip"
                   id="zip"
-                  defaultValue={order.shipping.postcode}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ postcode: e.target.value }, true)
+                  }
+                  value={order.shipping.postcode}
                 />
               </div>
             </div>
@@ -198,7 +253,7 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
             <button className={styles["submit"]} onClick={onClickSave}>
               Save All Changes
             </button>
-            {changesMade && (
+            {valuesMaybeUnsynced && (
               <FontAwesomeIcon
                 icon={faInfoCircle}
                 className={styles["info-circle"]}

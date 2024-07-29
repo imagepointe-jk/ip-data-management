@@ -54,6 +54,15 @@ export async function getOrder(
 
 type OrderUpdateData = {
   id: number;
+  shipping: {
+    first_name?: string;
+    last_name?: string;
+    address_1?: string;
+    address_2?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+  };
   line_items: { id: number; quantity?: number; total?: string }[];
 };
 export async function updateOrder(
