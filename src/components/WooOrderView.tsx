@@ -6,7 +6,7 @@ import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { ChangeEvent, useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   orderId: number;
@@ -18,6 +18,7 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
+  const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
 
   function onChangeLineItemQuantity(id: number, valueStr: string) {
     if (!order) return;
@@ -31,15 +32,6 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
 
     setValuesMaybeUnsynced(true);
     setOrder(newOrder);
-  }
-
-  function onChangeShippingFirstName(e: ChangeEvent<HTMLInputElement>) {
-    if (!order) return;
-
-    setOrder({
-      ...order,
-      shipping: { ...order.shipping, firstName: e.target.value },
-    });
   }
 
   function onChangeShippingInfo(
@@ -60,14 +52,27 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
     if (mayUnsyncValues) setValuesMaybeUnsynced(true);
   }
 
+  function setLineItemDelete(idToSet: number, willDelete: boolean) {
+    const newRemoveLineItems = !willDelete
+      ? [...removeLineItemIds].filter((id) => idToSet !== id)
+      : [...removeLineItemIds, idToSet];
+    setRemoveLineItemIds(newRemoveLineItems);
+  }
+
   async function onClickSave() {
     if (!order) return;
+
+    //woocommerce API requires us to set quantity to 0 for any line items we want to delete
+    const lineItemsWithDeletions = order.lineItems.map((lineItem) => ({
+      ...lineItem,
+      quantity: removeLineItemIds.includes(lineItem.id) ? 0 : lineItem.quantity,
+    }));
 
     setLoading(true);
     try {
       const updateResponse = await updateOrder(storeUrl, apiKey, apiSecret, {
         ...order,
-        line_items: order.lineItems,
+        line_items: lineItemsWithDeletions,
         shipping: {
           ...order.shipping,
           first_name: order.shipping.firstName,
@@ -126,6 +131,7 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
             <table>
               <thead>
                 <tr>
+                  <th></th>
                   <th>Name</th>
                   <th>Quantity</th>
                   <th>Price</th>
@@ -135,18 +141,66 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
               <tbody>
                 {order.lineItems.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>
+                    <td style={{ padding: "0" }}>
+                      <button
+                        className={styles["line-item-x"]}
+                        onClick={() =>
+                          setLineItemDelete(
+                            item.id,
+                            !removeLineItemIds.includes(item.id)
+                          )
+                        }
+                      >
+                        {!removeLineItemIds.includes(item.id) ? (
+                          <FontAwesomeIcon icon={faXmark} />
+                        ) : (
+                          "undo"
+                        )}
+                      </button>
+                    </td>
+                    <td
+                      className={
+                        removeLineItemIds.includes(item.id)
+                          ? styles["deleted-line-item"]
+                          : undefined
+                      }
+                    >
+                      {item.name}
+                    </td>
+                    <td
+                      className={
+                        removeLineItemIds.includes(item.id)
+                          ? styles["deleted-line-item"]
+                          : undefined
+                      }
+                    >
                       <input
                         type="number"
                         onChange={(e) =>
                           onChangeLineItemQuantity(item.id, e.target.value)
                         }
                         defaultValue={item.quantity}
+                        disabled={removeLineItemIds.includes(item.id)}
                       />
                     </td>
-                    <td>${item.total}</td>
-                    <td>${item.totalTax}</td>
+                    <td
+                      className={
+                        removeLineItemIds.includes(item.id)
+                          ? styles["deleted-line-item"]
+                          : undefined
+                      }
+                    >
+                      ${item.total}
+                    </td>
+                    <td
+                      className={
+                        removeLineItemIds.includes(item.id)
+                          ? styles["deleted-line-item"]
+                          : undefined
+                      }
+                    >
+                      ${item.totalTax}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -253,7 +307,7 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
             <button className={styles["submit"]} onClick={onClickSave}>
               Save All Changes
             </button>
-            {valuesMaybeUnsynced && (
+            {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
               <FontAwesomeIcon
                 icon={faInfoCircle}
                 className={styles["info-circle"]}

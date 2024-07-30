@@ -44,6 +44,30 @@
   width: 100px;
 }
 
+.line-item-x {
+  color: white;
+  background: red;
+  border: none;
+  cursor: pointer;
+  border-radius: 100px;
+}
+
+.deleted-line-item {
+  position: relative;
+  color: gray;
+}
+
+.deleted-line-item::before {
+  display: block;
+  height: 2px;
+  background-color: red;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  content: "";
+}
+
 .extra-details-flex {
   display: flex;
   justify-content: space-between;
