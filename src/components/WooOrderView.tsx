@@ -58,12 +58,22 @@ export function WooOrderView({
       state?: string;
       postcode?: string;
       country?: string;
+      method?: string;
     },
     mayUnsyncValues = false
   ) {
     if (!order) return;
 
-    setOrder({ ...order, shipping: { ...order.shipping, ...changes } });
+    setOrder({
+      ...order,
+      shipping: { ...order.shipping, ...changes },
+      shippingLines: [
+        {
+          id: order.shippingLines[0]?.id || 0,
+          method_title: changes.method || "SHIPPING METHOD ERROR",
+        },
+      ],
+    });
     if (mayUnsyncValues) setValuesMaybeUnsynced(true);
   }
 
@@ -95,6 +105,7 @@ export function WooOrderView({
           address_1: order.shipping.address1,
           address_2: order.shipping.address2,
         },
+        shipping_lines: order.shippingLines,
       });
       const updateJson = await updateResponse.json();
       const parsed = parseWooCommerceOrderJson(updateJson);
@@ -325,9 +336,18 @@ export function WooOrderView({
               {permissions?.shipping?.method === "edit" && (
                 <div>
                   <label htmlFor="shipping-method">Shipping Method</label>
-                  <select name="shipping-method" id="shipping-method">
+                  <select
+                    name="shipping-method"
+                    id="shipping-method"
+                    value={order.shippingLines[0]?.method_title}
+                    onChange={(e) =>
+                      onChangeShippingInfo({ method: e.target.value })
+                    }
+                  >
                     {shippingMethods.map((method) => (
-                      <option key={method}>{method}</option>
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
                     ))}
                   </select>
                 </div>

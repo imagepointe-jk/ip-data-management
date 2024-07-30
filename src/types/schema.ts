@@ -236,6 +236,12 @@ export const wooCommerceOrderDataSchema = z.object({
     postcode: z.string(),
     country: z.string(),
   }),
+  shippingLines: z.array(
+    z.object({
+      id: z.number(),
+      method_title: z.string(),
+    })
+  ),
 });
 
 export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;

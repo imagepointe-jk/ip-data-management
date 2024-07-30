@@ -46,6 +46,7 @@ export function parseWooCommerceOrderJson(json: any) {
   json.shipping.lastName = json.shipping.last_name;
   json.shipping.address1 = json.shipping.address_1;
   json.shipping.address2 = json.shipping.address_2;
+  json.shippingLines = json.shipping_lines;
 
   return wooCommerceOrderDataSchema.parse(json);
 }

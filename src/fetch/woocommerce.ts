@@ -65,6 +65,7 @@ type OrderUpdateData = {
     country?: string;
   };
   line_items: { id: number; quantity?: number; total?: string }[];
+  shipping_lines: { id: number; method_title: string }[];
 };
 export async function updateOrder(
   storeUrl: string,
