@@ -234,6 +234,7 @@ export const wooCommerceOrderDataSchema = z.object({
     city: z.string(),
     state: z.string(),
     postcode: z.string(),
+    country: z.string(),
   }),
 });
 

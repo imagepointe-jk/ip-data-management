@@ -57,6 +57,7 @@ export function WooOrderView({
       city?: string;
       state?: string;
       postcode?: string;
+      country?: string;
     },
     mayUnsyncValues = false
   ) {
@@ -284,7 +285,7 @@ export function WooOrderView({
                 />
               </div>
               <div>
-                <label htmlFor="state">State</label>
+                <label htmlFor="state">State/County</label>
                 <input
                   type="text"
                   name="state"
@@ -307,6 +308,20 @@ export function WooOrderView({
                   value={order.shipping.postcode}
                 />
               </div>
+              <div>
+                <label htmlFor="country">Country</label>
+                <select
+                  name="country"
+                  id="country"
+                  value={order.shipping.country}
+                  onChange={(e) =>
+                    onChangeShippingInfo({ country: e.target.value }, true)
+                  }
+                >
+                  <option value="US">US</option>
+                  <option value="CA">CA</option>
+                </select>
+              </div>
               {permissions?.shipping?.method === "edit" && (
                 <div>
                   <label htmlFor="shipping-method">Shipping Method</label>
@@ -321,10 +336,10 @@ export function WooOrderView({
             <div className={styles["totals"]}>
               <div>Subtotal: ${order.subtotal}</div>
               <div>Total Tax: ${order.totalTax}</div>
-              <div>Shipping Total: ${order.shippingTotal}</div>
-              <div className={styles["grand-total"]}>
+              {/* <div>Shipping Total: ${order.shippingTotal}</div> */}
+              {/* <div className={styles["grand-total"]}>
                 Grand Total: ${order.total}
-              </div>
+              </div> */}
             </div>
           </div>
           <div className={styles["submit-row"]}>

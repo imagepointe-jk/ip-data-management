@@ -62,6 +62,7 @@ type OrderUpdateData = {
     city?: string;
     state?: string;
     postcode?: string;
+    country?: string;
   };
   line_items: { id: number; quantity?: number; total?: string }[];
 };
