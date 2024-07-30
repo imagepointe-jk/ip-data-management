@@ -153,11 +153,11 @@ model Webstore {
 }
 
 model WebstoreShippingSettings {
-  id                         Int      @id @default(autoincrement())
-  allowApproverChangeCarrier Boolean
-  allowApproverChangeMethod  Boolean
-  webstoreId                 Int      @unique
-  webstore                   Webstore @relation(fields: [webstoreId], references: [id])
+  id                        Int      @id @default(autoincrement())
+  allowApproverChangeMethod Boolean
+  allowUpsToCanada          Boolean
+  webstoreId                Int      @unique
+  webstore                  Webstore @relation(fields: [webstoreId], references: [id])
 }
 
 model WebstoreShippingMethod {

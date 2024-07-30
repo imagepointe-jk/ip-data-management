@@ -166,8 +166,8 @@ export async function updateWebstore(formData: FormData) {
     name,
     orgName,
     url,
-    allowApproverChangeCarrier,
     allowApproverChangeMethod,
+    allowUpsToCanada,
     shippingMethodIds,
   } = validateWebstoreFormData(formData);
   if (isNaN(+`${id}`))
@@ -215,8 +215,8 @@ export async function updateWebstore(formData: FormData) {
       webstoreId: +`${id}`,
     },
     data: {
-      allowApproverChangeCarrier,
       allowApproverChangeMethod,
+      allowUpsToCanada,
     },
   });
 }

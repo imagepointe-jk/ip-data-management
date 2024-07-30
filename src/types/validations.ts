@@ -395,8 +395,7 @@ export function validateWebstoreFormData(formData: FormData) {
     changeApiSecret: formData.get("api-secret"),
     allowApproverChangeMethod:
       formData.get("allow-approver-change-method") === "on",
-    allowApproverChangeCarrier:
-      formData.get("allow-approver-change-carrier") === "on",
+    allowUpsToCanada: formData.get("allow-ups-to-canada") === "on",
     shippingMethodIds: formData.getAll("shipping-methods").map((item) => +item),
   });
 }

@@ -79,19 +79,6 @@ export default async function Page({ params }: Props) {
         <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
         <h2>Shipping Options</h2>
         <div>
-          <label htmlFor="allow-approver-change-carrier">
-            <input
-              type="checkbox"
-              name="allow-approver-change-carrier"
-              id="allow-approver-change-carrier"
-              defaultChecked={
-                existingWebstore?.shippingSettings?.allowApproverChangeCarrier
-              }
-            />
-            Allow approver to change carrier
-          </label>
-        </div>
-        <div>
           <label htmlFor="allow-approver-change-method">
             <input
               type="checkbox"
@@ -102,6 +89,19 @@ export default async function Page({ params }: Props) {
               }
             />
             Allow approver to change method
+          </label>
+        </div>
+        <div>
+          <label htmlFor="allow-ups-to-canada">
+            <input
+              type="checkbox"
+              name="allow-ups-to-canada"
+              id="allow-ups-to-canada"
+              defaultChecked={
+                existingWebstore?.shippingSettings?.allowUpsToCanada
+              }
+            />
+            Allow UPS Shipping to Canada
           </label>
         </div>
         <h3>Shipping Methods</h3>

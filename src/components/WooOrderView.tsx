@@ -16,11 +16,9 @@ type Props = {
   apiSecret: string;
   permissions?: {
     shipping?: {
-      carrier?: Permission;
       method?: Permission;
     };
   };
-  shippingCarriers: string[];
   shippingMethods: string[];
 };
 export function WooOrderView({
@@ -29,7 +27,6 @@ export function WooOrderView({
   apiKey,
   apiSecret,
   permissions,
-  shippingCarriers,
   shippingMethods,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
@@ -310,16 +307,6 @@ export function WooOrderView({
                   value={order.shipping.postcode}
                 />
               </div>
-              {permissions?.shipping?.carrier === "edit" && (
-                <div>
-                  <label htmlFor="shipping-carrier">Shipping Carrier</label>
-                  <select name="shipping-carrier" id="shipping-carrier">
-                    {shippingCarriers.map((carrier) => (
-                      <option key={carrier}>{carrier}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
               {permissions?.shipping?.method === "edit" && (
                 <div>
                   <label htmlFor="shipping-method">Shipping Method</label>

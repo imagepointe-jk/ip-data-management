@@ -28,9 +28,6 @@ export default async function Page({ params }: Props) {
       },
     },
   } = accessCode;
-  const carriers = new Set(
-    shippingMethods.map((method) => `${method.name.match(/UPS|USPS/)}`)
-  );
 
   return (
     <>
@@ -42,15 +39,11 @@ export default async function Page({ params }: Props) {
         storeUrl={webstore.url}
         permissions={{
           shipping: {
-            carrier: shippingSettings?.allowApproverChangeCarrier
-              ? "edit"
-              : "hidden",
             method: shippingSettings?.allowApproverChangeMethod
               ? "edit"
               : "hidden",
           },
         }}
-        shippingCarriers={Array.from(carriers)}
         shippingMethods={shippingMethods.map((method) => method.name)}
       />
     </>
