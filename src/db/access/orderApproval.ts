@@ -220,7 +220,12 @@ export async function getAccessCodeWithIncludes(accessCode: string) {
         include: {
           parentWorkflow: {
             include: {
-              webstore: true,
+              webstore: {
+                include: {
+                  shippingMethods: true,
+                  shippingSettings: true,
+                },
+              },
             },
           },
         },

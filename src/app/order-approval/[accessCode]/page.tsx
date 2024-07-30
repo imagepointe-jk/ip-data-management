@@ -21,6 +21,16 @@ export default async function Page({ params }: Props) {
   } = accessCode;
 
   const { key, secret } = decryptWebstoreData(webstore);
+  const {
+    workflowInstance: {
+      parentWorkflow: {
+        webstore: { shippingMethods, shippingSettings },
+      },
+    },
+  } = accessCode;
+  const carriers = new Set(
+    shippingMethods.map((method) => `${method.name.match(/UPS|USPS/)}`)
+  );
 
   return (
     <>
@@ -30,6 +40,18 @@ export default async function Page({ params }: Props) {
         apiSecret={secret}
         orderId={wooCommerceOrderId}
         storeUrl={webstore.url}
+        permissions={{
+          shipping: {
+            carrier: shippingSettings?.allowApproverChangeCarrier
+              ? "edit"
+              : "hidden",
+            method: shippingSettings?.allowApproverChangeMethod
+              ? "edit"
+              : "hidden",
+          },
+        }}
+        shippingCarriers={Array.from(carriers)}
+        shippingMethods={shippingMethods.map((method) => method.name)}
       />
     </>
   );

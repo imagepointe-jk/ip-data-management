@@ -8,13 +8,30 @@ import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 
+type Permission = "view" | "edit" | "hidden";
 type Props = {
   orderId: number;
   storeUrl: string;
   apiKey: string;
   apiSecret: string;
+  permissions?: {
+    shipping?: {
+      carrier?: Permission;
+      method?: Permission;
+    };
+  };
+  shippingCarriers: string[];
+  shippingMethods: string[];
 };
-export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
+export function WooOrderView({
+  orderId,
+  storeUrl,
+  apiKey,
+  apiSecret,
+  permissions,
+  shippingCarriers,
+  shippingMethods,
+}: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
@@ -293,6 +310,26 @@ export function WooOrderView({ orderId, storeUrl, apiKey, apiSecret }: Props) {
                   value={order.shipping.postcode}
                 />
               </div>
+              {permissions?.shipping?.carrier === "edit" && (
+                <div>
+                  <label htmlFor="shipping-carrier">Shipping Carrier</label>
+                  <select name="shipping-carrier" id="shipping-carrier">
+                    {shippingCarriers.map((carrier) => (
+                      <option key={carrier}>{carrier}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {permissions?.shipping?.method === "edit" && (
+                <div>
+                  <label htmlFor="shipping-method">Shipping Method</label>
+                  <select name="shipping-method" id="shipping-method">
+                    {shippingMethods.map((method) => (
+                      <option key={method}>{method}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className={styles["totals"]}>
               <div>Subtotal: ${order.subtotal}</div>
