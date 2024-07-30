@@ -19,6 +19,10 @@ type Props = {
       method?: Permission;
     };
   };
+  special?: {
+    //highly specific settings for edge cases
+    allowUpsShippingToCanada?: boolean;
+  };
   shippingMethods: string[];
 };
 export function WooOrderView({
@@ -28,11 +32,16 @@ export function WooOrderView({
   apiSecret,
   permissions,
   shippingMethods,
+  special,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
+  const permittedShippingMethods = shippingMethods.filter((method) => {
+    if (special?.allowUpsShippingToCanada) return method;
+    return order?.shipping.country !== "CA" || !method.includes("UPS");
+  });
 
   function onChangeLineItemQuantity(id: number, valueStr: string) {
     if (!order) return;
@@ -67,12 +76,14 @@ export function WooOrderView({
     setOrder({
       ...order,
       shipping: { ...order.shipping, ...changes },
-      shippingLines: [
-        {
-          id: order.shippingLines[0]?.id || 0,
-          method_title: changes.method || "SHIPPING METHOD ERROR",
-        },
-      ],
+      shippingLines: !changes.method
+        ? order.shippingLines
+        : [
+            {
+              id: order.shippingLines[0]?.id || 0,
+              method_title: changes.method || "SHIPPING METHOD ERROR",
+            },
+          ],
     });
     if (mayUnsyncValues) setValuesMaybeUnsynced(true);
   }
@@ -344,7 +355,7 @@ export function WooOrderView({
                       onChangeShippingInfo({ method: e.target.value })
                     }
                   >
-                    {shippingMethods.map((method) => (
+                    {permittedShippingMethods.map((method) => (
                       <option key={method} value={method}>
                         {method}
                       </option>

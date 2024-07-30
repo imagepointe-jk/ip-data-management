@@ -44,6 +44,9 @@ export default async function Page({ params }: Props) {
               : "hidden",
           },
         }}
+        special={{
+          allowUpsShippingToCanada: shippingSettings?.allowUpsToCanada,
+        }}
         shippingMethods={shippingMethods.map((method) => method.name)}
       />
     </>
