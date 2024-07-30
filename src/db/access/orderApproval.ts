@@ -16,6 +16,8 @@ const webstoreIncludes = {
     },
   },
   users: true,
+  shippingSettings: true,
+  shippingMethods: true,
 };
 export async function getWebstoreById(id: number) {
   return prisma.webstore.findUnique({
@@ -42,6 +44,10 @@ export async function getWebstoresWithIncludes() {
   return prisma.webstore.findMany({
     include: webstoreIncludes,
   });
+}
+
+export async function getShippingMethods() {
+  return prisma.webstoreShippingMethod.findMany();
 }
 
 export async function getUser(webstoreId: number, email: string) {

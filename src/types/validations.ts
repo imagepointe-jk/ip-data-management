@@ -393,6 +393,11 @@ export function validateWebstoreFormData(formData: FormData) {
     url: formData.get("url"),
     changeApiKey: formData.get("api-key"),
     changeApiSecret: formData.get("api-secret"),
+    allowApproverChangeMethod:
+      formData.get("allow-approver-change-method") === "on",
+    allowApproverChangeCarrier:
+      formData.get("allow-approver-change-carrier") === "on",
+    shippingMethodIds: formData.getAll("shipping-methods").map((item) => +item),
   });
 }
 

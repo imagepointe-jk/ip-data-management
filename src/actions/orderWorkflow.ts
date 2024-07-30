@@ -159,8 +159,17 @@ export async function deleteStep(id: number) {
 }
 
 export async function updateWebstore(formData: FormData) {
-  const { changeApiKey, changeApiSecret, id, name, orgName, url } =
-    validateWebstoreFormData(formData);
+  const {
+    changeApiKey,
+    changeApiSecret,
+    id,
+    name,
+    orgName,
+    url,
+    allowApproverChangeCarrier,
+    allowApproverChangeMethod,
+    shippingMethodIds,
+  } = validateWebstoreFormData(formData);
   if (isNaN(+`${id}`))
     throw new Error(`Invalid webstore id ${id}. This is a bug.`);
   const changingApiKey = changeApiKey !== "";
@@ -195,6 +204,19 @@ export async function updateWebstore(formData: FormData) {
       apiSecretEncryptTag: changingApiSecret
         ? apiSecretEncryptTag.toString("base64")
         : undefined,
+      shippingMethods: {
+        set: shippingMethodIds.map((id) => ({ id })),
+      },
+    },
+  });
+
+  await prisma.webstoreShippingSettings.update({
+    where: {
+      webstoreId: +`${id}`,
+    },
+    data: {
+      allowApproverChangeCarrier,
+      allowApproverChangeMethod,
     },
   });
 }

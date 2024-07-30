@@ -256,6 +256,9 @@ export const webstoreFormDataSchema = z.object({
   url: z.string(),
   changeApiKey: z.string(),
   changeApiSecret: z.string(),
+  shippingMethodIds: z.array(z.number()),
+  allowApproverChangeCarrier: z.boolean(),
+  allowApproverChangeMethod: z.boolean(),
 });
 
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
