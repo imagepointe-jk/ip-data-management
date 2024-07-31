@@ -39,7 +39,7 @@ export function ResultsTable({ workflow }: Props) {
         },
         {
           headerName: "WooCommerce Order ID",
-          createCell: (instance) => instance.id,
+          createCell: (instance) => instance.wooCommerceOrderId,
         },
         {
           headerName: "Current Step",
