@@ -24,7 +24,7 @@ type Replacer = {
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
 };
-const replacers: Replacer[] = [
+export const replacers: Replacer[] = [
   {
     description: "Insert <br> for HTML",
     fn: (text: string) => text.replace(/\r\n/g, "<br>"),
