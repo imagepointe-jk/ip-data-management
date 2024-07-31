@@ -138,7 +138,10 @@ async function doStepAction(
       processedMessage
     );
   } else if (actionType === "mark workflow approved") {
-    console.log("marking workflow approved");
+    console.log(
+      `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
+    );
+    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
   } else if (actionType === "mark workflow denied") {
     console.log("marking workflow denied");
   } else if (actionType === "cancel woocommerce order") {
@@ -171,6 +174,8 @@ export async function handleWorkflowEvent(
     (listener) => listener.type === type && listener.from === source
   );
   if (matchingListener) {
+    if (matchingListener.type === "approve") {
+    }
     if (matchingListener.type === "deny") {
       await setWorkflowInstanceStatus(workflowInstanceId, "finished");
       await setWorkflowInstanceDeniedReason(

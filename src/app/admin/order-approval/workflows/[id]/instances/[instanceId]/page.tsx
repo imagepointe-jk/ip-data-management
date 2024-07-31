@@ -34,10 +34,19 @@ export default async function Page({ params: { id, instanceId } }: Props) {
           {step ? step.name : "Step not found"}){" "}
         </li>
       </ul>
-      {instance.deniedReason && (
+      {instance.status === "finished" && (
         <div className="content-frame" style={{ width: "400px" }}>
-          This order has been <strong>DENIED</strong> for the following reason:{" "}
-          <p>{instance.deniedReason}</p>
+          {instance.deniedReason && (
+            <>
+              This order has been <strong>DENIED</strong> for the following
+              reason: <p>{instance.deniedReason}</p>
+            </>
+          )}
+          {!instance.deniedReason && (
+            <>
+              This order has been <strong>APPROVED</strong>.
+            </>
+          )}
         </div>
       )}
       <h2>Users</h2>
