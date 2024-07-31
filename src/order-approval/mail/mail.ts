@@ -10,6 +10,7 @@ import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { Webstore } from "@prisma/client";
 
 type Replacer = {
   description: string;
@@ -17,7 +18,8 @@ type Replacer = {
     text: string,
     wcOrder: WooCommerceOrder,
     userName: string,
-    accessCode: string
+    accessCode: string,
+    webstore: Webstore
   ) => string;
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
@@ -82,6 +84,29 @@ const replacers: Replacer[] = [
         `<a href="${rootUrl()}/order-approval/${accessCode}">Review Order</a>`
       ),
   },
+  {
+    description: "Link to order details in WooCommerce backend",
+    shortcode: "{order-wc}",
+    automatic: false,
+    fn: (text, wcOrder, _, __, webstore) =>
+      text.replace(
+        /\{order-wc\}/,
+        `<a href="${webstore.url}/wp-admin/post.php?post=${wcOrder.id}&action=edit">View Order</a>`
+      ),
+  },
+  {
+    description: "Store name",
+    shortcode: "{store}",
+    automatic: false,
+    fn: (text, _, __, ___, webstore) =>
+      text.replace(/\{store\}/, webstore.name),
+  },
+  {
+    description: "Order ID",
+    shortcode: "{order-id}",
+    automatic: false,
+    fn: (text, wcOrder) => text.replace(/\{order-id\}/, `${wcOrder.id}`),
+  },
 ];
 
 export async function processFormattedText(
@@ -126,7 +151,8 @@ export async function processFormattedText(
         processed,
         parsedOrder,
         user.name,
-        accessCode.guid
+        accessCode.guid,
+        workflow.webstore
       );
     }
     return processed;
