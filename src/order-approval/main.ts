@@ -120,6 +120,8 @@ async function doStepAction(
     const targetToUse =
       actionTarget === "purchaser"
         ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
+        : actionTarget === "shipping"
+        ? process.env.IP_SHIPPING_EMAIL
         : actionTarget;
     if (!targetToUse)
       throw new Error(

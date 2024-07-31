@@ -214,6 +214,9 @@ function Step({
             <option key="purchaser" value="purchaser">
               Purchaser
             </option>,
+            <option key="shipping" value="shipping">
+              Shipping
+            </option>,
           ]}
         </select>
       </div>
