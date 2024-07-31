@@ -15,7 +15,7 @@ import {
   getWorkflowInstancePurchaser,
   setWorkflowInstanceDeniedReason,
 } from "@/db/access/orderApproval";
-import { getOrder } from "@/fetch/woocommerce";
+import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import {
   OrderWorkflowActionType,
   OrderWorkflowEventType,
@@ -30,6 +30,7 @@ import {
   Webstore,
 } from "@prisma/client";
 import { processFormattedText } from "./mail/mail";
+import { decryptWebstoreData } from "./encryption";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -152,7 +153,31 @@ async function doStepAction(
     //is this reason, but that may change in future.
     await setWorkflowInstanceStatus(workflowInstance.id, "finished");
   } else if (actionType === "cancel woocommerce order") {
-    console.log("canceling woocommerce order");
+    console.log(
+      `========================Canceling WooCommerce order ${workflowInstance.wooCommerceOrderId}`
+    );
+    try {
+      const workflow = await getWorkflowWithIncludes(
+        workflowInstance.parentWorkflowId
+      );
+      if (!workflow)
+        throw new Error(
+          "Canceling FAILED because the workflow could not be found"
+        );
+      const { key, secret } = decryptWebstoreData(workflow.webstore);
+      const cancelResponse = await cancelOrder(
+        workflowInstance.wooCommerceOrderId,
+        workflow.webstore.url,
+        key,
+        secret
+      );
+      if (!cancelResponse.ok)
+        throw new Error(
+          `Canceling FAILED because of an API error ${cancelResponse.status}`
+        );
+    } catch (error) {
+      console.error(error);
+    }
   } else {
     throw new Error(
       `Unrecognized action type "${actionType}" of step ${step.id} in workflow instance ${workflowInstance.id}`

@@ -88,3 +88,25 @@ export async function updateOrder(
 
   return fetch(`${storeUrl}/wp-json/wc/v3/orders/${data.id}`, requestOptions);
 }
+
+export async function cancelOrder(
+  orderId: number,
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "PUT",
+    headers: headers,
+    body: JSON.stringify({ status: "cancelled" }),
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${orderId}`, requestOptions);
+}
