@@ -30,7 +30,7 @@ export default async function Page({ params: { id } }: Props) {
           </ul>
         </details>
       </div>
-      <WorkflowPreview />
+      <WorkflowPreview steps={workflow.steps} />
     </>
   );
 }
