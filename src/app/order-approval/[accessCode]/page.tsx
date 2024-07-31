@@ -32,6 +32,8 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <h1>Order {accessCode.workflowInstance.wooCommerceOrderId}</h1>
+      <Link href={`${accessCode.guid}/approve`}>Approve</Link>{" "}
+      <Link href={`${accessCode.guid}/deny`}>Deny</Link>
       <WooOrderView
         apiKey={key}
         apiSecret={secret}
