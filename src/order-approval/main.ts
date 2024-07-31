@@ -143,7 +143,14 @@ async function doStepAction(
     );
     await setWorkflowInstanceStatus(workflowInstance.id, "finished");
   } else if (actionType === "mark workflow denied") {
-    console.log("marking workflow denied");
+    console.log(
+      `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
+    );
+    //the denied reason is only in-scope when the "Deny" event is received,
+    //so that data is recorded during handleWorkflowEvent.
+    //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instnace
+    //is this reason, but that may change in future.
+    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
   } else if (actionType === "cancel woocommerce order") {
     console.log("canceling woocommerce order");
   } else {
@@ -174,10 +181,9 @@ export async function handleWorkflowEvent(
     (listener) => listener.type === type && listener.from === source
   );
   if (matchingListener) {
-    if (matchingListener.type === "approve") {
-    }
     if (matchingListener.type === "deny") {
-      await setWorkflowInstanceStatus(workflowInstanceId, "finished");
+      //the reason is only in-scope when the "deny" event is received.
+      //handle all other step behavior (e.g. marking as "finished") in doStepAction.
       await setWorkflowInstanceDeniedReason(
         workflowInstanceId,
         message || "(NO REASON GIVEN. This is a bug.)"
