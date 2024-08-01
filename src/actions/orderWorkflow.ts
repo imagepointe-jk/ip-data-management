@@ -14,6 +14,9 @@ import { encrypt } from "@/utility/misc";
 import { createWebstore as createDbWebstore } from "@/db/access/orderApproval";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getOrder } from "@/fetch/woocommerce";
+import { decryptWebstoreData } from "@/order-approval/encryption";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({
@@ -346,4 +349,47 @@ export async function moveWorkflowStep(
       order: step.order,
     },
   });
+}
+
+export async function getOrderApprovalIframeData(accessCode: string) {
+  const foundAccessCode = await prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      guid: accessCode,
+    },
+    include: {
+      workflowInstance: {
+        include: {
+          parentWorkflow: {
+            include: {
+              webstore: {
+                include: {
+                  shippingSettings: true,
+                  shippingMethods: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!foundAccessCode) throw new Error(`Access code ${accessCode} not found.`);
+  const { key, secret } = decryptWebstoreData(
+    foundAccessCode.workflowInstance.parentWorkflow.webstore
+  );
+
+  return {
+    orderId: foundAccessCode.workflowInstance.wooCommerceOrderId,
+    storeUrl: foundAccessCode.workflowInstance.parentWorkflow.webstore.url,
+    apiKey: key,
+    apiSecret: secret,
+    shippingMethods:
+      foundAccessCode.workflowInstance.parentWorkflow.webstore.shippingMethods,
+    allowApproveChangeMethod:
+      foundAccessCode.workflowInstance.parentWorkflow.webstore.shippingSettings
+        ?.allowApproverChangeMethod,
+    allowUpsToCanada:
+      foundAccessCode.workflowInstance.parentWorkflow.webstore.shippingSettings
+        ?.allowUpsToCanada,
+  };
 }
