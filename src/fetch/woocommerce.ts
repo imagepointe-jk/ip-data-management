@@ -52,7 +52,7 @@ export async function getOrder(
   return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, requestOptions);
 }
 
-type OrderUpdateData = {
+export type OrderUpdateData = {
   id: number;
   shipping: {
     first_name?: string;

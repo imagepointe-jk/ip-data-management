@@ -14,7 +14,7 @@ import { encrypt } from "@/utility/misc";
 import { createWebstore as createDbWebstore } from "@/db/access/orderApproval";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getOrder } from "@/fetch/woocommerce";
+import { getOrder, OrderUpdateData, updateOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
@@ -374,15 +374,15 @@ export async function getOrderApprovalIframeData(accessCode: string) {
     },
   });
   if (!foundAccessCode) throw new Error(`Access code ${accessCode} not found.`);
-  const { key, secret } = decryptWebstoreData(
-    foundAccessCode.workflowInstance.parentWorkflow.webstore
-  );
+  // const { key, secret } = decryptWebstoreData(
+  //   foundAccessCode.workflowInstance.parentWorkflow.webstore
+  // );
 
   return {
     orderId: foundAccessCode.workflowInstance.wooCommerceOrderId,
     storeUrl: foundAccessCode.workflowInstance.parentWorkflow.webstore.url,
-    apiKey: key,
-    apiSecret: secret,
+    // apiKey: key,
+    // apiSecret: secret,
     shippingMethods:
       foundAccessCode.workflowInstance.parentWorkflow.webstore.shippingMethods,
     allowApproveChangeMethod:
@@ -392,4 +392,44 @@ export async function getOrderApprovalIframeData(accessCode: string) {
       foundAccessCode.workflowInstance.parentWorkflow.webstore.shippingSettings
         ?.allowUpsToCanada,
   };
+}
+
+//server action for when a client component needs to get a WC order all by itself
+export async function getOrderAction(id: number, storeUrl: string) {
+  const webstore = await prisma.webstore.findUnique({
+    where: {
+      url: storeUrl,
+    },
+  });
+  if (!webstore) throw new Error(`Webstore with url ${storeUrl} not found.`);
+
+  const { key, secret } = decryptWebstoreData(webstore);
+  const orderResponse = await getOrder(id, storeUrl, key, secret);
+  if (!orderResponse.ok)
+    throw new Error(
+      `API response code ${orderResponse.status} when trying to get order ${id} for store ${storeUrl}`
+    );
+  const orderJson = await orderResponse.json();
+  return parseWooCommerceOrderJson(orderJson);
+}
+
+export async function updateOrderAction(
+  storeUrl: string,
+  updateData: OrderUpdateData
+) {
+  const webstore = await prisma.webstore.findUnique({
+    where: {
+      url: storeUrl,
+    },
+  });
+  if (!webstore) throw new Error(`Webstore with url ${storeUrl} not found.`);
+
+  const { key, secret } = decryptWebstoreData(webstore);
+  const updateResponse = await updateOrder(storeUrl, key, secret, updateData);
+  if (!updateResponse.ok)
+    throw new Error(
+      `API response code ${updateResponse.status} when trying to update order ${updateData.id} for store ${storeUrl}`
+    );
+  const updateJson = await updateResponse.json();
+  return parseWooCommerceOrderJson(updateJson);
 }

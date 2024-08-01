@@ -1,19 +1,16 @@
 "use client";
 
-import { getOrder, updateOrder } from "@/fetch/woocommerce";
 import { WooCommerceOrder } from "@/types/schema";
-import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { ChangeEvent, useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { getOrderAction, updateOrderAction } from "@/actions/orderWorkflow";
 
 type Permission = "view" | "edit" | "hidden";
 type Props = {
   orderId: number;
   storeUrl: string;
-  apiKey: string;
-  apiSecret: string;
   permissions?: {
     shipping?: {
       method?: Permission;
@@ -28,8 +25,6 @@ type Props = {
 export function WooOrderView({
   orderId,
   storeUrl,
-  apiKey,
-  apiSecret,
   permissions,
   shippingMethods,
   special,
@@ -106,7 +101,7 @@ export function WooOrderView({
 
     setLoading(true);
     try {
-      const updateResponse = await updateOrder(storeUrl, apiKey, apiSecret, {
+      const updated = await updateOrderAction(storeUrl, {
         ...order,
         line_items: lineItemsWithDeletions,
         shipping: {
@@ -118,9 +113,7 @@ export function WooOrderView({
         },
         shipping_lines: order.shippingLines,
       });
-      const updateJson = await updateResponse.json();
-      const parsed = parseWooCommerceOrderJson(updateJson);
-      setOrder(parsed);
+      setOrder(updated);
       setValuesMaybeUnsynced(false);
     } catch (error) {
       setOrder(null);
@@ -132,15 +125,8 @@ export function WooOrderView({
   async function loadOrder() {
     setLoading(true);
     try {
-      const orderResponse = await getOrder(
-        orderId,
-        storeUrl,
-        apiKey,
-        apiSecret
-      );
-      const orderJson = await orderResponse.json();
-      const parsed = parseWooCommerceOrderJson(orderJson);
-      setOrder(parsed);
+      const order = await getOrderAction(orderId, storeUrl);
+      setOrder(order);
     } catch (error) {
       console.error(error);
     }

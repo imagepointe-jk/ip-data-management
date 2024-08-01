@@ -39,8 +39,8 @@ export default function Page() {
         <>
           <WooOrderView
             orderId={serverData.orderId}
-            apiKey={serverData.apiKey}
-            apiSecret={serverData.apiSecret}
+            // apiKey={serverData.apiKey}
+            // apiSecret={serverData.apiSecret}
             shippingMethods={serverData.shippingMethods.map(
               (method) => method.name
             )}
