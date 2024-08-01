@@ -1,4 +1,5 @@
 import {
+  getWorkflowInstance,
   getWorkflowInstanceWithIncludes,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
@@ -159,5 +160,47 @@ export async function processFormattedText(
   } catch (error) {
     console.error(error);
     return text;
+  }
+}
+
+//this email is specifically intended for notifying the shipping dept. upon order approval
+export async function createShippingEmail(instanceId: number) {
+  try {
+    const instance = await getWorkflowInstance(instanceId);
+    if (!instance)
+      throw new Error(`Workflow instance ${instanceId} not found.`);
+
+    const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);
+    if (!workflow)
+      throw new Error(`Parent workflow of instance ${instanceId} not found.`);
+
+    const { key, secret } = decryptWebstoreData(workflow.webstore);
+    const orderResponse = await getOrder(
+      instance.wooCommerceOrderId,
+      workflow.webstore.url,
+      key,
+      secret
+    );
+    if (!orderResponse.ok)
+      throw new Error(
+        `Failed to fetch WooCommerce order for workflow instance ${instanceId} with status ${orderResponse.status}`
+      );
+    const orderJson = await orderResponse.json();
+    const parsed = parseWooCommerceOrderJson(orderJson);
+
+    const templateSource = fs.readFileSync(
+      path.resolve(process.cwd(), "src/order-approval/mail/shippingEmail.hbs"),
+      "utf-8"
+    );
+    const template = handlebars.compile(templateSource);
+    const message = template({
+      ...parsed,
+      storeUrl: workflow.webstore.url,
+      storeName: workflow.webstore.name,
+    });
+    return message;
+  } catch (error) {
+    console.error("Error creating shipping email", error);
+    return "EMAIL ERROR";
   }
 }

@@ -1,0 +1,49 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order {{id}} was approved</title>
+  </head>
+  <body>
+    <p>Hello,</p>
+    <p>Order
+      {{id}}
+      has been approved for the store "{{storeName}}."
+      <a href="{{storeUrl}}/wp-admin/post.php?post={{id}}&action=edit">Click
+        here</a>
+      to view it in WooCommerce.</p>
+    <p style="color:red;font-weight:bold;">PLEASE WAIT AT LEAST 30 MINUTES TO
+      FILL THIS ORDER. This gives Pirate Ship time to get updated shipping
+      information from WooCommerce.</p>
+    <table style="border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Name</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Quantity</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Price</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Tax</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each lineItems}}
+          <tr>
+            <td style="border: 1px solid black; padding: 8px;">{{name}}</td>
+            <td style="border: 1px solid black; padding: 8px;">{{quantity}}</td>
+            <td style="border: 1px solid black; padding: 8px;">${{total}}</td>
+            <td
+              style="border: 1px solid black; padding: 8px;"
+            >${{totalTax}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </body>
+</html>

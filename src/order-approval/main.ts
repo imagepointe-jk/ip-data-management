@@ -29,7 +29,7 @@ import {
   OrderWorkflowUser,
   Webstore,
 } from "@prisma/client";
-import { processFormattedText } from "./mail/mail";
+import { createShippingEmail, processFormattedText } from "./mail/mail";
 import { decryptWebstoreData } from "./encryption";
 
 type StartWorkflowParams = {
@@ -120,8 +120,6 @@ async function doStepAction(
     const targetToUse =
       actionTarget === "purchaser"
         ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
-        : actionTarget === "shipping"
-        ? process.env.IP_SHIPPING_EMAIL
         : actionTarget;
     if (!targetToUse)
       throw new Error(
@@ -145,6 +143,12 @@ async function doStepAction(
       `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
     );
     await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+    const shippingMessage = await createShippingEmail(workflowInstance.id);
+    await sendEmail(
+      `${process.env.IP_SHIPPING_EMAIL}`,
+      `Order ${workflowInstance.wooCommerceOrderId} Approved`,
+      shippingMessage
+    );
   } else if (actionType === "mark workflow denied") {
     console.log(
       `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
