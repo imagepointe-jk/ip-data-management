@@ -273,11 +273,30 @@ export async function updateWorkflowInstanceLastStartedDate(id: number) {
   });
 }
 
-export async function createWebstore(data: Omit<Webstore, "id">) {
+export async function createWebstore(
+  data: Omit<Webstore, "id">,
+  allowApproverChangeMethod: boolean,
+  allowUpsToCanada: boolean,
+  shippingMethodIds: number[]
+) {
   // const {apiKey, apiKeyEncryptIv, apiKeyEncryptTag, apiSecret, apiSecretEncryptIv, apiSecretEncryptTag, name, organizationName, url} = data;
 
-  return prisma.webstore.create({
-    data,
+  const webstore = await prisma.webstore.create({
+    data: {
+      ...data,
+      shippingMethods: {
+        connect: shippingMethodIds.map((id) => ({ id })),
+      },
+    },
+  });
+
+  await prisma.webstoreShippingSettings.create({
+    data: {
+      webstoreId: webstore.id,
+      allowApproverChangeMethod,
+
+      allowUpsToCanada,
+    },
   });
 }
 

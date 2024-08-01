@@ -228,6 +228,9 @@ export async function createWebstore(formData: FormData) {
     name,
     orgName: organizationName,
     url,
+    allowApproverChangeMethod,
+    allowUpsToCanada,
+    shippingMethodIds,
   } = validateWebstoreFormData(formData);
   const {
     ciphertext: apiKey,
@@ -240,17 +243,22 @@ export async function createWebstore(formData: FormData) {
     tag: apiSecretEncryptTag,
   } = encrypt(changeApiSecret);
 
-  await createDbWebstore({
-    apiKey,
-    apiKeyEncryptIv,
-    apiKeyEncryptTag: apiKeyEncryptTag.toString("base64"),
-    apiSecret,
-    apiSecretEncryptIv,
-    apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
-    name,
-    organizationName,
-    url,
-  });
+  await createDbWebstore(
+    {
+      apiKey,
+      apiKeyEncryptIv,
+      apiKeyEncryptTag: apiKeyEncryptTag.toString("base64"),
+      apiSecret,
+      apiSecretEncryptIv,
+      apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
+      name,
+      organizationName,
+      url,
+    },
+    allowApproverChangeMethod,
+    allowUpsToCanada,
+    shippingMethodIds
+  );
 
   revalidatePath("/admin/order-approval/webstores");
   redirect("/admin/order-approval/webstores");
