@@ -139,13 +139,12 @@ export function WooOrderView({
 
   return (
     <div className={styles["main"]}>
-      {!order && loading && <div>Loading order...</div>}
-      {!order && !loading && <div>Error finding order.</div>}
-      {order && loading && (
+      {loading && (
         <div className={styles["update-overlay"]}>
-          <div>Updating order...</div>
+          <div>{`${order ? "Updating" : "Loading"}`} order...</div>
         </div>
       )}
+      {!order && !loading && <div>Error finding order.</div>}
       {order && (
         <>
           <h2>Order {orderId}</h2>
