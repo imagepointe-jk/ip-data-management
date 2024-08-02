@@ -27,11 +27,13 @@ export default function Page() {
       );
 
       const action = searchParams.get("action");
+      setActionRequest(action as Action | null);
+      if (action !== "approve") setLoading(false); //if "approve", we'll be immediately sending an async approval, so we will stay in the loading state for a bit longer
       setServerData(dataFromServer);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -45,10 +47,12 @@ export default function Page() {
 
   useEffect(() => {
     async function doApprove() {
+      console.log("1");
       setLoading(true);
       await waitForMs(3000);
-      setActionSuccess(false);
+      setActionSuccess(true);
       setLoading(false);
+      console.log("2");
     }
 
     if (actionRequest === "approve") doApprove();
