@@ -3,15 +3,23 @@
   border: 1px solid gray;
   background-color: lightgray;
   padding: 10px;
-  max-width: 500px;
+  /* width: 100%; */
   position: relative;
   overflow: hidden;
+}
+
+.main * {
+  box-sizing: border-box;
 }
 
 .main table {
   text-align: left;
   border-collapse: collapse;
   width: 100%;
+}
+
+.column-right-align {
+  text-align: right;
 }
 
 .main th {
@@ -44,12 +52,21 @@
   width: 100px;
 }
 
+td.line-item-x-container {
+  padding: 0;
+  position: relative;
+}
+
 .line-item-x {
   color: white;
   background: red;
   border: none;
   cursor: pointer;
   border-radius: 100px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -45% -50%;
 }
 
 .deleted-line-item {
@@ -77,13 +94,43 @@
   margin: 0;
 }
 
+.shipping-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.shipping-fields input,
+.shipping-fields select {
+  width: 250px;
+}
+
 .totals {
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
 
 .grand-total {
-  font-size: 1.125rem;
   font-weight: bold;
+  position: relative;
+}
+
+.grand-total-asterisk {
+  position: absolute;
+  top: -1px;
+  right: -10px;
+}
+
+.info-box {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #006ac6;
+  width: 180px;
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #006ac611;
 }
 
 .main input,
@@ -132,4 +179,18 @@
   justify-content: center;
   align-items: center;
   font-size: 1.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .extra-details-flex {
+    flex-direction: column-reverse;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .shipping-fields > div,
+  .shipping-fields input,
+  .shipping-fields select {
+    width: 100%;
+  }
 }

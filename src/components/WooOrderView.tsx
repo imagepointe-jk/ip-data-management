@@ -157,14 +157,14 @@ export function WooOrderView({
                   <th></th>
                   <th>Name</th>
                   <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Tax</th>
+                  <th className={styles["column-right-align"]}>Unit Price</th>
+                  <th className={styles["column-right-align"]}>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 {order.lineItems.map((item) => (
                   <tr key={item.id}>
-                    <td style={{ padding: "0" }}>
+                    <td className={styles["line-item-x-container"]}>
                       <button
                         className={styles["line-item-x"]}
                         onClick={() =>
@@ -207,22 +207,22 @@ export function WooOrderView({
                       />
                     </td>
                     <td
-                      className={
+                      className={`${
                         removeLineItemIds.includes(item.id)
                           ? styles["deleted-line-item"]
                           : undefined
-                      }
+                      } ${styles["column-right-align"]}`}
                     >
-                      ${item.total}
+                      ${item.price.toFixed(2)}
                     </td>
                     <td
-                      className={
+                      className={`${
                         removeLineItemIds.includes(item.id)
                           ? styles["deleted-line-item"]
                           : undefined
-                      }
+                      } ${styles["column-right-align"]}`}
                     >
-                      ${item.totalTax}
+                      ${item.total}
                     </td>
                   </tr>
                 ))}
@@ -232,131 +232,139 @@ export function WooOrderView({
           <div className={styles["extra-details-flex"]}>
             <div>
               <h3>Shipping</h3>
-              <div>
-                <label htmlFor="first-name">First Name</label>
-                <input
-                  type="text"
-                  name="first-name"
-                  id="first-name"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ firstName: e.target.value })
-                  }
-                  value={order.shipping.firstName}
-                />
-              </div>
-              <div>
-                <label htmlFor="last-name">Last Name</label>
-                <input
-                  type="text"
-                  name="last-name"
-                  id="last-name"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ lastName: e.target.value })
-                  }
-                  value={order.shipping.lastName}
-                />
-              </div>
-              <div>
-                <label htmlFor="address1">Street Address (Line 1)</label>
-                <input
-                  type="text"
-                  name="address1"
-                  id="address1"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ address1: e.target.value }, true)
-                  }
-                  value={order.shipping.address1}
-                />
-              </div>
-              <div>
-                <label htmlFor="address2">Street Address (Line 2)</label>
-                <input
-                  type="text"
-                  name="address2"
-                  id="address2"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ address2: e.target.value }, true)
-                  }
-                  value={order.shipping.address2}
-                />
-              </div>
-              <div>
-                <label htmlFor="city">City</label>
-                <input
-                  type="text"
-                  name="city"
-                  id="city"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ city: e.target.value }, true)
-                  }
-                  value={order.shipping.city}
-                />
-              </div>
-              <div>
-                <label htmlFor="state">State/County</label>
-                <input
-                  type="text"
-                  name="state"
-                  id="state"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ state: e.target.value }, true)
-                  }
-                  value={order.shipping.state}
-                />
-              </div>
-              <div>
-                <label htmlFor="zip">Zip Code</label>
-                <input
-                  type="text"
-                  name="zip"
-                  id="zip"
-                  onChange={(e) =>
-                    onChangeShippingInfo({ postcode: e.target.value }, true)
-                  }
-                  value={order.shipping.postcode}
-                />
-              </div>
-              <div>
-                <label htmlFor="country">Country</label>
-                <select
-                  name="country"
-                  id="country"
-                  value={order.shipping.country}
-                  onChange={(e) =>
-                    onChangeShippingInfo({ country: e.target.value }, true)
-                  }
-                >
-                  <option value="US">US</option>
-                  <option value="CA">CA</option>
-                </select>
-              </div>
-              {permissions?.shipping?.method === "edit" && (
+              <div className={styles["shipping-fields"]}>
                 <div>
-                  <label htmlFor="shipping-method">Shipping Method</label>
-                  <select
-                    name="shipping-method"
-                    id="shipping-method"
-                    value={order.shippingLines[0]?.method_title}
+                  <label htmlFor="first-name">First Name</label>
+                  <input
+                    type="text"
+                    name="first-name"
+                    id="first-name"
                     onChange={(e) =>
-                      onChangeShippingInfo({ method: e.target.value })
+                      onChangeShippingInfo({ firstName: e.target.value })
+                    }
+                    value={order.shipping.firstName}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="last-name">Last Name</label>
+                  <input
+                    type="text"
+                    name="last-name"
+                    id="last-name"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ lastName: e.target.value })
+                    }
+                    value={order.shipping.lastName}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="address1">Street Address (Line 1)</label>
+                  <input
+                    type="text"
+                    name="address1"
+                    id="address1"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ address1: e.target.value }, true)
+                    }
+                    value={order.shipping.address1}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="address2">Street Address (Line 2)</label>
+                  <input
+                    type="text"
+                    name="address2"
+                    id="address2"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ address2: e.target.value }, true)
+                    }
+                    value={order.shipping.address2}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="city">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    id="city"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ city: e.target.value }, true)
+                    }
+                    value={order.shipping.city}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="state">State/County</label>
+                  <input
+                    type="text"
+                    name="state"
+                    id="state"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ state: e.target.value }, true)
+                    }
+                    value={order.shipping.state}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="zip">Zip Code</label>
+                  <input
+                    type="text"
+                    name="zip"
+                    id="zip"
+                    onChange={(e) =>
+                      onChangeShippingInfo({ postcode: e.target.value }, true)
+                    }
+                    value={order.shipping.postcode}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="country">Country</label>
+                  <select
+                    name="country"
+                    id="country"
+                    value={order.shipping.country}
+                    onChange={(e) =>
+                      onChangeShippingInfo({ country: e.target.value }, true)
                     }
                   >
-                    {permittedShippingMethods.map((method) => (
-                      <option key={method} value={method}>
-                        {method}
-                      </option>
-                    ))}
+                    <option value="US">US</option>
+                    <option value="CA">CA</option>
                   </select>
                 </div>
-              )}
+                {permissions?.shipping?.method === "edit" && (
+                  <div>
+                    <label htmlFor="shipping-method">Shipping Method</label>
+                    <select
+                      name="shipping-method"
+                      id="shipping-method"
+                      value={order.shippingLines[0]?.method_title}
+                      onChange={(e) =>
+                        onChangeShippingInfo({ method: e.target.value })
+                      }
+                    >
+                      {permittedShippingMethods.map((method) => (
+                        <option key={method} value={method}>
+                          {method}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
             </div>
             <div className={styles["totals"]}>
               <div>Subtotal: ${order.subtotal}</div>
               <div>Total Tax: ${order.totalTax}</div>
               {/* <div>Shipping Total: ${order.shippingTotal}</div> */}
-              {/* <div className={styles["grand-total"]}>
-                Grand Total: ${order.total}
-              </div> */}
+              <div className={styles["grand-total"]}>
+                {`Grand Total: $${(+order.total - +order.shippingTotal).toFixed(
+                  2
+                )}`}
+                <div className={styles["grand-total-asterisk"]}>*</div>
+              </div>
+              <div className={styles["info-box"]}>
+                *Grand total is an estimate and does not include shipping cost.
+              </div>
             </div>
           </div>
           <div className={styles["submit-row"]}>

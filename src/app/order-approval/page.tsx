@@ -5,6 +5,7 @@ import { WooOrderView } from "@/components/WooOrderView";
 import { UnwrapPromise } from "@/types/types";
 import { validateOrderApprovalIframeData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
+import styles from "@/styles/orderApproval/approverArea.module.css";
 
 export default function Page() {
   const [serverData, setServerData] = useState(
@@ -36,25 +37,27 @@ export default function Page() {
     <>
       {!serverData && <>Loading...</>}
       {serverData && (
-        <>
-          <WooOrderView
-            orderId={serverData.orderId}
-            // apiKey={serverData.apiKey}
-            // apiSecret={serverData.apiSecret}
-            shippingMethods={serverData.shippingMethods.map(
-              (method) => method.name
-            )}
-            storeUrl={serverData.storeUrl}
-            permissions={{
-              shipping: {
-                method: serverData.allowApproveChangeMethod ? "edit" : "hidden",
-              },
-            }}
-            special={{
-              allowUpsShippingToCanada: serverData.allowUpsToCanada,
-            }}
-          />
-        </>
+        <div className={styles["main"]}>
+          <div className={styles["order-view-container"]}>
+            <WooOrderView
+              orderId={serverData.orderId}
+              shippingMethods={serverData.shippingMethods.map(
+                (method) => method.name
+              )}
+              storeUrl={serverData.storeUrl}
+              permissions={{
+                shipping: {
+                  method: serverData.allowApproveChangeMethod
+                    ? "edit"
+                    : "hidden",
+                },
+              }}
+              special={{
+                allowUpsShippingToCanada: serverData.allowUpsToCanada,
+              }}
+            />
+          </div>
+        </div>
       )}
     </>
   );
