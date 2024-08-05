@@ -6,7 +6,7 @@ import {
 import { getOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "../encryption";
 import { WooCommerceOrder } from "@/types/schema";
-import { rootUrl } from "@/utility/url";
+import { createApproverFrontEndUrl, rootUrl } from "@/utility/url";
 import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
@@ -59,30 +59,41 @@ export const replacers: Replacer[] = [
     description: "Approver's 'approve' link",
     shortcode: "{approve}",
     automatic: false,
-    fn: (text, _, __, accessCode) =>
+    fn: (text, _, __, accessCode, webstore) =>
       text.replace(
         /\{approve\}/gi,
-        `<a href="${rootUrl()}/order-approval/${accessCode}/approve">Approve</a>`
+        `<a href="${createApproverFrontEndUrl(
+          webstore.url,
+          accessCode,
+          "approve"
+        )}">Approve</a>`
       ),
   },
   {
     description: "Approver's 'deny' link",
     shortcode: "{deny}",
     automatic: false,
-    fn: (text, _, __, accessCode) =>
+    fn: (text, _, __, accessCode, webstore) =>
       text.replace(
         /\{deny\}/gi,
-        `<a href="${rootUrl()}/order-approval/${accessCode}/deny">Deny</a>`
+        `<a href="${createApproverFrontEndUrl(
+          webstore.url,
+          accessCode,
+          "deny"
+        )}/order-approval/${accessCode}/deny">Deny</a>`
       ),
   },
   {
     description: "Approver's link to review/edit order",
     shortcode: "{edit}",
     automatic: false,
-    fn: (text, _, __, accessCode) =>
+    fn: (text, _, __, accessCode, webstore) =>
       text.replace(
         /\{edit\}/gi,
-        `<a href="${rootUrl()}/order-approval/${accessCode}">Review Order</a>`
+        `<a href="${createApproverFrontEndUrl(
+          webstore.url,
+          accessCode
+        )}">Review Order</a>`
       ),
   },
   {

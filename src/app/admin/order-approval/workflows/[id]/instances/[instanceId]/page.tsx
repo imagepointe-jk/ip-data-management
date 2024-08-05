@@ -1,6 +1,7 @@
 import {
   getWorkflowInstanceWithIncludes,
   getWorkflowStepByNumber,
+  getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
@@ -14,6 +15,9 @@ type Props = {
 export default async function Page({ params: { id, instanceId } }: Props) {
   const instance = await getWorkflowInstanceWithIncludes(+instanceId);
   if (!instance) return <h1>Instance {instanceId} not found.</h1>;
+  const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);
+  if (!workflow) return <h1>Workflow for instance {instanceId} not found.</h1>;
+
   const step = await getWorkflowStepByNumber(
     instance.parentWorkflowId,
     instance.currentStep
@@ -50,7 +54,7 @@ export default async function Page({ params: { id, instanceId } }: Props) {
         </div>
       )}
       <h2>Users</h2>
-      <ResultsTable instance={instance} />
+      <ResultsTable instance={instance} webstoreUrl={workflow.webstore.url} />
     </>
   );
 }
