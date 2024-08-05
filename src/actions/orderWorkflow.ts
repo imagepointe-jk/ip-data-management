@@ -161,8 +161,6 @@ export async function deleteStep(id: number) {
   });
   if (!step) throw new Error(`Step ${id} not found.`);
 
-  const deletedStepNumber = step.order;
-
   await prisma.orderWorkflowStep.delete({
     where: {
       id,
