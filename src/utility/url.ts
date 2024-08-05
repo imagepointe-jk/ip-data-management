@@ -8,7 +8,7 @@ export function createApproverFrontEndUrl(
   accessCode: string,
   action?: "approve" | "deny"
 ) {
-  return `${webstoreUrl}?code=${accessCode}${
+  return `${webstoreUrl}/order-approval?code=${accessCode}${
     action ? `&action=${action}` : ""
   }`;
 }

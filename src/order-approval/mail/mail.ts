@@ -80,7 +80,7 @@ export const replacers: Replacer[] = [
           webstore.url,
           accessCode,
           "deny"
-        )}/order-approval/${accessCode}/deny">Deny</a>`
+        )}">Deny</a>`
       ),
   },
   {
