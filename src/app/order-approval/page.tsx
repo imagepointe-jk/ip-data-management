@@ -9,17 +9,18 @@ import { UnwrapPromise } from "@/types/types";
 import { validateOrderApprovalIframeData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
-import { waitForMs } from "@/utility/misc";
+import DenyForm from "./DenyForm";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
   const [serverData, setServerData] = useState(
     null as UnwrapPromise<ReturnType<typeof getOrderApprovalIframeData>> | null
   );
-  const [accessCode, setAccessCode] = useState(null as string | null);
+  const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionRequest, setActionRequest] = useState(null as Action);
   const [actionSuccess, setActionSuccess] = useState(false);
+  const [actionAttempted, setActionAttempted] = useState(false);
 
   async function onReceiveParentWindowInfo(e: any) {
     try {
@@ -42,11 +43,22 @@ export default function Page() {
   }
 
   async function doApprove() {
-    if (!accessCode) return;
-
     try {
       setLoading(true);
+      setActionAttempted(true);
       await receiveWorkflowEvent(accessCode, "approve");
+      setActionSuccess(true);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  }
+
+  async function doDeny(reason: string) {
+    try {
+      setLoading(true);
+      setActionAttempted(true);
+      await receiveWorkflowEvent(accessCode, "deny", reason);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
@@ -73,8 +85,8 @@ export default function Page() {
       {!serverData && !loading && <>Error.</>}
       {serverData && (
         <div className={styles["main"]}>
-          {/* Only show the buttons if an action hasn't been successfully performed yet */}
-          {!actionSuccess && (
+          {/* Only show the buttons if an action hasn't been attempted yet */}
+          {!actionSuccess && !actionAttempted && (
             <>
               <button onClick={() => setActionRequest(null)}>Review</button>
               <button onClick={() => setActionRequest("approve")}>
@@ -90,7 +102,14 @@ export default function Page() {
               {!loading && actionSuccess && <>Order approved.</>}
             </>
           )}
-          {actionRequest === "deny" && <>Deny form</>}
+          {actionRequest === "deny" && (
+            <DenyForm
+              loading={loading}
+              onClickSubmit={doDeny}
+              success={actionSuccess}
+              error={actionAttempted && !loading && !actionSuccess}
+            />
+          )}
           <div
             className={styles["order-view-container"]}
             style={{ display: actionRequest === null ? undefined : "none" }}
