@@ -206,11 +206,13 @@ function Step({
             <option key={-1} value={undefined}>
               (none)
             </option>,
-            ...workflowUsers.map((user) => (
-              <option key={user.id} value={user.email}>
-                {user.name}
-              </option>
-            )),
+            ...workflowUsers
+              .filter((user) => user.isApprover)
+              .map((user) => (
+                <option key={user.id} value={user.email}>
+                  {user.name}
+                </option>
+              )),
             <option key="purchaser" value="purchaser">
               Purchaser
             </option>,
