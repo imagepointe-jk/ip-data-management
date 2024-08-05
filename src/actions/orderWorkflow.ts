@@ -154,11 +154,55 @@ export async function createStep(parentWorkflowId: number, order?: number) {
 }
 
 export async function deleteStep(id: number) {
+  const step = await prisma.orderWorkflowStep.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!step) throw new Error(`Step ${id} not found.`);
+
+  const deletedStepNumber = step.order;
+
   await prisma.orderWorkflowStep.delete({
     where: {
       id,
     },
   });
+  await revalidateStepOrder(step.workflowId);
+}
+//deleting a step causes a gap in step order (e.g. deleting 3 in 1, 2, 3, 4, 5 yields the sequence 1, 2, 4, 5).
+//revalidate so that the step sequence remains sequential and zero-based.
+async function revalidateStepOrder(workflowId: number) {
+  const allSteps = await prisma.orderWorkflowStep.findMany({
+    where: {
+      workflowId,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const updates: { id: number; order: number }[] = [];
+  for (let i = 0; i < allSteps.length; i++) {
+    const step = allSteps[i];
+    if (!step) throw new Error(`Invalid step ${i} in array`);
+
+    if (step.order !== i) {
+      updates.push({
+        id: step.id,
+        order: i,
+      });
+    }
+  }
+
+  await Promise.all(
+    updates.map((update) =>
+      prisma.orderWorkflowStep.update({
+        where: { id: update.id },
+        data: { order: update.order },
+      })
+    )
+  );
 }
 
 export async function updateWebstore(formData: FormData) {
