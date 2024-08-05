@@ -57,7 +57,7 @@ td.line-item-x-container {
   position: relative;
 }
 
-.line-item-x {
+.main .line-item-x {
   color: white;
   background: red;
   border: none;
@@ -67,6 +67,7 @@ td.line-item-x-container {
   left: 50%;
   top: 50%;
   translate: -45% -50%;
+  padding: revert;
 }
 
 .deleted-line-item {

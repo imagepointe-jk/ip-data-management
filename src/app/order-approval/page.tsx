@@ -10,6 +10,7 @@ import { validateOrderApprovalIframeData } from "@/types/validations/orderApprov
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
+import { waitForMs } from "@/utility/misc";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
@@ -46,7 +47,8 @@ export default function Page() {
     try {
       setLoading(true);
       setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "approve");
+      // await receiveWorkflowEvent(accessCode, "approve");
+      await waitForMs(2000);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
@@ -81,25 +83,46 @@ export default function Page() {
 
   return (
     <>
-      {loading && <>Loading...</>}
+      {loading && <div className={styles["status-message"]}>Loading...</div>}
       {!serverData && !loading && <>Error.</>}
       {serverData && (
         <div className={styles["main"]}>
           {/* Only show the buttons if an action hasn't been attempted yet */}
           {!actionSuccess && !actionAttempted && (
-            <>
-              <button onClick={() => setActionRequest(null)}>Review</button>
-              <button onClick={() => setActionRequest("approve")}>
-                Approve
+            <div className={styles["nav-buttons-container"]}>
+              <button
+                className={styles["nav-button-review"]}
+                onClick={() => setActionRequest(null)}
+              >
+                Review
               </button>
-              <button onClick={() => setActionRequest("deny")}>Deny</button>
-            </>
+              <button
+                className={styles["nav-button-approve"]}
+                onClick={() => setActionRequest("approve")}
+              >
+                Approve Now
+              </button>
+              <button
+                className={styles["nav-button-deny"]}
+                onClick={() => setActionRequest("deny")}
+              >
+                Deny
+              </button>
+            </div>
           )}
           {actionRequest === "approve" && (
             <>
-              {loading && <>Sending approval...</>}
-              {!loading && !actionSuccess && <>Failed to send approval.</>}
-              {!loading && actionSuccess && <>Order approved.</>}
+              {/* {loading && <>Sending approval...</>} */}
+              {!loading && !actionSuccess && (
+                <div className={styles["status-message"]}>
+                  Failed to send approval.
+                </div>
+              )}
+              {!loading && actionSuccess && (
+                <div className={styles["status-message"]}>
+                  Order approved. ✅
+                </div>
+              )}
             </>
           )}
           {actionRequest === "deny" && (

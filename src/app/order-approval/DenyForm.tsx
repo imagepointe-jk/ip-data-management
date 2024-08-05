@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "@/styles/orderApproval/approverArea.module.css";
 
 type Props = {
   onClickSubmit: (reason: string) => void;
@@ -33,6 +34,7 @@ export default function DenyForm({
             reason before continuing.
           </div>
           <textarea
+            className={styles["deny-textarea"]}
             cols={40}
             rows={10}
             value={text}
@@ -42,14 +44,7 @@ export default function DenyForm({
             {!loading && (
               <button
                 onClick={() => onClickSubmit(text)}
-                style={{
-                  backgroundColor: allowSubmit ? "red" : "lightgray",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  border: "none",
-                  color: "white",
-                  cursor: allowSubmit ? "pointer" : undefined,
-                }}
+                className={styles["deny-button"]}
                 disabled={!allowSubmit}
               >
                 Deny Order
