@@ -1,6 +1,9 @@
 "use client";
 
-import { getOrderApprovalIframeData } from "@/actions/orderWorkflow";
+import {
+  getOrderApprovalIframeData,
+  receiveWorkflowEvent,
+} from "@/actions/orderWorkflow";
 import { WooOrderView } from "@/components/WooOrderView";
 import { UnwrapPromise } from "@/types/types";
 import { validateOrderApprovalIframeData } from "@/types/validations/orderApproval";
@@ -13,6 +16,7 @@ export default function Page() {
   const [serverData, setServerData] = useState(
     null as UnwrapPromise<ReturnType<typeof getOrderApprovalIframeData>> | null
   );
+  const [accessCode, setAccessCode] = useState(null as string | null);
   const [loading, setLoading] = useState(true);
   const [actionRequest, setActionRequest] = useState(null as Action);
   const [actionSuccess, setActionSuccess] = useState(false);
@@ -22,6 +26,7 @@ export default function Page() {
       const parsed = validateOrderApprovalIframeData(e.data);
       const searchParams = new URLSearchParams(parsed.searchParams);
       const accessCodeInParams = `${searchParams.get("code")}`;
+      setAccessCode(accessCodeInParams);
       const dataFromServer = await getOrderApprovalIframeData(
         accessCodeInParams
       );
@@ -36,6 +41,19 @@ export default function Page() {
     }
   }
 
+  async function doApprove() {
+    if (!accessCode) return;
+
+    try {
+      setLoading(true);
+      await receiveWorkflowEvent(accessCode, "approve");
+      setActionSuccess(true);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  }
+
   useEffect(() => {
     window.addEventListener("message", onReceiveParentWindowInfo);
     window.parent.postMessage({ type: "order-approval-request-url" }, "*");
@@ -46,15 +64,6 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    async function doApprove() {
-      console.log("1");
-      setLoading(true);
-      await waitForMs(3000);
-      setActionSuccess(true);
-      setLoading(false);
-      console.log("2");
-    }
-
     if (actionRequest === "approve") doApprove();
   }, [actionRequest]);
 
