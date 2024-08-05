@@ -10,7 +10,6 @@ import { validateOrderApprovalIframeData } from "@/types/validations/orderApprov
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
-import { waitForMs } from "@/utility/misc";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
@@ -47,8 +46,7 @@ export default function Page() {
     try {
       setLoading(true);
       setActionAttempted(true);
-      // await receiveWorkflowEvent(accessCode, "approve");
-      await waitForMs(2000);
+      await receiveWorkflowEvent(accessCode, "approve");
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
