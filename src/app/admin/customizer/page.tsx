@@ -6,5 +6,10 @@ export default async function Customizer() {
   const productSettings = await getProductSettings();
   const populatedProducts = await populateProductData(productSettings);
 
-  return <ResultsTable productListings={populatedProducts} />;
+  return (
+    <>
+      <h1>Customizable Products</h1>
+      <ResultsTable productListings={populatedProducts} />
+    </>
+  );
 }

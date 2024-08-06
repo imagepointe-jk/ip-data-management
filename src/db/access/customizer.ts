@@ -7,36 +7,17 @@ import {
 } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 
-export type ProductSettingListing = CustomProductSettings & {
-  imageUrl?: string;
-};
-export async function getProductSettings(): Promise<ProductSettingListing[]> {
-  const settings = await prisma.customProductSettings.findMany({
+const productSettingIncludes = {
+  variations: {
     include: {
-      variations: {
-        take: 1,
-        include: {
-          views: {
-            take: 1,
-          },
-        },
-      },
+      views: true,
     },
+  },
+};
+export async function getProductSettings() {
+  return prisma.customProductSettings.findMany({
+    include: productSettingIncludes,
   });
-  const listings: ProductSettingListing[] = settings.map((setting) => {
-    const firstVariation = setting.variations[0];
-    if (!firstVariation) return setting;
-
-    const firstView = firstVariation.views[0];
-    if (!firstView) return setting;
-
-    return {
-      ...setting,
-      imageUrl: firstView.imageUrl,
-    };
-  });
-
-  return listings;
 }
 
 export type FullProductSettings = CustomProductSettings & {

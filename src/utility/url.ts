@@ -12,3 +12,10 @@ export function createApproverFrontEndUrl(
     action ? `&action=${action}` : ""
   }`;
 }
+
+export function createWooCommerceProductAdminUrl(
+  productId: number,
+  url = "https://www.imagepointe.com"
+) {
+  return `${url}/wp-admin/post.php?post=${productId}&action=edit`;
+}

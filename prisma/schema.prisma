@@ -97,8 +97,12 @@ model HubSpotSync {
   progress    Decimal //0 is no progress, 1 is complete
 }
 
-//TODO: These tables should ideally be renamed to something more generic like "CustomProduct".
-//TODO: We may want to use the customizer app for more than just garments in the future.
+//base table for customizer product records.
+//this table should not contain any product-specific fields that might be varied,
+//such as color, material, size, etc.
+//these should instead be in the variation table.
+//a product that has "no variations" will in reality have exactly 1 variation treated as the base,
+//and every product should have at least one variation.
 model CustomProductSettings {
   id            Int                              @id @default(autoincrement())
   createdAt     DateTime                         @default(now())

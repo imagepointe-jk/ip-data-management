@@ -1,7 +1,7 @@
 "use client";
 
 import { FullProductSettings } from "@/db/access/customizer";
-import styles from "@/styles/CustomProductEditor.module.css";
+import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 
 type Props = {
   settings: FullProductSettings;
