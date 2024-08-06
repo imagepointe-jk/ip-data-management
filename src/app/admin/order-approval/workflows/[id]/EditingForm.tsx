@@ -46,8 +46,13 @@ export function EditingForm({ workflow }: Props) {
     router.refresh();
   }
 
+  async function onSubmit(e: FormData) {
+    await updateWorkflow(e);
+    router.refresh();
+  }
+
   return (
-    <form action={updateWorkflow}>
+    <form action={(e) => onSubmit(e)}>
       {workflow.instances.length > 0 && (
         <Link href={`${workflow.id}/instances`}>
           View {workflow.instances.length} instance(s)

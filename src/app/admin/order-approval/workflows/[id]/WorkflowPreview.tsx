@@ -1,6 +1,6 @@
 "use client";
 import styles from "@/styles/orderApproval/workflowPreview.module.css";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
@@ -107,6 +107,10 @@ export function WorkflowPreview({ steps }: Props) {
             )}
           </div>
         ))}
+      </div>
+      <div className={styles["info"]}>
+        <FontAwesomeIcon icon={faInfoCircle} /> Preview not updating? Try
+        clicking &quot;Save Changes&quot; first.
       </div>
     </div>
   );
