@@ -379,11 +379,13 @@ function EventListener({ listener, workflowUsers }: EventListenerProps) {
           from{" "}
           <select name={fromField} id={fromField} defaultValue={listener.from}>
             {[
-              ...workflowUsers.map((user) => (
-                <option key={user.id} value={user.email}>
-                  {user.name}
-                </option>
-              )),
+              ...workflowUsers
+                .filter((user) => user.isApprover)
+                .map((user) => (
+                  <option key={user.id} value={user.email}>
+                    {user.name}
+                  </option>
+                )),
               <option key="purchaser" value="purchaser">
                 Purchaser
               </option>,
