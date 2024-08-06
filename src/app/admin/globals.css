@@ -68,6 +68,20 @@ a.link-as-button.current,
   font-weight: bold;
 }
 
+a.normal-link {
+  color: revert;
+  text-decoration: revert;
+  padding: revert;
+}
+
+a.normal-link:hover {
+  background: none;
+}
+
+a.normal-link:visited {
+  color: revert;
+}
+
 .ip-logo {
   height: 50px;
 }
@@ -121,6 +135,12 @@ button.button-danger:hover {
 button.button-danger:disabled {
   background-color: var(--color-danger-inactive);
   pointer-events: none;
+}
+
+a.button-small,
+button.button-small {
+  font-size: 0.8rem;
+  padding: 5px;
 }
 
 select,

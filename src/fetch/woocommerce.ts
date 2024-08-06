@@ -30,3 +30,83 @@ export async function getProduct(id: number) {
     requestOptions
   );
 }
+
+export async function getOrder(
+  id: number,
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "GET",
+    headers: headers,
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, requestOptions);
+}
+
+export type OrderUpdateData = {
+  id: number;
+  shipping: {
+    first_name?: string;
+    last_name?: string;
+    address_1?: string;
+    address_2?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+  };
+  line_items: { id: number; quantity?: number; total?: string }[];
+  shipping_lines: { id: number; method_title: string }[];
+};
+export async function updateOrder(
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string,
+  data: OrderUpdateData
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "PUT",
+    headers: headers,
+    body: JSON.stringify(data),
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${data.id}`, requestOptions);
+}
+
+export async function cancelOrder(
+  orderId: number,
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "PUT",
+    headers: headers,
+    body: JSON.stringify({ status: "cancelled" }),
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${orderId}`, requestOptions);
+}

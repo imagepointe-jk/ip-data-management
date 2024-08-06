@@ -185,6 +185,89 @@ export const wooCommerceProductSchema = z.object({
   name: z.string(),
 });
 
+export const wooCommerceWebhookRequestSchema = z.object({
+  headers: z.object({
+    webhookSource: z.string(),
+    webhookEvent: z.string(),
+    webhookResource: z.string(),
+  }),
+  body: z.object({
+    id: z.number(),
+    billing: z.object({
+      first_name: z.string(),
+      last_name: z.string(),
+      email: z.string(),
+    }),
+  }),
+});
+
+export const wooCommerceLineItemSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  quantity: z.number(),
+  total: z.string(),
+  totalTax: z.string(),
+  price: z.number(),
+});
+
+export const wooCommerceFeeLineSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  total: z.string(),
+});
+
+//WC returns a lot of order data. only include what's necessary in the schema.
+export const wooCommerceOrderDataSchema = z.object({
+  id: z.number(),
+  subtotal: z.string(), //created during validation by summing the pre-tax totals of each line item
+  total: z.string(),
+  totalTax: z.string(),
+  shippingTotal: z.string(),
+  lineItems: z.array(wooCommerceLineItemSchema),
+  feeLines: z.array(wooCommerceFeeLineSchema),
+  dateCreated: z.date(),
+  shipping: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    address1: z.string(),
+    address2: z.string(),
+    city: z.string(),
+    state: z.string(),
+    postcode: z.string(),
+    country: z.string(),
+  }),
+  shippingLines: z.array(
+    z.object({
+      id: z.number(),
+      method_title: z.string(),
+    })
+  ),
+});
+
+export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
+const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
+export const orderWorkflowActionTypes = [
+  "email",
+  "mark workflow approved",
+  "mark workflow denied",
+  "cancel woocommerce order",
+] as const;
+const orderWorkflowActionTypeSchema = z.enum(orderWorkflowActionTypes);
+export const orderWorkflowEventTypes = ["approve", "deny", "proceed"] as const;
+const orderWorkflowEventTypeSchema = z.enum(orderWorkflowEventTypes);
+
+export const webstoreFormDataSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  orgName: z.string(),
+  url: z.string(),
+  changeApiKey: z.string(),
+  changeApiSecret: z.string(),
+  shippingMethodIds: z.array(z.number()),
+  allowApproverChangeMethod: z.boolean(),
+  allowUpsToCanada: z.boolean(),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -213,6 +296,13 @@ export type ImpressDataType =
   | "Line Item"
   | "PO"
   | "Product";
+export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
+export type OrderWorkflowActionType = z.infer<
+  typeof orderWorkflowActionTypeSchema
+>;
+export type OrderWorkflowEventType = z.infer<
+  typeof orderWorkflowEventTypeSchema
+>;
 
 //associates the ID of the company resource that got created in HubSpot with the Impress customer number
 export type CompanyResource = {
@@ -242,3 +332,4 @@ export type ProductResource = {
 };
 
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
+export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;

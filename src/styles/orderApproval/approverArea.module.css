@@ -1,0 +1,61 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-message {
+  margin-top: 100px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.order-view-container {
+  width: 800px;
+}
+
+.main button {
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+
+.nav-buttons-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.nav-buttons-container button {
+  font-size: 1.125rem;
+}
+
+.nav-button-review {
+  background-color: #006ac6;
+}
+
+.nav-button-approve {
+  background-color: green;
+}
+
+.deny-textarea {
+  margin: 20px 0;
+}
+
+.nav-button-deny,
+.deny-button {
+  background-color: red;
+}
+
+.deny-button:disabled {
+  background-color: lightgray;
+  cursor: initial;
+}
+
+@media screen and (max-width: 1024px) {
+  .order-view-container {
+    width: 100%;
+  }
+}

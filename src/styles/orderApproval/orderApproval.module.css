@@ -1,0 +1,22 @@
+.basic-table {
+  width: 100%;
+  text-align: left;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.single-step-container {
+  border-radius: 10px;
+  background-color: lightgray;
+  width: 600px;
+  padding: 10px;
+}
+
+.step-subcontainer {
+  border: 1px solid gray;
+  padding: 10px;
+}

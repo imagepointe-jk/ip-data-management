@@ -7,7 +7,7 @@ import { AppError } from "@/error";
 import { DataError, SyncError, SyncWarning } from "@/processes/hubspot/error";
 import { dataToSheetBuffer } from "./spreadsheet";
 
-async function sendEmail(
+export async function sendEmail(
   recipientAddress: string,
   subject: string,
   message: string,

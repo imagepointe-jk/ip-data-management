@@ -45,6 +45,14 @@ export default function NavbarLinks() {
           Customizer
         </Link>
       </li>
+      <li>
+        <Link
+          href="/admin/order-approval"
+          className={path === "/admin/order-approval" ? "current" : ""}
+        >
+          Order Approval
+        </Link>
+      </li>
     </>
   );
 }

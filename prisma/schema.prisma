@@ -136,3 +136,116 @@ model CustomGarmentDecorationLocation {
   parentView   CustomGarmentView @relation(fields: [parentViewId], references: [id])
   parentViewId Int
 }
+
+model Webstore {
+  id                  Int                       @id @default(autoincrement())
+  name                String
+  organizationName    String
+  url                 String                    @unique
+  apiKey              String //encrypted
+  apiKeyEncryptIv     String
+  apiKeyEncryptTag    String
+  apiSecret           String //encrypted
+  apiSecretEncryptIv  String
+  apiSecretEncryptTag String
+  shippingSettings    WebstoreShippingSettings?
+  shippingMethods     WebstoreShippingMethod[]
+  workflows           OrderWorkflow[]
+  users               OrderWorkflowUser[]
+}
+
+model WebstoreShippingSettings {
+  id                        Int      @id @default(autoincrement())
+  allowApproverChangeMethod Boolean
+  allowUpsToCanada          Boolean
+  webstoreId                Int      @unique
+  webstore                  Webstore @relation(fields: [webstoreId], references: [id])
+}
+
+model WebstoreShippingMethod {
+  id          Int        @id @default(autoincrement())
+  name        String
+  serviceCode Int?
+  webstores   Webstore[]
+}
+
+model OrderWorkflow {
+  id         Int                     @id @default(autoincrement())
+  name       String
+  webstoreId Int
+  webstore   Webstore                @relation(fields: [webstoreId], references: [id])
+  steps      OrderWorkflowStep[]
+  instances  OrderWorkflowInstance[]
+}
+
+model OrderWorkflowUser {
+  id          Int                       @id @default(autoincrement())
+  name        String
+  email       String                    @unique
+  isApprover  Boolean                   @default(false) //is this user an approver for their webstore?
+  webstoreId  Int
+  webstore    Webstore                  @relation(fields: [webstoreId], references: [id])
+  comments    OrderWorkflowComment[]
+  accessCodes OrderWorkflowAccessCode[]
+}
+
+model OrderWorkflowStep {
+  id                   Int                                @id @default(autoincrement())
+  name                 String
+  order                Int
+  actionTarget         String?
+  actionType           String
+  actionSubject        String?
+  actionMessage        String?
+  proceedImmediatelyTo String? //if defined, will proceed to the specified step without waiting for events
+  proceedListeners     OrderWorkflowStepProceedListener[]
+  workflowId           Int
+  workflow             OrderWorkflow                      @relation(fields: [workflowId], references: [id])
+}
+
+//when an event is received, it's checked against the current step's ProceedListeners.
+//if one is found matching in "type" and "from", the workflow will try to proceed to
+//whatever is specified by "goto" (usually a stringified step index or something like "next")
+model OrderWorkflowStepProceedListener {
+  id     Int               @id() @default(autoincrement())
+  name   String
+  type   String
+  from   String
+  goto   String
+  stepId Int
+  step   OrderWorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+}
+
+model OrderWorkflowInstance {
+  id                 Int                       @id @default(autoincrement())
+  status             String
+  wooCommerceOrderId Int                       @unique
+  currentStep        Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
+  deniedReason       String?
+  accessCodes        OrderWorkflowAccessCode[]
+  comments           OrderWorkflowComment[]
+  parentWorkflowId   Int
+  parentWorkflow     OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
+  createdAt          DateTime                  @default(now())
+  lastStartedAt      DateTime                  @default(now())
+}
+
+model OrderWorkflowComment {
+  id               Int                   @id @default(autoincrement())
+  userId           Int
+  instanceId       Int
+  user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
+  workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
+  text             String
+}
+
+model OrderWorkflowAccessCode {
+  userId           Int
+  instanceId       Int
+  user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
+  workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
+  guid             String                @default(uuid())
+  userRole         String
+
+  @@id([userId, instanceId])
+}
