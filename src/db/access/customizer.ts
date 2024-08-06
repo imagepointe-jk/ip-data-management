@@ -1,17 +1,17 @@
 import {
   Color,
-  CustomGarmentDecorationLocation,
-  CustomGarmentSettings,
-  CustomGarmentSettingsVariation,
-  CustomGarmentView,
+  CustomProductDecorationLocation,
+  CustomProductSettings,
+  CustomProductSettingsVariation,
+  CustomProductView,
 } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 
-export type GarmentSettingListing = CustomGarmentSettings & {
+export type ProductSettingListing = CustomProductSettings & {
   imageUrl?: string;
 };
-export async function getGarmentSettings(): Promise<GarmentSettingListing[]> {
-  const settings = await prisma.customGarmentSettings.findMany({
+export async function getProductSettings(): Promise<ProductSettingListing[]> {
+  const settings = await prisma.customProductSettings.findMany({
     include: {
       variations: {
         take: 1,
@@ -23,7 +23,7 @@ export async function getGarmentSettings(): Promise<GarmentSettingListing[]> {
       },
     },
   });
-  const listings: GarmentSettingListing[] = settings.map((setting) => {
+  const listings: ProductSettingListing[] = settings.map((setting) => {
     const firstVariation = setting.variations[0];
     if (!firstVariation) return setting;
 
@@ -39,17 +39,17 @@ export async function getGarmentSettings(): Promise<GarmentSettingListing[]> {
   return listings;
 }
 
-export type FullGarmentSettings = CustomGarmentSettings & {
-  variations: (CustomGarmentSettingsVariation & { color: Color } & {
-    views: (CustomGarmentView & {
-      locations: CustomGarmentDecorationLocation[];
+export type FullProductSettings = CustomProductSettings & {
+  variations: (CustomProductSettingsVariation & { color: Color } & {
+    views: (CustomProductView & {
+      locations: CustomProductDecorationLocation[];
     })[];
   })[];
 };
-export async function getFullGarmentSettings(
+export async function getFullProductSettings(
   id: number
-): Promise<FullGarmentSettings | null> {
-  return prisma.customGarmentSettings.findUnique({
+): Promise<FullProductSettings | null> {
+  return prisma.customProductSettings.findUnique({
     where: {
       id,
     },

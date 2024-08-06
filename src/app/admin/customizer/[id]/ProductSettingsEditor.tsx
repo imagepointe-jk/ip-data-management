@@ -1,12 +1,12 @@
 "use client";
 
-import { FullGarmentSettings } from "@/db/access/customizer";
-import styles from "@/styles/CustomGarmentEditor.module.css";
+import { FullProductSettings } from "@/db/access/customizer";
+import styles from "@/styles/CustomProductEditor.module.css";
 
 type Props = {
-  settings: FullGarmentSettings;
+  settings: FullProductSettings;
 };
-export default function GarmentSettingsEditor({ settings }: Props) {
+export default function ProductSettingsEditor({ settings }: Props) {
   return (
     <div className={styles["main-flex"]}>
       <div>
