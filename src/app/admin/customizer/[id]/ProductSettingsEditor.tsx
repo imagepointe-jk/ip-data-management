@@ -35,6 +35,8 @@ export default function ProductSettingsEditor({ settings }: Props) {
         <button className={styles["add-variation"]}>+</button>
       </div>
       <div className={styles["editor-area"]}>
+        {/* Variation Swatch */}
+
         <div className={styles["variation-swatch-container"]}>
           <span
             className={styles["variation-swatch"]}
@@ -44,6 +46,17 @@ export default function ProductSettingsEditor({ settings }: Props) {
           ></span>{" "}
           Variation Color
         </div>
+
+        {/* View Name */}
+
+        <input
+          type="text"
+          className={styles["view-name"]}
+          placeholder="Name this view..."
+        />
+
+        {/* View Arrows */}
+
         <div className={styles["view-arrows-container"]}>
           <button
             className={`${styles["view-arrow"]} ${styles["view-arrow-left"]}`}
@@ -55,13 +68,44 @@ export default function ProductSettingsEditor({ settings }: Props) {
           >
             <FontAwesomeIcon icon={faChevronRight} />
           </button>
-          <div className={styles["product-view-frame"]}>
-            <img
-              src={view?.imageUrl || IMAGE_NOT_FOUND_URL}
-              className={styles["product-view-img"]}
-            />
+        </div>
+
+        {/* View Image */}
+
+        <div className={styles["product-view-frame"]}>
+          <img
+            src={view?.imageUrl || IMAGE_NOT_FOUND_URL}
+            className={styles["product-view-img"]}
+          />
+        </div>
+
+        {/* Image URL */}
+
+        <div className={styles["image-url-container"]}>
+          Image URL
+          <input type="text" placeholder="www.example.com" />
+        </div>
+
+        {/* Location Settings */}
+
+        <div className={styles["location-settings-box"]}>
+          <h4>Location Settings</h4>
+          <div>
+            Position X<input type="range" />
+          </div>
+          <div>
+            Position X<input type="range" />
+          </div>
+          <div>
+            Position X<input type="range" />
+          </div>
+          <div>
+            Position X<input type="range" />
           </div>
         </div>
+
+        {/* Errors */}
+
         {errors.length > 0 && (
           <div className={styles["error"]}>
             <ul>
