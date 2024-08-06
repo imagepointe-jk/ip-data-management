@@ -4,6 +4,7 @@ import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { createLocationFrameInlineStyles } from "@/customizer/editor";
 import { FullProductSettings } from "@/db/access/customizer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
+import { wrap } from "@/utility/misc";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,12 +32,24 @@ export default function ProductSettingsEditor({ settings }: Props) {
   if (!location && view && view.locations.length > 0)
     errors.push(`Invalid location index ${locationIndex} selected.`);
 
+  function onClickViewArrow(direction: "left" | "right") {
+    const views = variation?.views;
+    if (!views) return;
+
+    let newViewIndex = direction === "left" ? viewIndex - 1 : viewIndex + 1;
+    newViewIndex = wrap(newViewIndex, 0, views.length - 1);
+
+    setViewIndex(newViewIndex);
+  }
+
   return (
     <div className={styles["main-flex"]}>
       <div className={styles["variations-column"]}>
         Variations
         {settings.variations.map((variation, i) => (
-          <button key={i}>{variation.color.name}</button>
+          <button key={i} onClick={() => setVariationIndex(i)}>
+            {variation.color.name}
+          </button>
         ))}
         <button className={styles["add-variation"]}>+</button>
       </div>
@@ -66,11 +79,13 @@ export default function ProductSettingsEditor({ settings }: Props) {
         <div className={styles["view-arrows-container"]}>
           <button
             className={`${styles["view-arrow"]} ${styles["view-arrow-left"]}`}
+            onClick={() => onClickViewArrow("left")}
           >
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
           <button
             className={`${styles["view-arrow"]} ${styles["view-arrow-right"]}`}
+            onClick={() => onClickViewArrow("right")}
           >
             <FontAwesomeIcon icon={faChevronRight} />
           </button>

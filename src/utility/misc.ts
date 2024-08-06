@@ -184,3 +184,9 @@ export function decrypt(encrypted: string, iv: string, tag: string) {
 
   return plaintext;
 }
+
+export function wrap(value: number, min: number, max: number) {
+  if (value < min) return max;
+  if (value > max) return min;
+  return value;
+}
