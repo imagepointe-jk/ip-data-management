@@ -99,7 +99,7 @@ export default function ProductSettingsEditor({ settings }: Props) {
             className={styles["product-view-img"]}
           />
           {view &&
-            view.locations.map((location) => (
+            view.locations.map((location, i) => (
               <div
                 key={location.id}
                 className={styles["location-frame"]}
@@ -109,6 +109,7 @@ export default function ProductSettingsEditor({ settings }: Props) {
                   positionX: `${location.positionX}`,
                   positionY: `${location.positionY}`,
                 })}
+                onClick={() => setLocationIndex(i)}
               >
                 <div className={styles["location-name"]}>{location.name}</div>
               </div>
