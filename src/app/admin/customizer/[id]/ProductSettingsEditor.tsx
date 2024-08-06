@@ -1,6 +1,7 @@
 "use client";
 
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { createLocationFrameInlineStyles } from "@/customizer/editor";
 import { FullProductSettings } from "@/db/access/customizer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +15,7 @@ type Props = {
 export default function ProductSettingsEditor({ settings }: Props) {
   const [variationIndex, setVariationIndex] = useState(0);
   const [viewIndex, setViewIndex] = useState(0);
+  const [locationIndex, setLocationIndex] = useState(0);
   const errors: string[] = [];
 
   const variation = settings.variations[variationIndex];
@@ -24,6 +26,10 @@ export default function ProductSettingsEditor({ settings }: Props) {
     errors.push(
       `View index ${viewIndex} of variation index ${variationIndex} not found.`
     );
+
+  const location = view?.locations[locationIndex];
+  if (!location && view && view.locations.length > 0)
+    errors.push(`Invalid location index ${locationIndex} selected.`);
 
   return (
     <div className={styles["main-flex"]}>
@@ -77,6 +83,21 @@ export default function ProductSettingsEditor({ settings }: Props) {
             src={view?.imageUrl || IMAGE_NOT_FOUND_URL}
             className={styles["product-view-img"]}
           />
+          {view &&
+            view.locations.map((location) => (
+              <div
+                key={location.id}
+                className={styles["location-frame"]}
+                style={createLocationFrameInlineStyles({
+                  width: `${location.width}`,
+                  height: `${location.height}`,
+                  positionX: `${location.positionX}`,
+                  positionY: `${location.positionY}`,
+                })}
+              >
+                <div className={styles["location-name"]}>{location.name}</div>
+              </div>
+            ))}
         </div>
 
         {/* Image URL */}
@@ -89,19 +110,29 @@ export default function ProductSettingsEditor({ settings }: Props) {
         {/* Location Settings */}
 
         <div className={styles["location-settings-box"]}>
-          <h4>Location Settings</h4>
-          <div>
-            Position X<input type="range" />
-          </div>
-          <div>
-            Position X<input type="range" />
-          </div>
-          <div>
-            Position X<input type="range" />
-          </div>
-          <div>
-            Position X<input type="range" />
-          </div>
+          <h4>
+            {location
+              ? `"${location.name}" Settings`
+              : view && view.locations.length === 0
+              ? "(No Locations)"
+              : "(Invalid Location)"}
+          </h4>
+          {location && (
+            <>
+              <div>
+                Position X<input type="range" />
+              </div>
+              <div>
+                Position X<input type="range" />
+              </div>
+              <div>
+                Position X<input type="range" />
+              </div>
+              <div>
+                Position X<input type="range" />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Errors */}

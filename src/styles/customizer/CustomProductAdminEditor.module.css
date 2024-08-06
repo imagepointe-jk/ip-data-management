@@ -118,3 +118,28 @@
 .location-settings-box input[type="range"] {
   display: block;
 }
+
+.location-frame {
+  width: 100px;
+  height: 100px;
+  border: 4px dashed gray;
+  position: absolute;
+  cursor: pointer;
+}
+
+.location-name {
+  background-color: rgb(48, 48, 48);
+  padding: 5px;
+  color: white;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  border-radius: 5px;
+  translate: -50% 110%;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.location-frame:hover .location-name {
+  opacity: 1;
+}
