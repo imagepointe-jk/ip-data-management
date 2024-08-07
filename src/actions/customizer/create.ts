@@ -14,9 +14,16 @@ export async function createVariation(parentSettingsId: number) {
     data: {
       parentSettingsId,
       colorId: firstColor.id,
+      views: {
+        create: {
+          name: "New View",
+          imageUrl: "www.example.com",
+        },
+      },
     },
     include: {
       color: true,
+      views: true,
     },
   });
 }

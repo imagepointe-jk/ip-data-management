@@ -122,7 +122,10 @@ export default function ProductSettingsEditor({
       setAddVariationLoading(true);
       const newVariation = await createVariation(settings.id);
       setSettings((draft) => {
-        draft.variations.push({ ...newVariation, views: [] });
+        draft.variations.push({
+          ...newVariation,
+          views: newVariation.views.map((view) => ({ ...view, locations: [] })),
+        });
       });
     } catch (error) {
       console.error(error);
