@@ -193,7 +193,7 @@ export default function ProductSettingsEditor({
         </div>
       </div>
       <div className={styles["editor-area"]}>
-        {/* Variation Swatch */}
+        {/* Variation Settings */}
 
         <div className={styles["variation-settings-container"]}>
           <span
@@ -219,7 +219,7 @@ export default function ProductSettingsEditor({
           type="text"
           className={styles["view-name"]}
           placeholder="Name this view..."
-          value={view?.name}
+          value={view?.name || ""}
           onChange={(e) => onChangeViewName(e.target.value)}
         />
 
@@ -272,7 +272,7 @@ export default function ProductSettingsEditor({
           <input
             type="text"
             placeholder="www.example.com"
-            value={view?.imageUrl}
+            value={view?.imageUrl || ""}
             onChange={(e) => onChangeImageUrl(e.target.value)}
           />
         </div>

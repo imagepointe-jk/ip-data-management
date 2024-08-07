@@ -42,8 +42,14 @@ export async function getFullProductSettings(
     },
     include: {
       variations: {
+        orderBy: {
+          id: "asc",
+        },
         include: {
           views: {
+            orderBy: {
+              id: "asc",
+            },
             include: {
               locations: true,
             },
