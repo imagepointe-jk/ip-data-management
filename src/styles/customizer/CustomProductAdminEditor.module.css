@@ -25,6 +25,13 @@
   display: block;
 }
 
+.variation-selected,
+.variation-selected:hover {
+  background-color: white;
+  color: var(--color-alpha);
+  border: 2px solid var(--color-alpha);
+}
+
 .add-variation {
   font-weight: 800;
 }

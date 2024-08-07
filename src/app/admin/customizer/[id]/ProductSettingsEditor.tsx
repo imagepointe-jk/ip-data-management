@@ -140,6 +140,13 @@ export default function ProductSettingsEditor({
           (variation) => variation.id !== variationId
         );
       });
+      const variationBeforeThis = settings.variations.find(
+        (variation, i, array) => {
+          const next = array[i + 1];
+          if (next && next.id === variationId) return variation;
+        }
+      );
+      setVariationId(variationBeforeThis?.id);
     } catch (error) {
       console.error(error);
     }
@@ -166,6 +173,11 @@ export default function ProductSettingsEditor({
             <button
               key={variation.id}
               onClick={() => onClickVariation(variation.id)}
+              className={
+                variation.id === variationId
+                  ? styles["variation-selected"]
+                  : undefined
+              }
             >
               {variation.color.name}
             </button>
