@@ -1,5 +1,7 @@
 "use client";
 
+import { createVariation } from "@/actions/customizer/create";
+import { deleteVariation } from "@/actions/customizer/delete";
 import { updateProductSettings } from "@/actions/customizer/update";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
@@ -28,17 +30,18 @@ export default function ProductSettingsEditor({
     initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
   );
   const [saving, setSaving] = useState(false);
+  const [addVariationLoading, setAddVariationLoading] = useState(false);
   const errors: string[] = [];
 
   const variation = settings.variations.find(
     (variation) => variation.id === variationId
   );
-  if (!variation) errors.push(`Variation index ${variationId} not found.`);
+  if (!variation) errors.push(`Variation id ${variationId} not found.`);
 
   const view = variation?.views[viewIndex];
   if (!view)
     errors.push(
-      `View index ${viewIndex} of variation index ${variationId} not found.`
+      `View index ${viewIndex} of variation id ${variationId} not found.`
     );
 
   const location = view?.locations.find(
@@ -114,6 +117,34 @@ export default function ProductSettingsEditor({
     });
   }
 
+  async function onClickAddVariation() {
+    try {
+      setAddVariationLoading(true);
+      const newVariation = await createVariation(settings.id);
+      setSettings((draft) => {
+        draft.variations.push({ ...newVariation, views: [] });
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    setAddVariationLoading(false);
+  }
+
+  async function onClickDeleteVariation() {
+    if (!variationId) return;
+
+    try {
+      await deleteVariation(variationId);
+      setSettings((draft) => {
+        draft.variations = draft.variations.filter(
+          (variation) => variation.id !== variationId
+        );
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function onClickSave() {
     if (saving) return;
 
@@ -139,7 +170,12 @@ export default function ProductSettingsEditor({
               {variation.color.name}
             </button>
           ))}
-          <button className={styles["add-variation"]}>+</button>
+          <ButtonWithLoading
+            className={styles["add-variation"]}
+            normalText="+"
+            onClick={() => onClickAddVariation()}
+            loading={addVariationLoading}
+          />
         </div>
         <div>
           <select
@@ -159,7 +195,7 @@ export default function ProductSettingsEditor({
       <div className={styles["editor-area"]}>
         {/* Variation Swatch */}
 
-        <div className={styles["variation-swatch-container"]}>
+        <div className={styles["variation-settings-container"]}>
           <span
             className={styles["variation-swatch"]}
             style={{
@@ -167,6 +203,14 @@ export default function ProductSettingsEditor({
             }}
           ></span>{" "}
           Variation Color
+          <div>
+            <button
+              className="button-danger"
+              onClick={() => onClickDeleteVariation()}
+            >
+              Delete Variation
+            </button>
+          </div>
         </div>
 
         {/* View Name */}
