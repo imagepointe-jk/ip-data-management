@@ -5,14 +5,20 @@
   max-width: 1000px;
 }
 
-.variations-column {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
+.sidebar {
   background-color: lightgray;
   padding: 10px;
   text-align: center;
   font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.variations-column {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
 }
 
 .variations-column button {

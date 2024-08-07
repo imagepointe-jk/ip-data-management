@@ -44,14 +44,22 @@ export default function ProductSettingsEditor({ settings }: Props) {
 
   return (
     <div className={styles["main-flex"]}>
-      <div className={styles["variations-column"]}>
-        Variations
-        {settings.variations.map((variation, i) => (
-          <button key={i} onClick={() => setVariationIndex(i)}>
-            {variation.color.name}
-          </button>
-        ))}
-        <button className={styles["add-variation"]}>+</button>
+      <div className={styles["sidebar"]}>
+        <div className={styles["variations-column"]}>
+          Variations
+          {settings.variations.map((variation, i) => (
+            <button key={i} onClick={() => setVariationIndex(i)}>
+              {variation.color.name}
+            </button>
+          ))}
+          <button className={styles["add-variation"]}>+</button>
+        </div>
+        <div>
+          <select>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
       </div>
       <div className={styles["editor-area"]}>
         {/* Variation Swatch */}
