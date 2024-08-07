@@ -9,14 +9,20 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useImmer } from "use-immer";
 
 type Props = {
   settings: FullProductSettings;
 };
-export default function ProductSettingsEditor({ settings }: Props) {
+export default function ProductSettingsEditor({
+  settings: initialSettings,
+}: Props) {
+  const [settings, setSettings] = useImmer(initialSettings);
   const [variationIndex, setVariationIndex] = useState(0);
   const [viewIndex, setViewIndex] = useState(0);
-  const [locationIndex, setLocationIndex] = useState(0);
+  const [locationId, setLocationId] = useState(
+    initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
+  );
   const errors: string[] = [];
 
   const variation = settings.variations[variationIndex];
@@ -28,9 +34,11 @@ export default function ProductSettingsEditor({ settings }: Props) {
       `View index ${viewIndex} of variation index ${variationIndex} not found.`
     );
 
-  const location = view?.locations[locationIndex];
+  const location = view?.locations.find(
+    (location) => location.id === locationId
+  );
   if (!location && view && view.locations.length > 0)
-    errors.push(`Invalid location index ${locationIndex} selected.`);
+    errors.push(`Invalid location id ${locationId} selected.`);
 
   function onClickViewArrow(direction: "left" | "right") {
     const views = variation?.views;
@@ -40,6 +48,29 @@ export default function ProductSettingsEditor({ settings }: Props) {
     newViewIndex = wrap(newViewIndex, 0, views.length - 1);
 
     setViewIndex(newViewIndex);
+  }
+
+  function onChangeLocationSettings(
+    locationId: number,
+    change: {
+      positionX?: number;
+      positionY?: number;
+      width?: number;
+      height?: number;
+    }
+  ) {
+    setSettings((draft) => {
+      const location = draft.variations[variationIndex]?.views[
+        viewIndex
+      ]?.locations.find((location) => location.id === locationId);
+      if (!location) return;
+
+      const { height, positionX, positionY, width } = change;
+      if (height) location.height = height;
+      if (width) location.width = width;
+      if (positionX) location.positionX = positionX;
+      if (positionY) location.positionY = positionY;
+    });
   }
 
   return (
@@ -55,7 +86,15 @@ export default function ProductSettingsEditor({ settings }: Props) {
           <button className={styles["add-variation"]}>+</button>
         </div>
         <div>
-          <select>
+          <select
+            value={settings.published ? "published" : "draft"}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                published: e.target.value === "published",
+              })
+            }
+          >
             <option value="draft">Draft</option>
             <option value="published">Published</option>
           </select>
@@ -107,7 +146,7 @@ export default function ProductSettingsEditor({ settings }: Props) {
             className={styles["product-view-img"]}
           />
           {view &&
-            view.locations.map((location, i) => (
+            view.locations.map((location) => (
               <div
                 key={location.id}
                 className={styles["location-frame"]}
@@ -117,7 +156,7 @@ export default function ProductSettingsEditor({ settings }: Props) {
                   positionX: `${location.positionX}`,
                   positionY: `${location.positionY}`,
                 })}
-                onClick={() => setLocationIndex(i)}
+                onClick={() => setLocationId(location.id)}
               >
                 <div className={styles["location-name"]}>{location.name}</div>
               </div>
@@ -144,16 +183,52 @@ export default function ProductSettingsEditor({ settings }: Props) {
           {location && (
             <>
               <div>
-                Position X<input type="range" />
+                Position X
+                <input
+                  type="range"
+                  value={location.positionX * 100}
+                  onChange={(e) =>
+                    onChangeLocationSettings(location.id, {
+                      positionX: +e.target.value / 100,
+                    })
+                  }
+                />
               </div>
               <div>
-                Position X<input type="range" />
+                Position Y
+                <input
+                  type="range"
+                  value={location.positionY * 100}
+                  onChange={(e) =>
+                    onChangeLocationSettings(location.id, {
+                      positionY: +e.target.value / 100,
+                    })
+                  }
+                />
               </div>
               <div>
-                Position X<input type="range" />
+                Width
+                <input
+                  type="range"
+                  value={location.width * 100}
+                  onChange={(e) =>
+                    onChangeLocationSettings(location.id, {
+                      width: +e.target.value / 100,
+                    })
+                  }
+                />
               </div>
               <div>
-                Position X<input type="range" />
+                Height
+                <input
+                  type="range"
+                  value={location.height * 100}
+                  onChange={(e) =>
+                    onChangeLocationSettings(location.id, {
+                      height: +e.target.value / 100,
+                    })
+                  }
+                />
               </div>
             </>
           )}
