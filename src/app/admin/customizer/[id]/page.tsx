@@ -13,6 +13,7 @@ type Props = {
 };
 export default async function ProductSettings({ params }: Props) {
   const id = +params.id;
+  if (isNaN(id)) return <h1>Invalid ID.</h1>;
   const existingSettings = await getFullProductSettings(id);
 
   if (!existingSettings) return <h1>Settings not found.</h1>;

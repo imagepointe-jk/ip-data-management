@@ -12,7 +12,8 @@ import { wrap } from "@/utility/misc";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 
 type Props = {
@@ -32,6 +33,7 @@ export default function ProductSettingsEditor({
   const [saving, setSaving] = useState(false);
   const [addVariationLoading, setAddVariationLoading] = useState(false);
   const errors: string[] = [];
+  const router = useRouter();
 
   const variation = settings.variations.find(
     (variation) => variation.id === variationId
@@ -120,13 +122,8 @@ export default function ProductSettingsEditor({
   async function onClickAddVariation() {
     try {
       setAddVariationLoading(true);
-      const newVariation = await createVariation(settings.id);
-      setSettings((draft) => {
-        draft.variations.push({
-          ...newVariation,
-          views: newVariation.views.map((view) => ({ ...view, locations: [] })),
-        });
-      });
+      await createVariation(settings.id);
+      router.refresh();
     } catch (error) {
       console.error(error);
     }
@@ -138,11 +135,6 @@ export default function ProductSettingsEditor({
 
     try {
       await deleteVariation(variationId);
-      setSettings((draft) => {
-        draft.variations = draft.variations.filter(
-          (variation) => variation.id !== variationId
-        );
-      });
       const variationBeforeThis = settings.variations.find(
         (variation, i, array) => {
           const next = array[i + 1];
@@ -150,6 +142,7 @@ export default function ProductSettingsEditor({
         }
       );
       setVariationId(variationBeforeThis?.id);
+      router.refresh();
     } catch (error) {
       console.error(error);
     }
@@ -166,6 +159,10 @@ export default function ProductSettingsEditor({
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    setSettings(initialSettings);
+  }, [initialSettings]);
 
   return (
     <div className={styles["main-flex"]}>
