@@ -1,5 +1,7 @@
 "use client";
 
+import { updateProductSettings } from "@/actions/customizer/update";
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { createLocationFrameInlineStyles } from "@/customizer/editor";
 import { FullProductSettings } from "@/db/access/customizer";
@@ -25,6 +27,7 @@ export default function ProductSettingsEditor({
   const [locationId, setLocationId] = useState(
     initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
   );
+  const [saving, setSaving] = useState(false);
   const errors: string[] = [];
 
   const variation = settings.variations.find(
@@ -109,6 +112,18 @@ export default function ProductSettingsEditor({
       if (!view) return;
       view.name = name;
     });
+  }
+
+  async function onClickSave() {
+    if (saving) return;
+
+    try {
+      setSaving(true);
+      await updateProductSettings(settings);
+      setSaving(false);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -294,6 +309,14 @@ export default function ProductSettingsEditor({
             </ul>
           </div>
         )}
+
+        <ButtonWithLoading
+          normalText="Save Changes"
+          className={styles["save"]}
+          loading={saving}
+          onClick={() => onClickSave()}
+        />
+        {/* <button className={styles["save"]}>Save Changes</button> */}
       </div>
     </div>
   );

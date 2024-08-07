@@ -149,3 +149,10 @@
 .location-frame:hover .location-name {
   opacity: 1;
 }
+
+.save {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 1.5rem;
+}

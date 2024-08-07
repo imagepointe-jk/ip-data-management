@@ -1,0 +1,18 @@
+.spinner {
+  filter: sepia(100) brightness(0.4) saturate(15) hue-rotate(158deg);
+  width: 50px;
+  height: 50px;
+}
+
+.spinner-anim {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
