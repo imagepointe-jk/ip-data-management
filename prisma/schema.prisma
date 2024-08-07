@@ -124,7 +124,7 @@ model CustomProductSettingsVariation {
 model CustomProductView {
   id                Int                               @id @default(autoincrement())
   name              String
-  parentVariation   CustomProductSettingsVariation    @relation(fields: [parentVariationId], references: [id])
+  parentVariation   CustomProductSettingsVariation    @relation(fields: [parentVariationId], references: [id], onDelete: Cascade)
   parentVariationId Int
   locations         CustomProductDecorationLocation[]
   imageUrl          String
@@ -137,7 +137,7 @@ model CustomProductDecorationLocation {
   positionY    Decimal
   width        Decimal
   height       Decimal
-  parentView   CustomProductView @relation(fields: [parentViewId], references: [id])
+  parentView   CustomProductView @relation(fields: [parentViewId], references: [id], onDelete: Cascade)
   parentViewId Int
 }
 
