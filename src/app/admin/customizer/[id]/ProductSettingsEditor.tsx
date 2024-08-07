@@ -91,6 +91,26 @@ export default function ProductSettingsEditor({
     });
   }
 
+  function onChangeImageUrl(url: string) {
+    setSettings((draft) => {
+      const view = draft.variations.find(
+        (variation) => variation.id === variationId
+      )?.views[viewIndex];
+      if (!view) return;
+      view.imageUrl = url;
+    });
+  }
+
+  function onChangeViewName(name: string) {
+    setSettings((draft) => {
+      const view = draft.variations.find(
+        (variation) => variation.id === variationId
+      )?.views[viewIndex];
+      if (!view) return;
+      view.name = name;
+    });
+  }
+
   return (
     <div className={styles["main-flex"]}>
       <div className={styles["sidebar"]}>
@@ -140,6 +160,8 @@ export default function ProductSettingsEditor({
           type="text"
           className={styles["view-name"]}
           placeholder="Name this view..."
+          value={view?.name}
+          onChange={(e) => onChangeViewName(e.target.value)}
         />
 
         {/* View Arrows */}
@@ -188,7 +210,12 @@ export default function ProductSettingsEditor({
 
         <div className={styles["image-url-container"]}>
           Image URL
-          <input type="text" placeholder="www.example.com" />
+          <input
+            type="text"
+            placeholder="www.example.com"
+            value={view?.imageUrl}
+            onChange={(e) => onChangeImageUrl(e.target.value)}
+          />
         </div>
 
         {/* Location Settings */}
