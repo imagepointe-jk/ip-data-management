@@ -18,27 +18,42 @@ export default function ProductSettingsEditor({
   settings: initialSettings,
 }: Props) {
   const [settings, setSettings] = useImmer(initialSettings);
-  const [variationIndex, setVariationIndex] = useState(0);
+  const [variationId, setVariationId] = useState(
+    initialSettings.variations[0]?.id || undefined
+  );
   const [viewIndex, setViewIndex] = useState(0);
   const [locationId, setLocationId] = useState(
     initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
   );
   const errors: string[] = [];
 
-  const variation = settings.variations[variationIndex];
-  if (!variation) errors.push(`Variation index ${variationIndex} not found.`);
+  const variation = settings.variations.find(
+    (variation) => variation.id === variationId
+  );
+  if (!variation) errors.push(`Variation index ${variationId} not found.`);
 
   const view = variation?.views[viewIndex];
   if (!view)
     errors.push(
-      `View index ${viewIndex} of variation index ${variationIndex} not found.`
+      `View index ${viewIndex} of variation index ${variationId} not found.`
     );
 
   const location = view?.locations.find(
     (location) => location.id === locationId
   );
-  if (!location && view && view.locations.length > 0)
+  if (
+    locationId !== undefined &&
+    !location &&
+    view &&
+    view.locations.length > 0
+  )
     errors.push(`Invalid location id ${locationId} selected.`);
+
+  function onClickVariation(variationId: number) {
+    setVariationId(variationId);
+    setViewIndex(0);
+    setLocationId(undefined);
+  }
 
   function onClickViewArrow(direction: "left" | "right") {
     const views = variation?.views;
@@ -60,9 +75,12 @@ export default function ProductSettingsEditor({
     }
   ) {
     setSettings((draft) => {
-      const location = draft.variations[variationIndex]?.views[
-        viewIndex
-      ]?.locations.find((location) => location.id === locationId);
+      //look for the given locationId on the currently selected view of the currently selected variation
+      const location = draft.variations
+        .find((variation) => variation.id === variationId)
+        ?.views[viewIndex]?.locations.find(
+          (location) => location.id === locationId
+        );
       if (!location) return;
 
       const { height, positionX, positionY, width } = change;
@@ -78,8 +96,11 @@ export default function ProductSettingsEditor({
       <div className={styles["sidebar"]}>
         <div className={styles["variations-column"]}>
           Variations
-          {settings.variations.map((variation, i) => (
-            <button key={i} onClick={() => setVariationIndex(i)}>
+          {settings.variations.map((variation) => (
+            <button
+              key={variation.id}
+              onClick={() => onClickVariation(variation.id)}
+            >
               {variation.color.name}
             </button>
           ))}
@@ -176,8 +197,9 @@ export default function ProductSettingsEditor({
           <h4>
             {location
               ? `"${location.name}" Settings`
-              : view && view.locations.length === 0
-              ? "(No Locations)"
+              : locationId === undefined ||
+                (view && view.locations.length === 0)
+              ? "(No Location Selected)"
               : "(Invalid Location)"}
           </h4>
           {location && (
