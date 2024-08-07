@@ -342,25 +342,25 @@ export default function ProductSettingsEditor({
           )}
         </div>
 
-        {/* Errors */}
+        {/* Errors & Save */}
 
-        {errors.length > 0 && (
-          <div className={styles["error"]}>
-            <ul>
-              {errors.map((error) => (
-                <li key={error}>{error}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <ButtonWithLoading
-          normalText="Save Changes"
-          className={styles["save"]}
-          loading={saving}
-          onClick={() => onClickSave()}
-        />
-        {/* <button className={styles["save"]}>Save Changes</button> */}
+        <div className={styles["save-container"]}>
+          {errors.length > 0 && (
+            <div className={styles["error"]}>
+              <ul>
+                {errors.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <ButtonWithLoading
+            normalText="Save Changes"
+            className={styles["save"]}
+            loading={saving}
+            onClick={() => onClickSave()}
+          />
+        </div>
       </div>
     </div>
   );
