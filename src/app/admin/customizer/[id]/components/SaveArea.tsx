@@ -3,6 +3,7 @@ import { FullProductSettings } from "@/db/access/customizer";
 import { Dispatch, SetStateAction } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { useRouter } from "next/navigation";
 
 type SaveAreaProps = {
   errors: string[];
@@ -16,12 +17,15 @@ export function SaveArea({
   setSaving,
   settingsState,
 }: SaveAreaProps) {
+  const router = useRouter();
+
   async function onClickSave() {
     if (saving) return;
 
     try {
       setSaving(true);
       await updateProductSettings(settingsState);
+      router.refresh();
       setSaving(false);
     } catch (error) {
       console.error(error);

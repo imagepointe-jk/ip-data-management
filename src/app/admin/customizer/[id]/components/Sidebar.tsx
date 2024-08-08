@@ -73,6 +73,20 @@ export function Sidebar({
         />
       </div>
       <div>
+        Product ID
+        <div>
+          <input
+            type="number"
+            value={settings.wooCommerceId}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                wooCommerceId: +e.target.value,
+              })
+            }
+          />
+        </div>
+        Status
         <select
           value={settings.published ? "published" : "draft"}
           onChange={(e) =>

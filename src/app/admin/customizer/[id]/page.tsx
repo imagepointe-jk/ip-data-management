@@ -22,7 +22,6 @@ export default async function ProductSettings({ params }: Props) {
   return (
     <>
       <h1>{product ? product.name : "(Product not found)"}</h1>
-      <div>WooCommerce product ID: {product ? product.id : "(not found)"}</div>
       <ProductSettingsEditor settings={existingSettings} />
     </>
   );
