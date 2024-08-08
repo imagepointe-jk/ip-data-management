@@ -99,17 +99,37 @@ export function LocationSettingsBox({
     });
   }
 
+  function onChangeLocationName(name: string) {
+    setSettings((draft) => {
+      const location = draft.variations
+        .find((variation) => variation.id === selectedVariationId)
+        ?.views.find((view) => view.id === selectedViewId)
+        ?.locations.find((location) => location.id === selectedLocationId);
+
+      if (location) location.name = name;
+    });
+  }
+
   return (
     <div className={styles["location-settings-box"]}>
       <h4>
         {location
-          ? `"${location.name}" Settings`
+          ? "Location Settings"
           : selectedLocationId === undefined || totalViewLocations === 0
           ? "(No Location Selected)"
           : "(Invalid Location)"}
       </h4>
       {location && (
         <>
+          <div>
+            Name
+            <input
+              type="text"
+              value={location.name}
+              className={styles["location-settings-name"]}
+              onChange={(e) => onChangeLocationName(e.target.value)}
+            />
+          </div>
           <div>
             Position X
             <input

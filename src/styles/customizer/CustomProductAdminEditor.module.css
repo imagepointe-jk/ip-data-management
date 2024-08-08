@@ -135,8 +135,14 @@
   margin: 0;
 }
 
-.location-settings-box input[type="range"] {
+.location-settings-box input[type="range"],
+.location-settings-box input[type="text"] {
   display: block;
+}
+
+.location-settings-box .location-settings-name {
+  padding: 3px;
+  width: 100px;
 }
 
 .location-extras-container {
