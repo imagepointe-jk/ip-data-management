@@ -9,6 +9,9 @@ import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { Dispatch, SetStateAction, useState } from "react";
 import { createLocation } from "@/actions/customizer/create";
 import { deleteLocation } from "@/actions/customizer/delete";
+import { ExpandedDialog } from "../ProductSettingsEditor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
 type LocationSettingsBoxProps = {
   location: CustomProductDecorationLocationNumeric | undefined;
@@ -18,6 +21,8 @@ type LocationSettingsBoxProps = {
   selectedVariationId: number | undefined;
   selectedViewId: number | undefined;
   setSettings: Updater<FullProductSettings>;
+  expanded: boolean;
+  setExpandedDialog: Dispatch<SetStateAction<ExpandedDialog>>;
 };
 export function LocationSettingsBox({
   location,
@@ -27,6 +32,8 @@ export function LocationSettingsBox({
   selectedViewId,
   totalViewLocations,
   setSettings,
+  expanded,
+  setExpandedDialog,
 }: LocationSettingsBoxProps) {
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [isDeletingLocation, setIsDeletingLocation] = useState(false);
@@ -150,12 +157,20 @@ export function LocationSettingsBox({
     <div className={styles["location-settings-box"]}>
       <h4>
         {location
-          ? "Location Settings"
+          ? `Location Settings - ${location.name}`
           : selectedLocationId === undefined || totalViewLocations === 0
           ? "(No Location Selected)"
           : "(Invalid Location)"}
       </h4>
       {location && (
+        <button
+          className={styles["location-box-expand-button"]}
+          onClick={() => setExpandedDialog(expanded ? null : "location")}
+        >
+          <FontAwesomeIcon icon={expanded ? faChevronDown : faChevronUp} />
+        </button>
+      )}
+      {location && expanded && (
         <>
           <div>
             Name

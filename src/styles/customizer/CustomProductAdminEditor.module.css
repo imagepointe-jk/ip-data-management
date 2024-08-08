@@ -130,6 +130,25 @@
   background-color: lightgray;
 }
 
+.location-box-expand-button {
+  background-color: rgb(221, 221, 221);
+  border-radius: 100px;
+  padding: 5px;
+  color: black;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  translate: -50% 0;
+  scale: 70%;
+  transition: 0.2s;
+  border: 2px solid gray;
+}
+
+.location-box-expand-button:hover {
+  scale: 100%;
+  background-color: white;
+}
+
 .location-settings-box h4 {
   text-align: center;
   margin: 0;

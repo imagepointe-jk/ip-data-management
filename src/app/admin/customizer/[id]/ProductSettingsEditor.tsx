@@ -11,6 +11,7 @@ import { Sidebar } from "./components/Sidebar";
 import { VariationSettingsBox } from "./components/VariationSettingsBox";
 import { ViewArrows } from "./components/ViewArrows";
 
+export type ExpandedDialog = null | "location";
 type Props = {
   settings: FullProductSettings;
 };
@@ -28,6 +29,7 @@ export default function ProductSettingsEditor({
     initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
   );
   const [saving, setSaving] = useState(false);
+  const [expandedDialog, setExpandedDialog] = useState(null as ExpandedDialog);
   const errors: string[] = [];
 
   const variation = settings.variations.find(
@@ -147,6 +149,8 @@ export default function ProductSettingsEditor({
           selectedViewId={viewId}
           setSettings={setSettings}
           totalViewLocations={view?.locations.length || 0}
+          expanded={expandedDialog === "location"}
+          setExpandedDialog={setExpandedDialog}
         />
 
         <SaveArea
