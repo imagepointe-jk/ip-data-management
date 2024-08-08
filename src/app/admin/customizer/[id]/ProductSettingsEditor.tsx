@@ -81,6 +81,10 @@ export default function ProductSettingsEditor({
     setViewId(variation?.views[0]?.id);
   }, [variationId]);
 
+  useEffect(() => {
+    setLocationId(undefined);
+  }, [viewId]);
+
   return (
     <div className={styles["main-flex"]}>
       <Sidebar
