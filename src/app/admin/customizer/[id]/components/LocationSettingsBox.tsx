@@ -33,6 +33,7 @@ export function LocationSettingsBox({
   const [copiedLocationData, setCopiedLocationData] = useState(
     null as CustomProductDecorationLocationNumeric | null
   );
+  const colorChoices = ["000000", "808080", "ffffff"];
 
   async function onClickAddLocation() {
     if (selectedViewId === undefined) return;
@@ -117,7 +118,8 @@ export function LocationSettingsBox({
     if (!copiedLocationData) return;
 
     setSettings((draft) => {
-      const { positionX, positionY, width, height } = copiedLocationData;
+      const { positionX, positionY, width, height, frameColor } =
+        copiedLocationData;
       const location = draft.variations
         .find((variation) => variation.id === selectedVariationId)
         ?.views.find((view) => view.id === selectedViewId)
@@ -129,6 +131,18 @@ export function LocationSettingsBox({
       location.height = height;
       location.positionX = positionX;
       location.positionY = positionY;
+      location.frameColor = frameColor;
+    });
+  }
+
+  function onClickFrameColor(color: string) {
+    setSettings((draft) => {
+      const location = draft.variations
+        .find((variation) => variation.id === selectedVariationId)
+        ?.views.find((view) => view.id === selectedViewId)
+        ?.locations.find((location) => location.id === selectedLocationId);
+
+      if (location) location.frameColor = color;
     });
   }
 
@@ -151,6 +165,22 @@ export function LocationSettingsBox({
               className={styles["location-settings-name"]}
               onChange={(e) => onChangeLocationName(e.target.value)}
             />
+          </div>
+          <div>
+            Frame Color{" "}
+            <div className={styles["frame-colors-container"]}>
+              {colorChoices.map((choice) => (
+                <div
+                  className={`${
+                    location.frameColor === choice
+                      ? styles["frame-color-swatch-selected"]
+                      : styles["frame-color-swatch"]
+                  }`}
+                  style={{ backgroundColor: `#${choice}` }}
+                  onClick={() => onClickFrameColor(choice)}
+                ></div>
+              ))}
+            </div>
           </div>
           <div>
             Position X

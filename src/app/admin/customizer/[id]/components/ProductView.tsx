@@ -98,12 +98,7 @@ export function ProductView({
           <div
             key={location.id}
             className={styles["location-frame"]}
-            style={createLocationFrameInlineStyles({
-              width: `${location.width}`,
-              height: `${location.height}`,
-              positionX: `${location.positionX}`,
-              positionY: `${location.positionY}`,
-            })}
+            style={createLocationFrameInlineStyles(location)}
             onClick={() => setLocationId(location.id)}
           >
             <div className={styles["location-name"]}>{location.name}</div>

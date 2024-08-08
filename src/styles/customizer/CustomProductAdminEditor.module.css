@@ -140,6 +140,24 @@
   display: block;
 }
 
+.frame-colors-container {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.frame-color-swatch,
+.frame-color-swatch-selected {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid gray;
+  cursor: pointer;
+}
+
+.frame-color-swatch-selected {
+  scale: 140%;
+}
+
 .location-settings-box .location-settings-name {
   padding: 3px;
   width: 100px;

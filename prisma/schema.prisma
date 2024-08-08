@@ -139,6 +139,7 @@ model CustomProductDecorationLocation {
   height       Decimal
   parentView   CustomProductView @relation(fields: [parentViewId], references: [id], onDelete: Cascade)
   parentViewId Int
+  frameColor   String            @default("808080") //hex code expected
 }
 
 model Webstore {
