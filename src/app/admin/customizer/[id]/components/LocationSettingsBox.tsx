@@ -30,6 +30,9 @@ export function LocationSettingsBox({
 }: LocationSettingsBoxProps) {
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [isDeletingLocation, setIsDeletingLocation] = useState(false);
+  const [copiedLocationData, setCopiedLocationData] = useState(
+    null as CustomProductDecorationLocationNumeric | null
+  );
 
   async function onClickAddLocation() {
     if (selectedViewId === undefined) return;
@@ -110,6 +113,25 @@ export function LocationSettingsBox({
     });
   }
 
+  function onClickPasteLocationData() {
+    if (!copiedLocationData) return;
+
+    setSettings((draft) => {
+      const { positionX, positionY, width, height } = copiedLocationData;
+      const location = draft.variations
+        .find((variation) => variation.id === selectedVariationId)
+        ?.views.find((view) => view.id === selectedViewId)
+        ?.locations.find((location) => location.id === selectedLocationId);
+
+      if (!location) return;
+
+      location.width = width;
+      location.height = height;
+      location.positionX = positionX;
+      location.positionY = positionY;
+    });
+  }
+
   return (
     <div className={styles["location-settings-box"]}>
       <h4>
@@ -181,6 +203,14 @@ export function LocationSettingsBox({
         </>
       )}
       <div className={styles["location-extras-container"]}>
+        {location && (
+          <>
+            <button onClick={() => setCopiedLocationData(location)}>
+              Copy
+            </button>
+            <button onClick={onClickPasteLocationData}>Paste</button>
+          </>
+        )}
         <ButtonWithLoading
           loading={isAddingLocation}
           normalText="+ Add"
