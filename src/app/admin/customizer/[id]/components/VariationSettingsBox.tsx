@@ -1,14 +1,15 @@
 import { deleteVariation } from "@/actions/customizer/delete";
 import { FullProductSettings } from "@/db/access/customizer";
 import { Color, CustomProductSettingsVariation } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
+import { Updater } from "use-immer";
 
 type VariationSettingsBoxProps = {
   variation: (CustomProductSettingsVariation & { color: Color }) | undefined;
   selectedVariationId: number | undefined;
   settings: FullProductSettings;
+  setSettings: Updater<FullProductSettings>;
   setVariationId: Dispatch<SetStateAction<number | undefined>>;
 };
 export function VariationSettingsBox({
@@ -16,14 +17,18 @@ export function VariationSettingsBox({
   selectedVariationId,
   settings,
   setVariationId,
+  setSettings,
 }: VariationSettingsBoxProps) {
-  const router = useRouter();
-
   async function onClickDeleteVariation() {
     if (!selectedVariationId) return;
 
     try {
       await deleteVariation(selectedVariationId);
+      setSettings((draft) => {
+        draft.variations = draft.variations.filter(
+          (variation) => variation.id !== selectedVariationId
+        );
+      });
       const variationBeforeThis = settings.variations.find(
         (variation, i, array) => {
           const next = array[i + 1];
@@ -31,7 +36,6 @@ export function VariationSettingsBox({
         }
       );
       setVariationId(variationBeforeThis?.id);
-      router.refresh();
     } catch (error) {
       console.error(error);
     }

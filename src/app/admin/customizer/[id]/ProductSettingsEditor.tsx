@@ -89,6 +89,7 @@ export default function ProductSettingsEditor({
           selectedVariationId={variationId}
           setVariationId={setVariationId}
           settings={settings}
+          setSettings={setSettings}
           variation={variation}
         />
 
@@ -114,6 +115,7 @@ export default function ProductSettingsEditor({
           selectedView={view}
           views={variation?.views || []}
           selectedVariationId={variationId}
+          setSettings={setSettings}
         />
 
         <div className={styles["image-url-container"]}>

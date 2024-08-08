@@ -1,14 +1,17 @@
-import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
+import {
+  CustomProductDecorationLocationNumeric,
+  FullProductSettings,
+} from "@/db/access/customizer";
 import { CustomProductView } from "@prisma/client";
 import { Dispatch, SetStateAction, useState } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { createLocationFrameInlineStyles } from "@/customizer/editor";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import { useRouter } from "next/navigation";
 import { createView } from "@/actions/customizer/create";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { deleteView } from "@/actions/customizer/delete";
 import { wrap } from "@/utility/misc";
+import { Updater } from "use-immer";
 
 type ProductViewProps = {
   selectedVariationId: number | undefined;
@@ -22,6 +25,7 @@ type ProductViewProps = {
     | undefined;
   setViewId: Dispatch<SetStateAction<number | undefined>>;
   setLocationId: Dispatch<SetStateAction<number | undefined>>;
+  setSettings: Updater<FullProductSettings>;
 };
 export function ProductView({
   selectedView,
@@ -29,10 +33,10 @@ export function ProductView({
   views,
   setLocationId,
   selectedVariationId,
+  setSettings,
 }: ProductViewProps) {
   const [isAddingView, setIsAddingView] = useState(false);
   const [isDeletingView, setIsDeletingView] = useState(false);
-  const router = useRouter();
   const deleteAllowed = views.length > 1;
 
   async function onClickAddView() {
@@ -41,7 +45,12 @@ export function ProductView({
 
     try {
       const created = await createView(selectedVariationId);
-      router.refresh();
+      setSettings((draft) => {
+        const variation = draft.variations.find(
+          (variation) => variation.id === selectedVariationId
+        );
+        variation?.views.push({ ...created, locations: [] });
+      });
       setViewId(created.id);
     } catch (error) {
       console.error(error);
@@ -56,12 +65,20 @@ export function ProductView({
 
     try {
       await deleteView(selectedView.id);
+      setSettings((draft) => {
+        const variation = draft.variations.find(
+          (variation) => variation.id === selectedVariationId
+        );
+        if (variation)
+          variation.views = variation.views.filter(
+            (view) => view.id !== selectedView.id
+          );
+      });
       const curViewIndex = views.findIndex(
         (view) => view.id === selectedView.id
       );
       const prevViewIndex = wrap(curViewIndex - 1, 0, views.length - 1);
       const prevViewId = views[prevViewIndex]?.id;
-      router.refresh();
       setViewId(prevViewId);
     } catch (error) {
       console.error(error);

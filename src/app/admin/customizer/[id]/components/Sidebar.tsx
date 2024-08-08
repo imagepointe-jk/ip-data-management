@@ -1,6 +1,5 @@
 import { createVariation } from "@/actions/customizer/create";
 import { FullProductSettings } from "@/db/access/customizer";
-import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Updater } from "use-immer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
@@ -23,13 +22,17 @@ export function Sidebar({
   setViewId,
 }: SidebarProps) {
   const [addVariationLoading, setAddVariationLoading] = useState(false);
-  const router = useRouter();
 
   async function onClickAddVariation() {
     try {
       setAddVariationLoading(true);
-      await createVariation(settings.id);
-      router.refresh();
+      const created = await createVariation(settings.id);
+      setSettings((draft) => {
+        draft.variations.push({
+          ...created,
+          views: created.views.map((view) => ({ ...view, locations: [] })),
+        });
+      });
     } catch (error) {
       console.error(error);
     }
