@@ -20,7 +20,7 @@ export async function getProductSettings() {
   });
 }
 
-type CustomProductDecorationLocationNumeric = {
+export type CustomProductDecorationLocationNumeric = {
   [K in keyof CustomProductDecorationLocation]: CustomProductDecorationLocation[K] extends Decimal
     ? number
     : CustomProductDecorationLocation[K];
