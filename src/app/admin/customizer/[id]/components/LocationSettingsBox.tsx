@@ -186,6 +186,7 @@ export function LocationSettingsBox({
             <div className={styles["frame-colors-container"]}>
               {colorChoices.map((choice) => (
                 <div
+                  key={choice}
                   className={`${
                     location.frameColor === choice
                       ? styles["frame-color-swatch-selected"]

@@ -10,13 +10,16 @@ import { SaveArea } from "./components/SaveArea";
 import { Sidebar } from "./components/Sidebar";
 import { VariationSettingsBox } from "./components/VariationSettingsBox";
 import { ViewArrows } from "./components/ViewArrows";
+import { Color } from "@prisma/client";
 
 export type ExpandedDialog = null | "location";
 type Props = {
   settings: FullProductSettings;
+  colors: Color[];
 };
 export default function ProductSettingsEditor({
   settings: initialSettings,
+  colors,
 }: Props) {
   const [settings, setSettings] = useImmer(initialSettings);
   const [variationId, setVariationId] = useState(
@@ -104,6 +107,7 @@ export default function ProductSettingsEditor({
           settings={settings}
           setSettings={setSettings}
           variation={variation}
+          colors={colors}
         />
 
         {/* View Name */}

@@ -5,7 +5,7 @@ import { FullProductSettings } from "@/db/access/customizer";
 import { prisma } from "../../../prisma/client";
 
 export async function updateProductSettings(settings: FullProductSettings) {
-  const { published, wooCommerceId } = settings;
+  const { published, wooCommerceId, variations } = settings;
 
   const allViews = settings.variations
     .map((variation) => variation.views)
@@ -16,6 +16,16 @@ export async function updateProductSettings(settings: FullProductSettings) {
     .flat(2);
 
   await Promise.all([
+    ...variations.map((variation) =>
+      prisma.customProductSettingsVariation.update({
+        where: {
+          id: variation.id,
+        },
+        data: {
+          colorId: variation.colorId,
+        },
+      })
+    ),
     ...allLocations.map((location) =>
       prisma.customProductDecorationLocation.update({
         where: {

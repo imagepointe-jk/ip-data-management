@@ -11,6 +11,7 @@ type VariationSettingsBoxProps = {
   settings: FullProductSettings;
   setSettings: Updater<FullProductSettings>;
   setVariationId: Dispatch<SetStateAction<number | undefined>>;
+  colors: Color[];
 };
 export function VariationSettingsBox({
   variation,
@@ -18,6 +19,7 @@ export function VariationSettingsBox({
   settings,
   setVariationId,
   setSettings,
+  colors,
 }: VariationSettingsBoxProps) {
   async function onClickDeleteVariation() {
     if (!selectedVariationId) return;
@@ -41,15 +43,31 @@ export function VariationSettingsBox({
     }
   }
 
+  function onChangeColor(id: number) {
+    setSettings((draft) => {
+      const variation = draft.variations.find(
+        (variation) => variation.id === selectedVariationId
+      );
+      const color = colors.find((color) => color.id === id);
+      if (!variation || !color) return;
+
+      variation.colorId = id;
+      variation.color = color;
+    });
+  }
+
   return (
     <div className={styles["variation-settings-container"]}>
-      <span
-        className={styles["variation-swatch"]}
-        style={{
-          backgroundColor: `#${variation?.color.hexCode || "ffffff"}`,
-        }}
-      ></span>{" "}
-      Variation Color
+      <select
+        value={variation?.color.id || colors[0]?.id}
+        onChange={(e) => onChangeColor(+e.target.value)}
+      >
+        {colors.map((color) => (
+          <option key={color.id} value={color.id}>
+            {color.name}
+          </option>
+        ))}
+      </select>
       <div>
         <button
           className="button-danger"

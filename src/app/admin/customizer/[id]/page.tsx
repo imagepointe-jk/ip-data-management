@@ -5,6 +5,7 @@ import {
 import ProductSettingsEditor from "./ProductSettingsEditor";
 import { getProduct } from "@/fetch/woocommerce";
 import { parseWooCommerceProduct } from "@/types/validations";
+import { getColors } from "@/db/access/misc";
 
 type Props = {
   params: {
@@ -18,11 +19,12 @@ export default async function ProductSettings({ params }: Props) {
 
   if (!existingSettings) return <h1>Settings not found.</h1>;
   const product = await getProductBySettings(existingSettings);
+  const colors = await getColors();
 
   return (
     <>
       <h1>{product ? product.name : "(Product not found)"}</h1>
-      <ProductSettingsEditor settings={existingSettings} />
+      <ProductSettingsEditor settings={existingSettings} colors={colors} />
     </>
   );
 }
