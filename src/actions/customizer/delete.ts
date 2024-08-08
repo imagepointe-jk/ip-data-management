@@ -8,3 +8,11 @@ export async function deleteVariation(id: number) {
     },
   });
 }
+
+export async function deleteView(id: number) {
+  return prisma.customProductView.delete({
+    where: {
+      id,
+    },
+  });
+}

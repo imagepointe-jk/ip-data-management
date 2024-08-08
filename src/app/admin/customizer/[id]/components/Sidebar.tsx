@@ -11,7 +11,7 @@ type SidebarProps = {
   setSettings: Updater<FullProductSettings>;
   selectedVariationId: number | undefined;
   setVariationId: Dispatch<SetStateAction<number | undefined>>;
-  setViewIndex: Dispatch<SetStateAction<number>>;
+  setViewId: Dispatch<SetStateAction<number | undefined>>;
   setLocationId: Dispatch<SetStateAction<number | undefined>>;
 };
 export function Sidebar({
@@ -20,7 +20,7 @@ export function Sidebar({
   selectedVariationId,
   setLocationId,
   setVariationId,
-  setViewIndex,
+  setViewId,
 }: SidebarProps) {
   const [addVariationLoading, setAddVariationLoading] = useState(false);
   const router = useRouter();
@@ -38,7 +38,10 @@ export function Sidebar({
 
   function onClickVariation(variationId: number) {
     setVariationId(variationId);
-    setViewIndex(0);
+    const firstViewId = settings.variations.find(
+      (variation) => variation.id === variationId
+    )?.views[0]?.id;
+    setViewId(firstViewId);
     setLocationId(undefined);
   }
 

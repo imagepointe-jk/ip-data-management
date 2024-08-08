@@ -17,13 +17,23 @@ export async function createVariation(parentSettingsId: number) {
       views: {
         create: {
           name: "New View",
-          imageUrl: "www.example.com",
+          imageUrl: "",
         },
       },
     },
     include: {
       color: true,
       views: true,
+    },
+  });
+}
+
+export async function createView(parentVariationId: number) {
+  return prisma.customProductView.create({
+    data: {
+      parentVariationId,
+      name: "New View",
+      imageUrl: "",
     },
   });
 }

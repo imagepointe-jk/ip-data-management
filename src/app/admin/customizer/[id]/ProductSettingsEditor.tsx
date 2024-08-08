@@ -21,7 +21,9 @@ export default function ProductSettingsEditor({
   const [variationId, setVariationId] = useState(
     initialSettings.variations[0]?.id || undefined
   );
-  const [viewIndex, setViewIndex] = useState(0);
+  const [viewId, setViewId] = useState(
+    initialSettings.variations[0]?.views[0]?.id || undefined
+  );
   const [locationId, setLocationId] = useState(
     initialSettings.variations[0]?.views[0]?.locations[0]?.id || undefined
   );
@@ -33,11 +35,9 @@ export default function ProductSettingsEditor({
   );
   if (!variation) errors.push(`Variation id ${variationId} not found.`);
 
-  const view = variation?.views[viewIndex];
+  const view = variation?.views.find((view) => view.id === viewId);
   if (!view)
-    errors.push(
-      `View index ${viewIndex} of variation id ${variationId} not found.`
-    );
+    errors.push(`View id ${viewId} of variation id ${variationId} not found.`);
 
   const location = view?.locations.find(
     (location) => location.id === locationId
@@ -52,9 +52,9 @@ export default function ProductSettingsEditor({
 
   function onChangeImageUrl(url: string) {
     setSettings((draft) => {
-      const view = draft.variations.find(
-        (variation) => variation.id === variationId
-      )?.views[viewIndex];
+      const view = draft.variations
+        .find((variation) => variation.id === variationId)
+        ?.views.find((view) => view.id === viewId);
       if (!view) return;
       view.imageUrl = url;
     });
@@ -62,9 +62,9 @@ export default function ProductSettingsEditor({
 
   function onChangeViewName(name: string) {
     setSettings((draft) => {
-      const view = draft.variations.find(
-        (variation) => variation.id === variationId
-      )?.views[viewIndex];
+      const view = draft.variations
+        .find((variation) => variation.id === variationId)
+        ?.views.find((view) => view.id === viewId);
       if (!view) return;
       view.name = name;
     });
@@ -81,7 +81,7 @@ export default function ProductSettingsEditor({
         setLocationId={setLocationId}
         setSettings={setSettings}
         setVariationId={setVariationId}
-        setViewIndex={setViewIndex}
+        setViewId={setViewId}
         settings={settings}
       />
       <div className={styles["editor-area"]}>
@@ -103,12 +103,18 @@ export default function ProductSettingsEditor({
         />
 
         <ViewArrows
-          selectedViewIndex={viewIndex}
-          setViewIndex={setViewIndex}
+          selectedViewId={viewId}
+          setViewId={setViewId}
           views={variation?.views || []}
         />
 
-        <ProductView setLocationId={setLocationId} view={view} />
+        <ProductView
+          setViewId={setViewId}
+          setLocationId={setLocationId}
+          selectedView={view}
+          views={variation?.views || []}
+          selectedVariationId={variationId}
+        />
 
         <div className={styles["image-url-container"]}>
           Image URL
@@ -124,7 +130,7 @@ export default function ProductSettingsEditor({
           location={location}
           selectedLocationId={locationId}
           selectedVariationId={variationId}
-          selectedViewIndex={viewIndex}
+          selectedViewId={viewId}
           setSettings={setSettings}
           totalViewLocations={view?.locations.length || 0}
         />

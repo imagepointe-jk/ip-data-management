@@ -11,14 +11,14 @@ type LocationSettingsBoxProps = {
   totalViewLocations: number;
   selectedLocationId: number | undefined;
   selectedVariationId: number | undefined;
-  selectedViewIndex: number;
+  selectedViewId: number | undefined;
   setSettings: Updater<FullProductSettings>;
 };
 export function LocationSettingsBox({
   location,
   selectedLocationId,
   selectedVariationId,
-  selectedViewIndex,
+  selectedViewId,
   totalViewLocations,
   setSettings,
 }: LocationSettingsBoxProps) {
@@ -35,9 +35,8 @@ export function LocationSettingsBox({
       //look for the given locationId on the currently selected view of the currently selected variation
       const location = draft.variations
         .find((variation) => variation.id === selectedVariationId)
-        ?.views[selectedViewIndex]?.locations.find(
-          (location) => location.id === locationId
-        );
+        ?.views.find((view) => view.id === selectedViewId)
+        ?.locations.find((location) => location.id === locationId);
       if (!location) return;
 
       const { height, positionX, positionY, width } = change;

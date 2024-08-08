@@ -10,22 +10,25 @@ import {
 
 type ViewArrowsProps = {
   views: CustomProductView[];
-  selectedViewIndex: number;
-  setViewIndex: Dispatch<SetStateAction<number>>;
+  selectedViewId: number | undefined;
+  setViewId: Dispatch<SetStateAction<number | undefined>>;
 };
 export function ViewArrows({
-  setViewIndex,
+  setViewId,
   views,
-  selectedViewIndex,
+  selectedViewId,
 }: ViewArrowsProps) {
   function onClickViewArrow(direction: "left" | "right") {
     if (views.length === 0) return;
 
+    const curViewIndex = views.findIndex((view) => view.id === selectedViewId);
+
     let newViewIndex =
-      direction === "left" ? selectedViewIndex - 1 : selectedViewIndex + 1;
+      direction === "left" ? curViewIndex - 1 : curViewIndex + 1;
     newViewIndex = wrap(newViewIndex, 0, views.length - 1);
 
-    setViewIndex(newViewIndex);
+    const newViewId = views[newViewIndex]?.id;
+    setViewId(newViewId);
   }
 
   return (
