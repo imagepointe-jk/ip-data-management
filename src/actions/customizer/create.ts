@@ -37,3 +37,24 @@ export async function createView(parentVariationId: number) {
     },
   });
 }
+
+export async function createLocation(parentViewId: number) {
+  const created = await prisma.customProductDecorationLocation.create({
+    data: {
+      parentViewId,
+      name: "New Location",
+      positionX: 0,
+      positionY: 0,
+      width: 0.1,
+      height: 0.1,
+    },
+  });
+
+  return {
+    ...created,
+    positionX: created.positionX.toNumber(),
+    positionY: created.positionY.toNumber(),
+    width: created.width.toNumber(),
+    height: created.height.toNumber(),
+  };
+}

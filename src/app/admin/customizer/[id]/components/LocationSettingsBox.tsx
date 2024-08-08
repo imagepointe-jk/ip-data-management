@@ -5,11 +5,16 @@ import {
 import { Updater } from "use-immer";
 
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { Dispatch, SetStateAction, useState } from "react";
+import { createLocation } from "@/actions/customizer/create";
+import { deleteLocation } from "@/actions/customizer/delete";
 
 type LocationSettingsBoxProps = {
   location: CustomProductDecorationLocationNumeric | undefined;
   totalViewLocations: number;
   selectedLocationId: number | undefined;
+  setSelectedLocationId: Dispatch<SetStateAction<number | undefined>>;
   selectedVariationId: number | undefined;
   selectedViewId: number | undefined;
   setSettings: Updater<FullProductSettings>;
@@ -17,11 +22,58 @@ type LocationSettingsBoxProps = {
 export function LocationSettingsBox({
   location,
   selectedLocationId,
+  setSelectedLocationId,
   selectedVariationId,
   selectedViewId,
   totalViewLocations,
   setSettings,
 }: LocationSettingsBoxProps) {
+  const [isAddingLocation, setIsAddingLocation] = useState(false);
+  const [isDeletingLocation, setIsDeletingLocation] = useState(false);
+
+  async function onClickAddLocation() {
+    if (selectedViewId === undefined) return;
+    setIsAddingLocation(true);
+
+    try {
+      const created = await createLocation(selectedViewId);
+      setSettings((draft) => {
+        const view = draft.variations
+          .find((variation) => variation.id === selectedVariationId)
+          ?.views.find((view) => view.id === selectedViewId);
+        if (view) view.locations.push(created);
+      });
+      setSelectedLocationId(created.id);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setIsAddingLocation(false);
+  }
+
+  async function onClickDeleteLocation() {
+    if (selectedLocationId === undefined) return;
+    setIsDeletingLocation(true);
+
+    try {
+      await deleteLocation(selectedLocationId);
+      setSettings((draft) => {
+        const view = draft.variations
+          .find((variation) => variation.id === selectedVariationId)
+          ?.views.find((view) => view.id === selectedViewId);
+        if (view)
+          view.locations = view.locations.filter(
+            (location) => location.id !== selectedLocationId
+          );
+      });
+      setSelectedLocationId(undefined);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setIsDeletingLocation(false);
+  }
+
   function onChangeLocationSettings(
     locationId: number,
     change: {
@@ -108,6 +160,19 @@ export function LocationSettingsBox({
           </div>
         </>
       )}
+      <div className={styles["location-extras-container"]}>
+        <ButtonWithLoading
+          loading={isAddingLocation}
+          normalText="+ Add"
+          onClick={() => onClickAddLocation()}
+        />
+        <ButtonWithLoading
+          loading={isDeletingLocation}
+          normalText="Delete"
+          onClick={() => onClickDeleteLocation()}
+          className="button-danger"
+        />
+      </div>
     </div>
   );
 }

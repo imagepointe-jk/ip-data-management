@@ -139,6 +139,16 @@
   display: block;
 }
 
+.location-extras-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.location-extras-container button {
+  display: block;
+}
+
 .location-frame {
   width: 100px;
   height: 100px;

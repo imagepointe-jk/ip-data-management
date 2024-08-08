@@ -138,6 +138,7 @@ export default function ProductSettingsEditor({
         <LocationSettingsBox
           location={location}
           selectedLocationId={locationId}
+          setSelectedLocationId={setLocationId}
           selectedVariationId={variationId}
           selectedViewId={viewId}
           setSettings={setSettings}
