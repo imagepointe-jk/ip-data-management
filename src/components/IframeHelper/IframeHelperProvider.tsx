@@ -21,7 +21,8 @@ import {
 const messageTypes = {
   outgoing: {
     urlRequest: "ip-iframe-request-url",
-    navigationRequest: "ip-frame-navigation-request",
+    navigationRequest: "ip-iframe-navigation-request",
+    heightChangeRequest: "ip-iframe-height-change-request",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -45,7 +46,15 @@ export function useIframe() {
   return context;
 }
 
-export function IframeHelperProvider({ children }: { children: ReactNode }) {
+type IframeSize = {
+  width: number;
+  height: number;
+};
+type Props = {
+  children: ReactNode;
+  iframeSizes?: IframeSize[];
+};
+export function IframeHelperProvider({ children, iframeSizes }: Props) {
   const [parentWindowData, setParentWindowData] = useState(
     null as ParentWindowData | null
   );
@@ -61,6 +70,29 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }
 
+  function updateIframeHeight(width: number) {
+    if (!iframeSizes) return;
+
+    //in the provided iframeSizes, find the one with the lowest width that is greater than the given width.
+    //if none are greater, choose the size with the greatest width.
+    const sizesSorted = iframeSizes.sort((a, b) => b.width - a.width);
+    let size = sizesSorted[0];
+    for (const thisSize of iframeSizes) {
+      if (thisSize.width > width) size = thisSize;
+      else break;
+    }
+    if (!size) return;
+
+    postMessage({
+      type: messageTypes.outgoing.heightChangeRequest,
+      height: `${size.height}px`,
+    });
+  }
+
+  function onIframeResize(e: any) {
+    updateIframeHeight(e.target.innerWidth);
+  }
+
   function requestNavigation(href: string) {
     postMessage({ type: messageTypes.outgoing.navigationRequest, href });
   }
@@ -70,11 +102,16 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    updateIframeHeight(window.innerWidth);
+
     window.addEventListener("message", onParentWindowResponse);
-    window.parent.postMessage({ type: messageTypes.outgoing.urlRequest }, "*");
+    window.addEventListener("resize", onIframeResize);
+
+    postMessage({ type: messageTypes.outgoing.urlRequest });
 
     return () => {
       window.removeEventListener("message", onParentWindowResponse);
+      window.removeEventListener("resize", onIframeResize);
     };
   }, []);
 
