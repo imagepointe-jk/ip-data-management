@@ -21,8 +21,6 @@ import {
 const messageTypes = {
   outgoing: {
     urlRequest: "ip-iframe-request-url",
-    consoleLog: "ip-iframe-console-log",
-    consoleError: "ip-iframe-console-error",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -32,10 +30,6 @@ const messageTypes = {
 type IframeHelperContext = {
   parentWindow: {
     location: ParentWindowData | null;
-    console: {
-      log: (message?: any, ...optionalParams: any[]) => void;
-      error: (...data: any[]) => void;
-    };
   };
   loading: boolean;
 };
@@ -65,20 +59,6 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }
 
-  function parentConsoleLog(message: any, ...optionalParams: any[]) {
-    window.parent.postMessage({
-      type: messageTypes.outgoing.consoleLog,
-      log: `${message} ${optionalParams.join(" ")}`,
-    });
-  }
-
-  function parentConsoleError(...data: any[]) {
-    window.parent.postMessage({
-      type: messageTypes.outgoing.consoleError,
-      log: data.join(" "),
-    });
-  }
-
   useEffect(() => {
     window.addEventListener("message", onParentWindowResponse);
     window.parent.postMessage({ type: messageTypes.outgoing.urlRequest }, "*");
@@ -93,10 +73,6 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
       value={{
         parentWindow: {
           location: parentWindowData,
-          console: {
-            log: parentConsoleLog,
-            error: parentConsoleError,
-          },
         },
         loading,
       }}

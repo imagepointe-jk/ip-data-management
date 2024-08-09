@@ -20,7 +20,5 @@ export function EditorHelper() {
   const id = params.get("id");
   if (!id) return <h1>Invalid params.</h1>;
 
-  console.log("Hi normal", id);
-  iframe.parentWindow.console.log("Hi parent", id);
   return <Editor customProductId={+id} />;
 }
