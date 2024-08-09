@@ -1,8 +1,14 @@
 "use client";
+import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import { Sidebar } from "./components/Sidebar";
 
 type Props = {
   customProductId: number;
 };
 export function Editor({ customProductId }: Props) {
-  return <h1>The id is {customProductId}</h1>;
+  return (
+    <div className={styles["main"]}>
+      <Sidebar />
+    </div>
+  );
 }
