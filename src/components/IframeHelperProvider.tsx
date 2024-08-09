@@ -21,6 +21,8 @@ import {
 const messageTypes = {
   outgoing: {
     urlRequest: "ip-iframe-request-url",
+    consoleLog: "ip-iframe-console-log",
+    consoleError: "ip-iframe-console-error",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -28,9 +30,16 @@ const messageTypes = {
 };
 
 type IframeHelperContext = {
-  parentWindow: ParentWindowData | null;
+  parentWindow: {
+    location: ParentWindowData | null;
+    console: {
+      log: (message?: any, ...optionalParams: any[]) => void;
+      error: (...data: any[]) => void;
+    };
+  };
   loading: boolean;
 };
+
 const IframeHelperContext = createContext(null as IframeHelperContext | null);
 
 export function useIframe() {
@@ -41,7 +50,7 @@ export function useIframe() {
 }
 
 export function IframeHelperProvider({ children }: { children: ReactNode }) {
-  const [parentWindow, setParentWindow] = useState(
+  const [parentWindowData, setParentWindowData] = useState(
     null as ParentWindowData | null
   );
   const [loading, setLoading] = useState(true);
@@ -49,11 +58,25 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
   function onParentWindowResponse(e: any) {
     try {
       const parsed = validateResponseData(e.data);
-      setParentWindow(parsed);
+      setParentWindowData(parsed);
     } catch (error) {
       console.error("Invalid parent window response");
     }
     setLoading(false);
+  }
+
+  function parentConsoleLog(message: any, ...optionalParams: any[]) {
+    window.parent.postMessage({
+      type: messageTypes.outgoing.consoleLog,
+      log: `${message} ${optionalParams.join(" ")}`,
+    });
+  }
+
+  function parentConsoleError(...data: any[]) {
+    window.parent.postMessage({
+      type: messageTypes.outgoing.consoleError,
+      log: data.join(" "),
+    });
   }
 
   useEffect(() => {
@@ -68,7 +91,13 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
   return (
     <IframeHelperContext.Provider
       value={{
-        parentWindow,
+        parentWindow: {
+          location: parentWindowData,
+          console: {
+            log: parentConsoleLog,
+            error: parentConsoleError,
+          },
+        },
         loading,
       }}
     >
