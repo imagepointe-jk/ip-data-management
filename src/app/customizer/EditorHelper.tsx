@@ -2,7 +2,7 @@
 //Right now it provides them after getting them from IframeHelper, but we could change this in future if we stop using the iframe approach.
 "use client";
 
-import { useIframe } from "@/components/IframeHelperProvider";
+import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import { Editor } from "./Editor";
 
 export function EditorHelper() {

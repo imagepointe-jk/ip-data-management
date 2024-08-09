@@ -21,6 +21,7 @@ import {
 const messageTypes = {
   outgoing: {
     urlRequest: "ip-iframe-request-url",
+    navigationRequest: "ip-frame-navigation-request",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -30,6 +31,7 @@ const messageTypes = {
 type IframeHelperContext = {
   parentWindow: {
     location: ParentWindowData | null;
+    requestNavigation: (href: string) => void;
   };
   loading: boolean;
 };
@@ -59,6 +61,14 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }
 
+  function requestNavigation(href: string) {
+    postMessage({ type: messageTypes.outgoing.navigationRequest, href });
+  }
+
+  function postMessage(data: any) {
+    window.parent.postMessage(data, "*");
+  }
+
   useEffect(() => {
     window.addEventListener("message", onParentWindowResponse);
     window.parent.postMessage({ type: messageTypes.outgoing.urlRequest }, "*");
@@ -73,6 +83,7 @@ export function IframeHelperProvider({ children }: { children: ReactNode }) {
       value={{
         parentWindow: {
           location: parentWindowData,
+          requestNavigation,
         },
         loading,
       }}
