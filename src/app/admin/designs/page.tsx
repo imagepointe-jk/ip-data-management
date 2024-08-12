@@ -67,6 +67,7 @@ export default async function Designs({ searchParams }: Props) {
       <PageControls
         curItemsPerPage={perPage}
         curPageNumber={designs.length === 0 ? 1 : pageNumber}
+        showJumpTo={true}
         pageSizeChoices={pageSizeChoices}
         totalPages={designs.length === 0 ? 1 : totalResults / perPage}
         buttonClassName="link-as-button"
