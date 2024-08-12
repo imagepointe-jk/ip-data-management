@@ -1,11 +1,9 @@
-import { getProductSettings } from "@/db/access/customizer";
 import { getProduct } from "@/fetch/woocommerce";
-import { UnwrapPromise } from "@/types/types";
 import { parseWooCommerceProduct } from "@/types/validations";
 
-export async function populateProductData(
-  settingsArr: UnwrapPromise<ReturnType<typeof getProductSettings>>
-) {
+export async function populateProductData<
+  T extends { wooCommerceId: number; id: number }
+>(settingsArr: T[]) {
   //implement with parallel fetching
   const populated = [];
   for (const settings of settingsArr) {

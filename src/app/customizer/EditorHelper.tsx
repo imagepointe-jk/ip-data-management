@@ -1,9 +1,10 @@
-//This intermediary controls how the editor gets its props.
+//This intermediary controls how the editor context gets its props.
 //Right now it provides them after getting them from IframeHelper, but we could change this in future if we stop using the iframe approach.
 "use client";
 
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-import { Editor, EditorProps } from "./Editor";
+import { Editor } from "./Editor";
+import { EditorProps, EditorProvider } from "./EditorContext";
 
 type Props = Omit<EditorProps, "initialProductId">;
 export function EditorHelper({ designs, productData }: Props) {
@@ -21,10 +22,12 @@ export function EditorHelper({ designs, productData }: Props) {
   if (!id) return <h1>Invalid params.</h1>;
 
   return (
-    <Editor
-      initialProductId={+id}
+    <EditorProvider
       designs={designs}
+      initialProductId={+id}
       productData={productData}
-    />
+    >
+      <Editor />
+    </EditorProvider>
   );
 }
