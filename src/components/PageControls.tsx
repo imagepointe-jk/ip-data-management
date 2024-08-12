@@ -81,7 +81,8 @@ function PageNumberControl({
     <div className={styles["controls-subsection"]}>
       <span className={styles["page-buttons-label"]}>Page</span>
       {pageControlNumbers.map((numberOrEllipsis, i) => {
-        if (numberOrEllipsis === "...") return <div key="ellipsis">...</div>;
+        if (numberOrEllipsis === "...")
+          return <div key={`ellipsis-${i}`}>...</div>;
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set("pageNumber", `${numberOrEllipsis}`);
         const onClickPageNumber = buttonOverrides?.onClickPageNumber;
