@@ -57,11 +57,13 @@ a.link-as-button,
   color: white;
 }
 
-a.link-as-button.current {
+a.link-as-button.current,
+button.link-as-button.current {
   border: 1px solid var(--color-alpha);
 }
 
 a.link-as-button.current,
+button.link-as-button.current,
 .links-row a.current {
   background-color: white;
   color: var(--color-alpha);
