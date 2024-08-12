@@ -3,12 +3,12 @@
 "use client";
 
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-import { Editor } from "./Editor";
+import { Editor, EditorProps } from "./Editor";
 
-export function EditorHelper() {
+type Props = Omit<EditorProps, "initialProductId">;
+export function EditorHelper({ designs, productData }: Props) {
   const iframe = useIframe();
   if (iframe.loading) return <h1>Loading...</h1>;
-
   if (!iframe.parentWindow.location) return <h1>Iframe error.</h1>;
 
   const {
@@ -20,5 +20,11 @@ export function EditorHelper() {
   const id = params.get("id");
   if (!id) return <h1>Invalid params.</h1>;
 
-  return <Editor customProductId={+id} />;
+  return (
+    <Editor
+      initialProductId={+id}
+      designs={designs}
+      productData={productData}
+    />
+  );
 }

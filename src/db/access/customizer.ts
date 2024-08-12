@@ -20,6 +20,31 @@ export async function getProductSettings() {
   });
 }
 
+export async function getProductSettingsWithIncludes() {
+  const data = await prisma.customProductSettings.findMany({
+    include: {
+      variations: {
+        orderBy: {
+          id: "asc",
+        },
+        include: {
+          views: {
+            orderBy: {
+              id: "asc",
+            },
+            include: {
+              locations: true,
+            },
+          },
+          color: true,
+        },
+      },
+    },
+  });
+
+  return data.map((item) => convertFullProductSettings(item));
+}
+
 export type CustomProductDecorationLocationNumeric = {
   [K in keyof CustomProductDecorationLocation]: CustomProductDecorationLocation[K] extends Decimal
     ? number
@@ -62,7 +87,21 @@ export async function getFullProductSettings(
 
   if (!settings) throw new Error(`Product settings ${id} not found.`);
 
-  //convert the decimal values to numbers
+  return convertFullProductSettings(settings);
+}
+
+//the productSettings data arrives with numbers in Decimal form.
+//convert to make them more usable in various places.
+function convertFullProductSettings(
+  settings: CustomProductSettings & {
+    variations: (CustomProductSettingsVariation & {
+      views: (CustomProductView & {
+        locations: CustomProductDecorationLocation[];
+      })[];
+      color: Color;
+    })[];
+  }
+): FullProductSettings {
   const converted: FullProductSettings = {
     ...settings,
     variations: settings.variations.map((variation) => ({
