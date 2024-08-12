@@ -91,7 +91,7 @@ function PageNumberControl({
           <>
             {!onClickPageNumber && (
               <Link
-                key={i}
+                key={`${numberOrEllipsis}-${i}`}
                 className={className}
                 style={{
                   pointerEvents:
@@ -104,7 +104,7 @@ function PageNumberControl({
             )}
             {onClickPageNumber && (
               <button
-                key={i}
+                key={`${numberOrEllipsis}-${i}`}
                 className={className}
                 style={{
                   pointerEvents:
