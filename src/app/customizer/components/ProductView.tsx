@@ -10,7 +10,7 @@ export function ProductView() {
   return (
     <div className={styles["product-view-frame"]}>
       <img
-        className={styles["product-view-img"]}
+        className={styles["contained-img"]}
         src={selectedView?.imageUrl || IMAGE_NOT_FOUND_URL}
       />
     </div>

@@ -8,8 +8,9 @@ import {
 } from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 
-type EditorDialog = "colors" | null;
+type EditorDialog = "colors" | "designs" | null;
 type EditorContext = {
+  designResults: DesignResults;
   selectedVariation: CustomProductSettingsVariation | undefined;
   selectedView: CustomProductView | undefined;
   dialogOpen: EditorDialog;
@@ -31,7 +32,7 @@ export type EditorProps = {
   productData: FullProductSettings[];
 };
 export function EditorProvider({
-  designs,
+  designs: designResults,
   initialProductId,
   productData,
   children,
@@ -44,7 +45,7 @@ export function EditorProvider({
 
   const [selectedVariation, setSelectedVariation] = useState(initialVariation);
   const [selectedView, setSelectedView] = useState(initialView);
-  const [dialogOpen, setDialogOpen] = useState("colors" as EditorDialog);
+  const [dialogOpen, setDialogOpen] = useState("designs" as EditorDialog);
 
   return (
     <EditorContext.Provider
@@ -53,6 +54,7 @@ export function EditorProvider({
         selectedView,
         dialogOpen,
         selectedProductData: initialProductData,
+        designResults,
       }}
     >
       {children}

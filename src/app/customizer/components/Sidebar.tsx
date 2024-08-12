@@ -3,6 +3,7 @@ import { faPaintBrush, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ColorPicker } from "./ColorPicker";
 import { useEditor } from "../EditorContext";
+import { DesignPicker } from "./designs/DesignPicker";
 
 export function Sidebar() {
   const { dialogOpen } = useEditor();
@@ -22,6 +23,7 @@ export function Sidebar() {
       {dialogOpen !== null && (
         <div className={`${styles["dialog"]} ${styles["floating-container"]}`}>
           {dialogOpen === "colors" && <ColorPicker />}
+          {dialogOpen === "designs" && <DesignPicker />}
         </div>
       )}
     </div>
