@@ -17,6 +17,7 @@ type PageControlsProps = {
   buttonOverrides?: ButtonOverrides; //if function overrides are provided, the page number/page size buttons will be actual buttons using given functions, instead of <a>
   buttonClassName?: string;
   activeButtonClassName?: string;
+  mainClassName?: string;
 };
 
 export function PageControls({
@@ -28,9 +29,10 @@ export function PageControls({
   buttonOverrides,
   activeButtonClassName,
   buttonClassName,
+  mainClassName,
 }: PageControlsProps) {
   return (
-    <div className={styles["main"]}>
+    <div className={mainClassName || styles["main"]}>
       <PageNumberControl
         curPageNumber={curPageNumber}
         totalPages={totalPages}

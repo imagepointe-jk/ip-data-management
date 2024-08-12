@@ -111,10 +111,24 @@
 
 .design-card:hover {
   scale: 110%;
-  /* border-width: 3px; */
 }
 
 .design-img-container {
   width: 150px;
   height: 150px;
+}
+
+.design-page-numbers {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.page-button {
+  cursor: pointer;
+}
+
+.page-button.current {
+  scale: 140%;
 }
