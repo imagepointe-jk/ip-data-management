@@ -14,6 +14,7 @@ type EditorContext = {
   selectedVariation: CustomProductSettingsVariation | undefined;
   selectedView: CustomProductView | undefined;
   dialogOpen: EditorDialog;
+  setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: FullProductSettings | undefined;
 };
 
@@ -55,6 +56,7 @@ export function EditorProvider({
         dialogOpen,
         selectedProductData: initialProductData,
         designResults,
+        setDialogOpen,
       }}
     >
       {children}

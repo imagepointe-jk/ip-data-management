@@ -12,7 +12,7 @@ const pageSize = 20;
 export function DesignPicker() {
   const { designResults } = useEditor();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("937");
+  const [search, setSearch] = useState("");
   const filtered = filterDesigns(designResults, search);
   const resultsPage = getArrayPage(filtered, page, pageSize);
   const totalPages = Math.ceil(filtered.length / pageSize);
