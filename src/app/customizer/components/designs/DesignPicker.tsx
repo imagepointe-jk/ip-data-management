@@ -5,17 +5,29 @@ import { useEditor } from "../../EditorContext";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { getArrayPage } from "@/utility/misc";
 import { PageControls } from "@/components/PageControls";
+import { DesignResults, DesignWithIncludes } from "@/types/types";
 
 const pageSize = 20;
 
 export function DesignPicker() {
   const { designResults } = useEditor();
   const [page, setPage] = useState(1);
-  const resultsPage = getArrayPage(designResults.designs, page, pageSize);
-  const totalPages = Math.ceil(designResults.totalResults / pageSize);
+  const [search, setSearch] = useState("937");
+  const filtered = filterDesigns(designResults, search);
+  const resultsPage = getArrayPage(filtered, page, pageSize);
+  const totalPages = Math.ceil(filtered.length / pageSize);
 
   return (
     <div>
+      <div>
+        <input
+          className={styles["design-search"]}
+          type="text"
+          placeholder="Search designs..."
+          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+        />
+      </div>
       <div className={styles["design-results"]}>
         {resultsPage.map((design) => (
           <div key={design.id} className={styles["design-card"]}>
@@ -48,4 +60,28 @@ export function DesignPicker() {
       </div>
     </div>
   );
+}
+
+//small client-side filter function since we're currently getting all design data at once
+function filterDesigns(designResults: DesignResults, search?: string) {
+  const filtered: DesignWithIncludes[] = designResults.designs.filter(
+    (design) => {
+      const subcategoryNames = design.designSubcategories.map(
+        (sub) => sub.name
+      );
+      const tagNames = design.designTags.map((tag) => tag.name);
+      const searchable = [
+        ...subcategoryNames,
+        ...tagNames,
+        design.designNumber,
+      ];
+      return search
+        ? !!searchable.find((str) =>
+            str.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
+          )
+        : true;
+    }
+  );
+
+  return filtered;
 }
