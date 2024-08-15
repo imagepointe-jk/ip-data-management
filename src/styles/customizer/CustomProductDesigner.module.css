@@ -153,3 +153,10 @@
 .page-button.current {
   scale: 140%;
 }
+
+.artwork-controls-bar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  translate: -50% 0;
+}

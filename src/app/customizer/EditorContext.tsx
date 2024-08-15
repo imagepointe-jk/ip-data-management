@@ -27,6 +27,7 @@ type EditorContext = {
   dialogOpen: EditorDialog;
   setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: FullProductSettings | undefined;
+  deleteArtworkFromState: (guid: string) => void;
 };
 
 const EditorContext = createContext(null as EditorContext | null);
@@ -99,6 +100,15 @@ export function EditorProvider({
   const [selectedView, setSelectedView] = useState(initialView);
   const [dialogOpen, setDialogOpen] = useState("designs" as EditorDialog);
 
+  function deleteArtworkFromState(guid: string) {
+    setDesignState((draft) => {
+      draft.artworks = draft.artworks.filter(
+        (artwork) => artwork.objectData.editorGuid !== guid
+      );
+    });
+    setSelectedEditorGuid(null);
+  }
+
   return (
     <EditorContext.Provider
       value={{
@@ -111,6 +121,7 @@ export function EditorProvider({
         selectedProductData: initialProductData,
         designResults,
         setDialogOpen,
+        deleteArtworkFromState,
       }}
     >
       {children}
