@@ -8,7 +8,7 @@ import {
 } from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 
-type EditorDialog = "colors" | "designs" | null;
+type EditorDialog = "colors" | "designs" | "upload" | null;
 type EditorContext = {
   designResults: DesignResults;
   selectedVariation: CustomProductSettingsVariation | undefined;
