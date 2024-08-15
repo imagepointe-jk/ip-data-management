@@ -20,6 +20,8 @@ type DesignState = {
 type EditorContext = {
   designResults: DesignResults;
   designState: DesignState;
+  selectedEditorGuid: string | null;
+  setSelectedEditorGuid: (guid: string | null) => void;
   selectedVariation: CustomProductSettingsVariation | undefined;
   selectedView: CustomProductView | undefined;
   dialogOpen: EditorDialog;
@@ -28,7 +30,7 @@ type EditorContext = {
 };
 
 const EditorContext = createContext(null as EditorContext | null);
-const initialState: DesignState = {
+const initialStateTest: DesignState = {
   artworks: [
     {
       imageUrl:
@@ -89,7 +91,10 @@ export function EditorProvider({
   const initialVariation = initialProductData?.variations[0];
   const initialView = initialVariation?.views[0];
 
-  const [designState, setDesignState] = useImmer(initialState);
+  const [designState, setDesignState] = useImmer(initialStateTest);
+  const [selectedEditorGuid, setSelectedEditorGuid] = useState(
+    null as string | null
+  );
   const [selectedVariation, setSelectedVariation] = useState(initialVariation);
   const [selectedView, setSelectedView] = useState(initialView);
   const [dialogOpen, setDialogOpen] = useState("designs" as EditorDialog);
@@ -97,6 +102,8 @@ export function EditorProvider({
   return (
     <EditorContext.Provider
       value={{
+        selectedEditorGuid,
+        setSelectedEditorGuid,
         designState,
         selectedVariation,
         selectedView,
