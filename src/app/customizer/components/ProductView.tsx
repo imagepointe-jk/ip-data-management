@@ -5,6 +5,7 @@ import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { useEditor } from "../EditorContext";
 import { Image, Layer, Stage } from "react-konva";
 import useImage from "use-image";
+import { Transformable } from "./productView/Transformable";
 
 export function ProductView() {
   const { selectedView } = useEditor();
@@ -19,6 +20,7 @@ export function ProductView() {
     >
       <Layer>
         <Image image={image} width={650} height={650} />
+        <Transformable />
       </Layer>
     </Stage>
   );
