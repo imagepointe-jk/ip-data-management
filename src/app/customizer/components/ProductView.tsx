@@ -1,11 +1,14 @@
 "use client";
 
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import { convertDesignerObjectData } from "@/customizer/editor";
+import {
+  convertDesignerObjectData,
+  findLocationInState,
+} from "@/customizer/editor";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useRef } from "react";
-import { Image, Layer, Stage } from "react-konva";
+import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
 import { useEditor } from "../EditorContext";
 import { EditorImage } from "./productView/EditorImage";
@@ -13,9 +16,19 @@ import { EditorImage } from "./productView/EditorImage";
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
-  const { selectedView, designState, setSelectedEditorGuid } = useEditor();
+  const {
+    selectedView,
+    selectedLocation,
+    designState,
+    setSelectedEditorGuid,
+    selectedProductData,
+  } = useEditor();
   const [image] = useImage(selectedView?.imageUrl || IMAGE_NOT_FOUND_URL);
   const productImgRef = useRef<Konva.Image>(null);
+  const location = selectedLocation
+    ? findLocationInState(designState, selectedLocation.id)
+    : undefined;
+  console.log(selectedLocation);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
@@ -38,7 +51,7 @@ export function ProductView() {
           width={editorSize}
           height={editorSize}
         />
-        {designState.artworks.map((art) => {
+        {location?.artworks.map((art) => {
           const { position, size } = convertDesignerObjectData(
             editorSize,
             editorSize,
@@ -58,6 +71,41 @@ export function ProductView() {
           );
         })}
       </Layer>
+      {selectedView?.locations.map((location) => {
+        const { position, size } = convertDesignerObjectData(
+          editorSize,
+          editorSize,
+          {
+            position: {
+              x: location.positionX,
+              y: location.positionY,
+            },
+            size: {
+              x: location.width,
+              y: location.height,
+            },
+          }
+        );
+
+        return (
+          <Layer
+            key={location.id}
+            clipX={position.x}
+            clipY={position.y}
+            clipWidth={size.x}
+            clipHeight={size.y}
+          >
+            <Rect
+              x={position.x}
+              y={position.y}
+              width={size.x}
+              height={size.y}
+              stroke={"gray"}
+              strokeWidth={4}
+            />
+          </Layer>
+        );
+      })}
     </Stage>
   );
 }

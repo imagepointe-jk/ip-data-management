@@ -1,10 +1,16 @@
 "use client";
 
 import {
-  convertDesignerObjectData,
   convertTransformArgs,
+  createInitialState,
+  findArtworkInState,
+  findLocationInState,
+  findLocationWithArtworkInState,
 } from "@/customizer/editor";
-import { FullProductSettings } from "@/db/access/customizer";
+import {
+  CustomProductDecorationLocationNumeric,
+  FullProductSettings,
+} from "@/db/access/customizer";
 import { PlacedObject, TransformArgs } from "@/types/customizer";
 import { DesignResults } from "@/types/types";
 import {
@@ -17,20 +23,39 @@ import { editorSize } from "./components/ProductView";
 import { v4 as uuidv4 } from "uuid";
 
 type EditorDialog = "colors" | "designs" | "upload" | null;
-type DesignState = {
-  artworks: {
-    imageUrl: string;
-    identifiers: { designId: number; variationId?: number }; //will also be used to point to URI of any user-uploaded artwork
-    objectData: PlacedObject;
+export type DesignState = {
+  products: {
+    id: number;
+    variations: {
+      id: number;
+      views: {
+        id: number;
+        locations: {
+          id: number;
+          artworks: {
+            imageUrl: string;
+            identifiers: { designId: number; variationId?: number }; //will also be used to point to URI of any user-uploaded artwork
+            objectData: PlacedObject;
+          }[];
+        }[];
+      }[];
+    }[];
   }[];
+};
+type ViewWithIncludes = CustomProductView & {
+  locations: CustomProductDecorationLocationNumeric[];
+};
+type VariationWithIncludes = CustomProductSettingsVariation & {
+  views: ViewWithIncludes[];
 };
 type EditorContext = {
   designResults: DesignResults;
   designState: DesignState;
   selectedEditorGuid: string | null;
   setSelectedEditorGuid: (guid: string | null) => void;
-  selectedVariation: CustomProductSettingsVariation | undefined;
-  selectedView: CustomProductView | undefined;
+  selectedVariation: VariationWithIncludes | undefined;
+  selectedView: ViewWithIncludes | undefined;
+  selectedLocation: CustomProductDecorationLocationNumeric | undefined;
   dialogOpen: EditorDialog;
   setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: FullProductSettings | undefined;
@@ -40,9 +65,6 @@ type EditorContext = {
 };
 
 const EditorContext = createContext(null as EditorContext | null);
-const initialStateTest: DesignState = {
-  artworks: [],
-};
 
 export function useEditor() {
   const context = useContext(EditorContext);
@@ -65,20 +87,23 @@ export function EditorProvider({
   const initialProductData = productData.find(
     (data) => data.wooCommerceId === initialProductId
   );
-  const initialVariation = initialProductData?.variations[0];
-  const initialView = initialVariation?.views[0];
+  const { initialDesignState, initialVariation, initialView, initialLocation } =
+    createInitialState(productData);
 
-  const [designState, setDesignState] = useImmer(initialStateTest);
+  const [designState, setDesignState] = useImmer(initialDesignState);
   const [selectedEditorGuid, setSelectedEditorGuid] = useState(
     null as string | null
   );
   const [selectedVariation, setSelectedVariation] = useState(initialVariation);
   const [selectedView, setSelectedView] = useState(initialView);
+  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [dialogOpen, setDialogOpen] = useState(null as EditorDialog);
 
   function deleteArtworkFromState(guid: string) {
     setDesignState((draft) => {
-      draft.artworks = draft.artworks.filter(
+      const locationWithArtwork = findLocationWithArtworkInState(draft, guid);
+      if (!locationWithArtwork) return;
+      locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
         (artwork) => artwork.objectData.editorGuid !== guid
       );
     });
@@ -94,9 +119,7 @@ export function EditorProvider({
       transform
     );
     setDesignState((draft) => {
-      const artwork = draft.artworks.find(
-        (artwork) => artwork.objectData.editorGuid === guid
-      );
+      const artwork = findArtworkInState(draft, guid);
       if (!artwork) return;
 
       if (x) artwork.objectData.position.x = x;
@@ -135,7 +158,10 @@ export function EditorProvider({
     };
 
     setDesignState((draft) => {
-      draft.artworks.push({
+      const location = findLocationInState(draft, selectedLocation.id);
+      if (!location) return;
+
+      location.artworks.push({
         imageUrl: variation?.imageUrl || design.imageUrl,
         identifiers: {
           designId: design.id,
@@ -156,6 +182,7 @@ export function EditorProvider({
         designState,
         selectedVariation,
         selectedView,
+        selectedLocation,
         dialogOpen,
         selectedProductData: initialProductData,
         designResults,
