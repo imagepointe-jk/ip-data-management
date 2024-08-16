@@ -1,5 +1,5 @@
 import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
-import { PlacedObject } from "@/types/customizer";
+import { PlacedObject, TransformArgs } from "@/types/customizer";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -30,5 +30,21 @@ export function convertDesignerObjectData(
       x: size.x * viewWidth,
       y: size.y * viewHeight,
     },
+  };
+}
+
+//TransformArgs coming from Konva transform/drag events have absolute px values.
+//convert to 0-1 range for storage in PlacedObject state.
+export function convertTransformArgs(
+  viewWidth: number,
+  viewHeight: number,
+  transform: TransformArgs
+) {
+  const { x, y, width, height } = transform;
+  return {
+    x: x ? x / viewWidth : undefined,
+    y: y ? y / viewHeight : undefined,
+    width: width ? width / viewWidth : undefined,
+    height: height ? height / viewHeight : undefined,
   };
 }

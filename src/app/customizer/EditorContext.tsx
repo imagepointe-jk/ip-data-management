@@ -1,7 +1,8 @@
 "use client";
 
+import { convertTransformArgs } from "@/customizer/editor";
 import { FullProductSettings } from "@/db/access/customizer";
-import { PlacedObject } from "@/types/customizer";
+import { PlacedObject, TransformArgs } from "@/types/customizer";
 import { DesignResults } from "@/types/types";
 import {
   CustomProductSettingsVariation,
@@ -9,6 +10,7 @@ import {
 } from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { useImmer } from "use-immer";
+import { editorSize } from "./components/ProductView";
 
 type EditorDialog = "colors" | "designs" | "upload" | null;
 type DesignState = {
@@ -28,6 +30,7 @@ type EditorContext = {
   setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: FullProductSettings | undefined;
   deleteArtworkFromState: (guid: string) => void;
+  setArtworkTransform: (guid: string, transform: TransformArgs) => void;
 };
 
 const EditorContext = createContext(null as EditorContext | null);
@@ -109,6 +112,29 @@ export function EditorProvider({
     setSelectedEditorGuid(null);
   }
 
+  //expects absolute px amounts for position and size.
+  //will convert to 0-1 range for storing in state.
+  function setArtworkTransform(guid: string, transform: TransformArgs) {
+    const { x, y, width, height } = convertTransformArgs(
+      editorSize,
+      editorSize,
+      transform
+    );
+    setDesignState((draft) => {
+      const artwork = draft.artworks.find(
+        (artwork) => artwork.objectData.editorGuid === guid
+      );
+      if (!artwork) return;
+
+      if (x) artwork.objectData.position.x = x;
+      if (y) artwork.objectData.position.y = y;
+      if (width) artwork.objectData.size.x = width;
+      if (height) artwork.objectData.size.y = height;
+      if (transform.rotationDegrees)
+        artwork.objectData.rotationDegrees = transform.rotationDegrees;
+    });
+  }
+
   return (
     <EditorContext.Provider
       value={{
@@ -122,6 +148,7 @@ export function EditorProvider({
         designResults,
         setDialogOpen,
         deleteArtworkFromState,
+        setArtworkTransform,
       }}
     >
       {children}

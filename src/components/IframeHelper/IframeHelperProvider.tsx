@@ -61,6 +61,12 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
   const [loading, setLoading] = useState(true);
 
   function onParentWindowResponse(e: any) {
+    if (
+      ["react-devtools-content-script", "react-devtools-bridge"].includes(
+        e.data.source
+      )
+    )
+      return; //ignore messages from devtools
     try {
       const parsed = validateResponseData(e.data);
       setParentWindowData(parsed);

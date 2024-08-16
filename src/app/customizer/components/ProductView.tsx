@@ -10,7 +10,7 @@ import useImage from "use-image";
 import { useEditor } from "../EditorContext";
 import { EditorImage } from "./productView/EditorImage";
 
-const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
+export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
   const { selectedView, designState, setSelectedEditorGuid } = useEditor();

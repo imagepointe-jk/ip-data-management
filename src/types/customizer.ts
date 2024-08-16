@@ -10,3 +10,11 @@ export type PlacedObject = {
   };
   rotationDegrees: number;
 };
+
+export type TransformArgs = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  rotationDegrees?: number;
+};

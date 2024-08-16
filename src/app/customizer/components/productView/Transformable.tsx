@@ -1,6 +1,10 @@
 import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
+import { useEditor } from "../../EditorContext";
+
+//? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
+//? This generalized component appears to work well enough for now.
 
 type Props = {
   children: ReactNode;
@@ -9,26 +13,63 @@ type Props = {
 export function Transformable({ children, selected }: Props) {
   const mainRef = useRef<Konva.Group>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
+  const { setArtworkTransform, selectedEditorGuid } = useEditor();
+
+  function onTransformEnd() {
+    const transformer = transformerRef.current;
+    const main = mainRef.current;
+    const node = main?.children[0];
+    if (!transformer || !node || !selectedEditorGuid) return;
+
+    const scaleX = node.scaleX();
+    const scaleY = node.scaleY();
+    node.scaleX(1);
+    node.scaleY(1);
+
+    setArtworkTransform(selectedEditorGuid, {
+      x: node.x(),
+      y: node.y(),
+      width: node.width() * scaleX,
+      height: node.height() * scaleY,
+      rotationDegrees: node.rotation(),
+    });
+  }
+
+  function onDragEnd() {
+    const node = mainRef.current?.children[0];
+    if (!node || !selectedEditorGuid) return;
+
+    setArtworkTransform(selectedEditorGuid, {
+      x: node.x(),
+      y: node.y(),
+    });
+  }
 
   useEffect(() => {
     if (!selected) return;
 
     const transformer = transformerRef.current;
     const main = mainRef.current;
-    if (!transformer || !main) return;
+    const node = main?.children[0];
+    if (!transformer || !node) return;
 
-    //this is very sketchy but it seems to work!
-    //@ts-ignore
-    transformer.nodes([main.children[0]]);
+    transformer.nodes([node]);
     transformer.getLayer()?.batchDraw();
+
+    node.on("dragend", onDragEnd);
+    node.draggable(true);
+
+    return () => {
+      node.off("dragend", onDragEnd);
+    };
   }, [selected]);
 
   return (
     <>
-      <Group ref={mainRef} draggable>
-        {children}
-      </Group>
-      {selected && <Transformer ref={transformerRef} />}
+      <Group ref={mainRef}>{children}</Group>
+      {selected && (
+        <Transformer ref={transformerRef} onTransformEnd={onTransformEnd} />
+      )}
     </>
   );
 }
