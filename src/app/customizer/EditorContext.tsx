@@ -6,65 +6,23 @@ import {
   findArtworkInState,
   findLocationInState,
   findLocationWithArtworkInState,
+  findVariationInState,
+  findViewInState,
 } from "@/customizer/editor";
+import { FullProductSettings } from "@/db/access/customizer";
 import {
-  CustomProductDecorationLocationNumeric,
-  FullProductSettings,
-} from "@/db/access/customizer";
-import { PlacedObject, TransformArgs } from "@/types/customizer";
+  EditorContext as EditorContextType,
+  EditorDialog,
+  PlacedObject,
+  TransformArgs,
+} from "@/types/customizer";
 import { DesignResults } from "@/types/types";
-import {
-  CustomProductSettingsVariation,
-  CustomProductView,
-} from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { useImmer } from "use-immer";
-import { editorSize } from "./components/ProductView";
 import { v4 as uuidv4 } from "uuid";
+import { editorSize } from "./components/ProductView";
 
-type EditorDialog = "colors" | "designs" | "upload" | null;
-export type DesignState = {
-  products: {
-    id: number;
-    variations: {
-      id: number;
-      views: {
-        id: number;
-        locations: {
-          id: number;
-          artworks: {
-            imageUrl: string;
-            identifiers: { designId: number; variationId?: number }; //will also be used to point to URI of any user-uploaded artwork
-            objectData: PlacedObject;
-          }[];
-        }[];
-      }[];
-    }[];
-  }[];
-};
-type ViewWithIncludes = CustomProductView & {
-  locations: CustomProductDecorationLocationNumeric[];
-};
-type VariationWithIncludes = CustomProductSettingsVariation & {
-  views: ViewWithIncludes[];
-};
-type EditorContext = {
-  designResults: DesignResults;
-  designState: DesignState;
-  selectedEditorGuid: string | null;
-  setSelectedEditorGuid: (guid: string | null) => void;
-  selectedVariation: VariationWithIncludes | undefined;
-  selectedView: ViewWithIncludes | undefined;
-  selectedLocation: CustomProductDecorationLocationNumeric | undefined;
-  dialogOpen: EditorDialog;
-  setDialogOpen: (dialog: EditorDialog) => void;
-  selectedProductData: FullProductSettings | undefined;
-  deleteArtworkFromState: (guid: string) => void;
-  setArtworkTransform: (guid: string, transform: TransformArgs) => void;
-  addDesign: (designId: number, variationId?: number) => PlacedObject;
-};
-
-const EditorContext = createContext(null as EditorContext | null);
+const EditorContext = createContext(null as EditorContextType | null);
 
 export function useEditor() {
   const context = useContext(EditorContext);
@@ -94,10 +52,21 @@ export function EditorProvider({
   const [selectedEditorGuid, setSelectedEditorGuid] = useState(
     null as string | null
   );
-  const [selectedVariation, setSelectedVariation] = useState(initialVariation);
-  const [selectedView, setSelectedView] = useState(initialView);
-  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
+  const [selectedVariationId, setSelectedVariationId] = useState(
+    initialVariation.id
+  );
+  const [selectedViewId, setSelectedViewId] = useState(initialView.id);
+  const [selectedLocationId, setSelectedLocationId] = useState(
+    initialLocation.id
+  );
   const [dialogOpen, setDialogOpen] = useState(null as EditorDialog);
+
+  const selectedVariation = findVariationInState(
+    designState,
+    selectedVariationId
+  );
+  const selectedView = findViewInState(designState, selectedViewId);
+  const selectedLocation = findLocationInState(designState, selectedLocationId);
 
   function deleteArtworkFromState(guid: string) {
     setDesignState((draft) => {
@@ -158,7 +127,7 @@ export function EditorProvider({
     };
 
     setDesignState((draft) => {
-      const location = findLocationInState(draft, selectedLocation.id);
+      const location = findLocationInState(draft, selectedLocationId);
       if (!location) return;
 
       location.artworks.push({

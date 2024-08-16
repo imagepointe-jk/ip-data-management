@@ -1,9 +1,14 @@
-import { DesignState } from "@/app/customizer/EditorContext";
 import {
   CustomProductDecorationLocationNumeric,
   FullProductSettings,
 } from "@/db/access/customizer";
-import { TransformArgs } from "@/types/customizer";
+import {
+  DesignState,
+  DesignStateLocation,
+  DesignStateVariation,
+  DesignStateView,
+  TransformArgs,
+} from "@/types/customizer";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -57,31 +62,44 @@ export function convertTransformArgs(
 }
 
 export function createInitialState(products: FullProductSettings[]) {
-  const initialProduct = products[0];
-  if (!initialProduct) throw new Error("No initial product");
+  const firstProduct = products[0];
+  if (!firstProduct) throw new Error("No products");
 
-  const initialVariation = initialProduct.variations[0];
-  if (!initialVariation) throw new Error("No initial variation");
+  const firstVariation = firstProduct.variations[0];
+  if (!firstVariation) throw new Error("No variations");
 
-  const initialView = initialVariation.views[0];
-  if (!initialView) throw new Error("No initial view");
+  const firstView = firstVariation.views[0];
+  if (!firstView) throw new Error("No views");
 
-  const initialLocation = initialView.locations[0];
-  if (!initialLocation) throw new Error("No initial location");
+  const firstLocation = firstView.locations[0];
+  if (!firstLocation) throw new Error("No locations");
+
+  const initialLocation: DesignStateLocation = {
+    id: firstLocation.id,
+    artworks: [],
+  };
+  const initialView: DesignStateView = {
+    id: firstView.id,
+    locations: [initialLocation],
+  };
+  const initialVariation: DesignStateVariation = {
+    id: firstVariation.id,
+    views: [initialView],
+  };
 
   const initialDesignState: DesignState = {
     products: [
       {
-        id: initialProduct.id,
+        id: firstProduct.id,
         variations: [
           {
-            id: initialVariation.id,
+            id: firstVariation.id,
             views: [
               {
-                id: initialView.id,
+                id: firstView.id,
                 locations: [
                   {
-                    id: initialLocation.id,
+                    id: firstLocation.id,
                     artworks: [],
                   },
                 ],
@@ -117,6 +135,14 @@ function allArtworks(state: DesignState) {
   return allLocations(state).flatMap((location) => location.artworks);
 }
 
+export function findVariationInState(state: DesignState, id: number) {
+  return allVariations(state).find((variation) => variation.id === id);
+}
+
+export function findViewInState(state: DesignState, id: number) {
+  return allViews(state).find((location) => location.id === id);
+}
+
 export function findLocationWithArtworkInState(
   state: DesignState,
   artworkGuid: string
@@ -137,4 +163,19 @@ export function findArtworkInState(state: DesignState, guid: string) {
 
 export function findLocationInState(state: DesignState, id: number) {
   return allLocations(state).find((location) => location.id === id);
+}
+
+export function findLocationInProductData(
+  data: FullProductSettings,
+  id: number
+) {
+  return data.variations
+    .flatMap((variation) => variation.views.flatMap((view) => view.locations))
+    .find((location) => location.id === id);
+}
+
+export function findViewInProductData(data: FullProductSettings, id: number) {
+  return data.variations
+    .flatMap((variation) => variation.views)
+    .find((view) => view.id === id);
 }

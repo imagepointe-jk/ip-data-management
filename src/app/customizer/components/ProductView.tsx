@@ -3,7 +3,8 @@
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import {
   convertDesignerObjectData,
-  findLocationInState,
+  findLocationInProductData,
+  findViewInProductData,
 } from "@/customizer/editor";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -16,19 +17,14 @@ import { EditorImage } from "./productView/EditorImage";
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
-  const {
-    selectedView,
-    selectedLocation,
-    designState,
-    setSelectedEditorGuid,
-    selectedProductData,
-  } = useEditor();
-  const [image] = useImage(selectedView?.imageUrl || IMAGE_NOT_FOUND_URL);
+  const { selectedView, setSelectedEditorGuid, selectedProductData } =
+    useEditor();
+  const viewInProductData =
+    selectedProductData && selectedView
+      ? findViewInProductData(selectedProductData, selectedView.id)
+      : undefined;
+  const [image] = useImage(viewInProductData?.imageUrl || IMAGE_NOT_FOUND_URL);
   const productImgRef = useRef<Konva.Image>(null);
-  const location = selectedLocation
-    ? findLocationInState(designState, selectedLocation.id)
-    : undefined;
-  console.log(selectedLocation);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
@@ -51,38 +47,22 @@ export function ProductView() {
           width={editorSize}
           height={editorSize}
         />
-        {location?.artworks.map((art) => {
-          const { position, size } = convertDesignerObjectData(
-            editorSize,
-            editorSize,
-            art.objectData
-          );
-          return (
-            <EditorImage
-              key={art.objectData.editorGuid}
-              editorGuid={art.objectData.editorGuid}
-              src={art.imageUrl}
-              x={position.x}
-              y={position.y}
-              width={size.x}
-              height={size.y}
-              rotationDeg={art.objectData.rotationDegrees}
-            />
-          );
-        })}
       </Layer>
       {selectedView?.locations.map((location) => {
+        const locationInProductData = selectedProductData
+          ? findLocationInProductData(selectedProductData, location.id)
+          : undefined;
         const { position, size } = convertDesignerObjectData(
           editorSize,
           editorSize,
           {
             position: {
-              x: location.positionX,
-              y: location.positionY,
+              x: locationInProductData?.positionX || 0,
+              y: locationInProductData?.positionY || 0,
             },
             size: {
-              x: location.width,
-              y: location.height,
+              x: locationInProductData?.width || 0,
+              y: locationInProductData?.height || 0,
             },
           }
         );
@@ -103,6 +83,25 @@ export function ProductView() {
               stroke={"gray"}
               strokeWidth={4}
             />
+            {location?.artworks.map((art) => {
+              const { position, size } = convertDesignerObjectData(
+                editorSize,
+                editorSize,
+                art.objectData
+              );
+              return (
+                <EditorImage
+                  key={art.objectData.editorGuid}
+                  editorGuid={art.objectData.editorGuid}
+                  src={art.imageUrl}
+                  x={position.x}
+                  y={position.y}
+                  width={size.x}
+                  height={size.y}
+                  rotationDeg={art.objectData.rotationDegrees}
+                />
+              );
+            })}
           </Layer>
         );
       })}
