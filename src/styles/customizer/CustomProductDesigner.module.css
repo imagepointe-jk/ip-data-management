@@ -126,12 +126,43 @@
   padding: 5px;
   border: 1px solid lightgray;
   border-radius: 5px;
-  cursor: pointer;
   transition: 0.2s;
 }
 
 .design-card:hover {
   scale: 110%;
+}
+
+.design-variations-notification {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  color: white;
+  padding: 5px;
+  border-radius: 100px;
+  background-color: #006ac6;
+  border: 1px solid white;
+  font-size: 0.75rem;
+}
+
+.design-card-arrow {
+  background-color: #006ac6;
+  color: white;
+  padding: 5px 8px;
+  border-radius: 100px;
+  border: 1px solid white;
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  cursor: pointer;
+}
+
+.design-card-arrow-left {
+  left: -12px;
+}
+
+.design-card-arrow-right {
+  right: -12px;
 }
 
 .design-img-container {

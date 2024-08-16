@@ -20,6 +20,7 @@ type EditorDialog = "colors" | "designs" | "upload" | null;
 type DesignState = {
   artworks: {
     imageUrl: string;
+    identifiers: { designId: number; variationId?: number }; //will also be used to point to URI of any user-uploaded artwork
     objectData: PlacedObject;
   }[];
 };
@@ -35,7 +36,7 @@ type EditorContext = {
   selectedProductData: FullProductSettings | undefined;
   deleteArtworkFromState: (guid: string) => void;
   setArtworkTransform: (guid: string, transform: TransformArgs) => void;
-  addDesign: (designId: number) => PlacedObject;
+  addDesign: (designId: number, variationId?: number) => PlacedObject;
 };
 
 const EditorContext = createContext(null as EditorContext | null);
@@ -107,11 +108,18 @@ export function EditorProvider({
     });
   }
 
-  function addDesign(designId: number) {
+  function addDesign(designId: number, variationId?: number) {
     const design = designResults.designs.find(
       (design) => design.id === designId
     );
+    const variation = design?.variations.find(
+      (variation) => variation.id === variationId
+    );
     if (!design) throw new Error(`Design ${designId} not found.`);
+    if (!variation && variationId !== undefined)
+      throw new Error(
+        `Variation ${variationId} of design ${designId} not found.`
+      );
 
     const newObject: PlacedObject = {
       position: {
@@ -128,7 +136,11 @@ export function EditorProvider({
 
     setDesignState((draft) => {
       draft.artworks.push({
-        imageUrl: design.imageUrl,
+        imageUrl: variation?.imageUrl || design.imageUrl,
+        identifiers: {
+          designId: design.id,
+          variationId: variation?.id,
+        },
         objectData: newObject,
       });
     });
