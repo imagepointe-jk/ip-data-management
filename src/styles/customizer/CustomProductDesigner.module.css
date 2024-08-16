@@ -137,6 +137,26 @@
 .design-img-container {
   width: 150px;
   height: 150px;
+  position: relative;
+}
+
+.design-add-button {
+  opacity: 0;
+  transition: 0.2s;
+  padding: 10px;
+  border-radius: 100px;
+  color: white;
+  background-color: #006ac6;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 0;
+  cursor: pointer;
+  border: none;
+}
+
+.design-card:hover .design-add-button {
+  opacity: 1;
 }
 
 .design-page-numbers {

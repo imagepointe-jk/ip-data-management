@@ -1,6 +1,9 @@
 "use client";
 
-import { convertTransformArgs } from "@/customizer/editor";
+import {
+  convertDesignerObjectData,
+  convertTransformArgs,
+} from "@/customizer/editor";
 import { FullProductSettings } from "@/db/access/customizer";
 import { PlacedObject, TransformArgs } from "@/types/customizer";
 import { DesignResults } from "@/types/types";
@@ -11,6 +14,7 @@ import {
 import { createContext, ReactNode, useContext, useState } from "react";
 import { useImmer } from "use-immer";
 import { editorSize } from "./components/ProductView";
+import { v4 as uuidv4 } from "uuid";
 
 type EditorDialog = "colors" | "designs" | "upload" | null;
 type DesignState = {
@@ -31,44 +35,12 @@ type EditorContext = {
   selectedProductData: FullProductSettings | undefined;
   deleteArtworkFromState: (guid: string) => void;
   setArtworkTransform: (guid: string, transform: TransformArgs) => void;
+  addDesign: (designId: number) => PlacedObject;
 };
 
 const EditorContext = createContext(null as EditorContext | null);
 const initialStateTest: DesignState = {
-  artworks: [
-    {
-      imageUrl:
-        "https://www.imagepointe.com/wp-content/uploads/2024/02/857.jpg",
-      objectData: {
-        editorGuid: "abc",
-        position: {
-          x: 0.1,
-          y: 0.2,
-        },
-        rotationDegrees: 20,
-        size: {
-          x: 0.4,
-          y: 0.3,
-        },
-      },
-    },
-    {
-      imageUrl:
-        "https://www.imagepointe.com/wp-content/uploads/2024/02/857.jpg",
-      objectData: {
-        editorGuid: "def",
-        position: {
-          x: 0.4,
-          y: 0.4,
-        },
-        rotationDegrees: -20,
-        size: {
-          x: 0.2,
-          y: 0.1,
-        },
-      },
-    },
-  ],
+  artworks: [],
 };
 
 export function useEditor() {
@@ -101,7 +73,7 @@ export function EditorProvider({
   );
   const [selectedVariation, setSelectedVariation] = useState(initialVariation);
   const [selectedView, setSelectedView] = useState(initialView);
-  const [dialogOpen, setDialogOpen] = useState("designs" as EditorDialog);
+  const [dialogOpen, setDialogOpen] = useState(null as EditorDialog);
 
   function deleteArtworkFromState(guid: string) {
     setDesignState((draft) => {
@@ -135,6 +107,35 @@ export function EditorProvider({
     });
   }
 
+  function addDesign(designId: number) {
+    const design = designResults.designs.find(
+      (design) => design.id === designId
+    );
+    if (!design) throw new Error(`Design ${designId} not found.`);
+
+    const newObject: PlacedObject = {
+      position: {
+        x: 0.5,
+        y: 0.5,
+      },
+      size: {
+        x: 0.2,
+        y: 0.2,
+      },
+      rotationDegrees: 0,
+      editorGuid: uuidv4(),
+    };
+
+    setDesignState((draft) => {
+      draft.artworks.push({
+        imageUrl: design.imageUrl,
+        objectData: newObject,
+      });
+    });
+
+    return newObject;
+  }
+
   return (
     <EditorContext.Provider
       value={{
@@ -149,6 +150,7 @@ export function EditorProvider({
         setDialogOpen,
         deleteArtworkFromState,
         setArtworkTransform,
+        addDesign,
       }}
     >
       {children}

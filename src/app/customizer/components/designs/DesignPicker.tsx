@@ -10,12 +10,19 @@ import { DesignResults, DesignWithIncludes } from "@/types/types";
 const pageSize = 20;
 
 export function DesignPicker() {
-  const { designResults } = useEditor();
+  const { designResults, addDesign, setDialogOpen, setSelectedEditorGuid } =
+    useEditor();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const filtered = filterDesigns(designResults, search);
   const resultsPage = getArrayPage(filtered, page, pageSize);
   const totalPages = Math.ceil(filtered.length / pageSize);
+
+  function onClickDesignCard(designId: number) {
+    const added = addDesign(designId);
+    setDialogOpen(null);
+    setSelectedEditorGuid(added.editorGuid);
+  }
 
   return (
     <div>
@@ -31,7 +38,10 @@ export function DesignPicker() {
       <div className={styles["design-results"]}>
         {resultsPage.map((design) => (
           <div key={design.id} className={styles["design-card"]}>
-            <div className={styles["design-img-container"]}>
+            <div
+              className={styles["design-img-container"]}
+              onClick={() => onClickDesignCard(design.id)}
+            >
               <img
                 className={styles["contained-img"]}
                 src={design.imageUrl}
@@ -39,6 +49,7 @@ export function DesignPicker() {
                   backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
                 }}
               />
+              <button className={styles["design-add-button"]}>+ Add</button>
             </div>
             <div>{design.designNumber}</div>
           </div>
