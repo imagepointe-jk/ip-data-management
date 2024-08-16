@@ -94,17 +94,13 @@ export function createInitialState(products: FullProductSettings[]) {
         variations: [
           {
             id: firstVariation.id,
-            views: [
-              {
-                id: firstView.id,
-                locations: [
-                  {
-                    id: firstLocation.id,
-                    artworks: [],
-                  },
-                ],
-              },
-            ],
+            views: firstVariation.views.map((view) => ({
+              id: view.id,
+              locations: view.locations.map((location) => ({
+                id: location.id,
+                artworks: [],
+              })),
+            })),
           },
         ],
       },

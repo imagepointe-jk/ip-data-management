@@ -52,6 +52,8 @@ export function EditorProvider({
   const [selectedEditorGuid, setSelectedEditorGuid] = useState(
     null as string | null
   );
+  const [selectedProductData, setSelectedProductData] =
+    useState(initialProductData);
   const [selectedVariationId, setSelectedVariationId] = useState(
     initialVariation.id
   );
@@ -61,12 +63,19 @@ export function EditorProvider({
   );
   const [dialogOpen, setDialogOpen] = useState(null as EditorDialog);
 
+  if (!selectedProductData) throw new Error(`No product selected`);
   const selectedVariation = findVariationInState(
     designState,
     selectedVariationId
   );
+  if (!selectedVariation)
+    throw new Error(`Selected variation ${selectedVariationId} not found`);
   const selectedView = findViewInState(designState, selectedViewId);
+  if (!selectedView)
+    throw new Error(`Selected view ${selectedViewId} not found`);
   const selectedLocation = findLocationInState(designState, selectedLocationId);
+  if (!selectedLocation)
+    throw new Error(`Selected location ${selectedLocationId} not found`);
 
   function deleteArtworkFromState(guid: string) {
     setDesignState((draft) => {
@@ -116,7 +125,7 @@ export function EditorProvider({
     const newObject: PlacedObject = {
       position: {
         x: 0.5,
-        y: 0.5,
+        y: 0.2,
       },
       size: {
         x: 0.2,
@@ -152,8 +161,9 @@ export function EditorProvider({
         selectedVariation,
         selectedView,
         selectedLocation,
+        setSelectedLocationId,
         dialogOpen,
-        selectedProductData: initialProductData,
+        selectedProductData,
         designResults,
         setDialogOpen,
         deleteArtworkFromState,

@@ -73,12 +73,13 @@ export type EditorContext = {
   designState: DesignState;
   selectedEditorGuid: string | null;
   setSelectedEditorGuid: (guid: string | null) => void;
-  selectedVariation: DesignStateVariation | undefined;
-  selectedView: DesignStateView | undefined;
-  selectedLocation: DesignStateLocation | undefined;
+  selectedVariation: DesignStateVariation;
+  selectedView: DesignStateView;
+  selectedLocation: DesignStateLocation;
+  setSelectedLocationId: (id: number) => void;
   dialogOpen: EditorDialog;
   setDialogOpen: (dialog: EditorDialog) => void;
-  selectedProductData: FullProductSettings | undefined;
+  selectedProductData: FullProductSettings;
   deleteArtworkFromState: (guid: string) => void;
   setArtworkTransform: (guid: string, transform: TransformArgs) => void;
   addDesign: (designId: number, variationId?: number) => PlacedObject;

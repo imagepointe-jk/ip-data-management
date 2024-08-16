@@ -8,7 +8,7 @@ import {
 } from "@/customizer/editor";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
 import { useEditor } from "../EditorContext";
@@ -17,14 +17,21 @@ import { EditorImage } from "./productView/EditorImage";
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
-  const { selectedView, setSelectedEditorGuid, selectedProductData } =
-    useEditor();
-  const viewInProductData =
-    selectedProductData && selectedView
-      ? findViewInProductData(selectedProductData, selectedView.id)
-      : undefined;
+  const {
+    selectedView,
+    setSelectedEditorGuid,
+    selectedProductData,
+    selectedLocation,
+    setSelectedLocationId,
+  } = useEditor();
+  const viewInProductData = findViewInProductData(
+    selectedProductData,
+    selectedView.id
+  );
+  if (!viewInProductData) throw new Error(`View ${selectedView.id} not found`);
   const [image] = useImage(viewInProductData?.imageUrl || IMAGE_NOT_FOUND_URL);
   const productImgRef = useRef<Konva.Image>(null);
+  const [showLocationFrames, setShowLocationFrames] = useState(false);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
@@ -41,14 +48,59 @@ export function ProductView() {
       onMouseDown={onClickStage}
     >
       <Layer>
+        {/* Detect mouse starting to leave product image */}
         <Image
           ref={productImgRef}
           image={image}
           width={editorSize}
           height={editorSize}
+          onMouseEnter={() => setShowLocationFrames(false)}
         />
       </Layer>
-      {selectedView?.locations.map((location) => {
+      <Layer>
+        {/* Detect mouse hovering over product image */}
+        <Rect
+          x={50}
+          y={50}
+          width={550}
+          height={550}
+          onMouseEnter={() => setShowLocationFrames(true)}
+        />
+      </Layer>
+      <Layer>
+        {showLocationFrames &&
+          viewInProductData.locations.map((location) => {
+            const { position, size } = convertDesignerObjectData(
+              editorSize,
+              editorSize,
+              {
+                position: {
+                  x: location.positionX || 0,
+                  y: location.positionY || 0,
+                },
+                size: {
+                  x: location.width || 0,
+                  y: location.height || 0,
+                },
+              }
+            );
+
+            return (
+              <Rect
+                key={location.id}
+                x={position.x}
+                y={position.y}
+                width={size.x}
+                height={size.y}
+                stroke={"gray"}
+                strokeWidth={4}
+                opacity={selectedLocation.id === location.id ? 1 : 0.3}
+                onClick={() => setSelectedLocationId(location.id)}
+              />
+            );
+          })}
+      </Layer>
+      {selectedView.locations.map((location) => {
         const locationInProductData = selectedProductData
           ? findLocationInProductData(selectedProductData, location.id)
           : undefined;
@@ -75,14 +127,6 @@ export function ProductView() {
             clipWidth={size.x}
             clipHeight={size.y}
           >
-            <Rect
-              x={position.x}
-              y={position.y}
-              width={size.x}
-              height={size.y}
-              stroke={"gray"}
-              strokeWidth={4}
-            />
             {location?.artworks.map((art) => {
               const { position, size } = convertDesignerObjectData(
                 editorSize,
