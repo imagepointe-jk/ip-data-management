@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "../styles/PageControls.module.css";
 import Link from "next/link";
+import { Fragment } from "react";
 
 type ButtonOverrides = {
   onClickPageNumber?: (clickedNumber: number) => void;
@@ -91,10 +92,9 @@ function PageNumberControl({
         }`;
 
         return (
-          <>
+          <Fragment key={`${numberOrEllipsis}-${i}`}>
             {!onClickPageNumber && (
               <Link
-                key={`${numberOrEllipsis}-${i}`}
                 className={className}
                 style={{
                   pointerEvents:
@@ -107,7 +107,6 @@ function PageNumberControl({
             )}
             {onClickPageNumber && (
               <button
-                key={`${numberOrEllipsis}-${i}`}
                 className={className}
                 style={{
                   pointerEvents:
@@ -118,7 +117,7 @@ function PageNumberControl({
                 {numberOrEllipsis}
               </button>
             )}
-          </>
+          </Fragment>
         );
       })}
     </div>
