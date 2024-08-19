@@ -268,6 +268,20 @@ export const webstoreFormDataSchema = z.object({
   allowUpsToCanada: z.boolean(),
 });
 
+export const orderApprovalServerDataSchema = z.object({
+  orderId: z.number(),
+  storeUrl: z.string(),
+  shippingMethods: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      serviceCode: z.number().nullable(),
+    })
+  ),
+  allowApproverChangeMethod: z.boolean().optional(),
+  allowUpsToCanada: z.boolean().optional(),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -333,3 +347,6 @@ export type ProductResource = {
 
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
 export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;
+export type OrderApprovalServerData = z.infer<
+  typeof orderApprovalServerDataSchema
+>;

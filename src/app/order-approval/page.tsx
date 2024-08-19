@@ -2,21 +2,26 @@
 
 "use client";
 
-import {
-  getOrderApprovalIframeData,
-  receiveWorkflowEvent,
-} from "@/actions/orderWorkflow";
+import { receiveWorkflowEvent } from "@/actions/orderWorkflow";
 import { WooOrderView } from "@/components/WooOrderView";
-import { UnwrapPromise } from "@/types/types";
-import { validateOrderApprovalIframeData } from "@/types/validations/orderApproval";
+import {
+  validateOrderApprovalIframeData,
+  validateOrderApprovalServerData,
+} from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
+import {
+  getOrderApprovalOrder,
+  getOrderApprovalServerData,
+} from "@/fetch/client/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { OrderApprovalServerData } from "@/types/schema";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
   const [serverData, setServerData] = useState(
-    null as UnwrapPromise<ReturnType<typeof getOrderApprovalIframeData>> | null
+    null as OrderApprovalServerData | null
   );
   const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(true);
@@ -30,9 +35,9 @@ export default function Page() {
       const searchParams = new URLSearchParams(parsed.searchParams);
       const accessCodeInParams = `${searchParams.get("code")}`;
       setAccessCode(accessCodeInParams);
-      const dataFromServer = await getOrderApprovalIframeData(
-        accessCodeInParams
-      );
+      const dataResponse = await getOrderApprovalServerData(accessCodeInParams);
+      const dataJson = await dataResponse.json();
+      const dataFromServer = validateOrderApprovalServerData(dataJson);
 
       const action = searchParams.get("action");
       setActionRequest(action as Action | null);
@@ -66,6 +71,12 @@ export default function Page() {
       console.error(error);
     }
     setLoading(false);
+  }
+
+  async function getOrder() {
+    const orderResponse = await getOrderApprovalOrder(accessCode);
+    const orderJson = await orderResponse.json();
+    return parseWooCommerceOrderJson(orderJson);
   }
 
   useEffect(() => {
@@ -142,10 +153,11 @@ export default function Page() {
               shippingMethods={serverData.shippingMethods.map(
                 (method) => method.name
               )}
+              getOrder={getOrder}
               storeUrl={serverData.storeUrl}
               permissions={{
                 shipping: {
-                  method: serverData.allowApproveChangeMethod
+                  method: serverData.allowApproverChangeMethod
                     ? "edit"
                     : "hidden",
                 },

@@ -5,12 +5,13 @@ import { ChangeEvent, useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { getOrderAction, updateOrderAction } from "@/actions/orderWorkflow";
+import { updateOrderAction } from "@/actions/orderWorkflow";
 
 type Permission = "view" | "edit" | "hidden";
 type Props = {
   orderId: number;
   storeUrl: string;
+  getOrder: () => Promise<WooCommerceOrder>;
   permissions?: {
     shipping?: {
       method?: Permission;
@@ -25,6 +26,7 @@ type Props = {
 export function WooOrderView({
   orderId,
   storeUrl,
+  getOrder,
   permissions,
   shippingMethods,
   special,
@@ -125,7 +127,8 @@ export function WooOrderView({
   async function loadOrder() {
     setLoading(true);
     try {
-      const order = await getOrderAction(orderId, storeUrl);
+      // const order = await getOrderAction(orderId, storeUrl);
+      const order = await getOrder();
       setOrder(order);
     } catch (error) {
       console.error(error);
