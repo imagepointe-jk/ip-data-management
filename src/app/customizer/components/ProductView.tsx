@@ -39,6 +39,7 @@ export function ProductView() {
     if (clickedOnEmpty) setSelectedEditorGuid(null);
   }
 
+  //TODO: Fix bug where designs can't be deselected
   return (
     <Stage
       width={editorSize}
