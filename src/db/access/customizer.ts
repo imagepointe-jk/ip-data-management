@@ -1,62 +1,55 @@
 import {
   Color,
-  CustomGarmentDecorationLocation,
-  CustomGarmentSettings,
-  CustomGarmentSettingsVariation,
-  CustomGarmentView,
+  CustomProductDecorationLocation,
+  CustomProductSettings,
+  CustomProductSettingsVariation,
+  CustomProductView,
 } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
-export type GarmentSettingListing = CustomGarmentSettings & {
-  imageUrl?: string;
-};
-export async function getGarmentSettings(): Promise<GarmentSettingListing[]> {
-  const settings = await prisma.customGarmentSettings.findMany({
+export async function getProductSettings() {
+  return prisma.customProductSettings.findMany({
     include: {
       variations: {
-        take: 1,
         include: {
-          views: {
-            take: 1,
-          },
+          views: true,
         },
       },
     },
   });
-  const listings: GarmentSettingListing[] = settings.map((setting) => {
-    const firstVariation = setting.variations[0];
-    if (!firstVariation) return setting;
-
-    const firstView = firstVariation.views[0];
-    if (!firstView) return setting;
-
-    return {
-      ...setting,
-      imageUrl: firstView.imageUrl,
-    };
-  });
-
-  return listings;
 }
 
-export type FullGarmentSettings = CustomGarmentSettings & {
-  variations: (CustomGarmentSettingsVariation & { color: Color } & {
-    views: (CustomGarmentView & {
-      locations: CustomGarmentDecorationLocation[];
+export type CustomProductDecorationLocationNumeric = {
+  [K in keyof CustomProductDecorationLocation]: CustomProductDecorationLocation[K] extends Decimal
+    ? number
+    : CustomProductDecorationLocation[K];
+};
+
+export type FullProductSettings = CustomProductSettings & {
+  variations: (CustomProductSettingsVariation & { color: Color } & {
+    views: (CustomProductView & {
+      locations: CustomProductDecorationLocationNumeric[];
     })[];
   })[];
 };
-export async function getFullGarmentSettings(
+export async function getFullProductSettings(
   id: number
-): Promise<FullGarmentSettings | null> {
-  return prisma.customGarmentSettings.findUnique({
+): Promise<FullProductSettings | null> {
+  const settings = await prisma.customProductSettings.findUnique({
     where: {
       id,
     },
     include: {
       variations: {
+        orderBy: {
+          id: "asc",
+        },
         include: {
           views: {
+            orderBy: {
+              id: "asc",
+            },
             include: {
               locations: true,
             },
@@ -66,4 +59,26 @@ export async function getFullGarmentSettings(
       },
     },
   });
+
+  if (!settings) throw new Error(`Product settings ${id} not found.`);
+
+  //convert the decimal values to numbers
+  const converted: FullProductSettings = {
+    ...settings,
+    variations: settings.variations.map((variation) => ({
+      ...variation,
+      views: variation.views.map((view) => ({
+        ...view,
+        locations: view.locations.map((location) => ({
+          ...location,
+          positionX: location.positionX.toNumber(),
+          positionY: location.positionY.toNumber(),
+          width: location.width.toNumber(),
+          height: location.height.toNumber(),
+        })),
+      })),
+    })),
+  };
+
+  return converted;
 }

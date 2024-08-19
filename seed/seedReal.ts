@@ -6,10 +6,10 @@ import { getSourceJson } from "../src/utility/spreadsheet";
 const data = getSourceJson("./seed/Design Data 7-8-24.xlsx");
 
 async function erase() {
-  await prisma.customGarmentDecorationLocation.deleteMany();
-  await prisma.customGarmentView.deleteMany();
-  await prisma.customGarmentSettingsVariation.deleteMany();
-  await prisma.customGarmentSettings.deleteMany();
+  await prisma.customProductDecorationLocation.deleteMany();
+  await prisma.customProductView.deleteMany();
+  await prisma.customProductSettingsVariation.deleteMany();
+  await prisma.customProductSettings.deleteMany();
 
   await prisma.designVariation.deleteMany();
   await prisma.design.deleteMany();

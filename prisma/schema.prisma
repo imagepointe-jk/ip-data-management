@@ -85,7 +85,7 @@ model Color {
   hexCode               String                           @unique
   designs               Design[]
   designVariations      DesignVariation[]
-  customGarmentSettings CustomGarmentSettingsVariation[]
+  customProductSettings CustomProductSettingsVariation[]
 }
 
 model HubSpotSync {
@@ -97,42 +97,49 @@ model HubSpotSync {
   progress    Decimal //0 is no progress, 1 is complete
 }
 
-model CustomGarmentSettings {
+//base table for customizer product records.
+//this table should not contain any product-specific fields that might be varied,
+//such as color, material, size, etc.
+//these should instead be in the variation table.
+//a product that has "no variations" will in reality have exactly 1 variation treated as the base,
+//and every product should have at least one variation.
+model CustomProductSettings {
   id            Int                              @id @default(autoincrement())
   createdAt     DateTime                         @default(now())
   updatedAt     DateTime                         @updatedAt
   published     Boolean                          @default(false)
-  variations    CustomGarmentSettingsVariation[]
+  variations    CustomProductSettingsVariation[]
   wooCommerceId Int
 }
 
-model CustomGarmentSettingsVariation {
+model CustomProductSettingsVariation {
   id               Int                   @id @default(autoincrement())
-  parentSettings   CustomGarmentSettings @relation(fields: [parentSettingsId], references: [id])
+  parentSettings   CustomProductSettings @relation(fields: [parentSettingsId], references: [id])
   parentSettingsId Int
-  views            CustomGarmentView[]
+  views            CustomProductView[]
   color            Color                 @relation(fields: [colorId], references: [id])
   colorId          Int
 }
 
-model CustomGarmentView {
+model CustomProductView {
   id                Int                               @id @default(autoincrement())
   name              String
-  parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
+  parentVariation   CustomProductSettingsVariation    @relation(fields: [parentVariationId], references: [id], onDelete: Cascade)
   parentVariationId Int
-  locations         CustomGarmentDecorationLocation[]
+  locations         CustomProductDecorationLocation[]
   imageUrl          String
 }
 
-model CustomGarmentDecorationLocation {
+model CustomProductDecorationLocation {
   id           Int               @id @default(autoincrement())
   name         String
   positionX    Decimal
   positionY    Decimal
   width        Decimal
   height       Decimal
-  parentView   CustomGarmentView @relation(fields: [parentViewId], references: [id])
+  parentView   CustomProductView @relation(fields: [parentViewId], references: [id], onDelete: Cascade)
   parentViewId Int
+  frameColor   String            @default("808080") //hex code expected
 }
 
 model Webstore {

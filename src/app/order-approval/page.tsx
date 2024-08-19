@@ -1,3 +1,5 @@
+//TODO: An IframeHelperProvider has been created to more easily get window data in an iframe context. If we need to continue using iframes for order approval, this should be refactored using the new helper.
+
 "use client";
 
 import {

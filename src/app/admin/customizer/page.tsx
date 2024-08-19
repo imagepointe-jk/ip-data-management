@@ -1,10 +1,15 @@
-import { getGarmentSettings } from "@/db/access/customizer";
+import { getProductSettings } from "@/db/access/customizer";
 import ResultsTable from "./ResultsTable";
-import { populateGarmentData } from "@/customizer/handleData";
+import { populateProductData } from "@/customizer/handleData";
 
 export default async function Customizer() {
-  const garmentSettings = await getGarmentSettings();
-  const populatedGarments = await populateGarmentData(garmentSettings);
+  const productSettings = await getProductSettings();
+  const populatedProducts = await populateProductData(productSettings);
 
-  return <ResultsTable garmentListings={populatedGarments} />;
+  return (
+    <>
+      <h1>Customizable Products</h1>
+      <ResultsTable productListings={populatedProducts} />
+    </>
+  );
 }

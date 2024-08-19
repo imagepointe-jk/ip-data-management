@@ -1,16 +1,13 @@
-import { GarmentSettingListing } from "@/db/access/customizer";
+import { getProductSettings } from "@/db/access/customizer";
 import { getProduct } from "@/fetch/woocommerce";
-import { WooCommerceProduct } from "@/types/schema";
+import { UnwrapPromise } from "@/types/types";
 import { parseWooCommerceProduct } from "@/types/validations";
-import { CustomGarmentSettings } from "@prisma/client";
 
-export async function populateGarmentData(
-  settingsArr: GarmentSettingListing[]
+export async function populateProductData(
+  settingsArr: UnwrapPromise<ReturnType<typeof getProductSettings>>
 ) {
   //implement with parallel fetching
-  const populated: (GarmentSettingListing & {
-    product?: WooCommerceProduct;
-  })[] = [];
+  const populated = [];
   for (const settings of settingsArr) {
     try {
       const response = await getProduct(settings.wooCommerceId);
@@ -27,7 +24,7 @@ export async function populateGarmentData(
       });
     } catch (error) {
       console.error(
-        `Error populating garment settings id ${settings.id}:`,
+        `Error populating product settings id ${settings.id}:`,
         error
       );
       populated.push({

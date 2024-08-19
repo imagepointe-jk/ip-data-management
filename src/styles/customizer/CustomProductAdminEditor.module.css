@@ -1,0 +1,239 @@
+.main-flex {
+  display: flex;
+  height: 600px;
+  border: 1px solid lightgray;
+  max-width: 1000px;
+}
+
+.sidebar {
+  background-color: lightgray;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 150px;
+}
+
+.sidebar input,
+.sidebar select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.variations-column {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.variations-column button {
+  display: block;
+}
+
+.variation-selected,
+.variation-selected:hover {
+  background-color: white;
+  color: var(--color-alpha);
+  border: 2px solid var(--color-alpha);
+}
+
+.add-variation {
+  font-weight: 800;
+}
+
+.editor-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.variation-settings-container {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 150px;
+}
+
+.variation-swatch {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border: 2px solid lightgray;
+}
+
+.editor-area .view-name {
+  font-size: 2rem;
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  translate: -50% 0;
+  width: 250px;
+  border: 2px solid gray;
+}
+
+.view-arrows-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.error {
+  background-color: var(--color-danger);
+  color: white;
+  padding: 5px;
+}
+
+.product-view-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 400px;
+  height: 400px;
+  border: 4px dashed lightgray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.view-controls-container {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: end;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.product-view-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.editor-area .image-url-container {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  bottom: 30px;
+}
+
+.editor-area .image-url-container input {
+  display: block;
+  border: 1px solid gray;
+}
+
+.location-settings-box {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: lightgray;
+}
+
+.location-box-expand-button {
+  background-color: rgb(221, 221, 221);
+  border-radius: 100px;
+  padding: 5px;
+  color: black;
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  translate: -50% 0;
+  scale: 70%;
+  transition: 0.2s;
+  border: 2px solid gray;
+}
+
+.location-box-expand-button:hover {
+  scale: 100%;
+  background-color: white;
+}
+
+.location-settings-box h4 {
+  text-align: center;
+  margin: 0;
+}
+
+.location-settings-box input[type="range"],
+.location-settings-box input[type="text"] {
+  display: block;
+}
+
+.frame-colors-container {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.frame-color-swatch,
+.frame-color-swatch-selected {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid gray;
+  cursor: pointer;
+}
+
+.frame-color-swatch-selected {
+  scale: 140%;
+}
+
+.location-settings-box .location-settings-name {
+  padding: 3px;
+  width: 100px;
+}
+
+.location-extras-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.location-extras-container button {
+  display: block;
+}
+
+.location-frame {
+  width: 100px;
+  height: 100px;
+  border: 4px dashed gray;
+  position: absolute;
+  cursor: pointer;
+}
+
+.location-name {
+  background-color: rgb(48, 48, 48);
+  padding: 5px;
+  color: white;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  border-radius: 5px;
+  translate: -50% 110%;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.location-frame:hover .location-name {
+  opacity: 1;
+}
+
+.save-container {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.save {
+  display: block;
+  font-size: 1.5rem;
+}
