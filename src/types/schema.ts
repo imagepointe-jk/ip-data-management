@@ -183,6 +183,7 @@ export const hubSpotOwnerSchema = z.object({
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
+  weight: z.string(),
 });
 
 export const wooCommerceWebhookRequestSchema = z.object({
@@ -208,6 +209,7 @@ export const wooCommerceLineItemSchema = z.object({
   total: z.string(),
   totalTax: z.string(),
   price: z.number(),
+  productId: z.number(),
 });
 
 export const wooCommerceFeeLineSchema = z.object({

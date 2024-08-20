@@ -1,11 +1,13 @@
 "use client";
 
-import { WooCommerceOrder } from "@/types/schema";
+import { WooCommerceOrder, WooCommerceProduct } from "@/types/schema";
 import { ChangeEvent, useEffect, useState } from "react";
 import styles from "@/styles/WooOrderView.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { updateOrderAction } from "@/actions/orderWorkflow";
+import { getUpsRate } from "@/fetch/client/shipping";
+import { validateUpsRateResponse } from "@/types/validations/shipping";
 
 type Permission = "view" | "edit" | "hidden";
 type Props = {
@@ -17,6 +19,7 @@ type Props = {
       method?: Permission;
     };
   };
+  getProducts: (ids: number[]) => Promise<WooCommerceProduct[]>;
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
@@ -27,11 +30,13 @@ export function WooOrderView({
   orderId,
   storeUrl,
   getOrder,
+  getProducts,
   permissions,
   shippingMethods,
   special,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
+  const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
@@ -127,13 +132,51 @@ export function WooOrderView({
   async function loadOrder() {
     setLoading(true);
     try {
-      // const order = await getOrderAction(orderId, storeUrl);
       const order = await getOrder();
       setOrder(order);
+      const ids = order.lineItems.map((item) => item.productId);
+      const products = await getProducts(ids);
+      console.log(products);
+      setProducts(products);
     } catch (error) {
       console.error(error);
     }
     setLoading(false);
+  }
+
+  async function test() {
+    if (!products || !order) return;
+
+    const totalWeight = products.reduce(
+      (accum, product) => accum + +product.weight,
+      0
+    );
+    try {
+      const ratingResponse = await getUpsRate({
+        service: {
+          code: "03",
+          description: "abc",
+        },
+        shipTo: {
+          Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
+          Address: {
+            AddressLine: [order.shipping.address1, order.shipping.address2],
+            City: order.shipping.city,
+            CountryCode: order.shipping.country,
+            PostalCode: order.shipping.postcode,
+            StateProvinceCode: order.shipping.state,
+          },
+        },
+        weight: totalWeight,
+      });
+      if (!ratingResponse.ok)
+        throw new Error(`Rating response status ${ratingResponse.status}`);
+      const json = await ratingResponse.json();
+      const parsed = validateUpsRateResponse(json);
+      console.log(parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   useEffect(() => {
@@ -381,6 +424,9 @@ export function WooOrderView({
                 title="Some values may be out-of-sync. Save changes to update."
               />
             )}
+          </div>
+          <div>
+            <button onClick={test}>Ground</button>
           </div>
         </>
       )}

@@ -15,6 +15,12 @@ const upsCredentials = () => {
   return { key, secret };
 };
 
+const upsBillingAccountNumber = () => {
+  const number = process.env.UPS_BILLING_ACCOUNT_NUMBER;
+  if (!number) throw new Error("Missing UPS billing account number");
+  return number;
+};
+
 async function getUpsAccessToken() {
   if (upsSat !== undefined) {
     const expiresAt = +upsSat.issued_at + +upsSat.expires_in * 1000;
@@ -52,6 +58,13 @@ async function getUpsAccessToken() {
 
 export async function getUpsRate(request: UpsRateRequest) {
   const { access_token } = await getUpsAccessToken();
+  const billingNumber = upsBillingAccountNumber();
+  //the billing number is omitted in the front end fetch request for security;
+  //fill it in using environment variables here
+  request.RateRequest.Shipment.Shipper.ShipperNumber = billingNumber;
+  request.RateRequest.Shipment.PaymentDetails.ShipmentCharge.BillShipper.AccountNumber =
+    billingNumber;
+
   const headers = new Headers({
     "Content-Type": "application/json",
     Authorization: `Bearer ${access_token}`,

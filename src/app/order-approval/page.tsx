@@ -13,10 +13,14 @@ import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
 import {
   getOrderApprovalOrder,
+  getOrderApprovalProduct,
   getOrderApprovalServerData,
 } from "@/fetch/client/woocommerce";
-import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { OrderApprovalServerData } from "@/types/schema";
+import {
+  parseWooCommerceOrderJson,
+  parseWooCommerceProduct,
+} from "@/types/validations/woo";
+import { OrderApprovalServerData, WooCommerceProduct } from "@/types/schema";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
@@ -77,6 +81,30 @@ export default function Page() {
     const orderResponse = await getOrderApprovalOrder(accessCode);
     const orderJson = await orderResponse.json();
     return parseWooCommerceOrderJson(orderJson);
+  }
+
+  async function getProducts(ids: number[]) {
+    const responses = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const response = await getOrderApprovalProduct(id, accessCode);
+          if (!response.ok)
+            throw new Error(
+              `Status ${response.status} while getting product id ${id}`
+            );
+          const json = await response.json();
+          return parseWooCommerceProduct(json);
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      })
+    );
+    const nonNull: WooCommerceProduct[] = [];
+    for (const r of responses) {
+      if (r !== null) nonNull.push(r);
+    }
+    return nonNull;
   }
 
   useEffect(() => {
@@ -154,6 +182,7 @@ export default function Page() {
                 (method) => method.name
               )}
               getOrder={getOrder}
+              getProducts={getProducts}
               storeUrl={serverData.storeUrl}
               permissions={{
                 shipping: {

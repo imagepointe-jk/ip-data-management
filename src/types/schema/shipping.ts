@@ -48,12 +48,6 @@ export const upsRateRequestSchema = z.object({
           Code: z.string(),
           Description: z.string(),
         }),
-        Dimensions: z.object({
-          UnitOfMeasurement: unitOfMeasurementSchema,
-          Length: z.string(),
-          Width: z.string(),
-          Height: z.string(),
-        }),
         PackageWeight: z.object({
           UnitOfMeasurement: unitOfMeasurementSchema,
           Weight: z.string(),
@@ -75,3 +69,4 @@ export const upsRateResponseSchema = z.object({
 
 export type UpsRateRequest = z.infer<typeof upsRateRequestSchema>;
 export type UpsRateResponse = z.infer<typeof upsRateResponseSchema>;
+export type ShippingAddress = z.infer<typeof addressSchema>;
