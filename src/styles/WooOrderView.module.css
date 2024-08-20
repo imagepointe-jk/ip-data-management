@@ -113,12 +113,15 @@ td.line-item-x-container {
   align-items: end;
 }
 
-.grand-total {
+.totals-bold {
   font-weight: bold;
+}
+
+.totals-row {
   position: relative;
 }
 
-.grand-total-asterisk {
+.totals-asterisk {
   position: absolute;
   top: -1px;
   right: -10px;
@@ -128,7 +131,7 @@ td.line-item-x-container {
   border-radius: 10px;
   padding: 10px;
   border: 1px solid #006ac6;
-  width: 180px;
+  width: 200px;
   text-align: center;
   font-size: 0.8rem;
   background-color: #006ac611;

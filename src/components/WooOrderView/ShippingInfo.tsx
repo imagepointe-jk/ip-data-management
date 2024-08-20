@@ -12,7 +12,6 @@ type Props = {
       method?: Permission;
     };
   };
-  //   permittedShippingMethods: string[];
   ratedShippingMethods: RatedShippingMethod[];
 };
 export function ShippingInfo({
@@ -21,8 +20,7 @@ export function ShippingInfo({
   setValuesMaybeUnsynced,
   permissions,
   ratedShippingMethods,
-}: //   permittedShippingMethods,
-Props) {
+}: Props) {
   function onChangeShippingInfo(
     changes: {
       firstName?: string;

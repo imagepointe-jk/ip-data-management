@@ -122,7 +122,6 @@ export function WooOrderView({
         : 0;
       return accum + thisWeight;
     }, 0);
-    console.log(`${totalWeight} total weight`);
 
     const permittedShippingMethods = shippingMethods.filter((method) => {
       if (special?.allowUpsShippingToCanada) return method;
@@ -175,41 +174,6 @@ export function WooOrderView({
     return ratedMethods;
   }
 
-  // async function test() {
-  //   if (!products || !order) return;
-
-  //   const totalWeight = products.reduce(
-  //     (accum, product) => accum + +product.weight,
-  //     0
-  //   );
-  //   try {
-  //     const ratingResponse = await getUpsRate({
-  //       service: {
-  //         code: "03",
-  //         description: "abc",
-  //       },
-  //       shipTo: {
-  //         Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
-  //         Address: {
-  //           AddressLine: [order.shipping.address1, order.shipping.address2],
-  //           City: order.shipping.city,
-  //           CountryCode: order.shipping.country,
-  //           PostalCode: order.shipping.postcode,
-  //           StateProvinceCode: order.shipping.state,
-  //         },
-  //       },
-  //       weight: totalWeight,
-  //     });
-  //     if (!ratingResponse.ok)
-  //       throw new Error(`Rating response status ${ratingResponse.status}`);
-  //     const json = await ratingResponse.json();
-  //     const parsed = validateUpsRateResponse(json);
-  //     console.log(parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
   useEffect(() => {
     loadOrder();
   }, []);
@@ -236,13 +200,15 @@ export function WooOrderView({
           <div className={styles["extra-details-flex"]}>
             <ShippingInfo
               order={order}
-              // permittedShippingMethods={permittedShippingMethods}
               ratedShippingMethods={ratedShippingMethods}
               setOrder={setOrder}
               setValuesMaybeUnsynced={setValuesMaybeUnsynced}
               permissions={permissions}
             />
-            <TotalsArea order={order} />
+            <TotalsArea
+              order={order}
+              ratedShippingMethods={ratedShippingMethods}
+            />
           </div>
           <div className={styles["submit-row"]}>
             <button className={styles["submit"]} onClick={onClickSave}>
