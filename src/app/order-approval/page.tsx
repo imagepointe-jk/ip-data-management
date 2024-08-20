@@ -3,7 +3,7 @@
 "use client";
 
 import { receiveWorkflowEvent } from "@/actions/orderWorkflow";
-import { WooOrderView } from "@/components/WooOrderView";
+import { WooOrderView } from "@/components/WooOrderView/WooOrderView";
 import {
   validateOrderApprovalIframeData,
   validateOrderApprovalServerData,
