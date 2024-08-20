@@ -10,13 +10,11 @@ type Props = {
   removeLineItemIds: number[];
   setRemoveLineItemIds: Dispatch<SetStateAction<number[]>>;
   setValuesMaybeUnsynced: (b: boolean) => void;
-  //   setLineItemDelete: (idToSet: number, willDelete: boolean) => void;
 };
 export function LineItemTable({
   order,
   setOrder,
   removeLineItemIds,
-  //   setLineItemDelete,
   setRemoveLineItemIds,
   setValuesMaybeUnsynced,
 }: Props) {

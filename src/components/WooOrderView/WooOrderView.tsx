@@ -9,8 +9,15 @@ import { useEffect, useState } from "react";
 import { LineItemTable } from "./LineItemTable";
 import { ShippingInfo } from "./ShippingInfo";
 import { TotalsArea } from "./TotalsArea";
+import { upsShippingCodes } from "@/order-approval/shipping";
+import { getUpsRate } from "@/fetch/client/shipping";
+import { validateUpsRateResponse } from "@/types/validations/shipping";
 
 export type Permission = "view" | "edit" | "hidden";
+export type RatedShippingMethod = {
+  name: string;
+  total: string | null;
+};
 type Props = {
   orderId: number;
   storeUrl: string;
@@ -41,13 +48,12 @@ export function WooOrderView({
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
-  const permittedShippingMethods = shippingMethods.filter((method) => {
-    if (special?.allowUpsShippingToCanada) return method;
-    return order?.shipping.country !== "CA" || !method.includes("UPS");
-  });
+  const [ratedShippingMethods, setRatedShippingMethods] = useState(
+    [] as RatedShippingMethod[]
+  );
 
   async function onClickSave() {
-    if (!order) return;
+    if (!order || !products) return;
 
     //woocommerce API requires us to set quantity to 0 for any line items we want to delete
     const lineItemsWithDeletions = order.lineItems.map((lineItem) => ({
@@ -70,6 +76,10 @@ export function WooOrderView({
         shipping_lines: order.shippingLines,
       });
       setOrder(updated);
+
+      const updatedMethods = await getUpdatedShippingMethods(updated, products);
+      setRatedShippingMethods(updatedMethods);
+
       setValuesMaybeUnsynced(false);
     } catch (error) {
       setOrder(null);
@@ -87,12 +97,118 @@ export function WooOrderView({
       const ids = order.lineItems.map((item) => item.productId);
       const products = await getProducts(ids);
 
+      const methods = await getUpdatedShippingMethods(order, products);
+
+      setRatedShippingMethods(methods);
       setProducts(products);
     } catch (error) {
       console.error(error);
     }
     setLoading(false);
   }
+
+  async function getUpdatedShippingMethods(
+    order: WooCommerceOrder,
+    products: WooCommerceProduct[]
+  ) {
+    if (!products) throw new Error("No products");
+
+    const totalWeight = products.reduce((accum, product) => {
+      const matchingLineItem = order.lineItems.find(
+        (item) => item.productId === product.id
+      );
+      const thisWeight = matchingLineItem
+        ? matchingLineItem.quantity * +product.weight
+        : 0;
+      return accum + thisWeight;
+    }, 0);
+    console.log(`${totalWeight} total weight`);
+
+    const permittedShippingMethods = shippingMethods.filter((method) => {
+      if (special?.allowUpsShippingToCanada) return method;
+      return order?.shipping.country !== "CA" || !method.includes("UPS");
+    });
+
+    const ratedMethods: RatedShippingMethod[] = await Promise.all(
+      permittedShippingMethods.map(async (method) => {
+        const nullResult: RatedShippingMethod = {
+          name: method,
+          total: null,
+        };
+
+        const matchingData = upsShippingCodes.find(
+          (code) => code.exactString === method
+        );
+        if (!matchingData) return nullResult;
+
+        const ratingResponse = await getUpsRate({
+          service: {
+            code: matchingData.code,
+            description: "abc",
+          },
+          shipTo: {
+            Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
+            Address: {
+              AddressLine: [order.shipping.address1, order.shipping.address2],
+              City: order.shipping.city,
+              CountryCode: order.shipping.country,
+              PostalCode: order.shipping.postcode,
+              StateProvinceCode: order.shipping.state,
+            },
+          },
+          weight: totalWeight,
+        });
+        if (!ratingResponse.ok) {
+          console.error(`UPS API response ${ratingResponse.status}`);
+          return nullResult;
+        }
+
+        const ratingJson = await ratingResponse.json();
+        const parsed = validateUpsRateResponse(ratingJson);
+        return {
+          name: method,
+          total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
+        };
+      })
+    );
+
+    return ratedMethods;
+  }
+
+  // async function test() {
+  //   if (!products || !order) return;
+
+  //   const totalWeight = products.reduce(
+  //     (accum, product) => accum + +product.weight,
+  //     0
+  //   );
+  //   try {
+  //     const ratingResponse = await getUpsRate({
+  //       service: {
+  //         code: "03",
+  //         description: "abc",
+  //       },
+  //       shipTo: {
+  //         Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
+  //         Address: {
+  //           AddressLine: [order.shipping.address1, order.shipping.address2],
+  //           City: order.shipping.city,
+  //           CountryCode: order.shipping.country,
+  //           PostalCode: order.shipping.postcode,
+  //           StateProvinceCode: order.shipping.state,
+  //         },
+  //       },
+  //       weight: totalWeight,
+  //     });
+  //     if (!ratingResponse.ok)
+  //       throw new Error(`Rating response status ${ratingResponse.status}`);
+  //     const json = await ratingResponse.json();
+  //     const parsed = validateUpsRateResponse(json);
+  //     console.log(parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   useEffect(() => {
     loadOrder();
@@ -120,7 +236,8 @@ export function WooOrderView({
           <div className={styles["extra-details-flex"]}>
             <ShippingInfo
               order={order}
-              permittedShippingMethods={permittedShippingMethods}
+              // permittedShippingMethods={permittedShippingMethods}
+              ratedShippingMethods={ratedShippingMethods}
               setOrder={setOrder}
               setValuesMaybeUnsynced={setValuesMaybeUnsynced}
               permissions={permissions}

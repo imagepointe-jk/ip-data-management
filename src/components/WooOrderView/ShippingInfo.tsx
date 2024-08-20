@@ -1,7 +1,7 @@
 import styles from "@/styles/WooOrderView.module.css";
 import { WooCommerceOrder } from "@/types/schema";
 import { Dispatch, SetStateAction } from "react";
-import { Permission } from "./WooOrderView";
+import { Permission, RatedShippingMethod } from "./WooOrderView";
 
 type Props = {
   order: WooCommerceOrder;
@@ -12,15 +12,17 @@ type Props = {
       method?: Permission;
     };
   };
-  permittedShippingMethods: string[];
+  //   permittedShippingMethods: string[];
+  ratedShippingMethods: RatedShippingMethod[];
 };
 export function ShippingInfo({
   order,
   setOrder,
   setValuesMaybeUnsynced,
   permissions,
-  permittedShippingMethods,
-}: Props) {
+  ratedShippingMethods,
+}: //   permittedShippingMethods,
+Props) {
   function onChangeShippingInfo(
     changes: {
       firstName?: string;
@@ -169,9 +171,9 @@ export function ShippingInfo({
               value={order.shippingLines[0]?.method_title}
               onChange={(e) => onChangeShippingInfo({ method: e.target.value })}
             >
-              {permittedShippingMethods.map((method) => (
-                <option key={method} value={method}>
-                  {method}
+              {ratedShippingMethods.map((method) => (
+                <option key={method.name} value={method.name}>
+                  {method.name} (${method.total})
                 </option>
               ))}
             </select>
