@@ -11,6 +11,7 @@ export function handleRequestError(error: unknown) {
       status: error.statusCode,
     });
   } else {
+    console.error(error);
     return Response.json(message("Unknown error."), {
       ...easyCorsInit,
       status: INTERNAL_SERVER_ERROR,
