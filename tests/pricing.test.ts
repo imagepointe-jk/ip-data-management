@@ -1,6 +1,6 @@
 import { roundToDecimalPlaces } from "../src/utility/misc";
 import { calculatePrice } from "../src/pricing/calc";
-import { CalculatePriceParams } from "@/types/schema";
+import { CalculatePriceParams } from "@/types/schema/pricing";
 
 describe("T-shirt screen print pricing formula", () => {
   const net = 6.43;

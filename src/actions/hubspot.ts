@@ -2,8 +2,8 @@
 
 import { AppError } from "@/error";
 import { hubSpotSync } from "@/processes/hubspot/sync";
-import { ServerActionResult } from "@/types/types";
-import { validateHubSpotSyncFormData } from "@/types/validations";
+import { ServerActionResult } from "@/types/schema/misc";
+import { validateHubSpotSyncFormData } from "@/types/validations/hubspot";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
 
 export async function startSync(

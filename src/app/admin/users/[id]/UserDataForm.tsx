@@ -1,6 +1,7 @@
 "use client";
 
-import { createUser, updateUser } from "@/actions/users";
+import { createUser } from "@/actions/users/create";
+import { updateUser } from "@/actions/users/update";
 import { User } from "@prisma/client";
 import { FormEvent, useState } from "react";
 

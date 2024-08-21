@@ -2,12 +2,12 @@
 
 import GenericTable from "@/components/GenericTable";
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
-import { restartWorkflow } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
+import { UnwrapPromise } from "@/types/schema/misc";
+import { restartWorkflow } from "@/actions/orderWorkflow/misc";
 
 type Props = {
   workflow: Exclude<

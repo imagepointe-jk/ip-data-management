@@ -1,8 +1,6 @@
 "use client";
 
-import { updateOrderAction } from "@/actions/orderWorkflow";
 import styles from "@/styles/WooOrderView.module.css";
-import { WooCommerceOrder, WooCommerceProduct } from "@/types/schema";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -12,6 +10,11 @@ import { TotalsArea } from "./TotalsArea";
 import { upsShippingCodes } from "@/order-approval/shipping";
 import { getUpsRate } from "@/fetch/client/shipping";
 import { validateUpsRateResponse } from "@/types/validations/shipping";
+import {
+  WooCommerceOrder,
+  WooCommerceProduct,
+} from "@/types/schema/woocommerce";
+import { updateOrderAction } from "@/actions/orderWorkflow/update";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {

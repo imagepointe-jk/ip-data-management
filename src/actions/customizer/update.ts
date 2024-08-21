@@ -1,4 +1,3 @@
-//TODO: use this structure to reorganize server actions & db access: parent actions folder, feature-specific subfolders (customizer, designs, etc.), action-type files (update.ts, get.ts, etc.)
 "use server";
 
 import { FullProductSettings } from "@/db/access/customizer";

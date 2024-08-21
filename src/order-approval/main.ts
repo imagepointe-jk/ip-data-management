@@ -16,11 +16,6 @@ import {
   setWorkflowInstanceDeniedReason,
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
-import {
-  OrderWorkflowActionType,
-  OrderWorkflowEventType,
-  OrderWorkflowUserRole,
-} from "@/types/schema";
 import { sendEmail } from "@/utility/mail";
 import { decrypt } from "@/utility/misc";
 import {
@@ -31,6 +26,10 @@ import {
 } from "@prisma/client";
 import { createShippingEmail, processFormattedText } from "./mail/mail";
 import { decryptWebstoreData } from "./encryption";
+import {
+  OrderWorkflowActionType,
+  OrderWorkflowEventType,
+} from "@/types/schema/orderApproval";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -155,7 +154,7 @@ async function doStepAction(
     );
     //the denied reason is only in-scope when the "Deny" event is received,
     //so that data is recorded during handleWorkflowEvent.
-    //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instnace
+    //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instance
     //is this reason, but that may change in future.
     await setWorkflowInstanceStatus(workflowInstance.id, "finished");
   } else if (actionType === "cancel woocommerce order") {

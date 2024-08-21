@@ -1,5 +1,8 @@
-import { SortingType } from "@/types/schema";
-import { DesignQuery, DesignWithIncludes } from "@/types/types";
+import {
+  DesignQuery,
+  DesignWithIncludes,
+  SortingType,
+} from "@/types/schema/designs";
 
 export function filterDesigns(
   designs: DesignWithIncludes[],
@@ -114,7 +117,7 @@ export function sortDesigns(designs: DesignWithIncludes[], query: DesignQuery) {
   designs.sort((designA, designB) => {
     if (!query.sortBy) return defaultSortFn(designA, designB);
 
-    return sortingFunctions[query.sortBy.type]({
+    return sortingFunctions[query.sortBy.type]!({
       designA,
       designB,
       direction: query.sortBy.direction,

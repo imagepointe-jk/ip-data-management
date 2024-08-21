@@ -1,6 +1,6 @@
 import { easyCorsInit } from "@/constants";
 import { calculatePrice } from "@/pricing/calc";
-import { validatePricingRequest } from "@/types/validations";
+import { validatePricingRequest } from "@/types/validations/pricing";
 import { message } from "@/utility/misc";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
 import { NextRequest, NextResponse } from "next/server";

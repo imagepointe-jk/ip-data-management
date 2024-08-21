@@ -1,8 +1,8 @@
 import styles from "@/styles/WooOrderView.module.css";
-import { WooCommerceOrder } from "@/types/schema";
 import { Dispatch, SetStateAction } from "react";
 import { Permission, RatedShippingMethod } from "./WooOrderView";
 import { CONTACT_US_URL } from "@/constants";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type Props = {
   order: WooCommerceOrder;

@@ -1,7 +1,7 @@
 "use client";
 
 import { getDesignCategoryHierarchy } from "@/db/access/designs";
-import { UnwrapPromise } from "@/types/types";
+import { UnwrapPromise } from "@/types/schema/misc";
 import { getTimeStampYearsAgo } from "@/utility/misc";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
