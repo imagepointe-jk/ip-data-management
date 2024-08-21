@@ -161,8 +161,30 @@ export function ShippingInfo({
         {/* Shipping Method */}
 
         {permissions?.shipping?.method === "edit" && (
-          <div>
-            <label htmlFor="shipping-method">Shipping Method</label>
+          <div className={styles["shipping-methods-container"]}>
+            <h4>Shipping Method</h4>
+            {ratedShippingMethods
+              .filter((method) => method.total !== null)
+              .map((method) => (
+                <div key={method.name}>
+                  <label htmlFor={method.name}>
+                    <input
+                      type="radio"
+                      name="shipping-method"
+                      id={method.name}
+                      value={method.name}
+                      defaultChecked={
+                        order.shippingLines[0]?.method_title === method.name
+                      }
+                      onChange={(e) =>
+                        onChangeShippingInfo({ method: e.target.value })
+                      }
+                    />
+                    {method.name} (${method.total})
+                  </label>
+                </div>
+              ))}
+            {/* <label htmlFor="shipping-method">Shipping Method</label>
             <select
               name="shipping-method"
               id="shipping-method"
@@ -174,7 +196,7 @@ export function ShippingInfo({
                   {method.name} (${method.total})
                 </option>
               ))}
-            </select>
+            </select> */}
           </div>
         )}
       </div>

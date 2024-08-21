@@ -101,9 +101,19 @@ td.line-item-x-container {
   gap: 10px;
 }
 
-.shipping-fields input,
+.shipping-fields input[type="text"],
 .shipping-fields select {
   width: 250px;
+}
+
+.shipping-methods-container {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid gray;
+}
+
+.shipping-methods-container h4 {
+  margin-top: 0;
 }
 
 .totals {
@@ -137,7 +147,8 @@ td.line-item-x-container {
   background-color: #006ac611;
 }
 
-.main input,
+.main input[type="text"],
+.main input[type="number"],
 .main select {
   display: block;
   font-size: 1.125rem;
