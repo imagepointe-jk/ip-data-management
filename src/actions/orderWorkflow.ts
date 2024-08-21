@@ -304,9 +304,6 @@ export async function createWebstore(formData: FormData) {
     allowUpsToCanada,
     shippingMethodIds
   );
-
-  revalidatePath("/admin/order-approval/webstores");
-  redirect("/admin/order-approval/webstores");
 }
 
 export async function setUserIsApprover(id: number, isApprover: boolean) {

@@ -7,6 +7,7 @@ import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
 import { restartWorkflow } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastProvider";
 
 type Props = {
   workflow: Exclude<
@@ -16,9 +17,11 @@ type Props = {
 };
 export function ResultsTable({ workflow }: Props) {
   const router = useRouter();
+  const toast = useToast();
 
   async function onClickRestart(id: number) {
     await restartWorkflow(id);
+    toast.toast("Workflow restarted.", "success");
     router.refresh();
   }
 
