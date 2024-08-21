@@ -4,6 +4,7 @@ import {
   getWebstoreWithIncludes,
 } from "@/db/access/orderApproval";
 import Link from "next/link";
+import { EditingForm } from "./EditingForm";
 
 type Props = {
   params: {
@@ -27,7 +28,7 @@ export default async function Page({ params }: Props) {
         {existingWebstore ? "Editing Webstore Data" : "Creating Webstore Data"}
       </h1>
       {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
-      <form action={existingWebstore ? updateWebstore : createWebstore}>
+      {/* <form action={existingWebstore ? updateWebstore : createWebstore}>
         <h2>
           Name{" "}
           <input
@@ -126,7 +127,11 @@ export default async function Page({ params }: Props) {
         <button type="submit">
           {existingWebstore ? "Save Changes" : "Create Webstore"}
         </button>
-      </form>
+      </form> */}
+      <EditingForm
+        existingWebstore={existingWebstore}
+        shippingMethods={shippingMethods}
+      />
     </>
   );
 }

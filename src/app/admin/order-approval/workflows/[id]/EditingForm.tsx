@@ -24,6 +24,7 @@ import {
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useToast } from "@/components/ToastProvider";
 
 type Props = {
   workflow: Exclude<
@@ -33,6 +34,7 @@ type Props = {
 };
 export function EditingForm({ workflow }: Props) {
   const router = useRouter();
+  const toast = useToast();
   const sorted = [...workflow.steps];
   sorted.sort((a, b) => a.order - b.order);
   const first = sorted[0];
@@ -48,6 +50,7 @@ export function EditingForm({ workflow }: Props) {
 
   async function onSubmit(e: FormData) {
     await updateWorkflow(e);
+    toast.changesSaved();
     router.refresh();
   }
 

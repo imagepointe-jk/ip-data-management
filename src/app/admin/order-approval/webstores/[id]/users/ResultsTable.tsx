@@ -2,6 +2,7 @@
 
 import { setUserEmail, setUserIsApprover } from "@/actions/orderWorkflow";
 import GenericTable from "@/components/GenericTable";
+import { useToast } from "@/components/ToastProvider";
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/types";
 import { useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ type Props = {
 };
 export function ResultsTable({ webstore }: Props) {
   const router = useRouter();
+  const toast = useToast();
   const sortedUsers = [...webstore.users];
   sortedUsers.sort((a, b) => a.id - b.id);
 
@@ -24,6 +26,7 @@ export function ResultsTable({ webstore }: Props) {
   ) {
     await setUserIsApprover(userId, e.target.value === "approver");
     router.refresh();
+    toast.changesSaved();
   }
 
   return (
@@ -64,10 +67,12 @@ type EditUserEmailProps = {
 function EditUserEmail({ initialEmail, userId }: EditUserEmailProps) {
   const [email, setEmail] = useState(initialEmail);
   const [edited, setEdited] = useState(false);
+  const toast = useToast();
 
   async function onClickSave() {
     await setUserEmail(userId, email);
     setEdited(false);
+    toast.changesSaved();
   }
 
   return (
