@@ -183,6 +183,7 @@ export const hubSpotOwnerSchema = z.object({
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
+  weight: z.string(),
 });
 
 export const wooCommerceWebhookRequestSchema = z.object({
@@ -208,6 +209,7 @@ export const wooCommerceLineItemSchema = z.object({
   total: z.string(),
   totalTax: z.string(),
   price: z.number(),
+  productId: z.number(),
 });
 
 export const wooCommerceFeeLineSchema = z.object({
@@ -266,6 +268,20 @@ export const webstoreFormDataSchema = z.object({
   shippingMethodIds: z.array(z.number()),
   allowApproverChangeMethod: z.boolean(),
   allowUpsToCanada: z.boolean(),
+});
+
+export const orderApprovalServerDataSchema = z.object({
+  orderId: z.number(),
+  storeUrl: z.string(),
+  shippingMethods: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      serviceCode: z.number().nullable(),
+    })
+  ),
+  allowApproverChangeMethod: z.boolean().optional(),
+  allowUpsToCanada: z.boolean().optional(),
 });
 
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
@@ -333,3 +349,6 @@ export type ProductResource = {
 
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
 export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;
+export type OrderApprovalServerData = z.infer<
+  typeof orderApprovalServerDataSchema
+>;

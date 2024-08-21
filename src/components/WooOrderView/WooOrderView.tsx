@@ -1,0 +1,230 @@
+"use client";
+
+import { updateOrderAction } from "@/actions/orderWorkflow";
+import styles from "@/styles/WooOrderView.module.css";
+import { WooCommerceOrder, WooCommerceProduct } from "@/types/schema";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
+import { LineItemTable } from "./LineItemTable";
+import { ShippingInfo } from "./ShippingInfo";
+import { TotalsArea } from "./TotalsArea";
+import { upsShippingCodes } from "@/order-approval/shipping";
+import { getUpsRate } from "@/fetch/client/shipping";
+import { validateUpsRateResponse } from "@/types/validations/shipping";
+
+export type Permission = "view" | "edit" | "hidden";
+export type RatedShippingMethod = {
+  name: string;
+  total: string | null;
+};
+type Props = {
+  orderId: number;
+  storeUrl: string;
+  getOrder: () => Promise<WooCommerceOrder>;
+  permissions?: {
+    shipping?: {
+      method?: Permission;
+    };
+  };
+  getProducts: (ids: number[]) => Promise<WooCommerceProduct[]>;
+  special?: {
+    //highly specific settings for edge cases
+    allowUpsShippingToCanada?: boolean;
+  };
+  shippingMethods: string[];
+};
+export function WooOrderView({
+  orderId,
+  storeUrl,
+  getOrder,
+  getProducts,
+  permissions,
+  shippingMethods,
+  special,
+}: Props) {
+  const [order, setOrder] = useState(null as WooCommerceOrder | null);
+  const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
+  const [loading, setLoading] = useState(true);
+  const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
+  const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
+  const [ratedShippingMethods, setRatedShippingMethods] = useState(
+    [] as RatedShippingMethod[]
+  );
+
+  async function onClickSave() {
+    if (!order || !products) return;
+
+    //woocommerce API requires us to set quantity to 0 for any line items we want to delete
+    const lineItemsWithDeletions = order.lineItems.map((lineItem) => ({
+      ...lineItem,
+      quantity: removeLineItemIds.includes(lineItem.id) ? 0 : lineItem.quantity,
+    }));
+
+    setLoading(true);
+    try {
+      const updated = await updateOrderAction(storeUrl, {
+        ...order,
+        line_items: lineItemsWithDeletions,
+        shipping: {
+          ...order.shipping,
+          first_name: order.shipping.firstName,
+          last_name: order.shipping.lastName,
+          address_1: order.shipping.address1,
+          address_2: order.shipping.address2,
+        },
+        shipping_lines: order.shippingLines,
+      });
+      setOrder(updated);
+
+      const updatedMethods = await getUpdatedShippingMethods(updated, products);
+      setRatedShippingMethods(updatedMethods);
+
+      setValuesMaybeUnsynced(false);
+    } catch (error) {
+      setOrder(null);
+      console.error(error);
+    }
+    setLoading(false);
+  }
+
+  async function loadOrder() {
+    setLoading(true);
+    try {
+      const order = await getOrder();
+      setOrder(order);
+
+      const ids = order.lineItems.map((item) => item.productId);
+      const products = await getProducts(ids);
+
+      const methods = await getUpdatedShippingMethods(order, products);
+
+      setRatedShippingMethods(methods);
+      setProducts(products);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  }
+
+  async function getUpdatedShippingMethods(
+    order: WooCommerceOrder,
+    products: WooCommerceProduct[]
+  ) {
+    if (!products) throw new Error("No products");
+
+    const totalWeight = products.reduce((accum, product) => {
+      const matchingLineItem = order.lineItems.find(
+        (item) => item.productId === product.id
+      );
+      const thisWeight = matchingLineItem
+        ? matchingLineItem.quantity * +product.weight
+        : 0;
+      return accum + thisWeight;
+    }, 0);
+
+    const permittedShippingMethods = shippingMethods.filter((method) => {
+      if (special?.allowUpsShippingToCanada) return method;
+      return order?.shipping.country !== "CA" || !method.includes("UPS");
+    });
+
+    const ratedMethods: RatedShippingMethod[] = await Promise.all(
+      permittedShippingMethods.map(async (method) => {
+        const nullResult: RatedShippingMethod = {
+          name: method,
+          total: null,
+        };
+
+        const matchingData = upsShippingCodes.find(
+          (code) => code.exactString === method
+        );
+        if (!matchingData) return nullResult;
+
+        const ratingResponse = await getUpsRate({
+          service: {
+            code: matchingData.code,
+            description: "abc",
+          },
+          shipTo: {
+            Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
+            Address: {
+              AddressLine: [order.shipping.address1, order.shipping.address2],
+              City: order.shipping.city,
+              CountryCode: order.shipping.country,
+              PostalCode: order.shipping.postcode,
+              StateProvinceCode: order.shipping.state,
+            },
+          },
+          weight: totalWeight,
+        });
+        if (!ratingResponse.ok) {
+          console.error(`UPS API response ${ratingResponse.status}`);
+          return nullResult;
+        }
+
+        const ratingJson = await ratingResponse.json();
+        const parsed = validateUpsRateResponse(ratingJson);
+        return {
+          name: method,
+          total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
+        };
+      })
+    );
+
+    return ratedMethods;
+  }
+
+  useEffect(() => {
+    loadOrder();
+  }, []);
+
+  return (
+    <div className={styles["main"]}>
+      {loading && (
+        <div className={styles["update-overlay"]}>
+          <div>{`${order ? "Updating" : "Loading"}`} order...</div>
+        </div>
+      )}
+      {!order && !loading && <div>Error finding order.</div>}
+      {order && (
+        <>
+          <h2>Order {orderId}</h2>
+          <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
+          <LineItemTable
+            order={order}
+            setOrder={setOrder}
+            removeLineItemIds={removeLineItemIds}
+            setRemoveLineItemIds={setRemoveLineItemIds}
+            setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+          />
+          <div className={styles["extra-details-flex"]}>
+            <ShippingInfo
+              order={order}
+              ratedShippingMethods={ratedShippingMethods}
+              setOrder={setOrder}
+              setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+              permissions={permissions}
+            />
+            <TotalsArea
+              order={order}
+              ratedShippingMethods={ratedShippingMethods}
+            />
+          </div>
+          <div className={styles["submit-row"]}>
+            <button className={styles["submit"]} onClick={onClickSave}>
+              Save All Changes
+            </button>
+            {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+              <FontAwesomeIcon
+                icon={faInfoCircle}
+                className={styles["info-circle"]}
+                size="2x"
+                title="Some values may be out-of-sync. Save changes to update."
+              />
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

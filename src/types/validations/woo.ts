@@ -4,6 +4,7 @@
 import {
   wooCommerceLineItemSchema,
   wooCommerceOrderDataSchema,
+  wooCommerceProductSchema,
 } from "../schema";
 
 function parseWooCommerceLineItem(lineItem: any) {
@@ -21,6 +22,7 @@ function parseWooCommerceLineItem(lineItem: any) {
     total,
     totalTax,
     price: lineItem.price,
+    productId: lineItem.product_id,
   });
 }
 
@@ -49,4 +51,8 @@ export function parseWooCommerceOrderJson(json: any) {
   json.shippingLines = json.shipping_lines;
 
   return wooCommerceOrderDataSchema.parse(json);
+}
+
+export function parseWooCommerceProduct(json: any) {
+  return wooCommerceProductSchema.parse(json);
 }

@@ -24,6 +24,7 @@
     "nodemailer": "^6.9.13",
     "react": "^18",
     "react-dom": "^18",
+    "react-toastify": "^10.0.5",
     "react-konva": "^18.2.10",
     "use-image": "^1.1.1",
     "use-immer": "^0.10.0",

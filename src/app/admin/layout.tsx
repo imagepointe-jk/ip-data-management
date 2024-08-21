@@ -3,6 +3,7 @@ import "./globals.css";
 import AdminNavbar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { BASE_PATH, auth } from "@/auth";
+import { ToastProvider } from "@/components/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Image Pointe Data Management",
@@ -20,7 +21,7 @@ export default async function AdminLayout({
     <>
       <AdminNavbar />
       <SessionProvider basePath={BASE_PATH} session={session}>
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </SessionProvider>
     </>
   );

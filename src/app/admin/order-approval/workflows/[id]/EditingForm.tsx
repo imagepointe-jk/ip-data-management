@@ -24,6 +24,7 @@ import {
 } from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useToast } from "@/components/ToastProvider";
 
 type Props = {
   workflow: Exclude<
@@ -33,6 +34,7 @@ type Props = {
 };
 export function EditingForm({ workflow }: Props) {
   const router = useRouter();
+  const toast = useToast();
   const sorted = [...workflow.steps];
   sorted.sort((a, b) => a.order - b.order);
   const first = sorted[0];
@@ -48,6 +50,7 @@ export function EditingForm({ workflow }: Props) {
 
   async function onSubmit(e: FormData) {
     await updateWorkflow(e);
+    toast.changesSaved();
     router.refresh();
   }
 
@@ -379,11 +382,13 @@ function EventListener({ listener, workflowUsers }: EventListenerProps) {
           from{" "}
           <select name={fromField} id={fromField} defaultValue={listener.from}>
             {[
-              ...workflowUsers.map((user) => (
-                <option key={user.id} value={user.email}>
-                  {user.name}
-                </option>
-              )),
+              ...workflowUsers
+                .filter((user) => user.isApprover)
+                .map((user) => (
+                  <option key={user.id} value={user.email}>
+                    {user.name}
+                  </option>
+                )),
               <option key="purchaser" value="purchaser">
                 Purchaser
               </option>,

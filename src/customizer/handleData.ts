@@ -1,5 +1,6 @@
 import { getProduct } from "@/fetch/woocommerce";
-import { parseWooCommerceProduct } from "@/types/validations";
+import { UnwrapPromise } from "@/types/types";
+import { parseWooCommerceProduct } from "@/types/validations/woo";
 
 export async function populateProductData<
   T extends { wooCommerceId: number; id: number }

@@ -17,18 +17,25 @@ const standardHeaders = () => {
   return headers;
 };
 
-export async function getProduct(id: number) {
+//this is being called from the front end, but only in the admin area,
+//so exposed credentials are not currently a concern
+export async function getProduct(
+  id: number,
+  storeUrl = "https://www.imagepointe.com",
+  key?: string,
+  secret?: string
+) {
   const headers = standardHeaders();
+  if (key && secret) {
+    headers.set("Authorization", `Basic ${btoa(`${key}:${secret}`)}`);
+  }
 
   const requestOptions = {
     method: "GET",
     headers: headers,
   };
 
-  return fetch(
-    `https://www.imagepointe.com/wp-json/wc/v3/products/${id}`,
-    requestOptions
-  );
+  return fetch(`${storeUrl}/wp-json/wc/v3/products/${id}`, requestOptions);
 }
 
 export async function getOrder(

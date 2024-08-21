@@ -16,3 +16,5 @@ export const HUBSPOT_CONTACT_TO_COMPANY = 279,
 
 export const IMAGE_NOT_FOUND_URL =
   "https://placehold.co/300x300?text=Not+Found";
+
+export const CONTACT_US_URL = "https://www.imagepointe.com/contact-us/";

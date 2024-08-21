@@ -2,21 +2,30 @@
 
 "use client";
 
+import { receiveWorkflowEvent } from "@/actions/orderWorkflow";
+import { WooOrderView } from "@/components/WooOrderView/WooOrderView";
 import {
-  getOrderApprovalIframeData,
-  receiveWorkflowEvent,
-} from "@/actions/orderWorkflow";
-import { WooOrderView } from "@/components/WooOrderView";
-import { UnwrapPromise } from "@/types/types";
-import { validateOrderApprovalIframeData } from "@/types/validations/orderApproval";
+  validateOrderApprovalIframeData,
+  validateOrderApprovalServerData,
+} from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
+import {
+  getOrderApprovalOrder,
+  getOrderApprovalProduct,
+  getOrderApprovalServerData,
+} from "@/fetch/client/woocommerce";
+import {
+  parseWooCommerceOrderJson,
+  parseWooCommerceProduct,
+} from "@/types/validations/woo";
+import { OrderApprovalServerData, WooCommerceProduct } from "@/types/schema";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
   const [serverData, setServerData] = useState(
-    null as UnwrapPromise<ReturnType<typeof getOrderApprovalIframeData>> | null
+    null as OrderApprovalServerData | null
   );
   const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(true);
@@ -30,9 +39,9 @@ export default function Page() {
       const searchParams = new URLSearchParams(parsed.searchParams);
       const accessCodeInParams = `${searchParams.get("code")}`;
       setAccessCode(accessCodeInParams);
-      const dataFromServer = await getOrderApprovalIframeData(
-        accessCodeInParams
-      );
+      const dataResponse = await getOrderApprovalServerData(accessCodeInParams);
+      const dataJson = await dataResponse.json();
+      const dataFromServer = validateOrderApprovalServerData(dataJson);
 
       const action = searchParams.get("action");
       setActionRequest(action as Action | null);
@@ -66,6 +75,36 @@ export default function Page() {
       console.error(error);
     }
     setLoading(false);
+  }
+
+  async function getOrder() {
+    const orderResponse = await getOrderApprovalOrder(accessCode);
+    const orderJson = await orderResponse.json();
+    return parseWooCommerceOrderJson(orderJson);
+  }
+
+  async function getProducts(ids: number[]) {
+    const responses = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const response = await getOrderApprovalProduct(id, accessCode);
+          if (!response.ok)
+            throw new Error(
+              `Status ${response.status} while getting product id ${id}`
+            );
+          const json = await response.json();
+          return parseWooCommerceProduct(json);
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      })
+    );
+    const nonNull: WooCommerceProduct[] = [];
+    for (const r of responses) {
+      if (r !== null) nonNull.push(r);
+    }
+    return nonNull;
   }
 
   useEffect(() => {
@@ -142,10 +181,12 @@ export default function Page() {
               shippingMethods={serverData.shippingMethods.map(
                 (method) => method.name
               )}
+              getOrder={getOrder}
+              getProducts={getProducts}
               storeUrl={serverData.storeUrl}
               permissions={{
                 shipping: {
-                  method: serverData.allowApproveChangeMethod
+                  method: serverData.allowApproverChangeMethod
                     ? "edit"
                     : "hidden",
                 },
