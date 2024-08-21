@@ -39,7 +39,6 @@ export function ProductView() {
     if (clickedOnEmpty) setSelectedEditorGuid(null);
   }
 
-  //TODO: Fix bug where designs can't be deselected
   return (
     <Stage
       width={editorSize}
@@ -66,6 +65,7 @@ export function ProductView() {
           width={550}
           height={550}
           onMouseEnter={() => setShowLocationFrames(true)}
+          onClick={() => setSelectedEditorGuid(null)}
         />
       </Layer>
       <Layer>
@@ -96,7 +96,10 @@ export function ProductView() {
                 stroke={"gray"}
                 strokeWidth={4}
                 opacity={selectedLocation.id === location.id ? 1 : 0.3}
-                onClick={() => setSelectedLocationId(location.id)}
+                onClick={() => {
+                  setSelectedLocationId(location.id);
+                  setSelectedEditorGuid(null);
+                }}
               />
             );
           })}
