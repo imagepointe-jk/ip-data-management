@@ -1,7 +1,7 @@
 import { getProductSettings } from "@/db/access/customizer";
 import { getProduct } from "@/fetch/woocommerce";
 import { UnwrapPromise } from "@/types/types";
-import { parseWooCommerceProduct } from "@/types/validations";
+import { parseWooCommerceProduct } from "@/types/validations/woo";
 
 export async function populateProductData(
   settingsArr: UnwrapPromise<ReturnType<typeof getProductSettings>>

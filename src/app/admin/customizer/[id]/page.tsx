@@ -4,7 +4,7 @@ import {
 } from "@/db/access/customizer";
 import ProductSettingsEditor from "./ProductSettingsEditor";
 import { getProduct } from "@/fetch/woocommerce";
-import { parseWooCommerceProduct } from "@/types/validations";
+import { parseWooCommerceProduct } from "@/types/validations/woo";
 import { getColors } from "@/db/access/misc";
 
 type Props = {
