@@ -2,6 +2,7 @@ import styles from "@/styles/WooOrderView.module.css";
 import { WooCommerceOrder } from "@/types/schema";
 import { Dispatch, SetStateAction } from "react";
 import { Permission, RatedShippingMethod } from "./WooOrderView";
+import { CONTACT_US_URL } from "@/constants";
 
 type Props = {
   order: WooCommerceOrder;
@@ -21,6 +22,9 @@ export function ShippingInfo({
   permissions,
   ratedShippingMethods,
 }: Props) {
+  const validShippingMethods = ratedShippingMethods.filter(
+    (method) => method.total !== null
+  );
   function onChangeShippingInfo(
     changes: {
       firstName?: string;
@@ -163,7 +167,13 @@ export function ShippingInfo({
         {permissions?.shipping?.method === "edit" && (
           <div className={styles["shipping-methods-container"]}>
             <h4>Shipping Method</h4>
-            {ratedShippingMethods
+            {validShippingMethods.length === 0 && (
+              <div>
+                No valid shipping methods found. Please{" "}
+                <a href={CONTACT_US_URL}>contact us</a> for assistance.
+              </div>
+            )}
+            {validShippingMethods
               .filter((method) => method.total !== null)
               .map((method) => (
                 <div key={method.name}>
@@ -184,19 +194,6 @@ export function ShippingInfo({
                   </label>
                 </div>
               ))}
-            {/* <label htmlFor="shipping-method">Shipping Method</label>
-            <select
-              name="shipping-method"
-              id="shipping-method"
-              value={order.shippingLines[0]?.method_title}
-              onChange={(e) => onChangeShippingInfo({ method: e.target.value })}
-            >
-              {ratedShippingMethods.map((method) => (
-                <option key={method.name} value={method.name}>
-                  {method.name} (${method.total})
-                </option>
-              ))}
-            </select> */}
           </div>
         )}
       </div>
