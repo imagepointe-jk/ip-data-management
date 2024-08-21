@@ -2,8 +2,8 @@
 
 import GenericTable from "@/components/GenericTable";
 import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
+import { UnwrapPromise } from "@/types/schema/misc";
 import Link from "next/link";
 
 type Props = {

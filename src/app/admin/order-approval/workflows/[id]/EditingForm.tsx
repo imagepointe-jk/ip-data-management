@@ -1,30 +1,32 @@
 "use client";
 
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/types";
 import {
   OrderWorkflowStep,
   OrderWorkflowStepProceedListener,
   OrderWorkflowUser,
 } from "@prisma/client";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
-import {
-  orderWorkflowActionTypes,
-  orderWorkflowEventTypes,
-} from "@/types/schema";
 import { makeStringTitleCase } from "@/utility/misc";
 import { ChangeEvent, useState } from "react";
-import {
-  createEventListener,
-  createStep,
-  deleteEventListener,
-  deleteStep,
-  moveWorkflowStep,
-  updateWorkflow,
-} from "@/actions/orderWorkflow";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ToastProvider";
+import {
+  orderWorkflowActionTypes,
+  orderWorkflowEventTypes,
+} from "@/types/schema/orderApproval";
+import { UnwrapPromise } from "@/types/schema/misc";
+import {
+  createEventListener,
+  createStep,
+} from "@/actions/orderWorkflow/create";
+import { updateWorkflow } from "@/actions/orderWorkflow/update";
+import {
+  deleteEventListener,
+  deleteStep,
+} from "@/actions/orderWorkflow/delete";
+import { moveWorkflowStep } from "@/actions/orderWorkflow/misc";
 
 type Props = {
   workflow: Exclude<

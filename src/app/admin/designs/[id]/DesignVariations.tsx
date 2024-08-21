@@ -1,18 +1,17 @@
 "use client";
 
-import {
-  DesignCategoryWithIncludes,
-  DesignVariationWithIncludes,
-} from "@/types/types";
 import { DesignDataFormProps } from "./DesignDataForm";
 import styles from "@/styles/designs/DesignPage.module.css";
-import {
-  createDesignVariation,
-  deleteDesignVariation,
-} from "@/actions/designs";
+
 import { useRouter } from "next/navigation";
 import { Color, DesignTag } from "@prisma/client";
 import { ChangeEvent, useState } from "react";
+import {
+  DesignCategoryWithIncludes,
+  DesignVariationWithIncludes,
+} from "@/types/schema/designs";
+import { createDesignVariation } from "@/actions/designs/create";
+import { deleteDesignVariation } from "@/actions/designs/delete";
 
 export function DesignVariations({
   existingDesign,

@@ -9,9 +9,8 @@ import {
   Order,
   Product,
   ProductResource,
-} from "@/types/schema";
+} from "@/types/schema/hubspot";
 import { SyncError } from "./error";
-import { parseHubSpotOwnerResults } from "@/types/validations";
 import {
   mapContactToContact,
   mapCustomerToCompany,
@@ -25,6 +24,7 @@ import {
   HUBSPOT_DEAL_TO_CONTACT,
   HUBSPOT_LINE_ITEM_TO_DEAL,
 } from "@/constants";
+import { parseHubSpotOwnerResults } from "@/types/validations/hubspot";
 
 const accessToken = () => {
   const accessToken = process.env.HUBSPOT_ACCESS_TOKEN;

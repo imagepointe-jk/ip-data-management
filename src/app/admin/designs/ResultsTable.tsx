@@ -1,11 +1,11 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
-import { DesignWithIncludes } from "@/types/types";
 import Link from "next/link";
 import styles from "@/styles/designs/designs.module.css";
 import SortIcon from "@/components/SortIcon";
 import { useRouter, useSearchParams } from "next/navigation";
+import { DesignWithIncludes } from "@/types/schema/designs";
 
 type Props = {
   designs: DesignWithIncludes[];

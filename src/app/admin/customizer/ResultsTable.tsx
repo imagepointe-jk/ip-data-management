@@ -2,8 +2,8 @@
 
 import GenericTable from "@/components/GenericTable";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import { WooCommerceProduct } from "@/types/schema";
 import styles from "@/styles/customizer/CustomizerResultsTable.module.css";
+import { WooCommerceProduct } from "@/types/schema/woocommerce";
 import { createWooCommerceProductAdminUrl } from "@/utility/url";
 import Link from "next/link";
 

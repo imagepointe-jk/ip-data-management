@@ -1,11 +1,8 @@
-//some validations in the old validations.ts depended on non-client-friendly  imports.
-//these validations are needed client-side and server-side both.
-//TODO: Reorganize validations to account for this.
 import {
   wooCommerceLineItemSchema,
   wooCommerceOrderDataSchema,
   wooCommerceProductSchema,
-} from "../schema";
+} from "../schema/woocommerce";
 
 function parseWooCommerceLineItem(lineItem: any) {
   //the data that comes from WC is very messy and deeply nested.

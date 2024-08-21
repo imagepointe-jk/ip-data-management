@@ -1,4 +1,9 @@
 import {
+  CalculatePriceParams,
+  DecorationLocation,
+  ProductCalcType,
+} from "@/types/schema/pricing";
+import {
   getGreatestSum,
   getPermutations,
   roundDownToAllowedValue,
@@ -16,11 +21,6 @@ import {
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
-import {
-  CalculatePriceParams,
-  DecorationLocation,
-  ProductCalcType,
-} from "@/types/schema";
 
 type QuantityPriceEstimate = {
   quantity: number;

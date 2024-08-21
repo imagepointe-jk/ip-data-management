@@ -2,11 +2,11 @@ import { PageControls } from "@/components/PageControls";
 import { defaultPerPage, pageSizeChoices } from "@/constants";
 import { getDesignCategoryHierarchy, getDesigns } from "@/db/access/designs";
 import Link from "next/link";
-import { DesignQuery } from "@/types/types";
 import Search from "./Search";
 import ResultsTable from "./ResultsTable";
 import Filter from "./Filter";
-import { SortingDirection, SortingType } from "@/types/schema";
+import { DesignQuery, SortingType } from "@/types/schema/designs";
+import { SortingDirection } from "@/types/schema/misc";
 
 type Props = {
   searchParams?: any;

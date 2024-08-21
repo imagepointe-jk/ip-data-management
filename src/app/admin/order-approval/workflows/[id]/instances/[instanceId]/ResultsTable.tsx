@@ -2,10 +2,10 @@
 
 import GenericTable from "@/components/GenericTable";
 import { getWorkflowInstanceWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/types";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
 import { createApproverFrontEndUrl } from "@/utility/url";
+import { UnwrapPromise } from "@/types/schema/misc";
 
 type Props = {
   instance: Exclude<

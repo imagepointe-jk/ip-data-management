@@ -1,6 +1,6 @@
 import { easyCorsInit } from "@/constants";
 import { AppError } from "@/error";
-import { validateQuoteRequest } from "@/types/validations";
+import { validateQuoteRequest } from "@/types/validations/designs";
 import { sendQuoteRequestEmail } from "@/utility/mail";
 import { message } from "@/utility/misc";
 import {

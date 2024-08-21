@@ -3,17 +3,6 @@ import {
   createHubSpotSync,
   updateHubSpotSyncProgress,
 } from "@/db/access/hubspot";
-import {
-  CompanyResource,
-  Contact,
-  ContactResource,
-  Customer,
-  DealResource,
-  LineItem,
-  Order,
-  Product,
-  ProductResource,
-} from "@/types/schema";
 import { WorkSheet } from "xlsx";
 import { DataError, SyncError, SyncWarning, gatherAllIssues } from "./error";
 import { handleData as handleInputData } from "./handleData";
@@ -33,6 +22,17 @@ import { sendIssuesSheet } from "@/utility/mail";
 import { filterErrors, findInAnyArray } from "@/utility/misc";
 import { RESOURCE_CONFLICT } from "@/utility/statusCodes";
 import { ProgressTracker } from "./progress";
+import {
+  CompanyResource,
+  Contact,
+  ContactResource,
+  Customer,
+  DealResource,
+  LineItem,
+  Order,
+  Product,
+  ProductResource,
+} from "@/types/schema/hubspot";
 
 const syncErrors: SyncError[] = [];
 const syncWarnings: SyncWarning[] = [];

@@ -1,6 +1,6 @@
 import { easyCorsInit } from "@/constants";
 import { startOrderWorkflow } from "@/order-approval/main";
-import { parseWooCommerceWebhookRequest } from "@/types/validations";
+import { parseWooCommerceWebhookRequest } from "@/types/validations/orderApproval";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {

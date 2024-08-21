@@ -5,13 +5,13 @@ import {
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "../encryption";
-import { WooCommerceOrder } from "@/types/schema";
 import { createApproverFrontEndUrl, rootUrl } from "@/utility/url";
 import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { Webstore } from "@prisma/client";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type Replacer = {
   description: string;

@@ -1,12 +1,16 @@
 "use client";
 
-import { createDesign, updateDesign } from "@/actions/designs";
-import { DesignCategoryWithIncludes, DesignWithIncludes } from "@/types/types";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
 import styles from "@/styles/designs/DesignPage.module.css";
 import { DesignVariations } from "./DesignVariations";
 import { useState } from "react";
+import {
+  DesignCategoryWithIncludes,
+  DesignWithIncludes,
+} from "@/types/schema/designs";
+import { updateDesign } from "@/actions/designs/update";
+import { createDesign } from "@/actions/designs/create";
 
 export type DesignDataFormProps = {
   existingDesign: DesignWithIncludes | null;

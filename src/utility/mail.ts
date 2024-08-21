@@ -2,10 +2,10 @@ import nodemailer from "nodemailer";
 import Mail, { Attachment } from "nodemailer/lib/mailer";
 import fs from "fs";
 import handlebars from "handlebars";
-import { QuoteRequest } from "@/types/schema";
 import { AppError } from "@/error";
 import { DataError, SyncError, SyncWarning } from "@/processes/hubspot/error";
 import { dataToSheetBuffer } from "./spreadsheet";
+import { QuoteRequest } from "@/types/schema/designs";
 
 export async function sendEmail(
   recipientAddress: string,

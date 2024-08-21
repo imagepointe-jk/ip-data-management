@@ -1,6 +1,12 @@
 //return key-value pairs where the value is the Impress value and the key is the exact property name expected by HubSpot API
 
-import { Contact, Customer, LineItem, Order, Product } from "@/types/schema";
+import {
+  Contact,
+  Customer,
+  LineItem,
+  Order,
+  Product,
+} from "@/types/schema/hubspot";
 
 export function mapCustomerToCompany(customer: Customer) {
   return {

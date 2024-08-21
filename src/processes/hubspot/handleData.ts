@@ -1,14 +1,4 @@
 import {
-  Contact,
-  Customer,
-  HubSpotOwner,
-  ImpressDataType,
-  LineItem,
-  Order,
-  PO,
-  Product,
-} from "@/types/schema";
-import {
   Obj,
   getSheetRawCells,
   jsonToSheet,
@@ -17,6 +7,18 @@ import {
 import { WorkSheet } from "xlsx";
 import { DataError } from "./error";
 import { ZodError } from "zod";
+import { makeStringTitleCase } from "@/utility/misc";
+import { getAllOwners } from "./fetch";
+import {
+  Contact,
+  Customer,
+  HubSpotOwner,
+  ImpressDataType,
+  LineItem,
+  Order,
+  PO,
+  Product,
+} from "@/types/schema/hubspot";
 import {
   parseContact,
   parseCustomer,
@@ -24,9 +26,7 @@ import {
   parseOrder,
   parsePo,
   parseProduct,
-} from "@/types/validations";
-import { makeStringTitleCase } from "@/utility/misc";
-import { getAllOwners } from "./fetch";
+} from "@/types/validations/hubspot";
 
 export async function handleData(worksheetInput: {
   customers: WorkSheet;

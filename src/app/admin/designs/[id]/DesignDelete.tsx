@@ -1,9 +1,9 @@
 "use client";
 
-import { deleteDesign } from "@/actions/designs";
 import { Design } from "@prisma/client";
 import { useState } from "react";
 import styles from "@/styles/designs/DesignPage.module.css";
+import { deleteDesign } from "@/actions/designs/delete";
 
 type Props = {
   design: Design;

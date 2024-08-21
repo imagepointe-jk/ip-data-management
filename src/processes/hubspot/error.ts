@@ -5,7 +5,7 @@ import {
   LineItem,
   Order,
   Product,
-} from "@/types/schema";
+} from "@/types/schema/hubspot";
 
 export class DataError extends Error {
   public readonly rowIdentifier;

@@ -1,8 +1,8 @@
-import { DesignQuery, DesignResults } from "@/types/types";
 import { prisma } from "../../../prisma/client";
 import { defaultPerPage } from "@/constants";
 import { getArrayPage } from "@/utility/misc";
 import { filterDesigns, sortDesigns } from "./designsFilterSort";
+import { DesignQuery, DesignResults } from "@/types/schema/designs";
 
 const standardDesignIncludes = {
   designSubcategories: true,

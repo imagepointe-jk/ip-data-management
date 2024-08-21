@@ -1,10 +1,13 @@
 "use client";
 
-import { setUserEmail, setUserIsApprover } from "@/actions/orderWorkflow";
+import {
+  setUserEmail,
+  setUserIsApprover,
+} from "@/actions/orderWorkflow/update";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/types";
+import { UnwrapPromise } from "@/types/schema/misc";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 

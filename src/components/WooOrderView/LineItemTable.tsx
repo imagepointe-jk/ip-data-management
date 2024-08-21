@@ -1,5 +1,5 @@
 import styles from "@/styles/WooOrderView.module.css";
-import { WooCommerceOrder } from "@/types/schema";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dispatch, SetStateAction } from "react";

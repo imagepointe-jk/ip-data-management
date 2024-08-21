@@ -2,7 +2,6 @@
 
 "use client";
 
-import { receiveWorkflowEvent } from "@/actions/orderWorkflow";
 import { WooOrderView } from "@/components/WooOrderView/WooOrderView";
 import {
   validateOrderApprovalIframeData,
@@ -20,7 +19,9 @@ import {
   parseWooCommerceOrderJson,
   parseWooCommerceProduct,
 } from "@/types/validations/woo";
-import { OrderApprovalServerData, WooCommerceProduct } from "@/types/schema";
+import { OrderApprovalServerData } from "@/types/schema/orderApproval";
+import { WooCommerceProduct } from "@/types/schema/woocommerce";
+import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
