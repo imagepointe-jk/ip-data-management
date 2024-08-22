@@ -7,9 +7,7 @@ import { useEffect, useState } from "react";
 import { LineItemTable } from "./LineItemTable";
 import { ShippingInfo } from "./ShippingInfo";
 import { TotalsArea } from "./TotalsArea";
-import { upsShippingCodes } from "@/order-approval/shipping";
-import { getUpsRate } from "@/fetch/client/shipping";
-import { validateUpsRateResponse } from "@/types/validations/shipping";
+import { rateShippingMethod } from "@/order-approval/shipping";
 import {
   WooCommerceOrder,
   WooCommerceProduct,
@@ -54,6 +52,7 @@ export function WooOrderView({
   const [ratedShippingMethods, setRatedShippingMethods] = useState(
     [] as RatedShippingMethod[]
   );
+  console.log("received", shippingMethods);
 
   async function onClickSave() {
     if (!order || !products) return;
@@ -131,47 +130,32 @@ export function WooOrderView({
       return order?.shipping.country !== "CA" || !method.includes("UPS");
     });
 
+    const {
+      firstName,
+      lastName,
+      address1,
+      address2,
+      city,
+      state,
+      postcode,
+      country,
+    } = order.shipping;
+
     const ratedMethods: RatedShippingMethod[] = await Promise.all(
-      permittedShippingMethods.map(async (method) => {
-        const nullResult: RatedShippingMethod = {
-          name: method,
-          total: null,
-        };
-
-        const matchingData = upsShippingCodes.find(
-          (code) => code.exactString === method
-        );
-        if (!matchingData) return nullResult;
-
-        const ratingResponse = await getUpsRate({
-          service: {
-            code: matchingData.code,
-            description: "abc",
-          },
-          shipTo: {
-            Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
-            Address: {
-              AddressLine: [order.shipping.address1, order.shipping.address2],
-              City: order.shipping.city,
-              CountryCode: order.shipping.country,
-              PostalCode: order.shipping.postcode,
-              StateProvinceCode: order.shipping.state,
-            },
-          },
-          weight: totalWeight,
-        });
-        if (!ratingResponse.ok) {
-          console.error(`UPS API response ${ratingResponse.status}`);
-          return nullResult;
-        }
-
-        const ratingJson = await ratingResponse.json();
-        const parsed = validateUpsRateResponse(ratingJson);
-        return {
-          name: method,
-          total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
-        };
-      })
+      permittedShippingMethods.map(async (method) =>
+        rateShippingMethod({
+          firstName,
+          lastName,
+          addressLine1: address1,
+          addressLine2: address2,
+          city,
+          stateCode: state,
+          postalCode: postcode,
+          countryCode: country,
+          method,
+          totalWeight,
+        })
+      )
     );
 
     return ratedMethods;

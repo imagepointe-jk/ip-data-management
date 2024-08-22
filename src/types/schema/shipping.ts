@@ -67,6 +67,45 @@ export const upsRateResponseSchema = z.object({
   }),
 });
 
+export const uspsDomesticPriceRequestSchema = z.object({
+  originZIPCode: z.string(),
+  destinationZIPCode: z.string(),
+  weight: z.number(),
+  length: z.number(),
+  width: z.number(),
+  height: z.number(),
+  mailClass: z.string(),
+  processingCategory: z.string(),
+  rateIndicator: z.string(),
+  destinationEntryFacilityType: z.string(),
+  priceType: z.string(),
+});
+
+export const uspsInternationalPriceRequestSchema = z.object({
+  originZIPCode: z.string(),
+  foreignPostalCode: z.string(),
+  weight: z.number(),
+  length: z.number(),
+  width: z.number(),
+  height: z.number(),
+  mailClass: z.string(),
+  processingCategory: z.string(),
+  rateIndicator: z.string(),
+  destinationEntryFacilityType: z.string(),
+  destinationCountryCode: z.string(),
+  priceType: z.string(),
+});
+
+export const uspsPriceResponseSchema = z.object({
+  totalBasePrice: z.number(),
+});
+
 export type UpsRateRequest = z.infer<typeof upsRateRequestSchema>;
 export type UpsRateResponse = z.infer<typeof upsRateResponseSchema>;
+export type UspsDomesticPriceRequest = z.infer<
+  typeof uspsDomesticPriceRequestSchema
+>;
+export type UspsInternationalPriceRequest = z.infer<
+  typeof uspsInternationalPriceRequestSchema
+>;
 export type ShippingAddress = z.infer<typeof addressSchema>;

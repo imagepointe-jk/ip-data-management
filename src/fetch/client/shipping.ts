@@ -1,5 +1,11 @@
-import { ShippingAddress, UpsRateRequest } from "@/types/schema/shipping";
+import {
+  ShippingAddress,
+  UpsRateRequest,
+  UspsDomesticPriceRequest,
+  UspsInternationalPriceRequest,
+} from "@/types/schema/shipping";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 type UpsRateParams = {
   shipTo: {
     Name: string;
@@ -73,8 +79,67 @@ export async function getUpsRate(params: UpsRateParams) {
     method: "POST",
     body: JSON.stringify(request),
   };
+  return fetch(`${baseUrl}/api/shipping/ups/rate`, requestOptions);
+}
+
+type UspsPriceParams = {
+  weight: number;
+  mailClass: string;
+};
+export async function getUspsDomesticPrice({
+  destinationZIPCode,
+  weight,
+  mailClass,
+}: UspsPriceParams & { destinationZIPCode: string }) {
+  const request: UspsDomesticPriceRequest = {
+    originZIPCode: "50703",
+    destinationZIPCode,
+    weight,
+    mailClass,
+    length: 12,
+    width: 12,
+    height: 12,
+    processingCategory: "NON_MACHINABLE",
+    rateIndicator: "SP",
+    destinationEntryFacilityType: "NONE",
+    priceType: "RETAIL",
+  };
+  const requestOptions = {
+    method: "POST",
+    body: JSON.stringify(request),
+  };
+  return fetch(`${baseUrl}/api/shipping/usps/prices`, requestOptions);
+}
+
+export async function getUspsInternationalPrice({
+  destinationCountryCode,
+  foreignPostalCode,
+  mailClass,
+  weight,
+}: UspsPriceParams & {
+  foreignPostalCode: string;
+  destinationCountryCode: string;
+}) {
+  const request: UspsInternationalPriceRequest = {
+    originZIPCode: "50703",
+    destinationCountryCode,
+    weight,
+    mailClass,
+    length: 12,
+    width: 12,
+    height: 12,
+    processingCategory: "NON_MACHINABLE",
+    rateIndicator: "SP",
+    destinationEntryFacilityType: "NONE",
+    priceType: "RETAIL",
+    foreignPostalCode,
+  };
+  const requestOptions = {
+    method: "POST",
+    body: JSON.stringify(request),
+  };
   return fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/shipping/ups/rate`,
+    `${baseUrl}/api/shipping/usps/international-prices`,
     requestOptions
   );
 }
