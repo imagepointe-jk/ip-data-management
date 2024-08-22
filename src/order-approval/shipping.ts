@@ -85,7 +85,6 @@ export async function rateShippingMethod(
 }
 
 async function getParsedUpsRate(params: ShippingRateParams) {
-  console.log("Getting UPS for", params.method);
   const {
     firstName,
     lastName,
@@ -140,7 +139,6 @@ async function getParsedUpsRate(params: ShippingRateParams) {
 }
 
 async function getParsedUspsRate(params: ShippingRateParams) {
-  console.log("Getting USPS for", params.method);
   const nullResult: RatedShippingMethod = {
     name: params.method,
     total: null,

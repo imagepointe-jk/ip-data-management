@@ -183,7 +183,7 @@ export function ShippingInfo({
                       name="shipping-method"
                       id={method.name}
                       value={method.name}
-                      defaultChecked={
+                      checked={
                         order.shippingLines[0]?.method_title === method.name
                       }
                       onChange={(e) =>

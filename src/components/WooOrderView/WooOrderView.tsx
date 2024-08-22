@@ -52,7 +52,6 @@ export function WooOrderView({
   const [ratedShippingMethods, setRatedShippingMethods] = useState(
     [] as RatedShippingMethod[]
   );
-  console.log("received", shippingMethods);
 
   async function onClickSave() {
     if (!order || !products) return;
@@ -65,6 +64,32 @@ export function WooOrderView({
 
     setLoading(true);
     try {
+      //first get updated methods based on any changed shipping info
+      const updatedMethods = await getUpdatedShippingMethods(order, products);
+      setRatedShippingMethods(updatedMethods);
+
+      //then check if we still have a valid shipping method selected
+      const selectedMethod = order.shippingLines[0]?.method_title;
+      const validMethods = updatedMethods.filter(
+        (method) => method.total !== null
+      );
+      const selectedValidMethod = validMethods.find(
+        (method) => method.name === selectedMethod
+      );
+
+      //if not, force the first valid one to be selected instead; NEVER save a shipping method that isn't valid for the shipping address
+      //if there are no valid methods anymore, save a blank string
+      const firstValidMethod = validMethods[0];
+      const forcedMethod = {
+        id: order.shippingLines[0]?.id || 0,
+        method_title: firstValidMethod
+          ? firstValidMethod.name
+          : "SHIPPING METHOD ERROR",
+      };
+      const newShippingLines = selectedValidMethod
+        ? order.shippingLines
+        : [forcedMethod];
+
       const updated = await updateOrderAction(storeUrl, {
         ...order,
         line_items: lineItemsWithDeletions,
@@ -75,12 +100,9 @@ export function WooOrderView({
           address_1: order.shipping.address1,
           address_2: order.shipping.address2,
         },
-        shipping_lines: order.shippingLines,
+        shipping_lines: newShippingLines,
       });
       setOrder(updated);
-
-      const updatedMethods = await getUpdatedShippingMethods(updated, products);
-      setRatedShippingMethods(updatedMethods);
 
       setValuesMaybeUnsynced(false);
     } catch (error) {

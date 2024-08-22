@@ -76,7 +76,7 @@ async function getUpsAccessToken() {
 
 async function getUspsAccessToken() {
   if (uspsSat !== undefined) {
-    const expiresAt = +upsSat.issued_at + +upsSat.expires_in * 1000;
+    const expiresAt = +uspsSat.issued_at + +uspsSat.expires_in * 1000;
     const time = Date.now();
     if (time < expiresAt) return uspsSat;
   }
