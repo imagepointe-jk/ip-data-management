@@ -2,6 +2,7 @@ import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
 import { useEditor } from "../../EditorContext";
+import { clamp } from "@/utility/misc";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -9,8 +10,14 @@ import { useEditor } from "../../EditorContext";
 type Props = {
   children: ReactNode;
   selected?: boolean;
+  limits?: {
+    size?: {
+      minWidth?: number;
+      minHeight?: number;
+    };
+  };
 };
-export function Transformable({ children, selected }: Props) {
+export function Transformable({ children, selected, limits }: Props) {
   const mainRef = useRef<Konva.Group>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
   const { setArtworkTransform, selectedEditorGuid } = useEditor();
@@ -29,8 +36,8 @@ export function Transformable({ children, selected }: Props) {
     setArtworkTransform(selectedEditorGuid, {
       x: node.x(),
       y: node.y(),
-      width: node.width() * scaleX,
-      height: node.height() * scaleY,
+      width: clamp(node.width() * scaleX, 50, Infinity),
+      height: clamp(node.height() * scaleY, 50, Infinity),
       rotationDegrees: node.rotation(),
     });
   }
