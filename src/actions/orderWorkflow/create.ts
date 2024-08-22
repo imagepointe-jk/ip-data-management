@@ -1,3 +1,5 @@
+"use server";
+
 import { validateWebstoreFormData } from "@/types/validations/orderApproval";
 import { prisma } from "../../../prisma/client";
 import { encrypt } from "@/utility/misc";

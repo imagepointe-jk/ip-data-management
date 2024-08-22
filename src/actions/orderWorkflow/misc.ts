@@ -1,3 +1,5 @@
+"use server";
+
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { prisma } from "../../../prisma/client";
 import {
