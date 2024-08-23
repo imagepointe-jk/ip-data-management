@@ -21,6 +21,7 @@ export async function updateWorkflow(formData: FormData) {
       actionMessage,
       actionSubject,
       actionTarget,
+      otherActionTargets,
       actionType,
       id,
       proceedImmediatelyTo,
@@ -33,6 +34,7 @@ export async function updateWorkflow(formData: FormData) {
         name,
         actionType,
         actionTarget,
+        otherActionTargets,
         actionSubject,
         actionMessage,
         proceedImmediatelyTo:

@@ -40,6 +40,9 @@ export function validateWorkflowFormData(formData: FormData) {
   const allActionTargets = findAllFormValues(formData, (name) =>
     name.includes("actionTarget")
   );
+  const allOtherActionTargets = findAllFormValues(formData, (name) =>
+    name.includes("otherActionTargets")
+  );
   const allActionSubjects = findAllFormValues(formData, (name) =>
     name.includes("actionSubject")
   );
@@ -94,6 +97,9 @@ export function validateWorkflowFormData(formData: FormData) {
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
       actionTarget,
+      otherActionTargets: allOtherActionTargets
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
       actionSubject: allActionSubjects
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),

@@ -119,6 +119,7 @@ function Step({
   const nameField = `step-${step.id}-name`;
   const actionTypeField = `step-${step.id}-actionType`;
   const actionTargetField = `step-${step.id}-actionTarget`;
+  const otherActionTargetsField = `step-${step.id}-otherActionTargets`;
   const actionSubjectField = `step-${step.id}-actionSubject`;
   const actionMessageField = `step-${step.id}-actionMessage`;
   const proceedImmediatelyField = `step-${step.id}-proceedImmediatelyTo`;
@@ -228,6 +229,17 @@ function Step({
             </option>,
           ]}
         </select>
+      </div>
+
+      {/* Other action targets */}
+      <div style={{ display: !showActionTarget ? "none" : undefined }}>
+        <label htmlFor={otherActionTargetsField}>Other Action Targets</label>
+        <input
+          type="text"
+          name={otherActionTargetsField}
+          id={otherActionTargetsField}
+          defaultValue={step.otherActionTargets || undefined}
+        />
       </div>
 
       {/* Action Subject */}

@@ -202,6 +202,7 @@ model OrderWorkflowStep {
   name                 String
   order                Int
   actionTarget         String?
+  otherActionTargets   String? //any emails sent to actionTarget will also be sent to these
   actionType           String
   actionSubject        String?
   actionMessage        String?

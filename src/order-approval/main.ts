@@ -116,27 +116,41 @@ async function doStepAction(
   const { actionMessage, actionTarget, actionType: a, actionSubject } = step;
   const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
-    const targetToUse =
+    const targetPrimary =
       actionTarget === "purchaser"
         ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
         : actionTarget;
-    if (!targetToUse)
+    if (!targetPrimary)
       throw new Error(
         `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
       );
+    const otherTargets = step.otherActionTargets
+      ? step.otherActionTargets.split(";")
+      : [];
     console.log(
-      `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget} (${targetToUse})`
+      `=====================Workflow Instance ${workflowInstance.id} sending email(s) to ${actionTarget} (${targetPrimary}) and ${otherTargets.length} other targets`
     );
     const processedMessage = await processFormattedText(
       `${actionMessage}`,
       workflowInstance.id,
-      targetToUse
+      targetPrimary
     );
-    await sendEmail(
-      targetToUse,
-      actionSubject || "Order Update",
-      processedMessage
-    );
+    const allTargets = [targetPrimary, ...otherTargets];
+
+    for (const target of allTargets) {
+      //The message may appear to be addressed directly to targetPrimary.
+      //Clarify to anyone in allTargets that they are intentionally receiving the message as well.
+      const prepend =
+        target === targetPrimary
+          ? ""
+          : `<strong>This message's primary recipient is ${targetPrimary}, but you have have been included on the email list for this order.</strong><br /><br />`;
+
+      await sendEmail(
+        target,
+        actionSubject || "Order Update",
+        prepend + processedMessage
+      );
+    }
   } else if (actionType === "mark workflow approved") {
     console.log(
       `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
