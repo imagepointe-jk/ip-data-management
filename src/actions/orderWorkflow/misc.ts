@@ -6,6 +6,9 @@ import {
   handleWorkflowEvent,
   startWorkflowInstanceFromBeginning,
 } from "@/order-approval/main";
+import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
+import { sendEmail } from "@/utility/mail";
+import { createSupportEmail } from "@/order-approval/mail/mail";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -117,4 +120,58 @@ export async function moveWorkflowStep(
       order: step.order,
     },
   });
+}
+
+export async function receiveOrderHelpForm(formData: FormData) {
+  const comments = formData.get("comments");
+  const code = formData.get("code");
+  if (!comments || !code)
+    throw new Error(
+      `An invalid order help form was submitted for access code ${
+        code || "(no access code)"
+      }.`
+    );
+
+  const foundCode = await getAccessCodeWithIncludes(`${code}`);
+  if (!foundCode)
+    throw new Error(
+      `An order help form was submitted for access code ${code}, but that code was not found in the database.`
+    );
+  const {
+    workflowInstance: {
+      parentWorkflow: { webstore },
+      wooCommerceOrderId,
+    },
+    user,
+  } = foundCode;
+
+  const webstoresEmail = process.env.IP_WEBSTORES_EMAIL;
+  if (!webstoresEmail) throw new Error("Missing webstores email");
+
+  const otherEmails = webstore.otherSupportEmails?.split(";") || [];
+  const targetAddresses = [
+    webstoresEmail,
+    webstore.salesPersonEmail,
+    ...otherEmails,
+  ];
+  const messageBody = await createSupportEmail(
+    webstore,
+    wooCommerceOrderId,
+    user.name,
+    user.email,
+    `${comments}`
+  );
+
+  //no Promise.all because concurrent connections are throttled with our email service
+  for (const address of targetAddresses) {
+    try {
+      await sendEmail(
+        address,
+        `Support request for order ${foundCode.workflowInstance.wooCommerceOrderId}`,
+        messageBody
+      );
+    } catch (error) {
+      console.error(`Error sending support request email to ${address}`, error);
+    }
+  }
 }

@@ -1,0 +1,49 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support requested for order {{id}}</title>
+  </head>
+  <body>
+    <p>Hello,</p>
+    <p>{{userName}}
+      ({{userEmail}}) has requested assistance with order
+      {{id}}. The webstore is "{{storeName}}."
+      <a href="{{storeUrl}}/wp-admin/post.php?post={{id}}&action=edit">Click
+        here</a>
+      to view it in WooCommerce.</p>
+    <p>Otherwise, the order details and the user's comments/questions are below.</p>
+    <table style="border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Name</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Quantity</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Price</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Tax</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each lineItems}}
+          <tr>
+            <td style="border: 1px solid black; padding: 8px;">{{name}}</td>
+            <td style="border: 1px solid black; padding: 8px;">{{quantity}}</td>
+            <td style="border: 1px solid black; padding: 8px;">${{total}}</td>
+            <td
+              style="border: 1px solid black; padding: 8px;"
+            >${{totalTax}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p><strong>Comments/questions:</strong></p>
+    <p>{{comments}}</p>
+  </body>
+</html>

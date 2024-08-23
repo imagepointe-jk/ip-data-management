@@ -215,3 +215,40 @@ export async function createShippingEmail(instanceId: number) {
     return "EMAIL ERROR";
   }
 }
+
+export async function createSupportEmail(
+  webstore: Webstore,
+  orderId: number,
+  fullUserName: string,
+  userEmail: string,
+  comments: string
+) {
+  try {
+    const { key, secret } = decryptWebstoreData(webstore);
+    const orderResponse = await getOrder(orderId, webstore.url, key, secret);
+    if (!orderResponse.ok)
+      throw new Error(
+        `Failed to fetch WooCommerce order ${orderId} with status ${orderResponse.status}`
+      );
+    const orderJson = await orderResponse.json();
+    const parsed = parseWooCommerceOrderJson(orderJson);
+
+    const templateSource = fs.readFileSync(
+      path.resolve(process.cwd(), "src/order-approval/mail/supportEmail.hbs"),
+      "utf-8"
+    );
+    const template = handlebars.compile(templateSource);
+    const message = template({
+      ...parsed,
+      userName: fullUserName,
+      userEmail,
+      storeUrl: webstore.url,
+      storeName: webstore.name,
+      comments,
+    });
+    return message;
+  } catch (error) {
+    console.error("Error creating support email", error);
+    return "EMAIL ERROR";
+  }
+}

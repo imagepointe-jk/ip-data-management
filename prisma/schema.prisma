@@ -153,6 +153,9 @@ model Webstore {
   apiSecret           String //encrypted
   apiSecretEncryptIv  String
   apiSecretEncryptTag String
+  salesPersonName     String                    @default("None")
+  salesPersonEmail    String                    @default("None")
+  otherSupportEmails  String? //when a customer submits a help form, the email will also go to all of these addresses
   shippingSettings    WebstoreShippingSettings?
   shippingMethods     WebstoreShippingMethod[]
   workflows           OrderWorkflow[]

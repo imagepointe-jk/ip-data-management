@@ -21,7 +21,10 @@ import {
 } from "@/types/validations/woo";
 import { OrderApprovalServerData } from "@/types/schema/orderApproval";
 import { WooCommerceProduct } from "@/types/schema/woocommerce";
-import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
+import {
+  receiveOrderHelpForm,
+  receiveWorkflowEvent,
+} from "@/actions/orderWorkflow/misc";
 
 type Action = "approve" | "deny" | null;
 export default function Page() {
@@ -108,6 +111,11 @@ export default function Page() {
     return nonNull;
   }
 
+  async function onSubmitHelpForm(data: FormData) {
+    data.append("code", accessCode);
+    await receiveOrderHelpForm(data);
+  }
+
   useEffect(() => {
     window.addEventListener("message", onReceiveParentWindowInfo);
     window.parent.postMessage({ type: "order-approval-request-url" }, "*");
@@ -184,6 +192,7 @@ export default function Page() {
               )}
               getOrder={getOrder}
               getProducts={getProducts}
+              onSubmitHelpForm={onSubmitHelpForm}
               storeUrl={serverData.storeUrl}
               permissions={{
                 shipping: {

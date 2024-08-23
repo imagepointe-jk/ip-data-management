@@ -141,6 +141,9 @@ export function validateWebstoreFormData(formData: FormData) {
     name: formData.get("name"),
     orgName: formData.get("org-name"),
     url: formData.get("url"),
+    salesPersonName: formData.get("sales-person-name"),
+    salesPersonEmail: formData.get("sales-person-email"),
+    otherSupportEmails: formData.get("other-support-emails"),
     changeApiKey: formData.get("api-key"),
     changeApiSecret: formData.get("api-secret"),
     allowApproverChangeMethod:

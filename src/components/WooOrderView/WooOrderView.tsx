@@ -1,7 +1,10 @@
 "use client";
 
 import styles from "@/styles/WooOrderView.module.css";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faInfoCircle,
+  faQuestionCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { LineItemTable } from "./LineItemTable";
@@ -13,6 +16,7 @@ import {
   WooCommerceProduct,
 } from "@/types/schema/woocommerce";
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
+import { HelpForm } from "./HelpForm";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -29,6 +33,7 @@ type Props = {
     };
   };
   getProducts: (ids: number[]) => Promise<WooCommerceProduct[]>;
+  onSubmitHelpForm: (data: FormData) => Promise<void>;
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
@@ -40,6 +45,7 @@ export function WooOrderView({
   storeUrl,
   getOrder,
   getProducts,
+  onSubmitHelpForm,
   permissions,
   shippingMethods,
   special,
@@ -52,6 +58,7 @@ export function WooOrderView({
   const [ratedShippingMethods, setRatedShippingMethods] = useState(
     [] as RatedShippingMethod[]
   );
+  const [helpMode, setHelpMode] = useState(false);
 
   async function onClickSave() {
     if (!order || !products) return;
@@ -189,50 +196,67 @@ export function WooOrderView({
 
   return (
     <div className={styles["main"]}>
-      {loading && (
-        <div className={styles["update-overlay"]}>
-          <div>{`${order ? "Updating" : "Loading"}`} order...</div>
-        </div>
-      )}
-      {!order && !loading && <div>Error finding order.</div>}
-      {order && (
+      {!helpMode && (
         <>
-          <h2>Order {orderId}</h2>
-          <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
-          <LineItemTable
-            order={order}
-            setOrder={setOrder}
-            removeLineItemIds={removeLineItemIds}
-            setRemoveLineItemIds={setRemoveLineItemIds}
-            setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-          />
-          <div className={styles["extra-details-flex"]}>
-            <ShippingInfo
-              order={order}
-              ratedShippingMethods={ratedShippingMethods}
-              setOrder={setOrder}
-              setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-              permissions={permissions}
-            />
-            <TotalsArea
-              order={order}
-              ratedShippingMethods={ratedShippingMethods}
-            />
-          </div>
-          <div className={styles["submit-row"]}>
-            <button className={styles["submit"]} onClick={onClickSave}>
-              Save All Changes
-            </button>
-            {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
-              <FontAwesomeIcon
-                icon={faInfoCircle}
-                className={styles["info-circle"]}
-                size="2x"
-                title="Some values may be out-of-sync. Save changes to update."
+          {loading && (
+            <div className={styles["update-overlay"]}>
+              <div>{`${order ? "Updating" : "Loading"}`} order...</div>
+            </div>
+          )}
+          {!order && !loading && <div>Error finding order.</div>}
+          {order && (
+            <>
+              <h2>Order {orderId}</h2>
+              <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
+              <LineItemTable
+                order={order}
+                setOrder={setOrder}
+                removeLineItemIds={removeLineItemIds}
+                setRemoveLineItemIds={setRemoveLineItemIds}
+                setValuesMaybeUnsynced={setValuesMaybeUnsynced}
               />
-            )}
-          </div>
+              <div className={styles["extra-details-flex"]}>
+                <ShippingInfo
+                  order={order}
+                  ratedShippingMethods={ratedShippingMethods}
+                  setOrder={setOrder}
+                  setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                  permissions={permissions}
+                />
+                <TotalsArea
+                  order={order}
+                  ratedShippingMethods={ratedShippingMethods}
+                />
+              </div>
+              <div className={styles["submit-row"]}>
+                <button className={styles["submit"]} onClick={onClickSave}>
+                  Save All Changes
+                </button>
+                {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+                  <FontAwesomeIcon
+                    icon={faInfoCircle}
+                    className={styles["info-circle"]}
+                    size="2x"
+                    title="Some values may be out-of-sync. Save changes to update."
+                  />
+                )}
+                <button
+                  className={styles["help-button"]}
+                  onClick={() => setHelpMode(true)}
+                >
+                  <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
+                  my order
+                </button>
+              </div>
+            </>
+          )}
         </>
+      )}
+      {helpMode && (
+        <HelpForm
+          setHelpMode={setHelpMode}
+          onSubmitHelpForm={onSubmitHelpForm}
+        />
       )}
     </div>
   );

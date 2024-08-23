@@ -196,6 +196,42 @@ td.line-item-x-container {
   font-size: 1.5rem;
 }
 
+.main .help-button,
+.main .help-back {
+  background-color: white;
+  border: 2px solid #2c91e9;
+  color: #2c91e9;
+}
+
+.main .help-back {
+  background: none;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.help-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  gap: 10px;
+}
+
+.help-form button {
+  display: block;
+}
+
+.help-form-result {
+  width: 300px;
+  text-align: center;
+}
+
+.help-error {
+  color: rgb(202, 0, 0);
+}
+
 @media screen and (max-width: 768px) {
   .extra-details-flex {
     flex-direction: column-reverse;
