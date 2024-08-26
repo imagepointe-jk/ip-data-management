@@ -59,8 +59,8 @@ export async function getUser(webstoreId: number, email: string) {
   });
 }
 
-export async function getFirstApproverFor(webstoreId: number) {
-  return prisma.orderWorkflowUser.findFirst({
+export async function getAllApproversFor(webstoreId: number) {
+  return prisma.orderWorkflowUser.findMany({
     where: {
       webstoreId,
       isApprover: true,

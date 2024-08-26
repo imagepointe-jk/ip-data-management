@@ -7,13 +7,13 @@ import {
   getUser,
   getWorkflowInstance,
   setWorkflowInstanceCurrentStep,
-  getFirstApproverFor,
   getWorkflowWithIncludes,
   getWorkflowInstanceCurrentStep,
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
   getWorkflowInstancePurchaser,
   setWorkflowInstanceDeniedReason,
+  getAllApproversFor,
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
@@ -74,8 +74,8 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     (await createUser(email, `${firstName} ${lastName}`, webstore.id));
 
   //Assume for now that a webstore will only have one approver
-  const approver = await getFirstApproverFor(webstore.id);
-  if (!approver)
+  const approvers = await getAllApproversFor(webstore.id);
+  if (approvers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
   //assume for now that a webstore will only have one workflow for all orders
@@ -85,7 +85,9 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
   await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
-  await createAccessCode(workflowInstance.id, approver.id, "approver");
+  for (const approver of approvers) {
+    await createAccessCode(workflowInstance.id, approver.id, "approver");
+  }
 
   console.log(
     `Finished setup on workflow instance ${workflowInstance.id} for webstore ${webstore.id}.`
