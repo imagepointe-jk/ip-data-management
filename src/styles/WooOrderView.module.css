@@ -116,6 +116,10 @@ td.line-item-x-container {
   margin-top: 0;
 }
 
+.shipping-method-invalid {
+  color: gray;
+}
+
 .totals {
   text-align: right;
   display: flex;

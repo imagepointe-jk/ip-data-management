@@ -101,6 +101,7 @@ async function getParsedUpsRate(params: ShippingRateParams) {
   const nullResult: RatedShippingMethod = {
     name: method,
     total: null,
+    statusCode: null,
   };
 
   const matchingData = upsShippingCodes.find(
@@ -127,6 +128,7 @@ async function getParsedUpsRate(params: ShippingRateParams) {
   });
   if (!ratingResponse.ok) {
     console.error(`UPS API response ${ratingResponse.status}`);
+    nullResult.statusCode = ratingResponse.status;
     return nullResult;
   }
 
@@ -135,6 +137,7 @@ async function getParsedUpsRate(params: ShippingRateParams) {
   return {
     name: method,
     total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
+    statusCode: ratingResponse.status,
   };
 }
 
@@ -142,6 +145,7 @@ async function getParsedUspsRate(params: ShippingRateParams) {
   const nullResult: RatedShippingMethod = {
     name: params.method,
     total: null,
+    statusCode: null,
   };
 
   const matchingData = uspsShippingCodes.find(
@@ -168,6 +172,7 @@ async function getParsedUspsRate(params: ShippingRateParams) {
       });
   if (!priceResponse.ok) {
     console.error(`USPS API response ${priceResponse.status}`);
+    nullResult.statusCode = priceResponse.status;
     return nullResult;
   }
 
@@ -177,5 +182,6 @@ async function getParsedUspsRate(params: ShippingRateParams) {
   return {
     name: params.method,
     total: parsed.totalBasePrice.toFixed(2),
+    statusCode: priceResponse.status,
   };
 }

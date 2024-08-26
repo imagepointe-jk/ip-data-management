@@ -22,6 +22,7 @@ export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
   name: string;
   total: string | null;
+  statusCode: number | null;
 };
 type Props = {
   orderId: number;
@@ -76,9 +77,13 @@ export function WooOrderView({
       setRatedShippingMethods(updatedMethods);
 
       //then check if we still have a valid shipping method selected
+      //treat a method as valid even if it got an API response of 429.
+      //the below auto-switch behavior should not affect the user just because of rate limiting.
       const selectedMethod = order.shippingLines[0]?.method_title;
       const validMethods = updatedMethods.filter(
-        (method) => method.total !== null
+        (method) =>
+          method.total !== null &&
+          (method.statusCode === 200 || method.statusCode === 429)
       );
       const selectedValidMethod = validMethods.find(
         (method) => method.name === selectedMethod
