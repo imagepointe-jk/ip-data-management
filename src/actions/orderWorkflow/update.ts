@@ -72,6 +72,9 @@ export async function updateWebstore(formData: FormData) {
     allowUpsToCanada,
     shippingMethodIds,
     orderUpdatedEmails,
+    otherSupportEmails,
+    salesPersonEmail,
+    salesPersonName,
   } = validateWebstoreFormData(formData);
   if (isNaN(+`${id}`))
     throw new Error(`Invalid webstore id ${id}. This is a bug.`);
@@ -111,6 +114,9 @@ export async function updateWebstore(formData: FormData) {
         set: shippingMethodIds.map((id) => ({ id })),
       },
       orderUpdatedEmails,
+      otherSupportEmails,
+      salesPersonEmail,
+      salesPersonName,
     },
   });
 
