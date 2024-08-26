@@ -82,7 +82,9 @@ export function EditingForm({ workflow }: Props) {
       <button type="button" onClick={onClickAddStep}>
         + Add Step
       </button>
-      <button type="submit">Save Changes</button>
+      <button type="submit" className={styles["save-changes-button"]}>
+        Save Changes
+      </button>
     </form>
   );
 }

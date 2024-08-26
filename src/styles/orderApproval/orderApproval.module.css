@@ -20,3 +20,10 @@
   border: 1px solid gray;
   padding: 10px;
 }
+
+.save-changes-button {
+  position: fixed;
+  right: 450px;
+  bottom: 10px;
+  font-size: 1.5rem;
+}
