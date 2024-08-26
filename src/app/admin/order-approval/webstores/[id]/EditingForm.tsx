@@ -94,6 +94,15 @@ export function EditingForm({ existingWebstore, shippingMethods }: Props) {
         />
       </div>
       <div>
+        Order updated emails (separate with {";"})
+        <input
+          type="text"
+          name="order-updated-emails"
+          id="order-updated-emails"
+          defaultValue={existingWebstore?.orderUpdatedEmails || undefined}
+        />
+      </div>
+      <div>
         {existingWebstore ? "Change API Key " : "Set API Key "}{" "}
         <input
           type="text"

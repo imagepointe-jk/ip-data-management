@@ -156,6 +156,7 @@ model Webstore {
   salesPersonName     String                    @default("None")
   salesPersonEmail    String                    @default("None")
   otherSupportEmails  String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails  String?
   shippingSettings    WebstoreShippingSettings?
   shippingMethods     WebstoreShippingMethod[]
   workflows           OrderWorkflow[]

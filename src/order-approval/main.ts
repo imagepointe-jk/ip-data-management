@@ -24,12 +24,17 @@ import {
   OrderWorkflowUser,
   Webstore,
 } from "@prisma/client";
-import { createShippingEmail, processFormattedText } from "./mail/mail";
+import {
+  createOrderUpdatedEmail,
+  createShippingEmail,
+  processFormattedText,
+} from "./mail/mail";
 import { decryptWebstoreData } from "./encryption";
 import {
   OrderWorkflowActionType,
   OrderWorkflowEventType,
 } from "@/types/schema/orderApproval";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -296,5 +301,23 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     throw new Error(
       `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
     );
+  }
+}
+
+export async function handleOrderUpdated(
+  order: WooCommerceOrder,
+  storeUrl: string
+) {
+  const webstore = await getWebstore(storeUrl);
+  if (!webstore) throw new Error(`No webstore with url ${storeUrl}`);
+
+  const orderUpdatedEmails = webstore.orderUpdatedEmails
+    ? webstore.orderUpdatedEmails.split(";")
+    : [];
+
+  const message = await createOrderUpdatedEmail(order, webstore.name);
+
+  for (const email of orderUpdatedEmails) {
+    await sendEmail(email, `Order ${order.id} updated`, message);
   }
 }

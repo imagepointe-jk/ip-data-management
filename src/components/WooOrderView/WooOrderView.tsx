@@ -90,7 +90,7 @@ export function WooOrderView({
       );
 
       //if not, force the first valid one to be selected instead; NEVER save a shipping method that isn't valid for the shipping address
-      //if there are no valid methods anymore, save a blank string
+      //if there are no valid methods anymore, save an error string
       const firstValidMethod = validMethods[0];
       const forcedMethod = {
         id: order.shippingLines[0]?.id || 0,

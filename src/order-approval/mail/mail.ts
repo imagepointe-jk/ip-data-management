@@ -252,3 +252,28 @@ export async function createSupportEmail(
     return "EMAIL ERROR";
   }
 }
+
+export async function createOrderUpdatedEmail(
+  order: WooCommerceOrder,
+  storeName: string
+) {
+  try {
+    const templateSource = fs.readFileSync(
+      path.resolve(
+        process.cwd(),
+        "src/order-approval/mail/orderUpdatedEmail.hbs"
+      ),
+      "utf-8"
+    );
+    const template = handlebars.compile(templateSource);
+    const message = template({
+      ...order,
+      storeName,
+      shippingMethod: order.shippingLines[0]?.method_title,
+    });
+    return message;
+  } catch (error) {
+    console.error("Error creating support email", error);
+    return "EMAIL ERROR";
+  }
+}

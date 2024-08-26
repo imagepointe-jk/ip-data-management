@@ -16,7 +16,6 @@ export function validateOrderApprovalServerData(data: any) {
 }
 
 export async function parseWooCommerceWebhookRequest(req: NextRequest) {
-  console.log(req);
   const body = await req.json();
   const data = {
     headers: {
@@ -151,6 +150,7 @@ export function validateWebstoreFormData(formData: FormData) {
     salesPersonName: formData.get("sales-person-name"),
     salesPersonEmail: formData.get("sales-person-email"),
     otherSupportEmails: formData.get("other-support-emails"),
+    orderUpdatedEmails: formData.get("order-updated-emails"),
     changeApiKey: formData.get("api-key"),
     changeApiSecret: formData.get("api-secret"),
     allowApproverChangeMethod:

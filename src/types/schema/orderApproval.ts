@@ -20,6 +20,7 @@ export const webstoreFormDataSchema = z.object({
   salesPersonName: z.string(),
   salesPersonEmail: z.string(),
   otherSupportEmails: z.string(),
+  orderUpdatedEmails: z.string(),
   changeApiKey: z.string(),
   changeApiSecret: z.string(),
   shippingMethodIds: z.array(z.number()),
