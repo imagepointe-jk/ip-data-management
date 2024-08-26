@@ -16,6 +16,7 @@ export function validateOrderApprovalServerData(data: any) {
 }
 
 export async function parseWooCommerceWebhookRequest(req: NextRequest) {
+  console.log(req);
   const body = await req.json();
   const data = {
     headers: {
