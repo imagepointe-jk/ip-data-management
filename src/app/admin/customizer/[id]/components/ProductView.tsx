@@ -5,13 +5,13 @@ import {
 import { CustomProductView } from "@prisma/client";
 import { Dispatch, SetStateAction, useState } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
-import { createLocationFrameInlineStyles } from "@/customizer/editor";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { createView } from "@/actions/customizer/create";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { deleteView } from "@/actions/customizer/delete";
 import { wrap } from "@/utility/misc";
 import { Updater } from "use-immer";
+import { createLocationFrameInlineStyles } from "@/customizer/utils";
 
 type ProductViewProps = {
   selectedVariationId: number | undefined;

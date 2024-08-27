@@ -1,4 +1,4 @@
-import { DesignWithIncludes } from "@/types/types";
+import { DesignWithIncludes } from "@/types/schema/designs";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { useEditor } from "../../EditorContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

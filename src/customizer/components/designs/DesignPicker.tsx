@@ -5,7 +5,7 @@ import { useEditor } from "../../EditorContext";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { getArrayPage } from "@/utility/misc";
 import { PageControls } from "@/components/PageControls";
-import { DesignResults, DesignWithIncludes } from "@/types/types";
+import { DesignResults, DesignWithIncludes } from "@/types/schema/designs";
 import { DesignCard } from "./DesignCard";
 
 const pageSize = 20;

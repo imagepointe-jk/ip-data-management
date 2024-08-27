@@ -3,11 +3,11 @@
 "use client";
 
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-import { Editor } from "./Editor";
 import { EditorProps, EditorProvider } from "./EditorContext";
+import { Editor } from "./Editor";
 
 type Props = Omit<EditorProps, "initialProductId">;
-export function EditorHelper({ designs, productData }: Props) {
+export default function EditorHelper({ designs, productData }: Props) {
   const iframe = useIframe();
   if (iframe.loading) return <h1>Loading...</h1>;
 

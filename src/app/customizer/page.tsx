@@ -1,5 +1,10 @@
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
-import { EditorHelper } from "./EditorHelper";
+// import { EditorHelper } from "../../customizer/EditorHelper";
+import dynamic from "next/dynamic";
+const EditorHelper = dynamic(() => import("@/customizer/EditorHelper"), {
+  ssr: false,
+}); //this is the recommended workaround for errors related to combining Next.js and Konva
+//recommended by Konva dev here: https://github.com/konvajs/react-konva#usage-with-nextjs
 import { getDesigns } from "@/db/access/designs";
 import { getProductSettingsWithIncludes } from "@/db/access/customizer";
 import { populateProductData } from "@/customizer/handleData";

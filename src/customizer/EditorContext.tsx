@@ -8,7 +8,7 @@ import {
   findLocationWithArtworkInState,
   findVariationInState,
   findViewInState,
-} from "@/customizer/editor";
+} from "@/customizer/utils";
 import { FullProductSettings } from "@/db/access/customizer";
 import {
   EditorContext as EditorContextType,
@@ -16,7 +16,7 @@ import {
   PlacedObject,
   TransformArgs,
 } from "@/types/customizer";
-import { DesignResults } from "@/types/types";
+import { DesignResults } from "@/types/schema/designs";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuidv4 } from "uuid";

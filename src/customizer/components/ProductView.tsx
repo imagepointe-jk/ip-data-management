@@ -1,11 +1,6 @@
 "use client";
 
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import {
-  convertDesignerObjectData,
-  findLocationInProductData,
-  findViewInProductData,
-} from "@/customizer/editor";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
@@ -13,6 +8,11 @@ import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
 import { useEditor } from "../EditorContext";
 import { EditorImage } from "./productView/EditorImage";
+import {
+  convertDesignerObjectData,
+  findLocationInProductData,
+  findViewInProductData,
+} from "../utils";
 
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 

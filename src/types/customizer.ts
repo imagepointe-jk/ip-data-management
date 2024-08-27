@@ -6,7 +6,7 @@ import {
   CustomProductSettingsVariation,
   CustomProductView,
 } from "@prisma/client";
-import { DesignResults } from "./types";
+import { DesignResults } from "./schema/designs";
 
 export type PlacedObject = {
   editorGuid: string; //the GUID for use within the editor. Needed to distinguish objects, e.g. when two of the same artwork are present.
