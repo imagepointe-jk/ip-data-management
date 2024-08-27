@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "../../../prisma/client";
 import { revalidateStepOrder } from "./misc";
 

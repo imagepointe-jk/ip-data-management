@@ -153,6 +153,10 @@ model Webstore {
   apiSecret           String //encrypted
   apiSecretEncryptIv  String
   apiSecretEncryptTag String
+  salesPersonName     String                    @default("None")
+  salesPersonEmail    String                    @default("None")
+  otherSupportEmails  String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails  String?
   shippingSettings    WebstoreShippingSettings?
   shippingMethods     WebstoreShippingMethod[]
   workflows           OrderWorkflow[]
@@ -199,6 +203,7 @@ model OrderWorkflowStep {
   name                 String
   order                Int
   actionTarget         String?
+  otherActionTargets   String? //any emails sent to actionTarget will also be sent to these
   actionType           String
   actionSubject        String?
   actionMessage        String?

@@ -26,7 +26,7 @@ export default function DenyForm({
           <p>The order has been denied.</p>
         </>
       )}
-      {!success && (
+      {!success && !loading && (
         <>
           <h1>Deny Order</h1>
           <div>
@@ -41,16 +41,13 @@ export default function DenyForm({
             onChange={(e) => setText(e.target.value)}
           ></textarea>
           <div>
-            {!loading && (
-              <button
-                onClick={() => onClickSubmit(text)}
-                className={styles["deny-button"]}
-                disabled={!allowSubmit}
-              >
-                Deny Order
-              </button>
-            )}
-            {loading && <div>Loading...</div>}
+            <button
+              onClick={() => onClickSubmit(text)}
+              className={styles["deny-button"]}
+              disabled={!allowSubmit}
+            >
+              Deny Order
+            </button>
           </div>
           {error && (
             <div style={{ color: "red" }}>

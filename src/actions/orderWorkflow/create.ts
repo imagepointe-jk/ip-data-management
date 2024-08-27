@@ -1,3 +1,5 @@
+"use server";
+
 import { validateWebstoreFormData } from "@/types/validations/orderApproval";
 import { prisma } from "../../../prisma/client";
 import { encrypt } from "@/utility/misc";
@@ -48,6 +50,10 @@ export async function createWebstore(formData: FormData) {
     name,
     orgName: organizationName,
     url,
+    salesPersonName,
+    salesPersonEmail,
+    otherSupportEmails,
+    orderUpdatedEmails,
     allowApproverChangeMethod,
     allowUpsToCanada,
     shippingMethodIds,
@@ -74,6 +80,10 @@ export async function createWebstore(formData: FormData) {
       name,
       organizationName,
       url,
+      salesPersonName,
+      salesPersonEmail,
+      otherSupportEmails,
+      orderUpdatedEmails,
     },
     allowApproverChangeMethod,
     allowUpsToCanada,

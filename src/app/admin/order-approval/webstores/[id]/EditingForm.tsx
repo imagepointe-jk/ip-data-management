@@ -65,6 +65,44 @@ export function EditingForm({ existingWebstore, shippingMethods }: Props) {
         />
       </div>
       <div>
+        Sales Person Name{" "}
+        <input
+          type="text"
+          name="sales-person-name"
+          id="sales-person-name"
+          defaultValue={existingWebstore?.salesPersonName}
+          required
+        />
+      </div>
+      <div>
+        Sales Person Email{" "}
+        <input
+          type="email"
+          name="sales-person-email"
+          id="sales-person-email"
+          defaultValue={existingWebstore?.salesPersonEmail}
+          required
+        />
+      </div>
+      <div>
+        Other support emails (separate with {";"})
+        <input
+          type="text"
+          name="other-support-emails"
+          id="other-support-emails"
+          defaultValue={existingWebstore?.otherSupportEmails || undefined}
+        />
+      </div>
+      <div>
+        Order updated emails (separate with {";"})
+        <input
+          type="text"
+          name="order-updated-emails"
+          id="order-updated-emails"
+          defaultValue={existingWebstore?.orderUpdatedEmails || undefined}
+        />
+      </div>
+      <div>
         {existingWebstore ? "Change API Key " : "Set API Key "}{" "}
         <input
           type="text"

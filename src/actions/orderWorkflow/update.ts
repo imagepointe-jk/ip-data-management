@@ -1,3 +1,5 @@
+"use server";
+
 import {
   validateWebstoreFormData,
   validateWorkflowFormData,
@@ -7,6 +9,7 @@ import { encrypt } from "@/utility/misc";
 import { OrderUpdateData, updateOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { handleOrderUpdated } from "@/order-approval/main";
 
 export async function updateWorkflow(formData: FormData) {
   const parsed = validateWorkflowFormData(formData);
@@ -19,6 +22,7 @@ export async function updateWorkflow(formData: FormData) {
       actionMessage,
       actionSubject,
       actionTarget,
+      otherActionTargets,
       actionType,
       id,
       proceedImmediatelyTo,
@@ -31,6 +35,7 @@ export async function updateWorkflow(formData: FormData) {
         name,
         actionType,
         actionTarget,
+        otherActionTargets,
         actionSubject,
         actionMessage,
         proceedImmediatelyTo:
@@ -66,6 +71,10 @@ export async function updateWebstore(formData: FormData) {
     allowApproverChangeMethod,
     allowUpsToCanada,
     shippingMethodIds,
+    orderUpdatedEmails,
+    otherSupportEmails,
+    salesPersonEmail,
+    salesPersonName,
   } = validateWebstoreFormData(formData);
   if (isNaN(+`${id}`))
     throw new Error(`Invalid webstore id ${id}. This is a bug.`);
@@ -104,6 +113,10 @@ export async function updateWebstore(formData: FormData) {
       shippingMethods: {
         set: shippingMethodIds.map((id) => ({ id })),
       },
+      orderUpdatedEmails,
+      otherSupportEmails,
+      salesPersonEmail,
+      salesPersonName,
     },
   });
 
@@ -142,7 +155,8 @@ export async function setUserEmail(id: number, email: string) {
 
 export async function updateOrderAction(
   storeUrl: string,
-  updateData: OrderUpdateData
+  updateData: OrderUpdateData,
+  userEmail: string //the email of the user initiating the update action
 ) {
   const webstore = await prisma.webstore.findUnique({
     where: {
@@ -158,5 +172,8 @@ export async function updateOrderAction(
       `API response code ${updateResponse.status} when trying to update order ${updateData.id} for store ${storeUrl}`
     );
   const updateJson = await updateResponse.json();
-  return parseWooCommerceOrderJson(updateJson);
+  const parsed = parseWooCommerceOrderJson(updateJson);
+  handleOrderUpdated(parsed, storeUrl, userEmail);
+
+  return parsed;
 }

@@ -7,13 +7,15 @@ import {
   getUser,
   getWorkflowInstance,
   setWorkflowInstanceCurrentStep,
-  getFirstApproverFor,
   getWorkflowWithIncludes,
   getWorkflowInstanceCurrentStep,
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
   getWorkflowInstancePurchaser,
   setWorkflowInstanceDeniedReason,
+  getAllApproversFor,
+  getAccessCodeWithIncludes,
+  getAccessCodeWithIncludesByOrderAndEmail,
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
@@ -24,12 +26,17 @@ import {
   OrderWorkflowUser,
   Webstore,
 } from "@prisma/client";
-import { createShippingEmail, processFormattedText } from "./mail/mail";
+import {
+  createOrderUpdatedEmail,
+  createShippingEmail,
+  processFormattedText,
+} from "./mail/mail";
 import { decryptWebstoreData } from "./encryption";
 import {
   OrderWorkflowActionType,
   OrderWorkflowEventType,
 } from "@/types/schema/orderApproval";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -74,8 +81,8 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     (await createUser(email, `${firstName} ${lastName}`, webstore.id));
 
   //Assume for now that a webstore will only have one approver
-  const approver = await getFirstApproverFor(webstore.id);
-  if (!approver)
+  const approvers = await getAllApproversFor(webstore.id);
+  if (approvers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
   //assume for now that a webstore will only have one workflow for all orders
@@ -85,7 +92,9 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
   await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
-  await createAccessCode(workflowInstance.id, approver.id, "approver");
+  for (const approver of approvers) {
+    await createAccessCode(workflowInstance.id, approver.id, "approver");
+  }
 
   console.log(
     `Finished setup on workflow instance ${workflowInstance.id} for webstore ${webstore.id}.`
@@ -113,80 +122,116 @@ async function doStepAction(
   step: OrderWorkflowStep,
   workflowInstance: OrderWorkflowInstance
 ) {
-  const { actionMessage, actionTarget, actionType: a, actionSubject } = step;
+  const { actionType: a } = step;
   const actionType = a as OrderWorkflowActionType;
   if (actionType === "email") {
-    const targetToUse =
-      actionTarget === "purchaser"
-        ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
-        : actionTarget;
-    if (!targetToUse)
-      throw new Error(
-        `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
-      );
-    console.log(
-      `=====================Workflow Instance ${workflowInstance.id} sending email to ${actionTarget} (${targetToUse})`
-    );
-    const processedMessage = await processFormattedText(
-      `${actionMessage}`,
-      workflowInstance.id,
-      targetToUse
-    );
-    await sendEmail(
-      targetToUse,
-      actionSubject || "Order Update",
-      processedMessage
-    );
+    await doEmailAction(step, workflowInstance);
   } else if (actionType === "mark workflow approved") {
-    console.log(
-      `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
-    );
-    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
-    const shippingMessage = await createShippingEmail(workflowInstance.id);
-    await sendEmail(
-      `${process.env.IP_SHIPPING_EMAIL}`,
-      `Order ${workflowInstance.wooCommerceOrderId} Approved`,
-      shippingMessage
-    );
+    await doWorkflowApprovedAction(workflowInstance);
   } else if (actionType === "mark workflow denied") {
-    console.log(
-      `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
-    );
-    //the denied reason is only in-scope when the "Deny" event is received,
-    //so that data is recorded during handleWorkflowEvent.
-    //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instance
-    //is this reason, but that may change in future.
-    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+    await doWorkflowDeniedAction(workflowInstance);
   } else if (actionType === "cancel woocommerce order") {
-    console.log(
-      `========================Canceling WooCommerce order ${workflowInstance.wooCommerceOrderId}`
-    );
-    try {
-      const workflow = await getWorkflowWithIncludes(
-        workflowInstance.parentWorkflowId
-      );
-      if (!workflow)
-        throw new Error(
-          "Canceling FAILED because the workflow could not be found"
-        );
-      const { key, secret } = decryptWebstoreData(workflow.webstore);
-      const cancelResponse = await cancelOrder(
-        workflowInstance.wooCommerceOrderId,
-        workflow.webstore.url,
-        key,
-        secret
-      );
-      if (!cancelResponse.ok)
-        throw new Error(
-          `Canceling FAILED because of an API error ${cancelResponse.status}`
-        );
-    } catch (error) {
-      console.error(error);
-    }
+    await doCancelOrderAction(workflowInstance);
   } else {
     throw new Error(
       `Unrecognized action type "${actionType}" of step ${step.id} in workflow instance ${workflowInstance.id}`
     );
+  }
+}
+
+async function doEmailAction(
+  step: OrderWorkflowStep,
+  workflowInstance: OrderWorkflowInstance
+) {
+  const { actionMessage, actionTarget, actionSubject } = step;
+  const targetPrimary =
+    actionTarget === "purchaser"
+      ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
+      : actionTarget;
+  if (!targetPrimary)
+    throw new Error(
+      `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
+    );
+  const otherTargets = step.otherActionTargets
+    ? step.otherActionTargets.split(";")
+    : [];
+  const processedMessage = await processFormattedText(
+    `${actionMessage}`,
+    workflowInstance.id,
+    targetPrimary
+  );
+  const allTargets = [targetPrimary, ...otherTargets];
+
+  console.log(
+    `=====================Workflow Instance ${workflowInstance.id} sending email(s) to ${actionTarget} (${targetPrimary}) and ${otherTargets.length} other targets`
+  );
+  for (const target of allTargets) {
+    //The message may appear to be addressed directly to targetPrimary.
+    //Clarify to anyone in allTargets that they are intentionally receiving the message as well.
+    const prepend =
+      target === targetPrimary
+        ? ""
+        : `<strong>This message's primary recipient is ${targetPrimary}, but you have have been included on the email list for this order.</strong><br /><br />`;
+
+    await sendEmail(
+      target,
+      actionSubject || "Order Update",
+      prepend + processedMessage
+    );
+  }
+}
+
+async function doWorkflowApprovedAction(
+  workflowInstance: OrderWorkflowInstance
+) {
+  console.log(
+    `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
+  );
+  await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+  const shippingMessage = await createShippingEmail(workflowInstance.id);
+  await sendEmail(
+    `${process.env.IP_SHIPPING_EMAIL}`,
+    `Order ${workflowInstance.wooCommerceOrderId} Approved`,
+    shippingMessage
+  );
+}
+
+async function doWorkflowDeniedAction(workflowInstance: OrderWorkflowInstance) {
+  console.log(
+    `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
+  );
+  //the denied reason is only in-scope when the "Deny" event is received,
+  //so that data is recorded during handleWorkflowEvent.
+  //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instance
+  //is this reason, but that may change in future.
+  await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+}
+
+async function doCancelOrderAction(workflowInstance: OrderWorkflowInstance) {
+  console.log(
+    `========================Canceling WooCommerce order ${workflowInstance.wooCommerceOrderId}`
+  );
+  try {
+    const workflow = await getWorkflowWithIncludes(
+      workflowInstance.parentWorkflowId
+    );
+    if (!workflow)
+      throw new Error(
+        "Canceling FAILED because the workflow could not be found"
+      );
+    const { key, secret } = decryptWebstoreData(workflow.webstore);
+    const cancelResponse = await cancelOrder(
+      workflowInstance.wooCommerceOrderId,
+      workflow.webstore.url,
+      key,
+      secret
+    );
+    if (!cancelResponse.ok)
+      throw new Error(
+        `Canceling FAILED because of an API error ${cancelResponse.status}`
+      );
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -258,5 +303,43 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     throw new Error(
       `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
     );
+  }
+}
+
+export async function handleOrderUpdated(
+  order: WooCommerceOrder,
+  storeUrl: string,
+  userEmail: string
+) {
+  const webstore = await getWebstore(storeUrl);
+  if (!webstore) throw new Error(`No webstore with url ${storeUrl}`);
+
+  const foundCode = await getAccessCodeWithIncludesByOrderAndEmail(
+    order.id,
+    userEmail
+  );
+  if (!foundCode)
+    throw new Error(
+      `No access code found with user email ${userEmail} and order id ${order.id}`
+    );
+
+  const purchaser = await getWorkflowInstancePurchaser(
+    foundCode.workflowInstance.id
+  );
+  if (!purchaser)
+    throw new Error(
+      `No purchaser found for instance ${foundCode.workflowInstance.id}`
+    );
+
+  const orderUpdatedEmails = webstore.orderUpdatedEmails
+    ? webstore.orderUpdatedEmails.split(";")
+    : [];
+  orderUpdatedEmails.push(purchaser.email);
+  orderUpdatedEmails.push(foundCode.user.email);
+
+  const message = await createOrderUpdatedEmail(order, webstore.name);
+
+  for (const email of orderUpdatedEmails) {
+    await sendEmail(email, `Order ${order.id} updated`, message);
   }
 }

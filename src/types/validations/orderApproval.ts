@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { NextRequest } from "next/server";
 import { wooCommerceWebhookRequestSchema } from "../schema/woocommerce";
 import {
@@ -6,10 +5,6 @@ import {
   webstoreFormDataSchema,
 } from "../schema/orderApproval";
 import { findAllFormValues } from "@/utility/misc";
-
-export function validateOrderApprovalIframeData(data: any) {
-  return z.object({ url: z.string(), searchParams: z.string() }).parse(data);
-}
 
 export function validateOrderApprovalServerData(data: any) {
   return orderApprovalServerDataSchema.parse(data);
@@ -39,6 +34,9 @@ export function validateWorkflowFormData(formData: FormData) {
   );
   const allActionTargets = findAllFormValues(formData, (name) =>
     name.includes("actionTarget")
+  );
+  const allOtherActionTargets = findAllFormValues(formData, (name) =>
+    name.includes("otherActionTargets")
   );
   const allActionSubjects = findAllFormValues(formData, (name) =>
     name.includes("actionSubject")
@@ -94,6 +92,9 @@ export function validateWorkflowFormData(formData: FormData) {
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
       actionTarget,
+      otherActionTargets: allOtherActionTargets
+        .find((field) => field.fieldName.includes(`${id}`))
+        ?.fieldValue.toString(),
       actionSubject: allActionSubjects
         .find((field) => field.fieldName.includes(`${id}`))
         ?.fieldValue.toString(),
@@ -141,6 +142,10 @@ export function validateWebstoreFormData(formData: FormData) {
     name: formData.get("name"),
     orgName: formData.get("org-name"),
     url: formData.get("url"),
+    salesPersonName: formData.get("sales-person-name"),
+    salesPersonEmail: formData.get("sales-person-email"),
+    otherSupportEmails: formData.get("other-support-emails"),
+    orderUpdatedEmails: formData.get("order-updated-emails"),
     changeApiKey: formData.get("api-key"),
     changeApiSecret: formData.get("api-secret"),
     allowApproverChangeMethod:

@@ -23,7 +23,9 @@ export function ShippingInfo({
   ratedShippingMethods,
 }: Props) {
   const validShippingMethods = ratedShippingMethods.filter(
-    (method) => method.total !== null
+    (method) =>
+      method.total !== null &&
+      (method.statusCode === 200 || method.statusCode === 429)
   );
   function onChangeShippingInfo(
     changes: {
@@ -40,6 +42,13 @@ export function ShippingInfo({
     mayUnsyncValues = false
   ) {
     if (!order) return;
+    if (changes.method !== undefined) {
+      //stop any invalid shipping method changes from taking place
+      const isValid = !!validShippingMethods.find(
+        (method) => method.name === changes.method
+      );
+      if (!isValid) changes.method = undefined;
+    }
 
     setOrder({
       ...order,
@@ -173,27 +182,36 @@ export function ShippingInfo({
                 <a href={CONTACT_US_URL}>contact us</a> for assistance.
               </div>
             )}
-            {validShippingMethods
-              .filter((method) => method.total !== null)
-              .map((method) => (
+            {ratedShippingMethods.map((method) => {
+              const isValid = !!validShippingMethods.find(
+                (validMethod) => validMethod.name === method.name
+              );
+              return (
                 <div key={method.name}>
-                  <label htmlFor={method.name}>
+                  <label
+                    htmlFor={method.name}
+                    className={
+                      !isValid ? styles["shipping-method-invalid"] : undefined
+                    }
+                  >
                     <input
                       type="radio"
                       name="shipping-method"
                       id={method.name}
                       value={method.name}
-                      defaultChecked={
+                      checked={
                         order.shippingLines[0]?.method_title === method.name
                       }
                       onChange={(e) =>
                         onChangeShippingInfo({ method: e.target.value })
                       }
+                      disabled={!isValid}
                     />
-                    {method.name} (${method.total})
+                    {method.name} {isValid && <>(${method.total})</>}
                   </label>
                 </div>
-              ))}
+              );
+            })}
           </div>
         )}
       </div>

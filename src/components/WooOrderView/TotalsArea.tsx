@@ -54,7 +54,8 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
         </div>
       ))}
       <div className={styles["info-box"]}>
-        *Shipping Total and Grand Total are estimates only.
+        *Shipping Total and Grand Total are estimates only. Please allow time
+        for processing prior to shipping.
       </div>
     </div>
   );

@@ -17,6 +17,10 @@ export const webstoreFormDataSchema = z.object({
   name: z.string(),
   orgName: z.string(),
   url: z.string(),
+  salesPersonName: z.string(),
+  salesPersonEmail: z.string(),
+  otherSupportEmails: z.string(),
+  orderUpdatedEmails: z.string(),
   changeApiKey: z.string(),
   changeApiSecret: z.string(),
   shippingMethodIds: z.array(z.number()),
@@ -36,6 +40,7 @@ export const orderApprovalServerDataSchema = z.object({
   ),
   allowApproverChangeMethod: z.boolean().optional(),
   allowUpsToCanada: z.boolean().optional(),
+  userEmail: z.string(), //the email of the user associated with the provided access code
 });
 
 export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;

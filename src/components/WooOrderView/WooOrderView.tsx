@@ -1,25 +1,28 @@
 "use client";
 
 import styles from "@/styles/WooOrderView.module.css";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faInfoCircle,
+  faQuestionCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { LineItemTable } from "./LineItemTable";
 import { ShippingInfo } from "./ShippingInfo";
 import { TotalsArea } from "./TotalsArea";
-import { upsShippingCodes } from "@/order-approval/shipping";
-import { getUpsRate } from "@/fetch/client/shipping";
-import { validateUpsRateResponse } from "@/types/validations/shipping";
+import { rateShippingMethod } from "@/order-approval/shipping";
 import {
   WooCommerceOrder,
   WooCommerceProduct,
 } from "@/types/schema/woocommerce";
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
+import { HelpForm } from "./HelpForm";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
   name: string;
   total: string | null;
+  statusCode: number | null;
 };
 type Props = {
   orderId: number;
@@ -31,20 +34,24 @@ type Props = {
     };
   };
   getProducts: (ids: number[]) => Promise<WooCommerceProduct[]>;
+  onSubmitHelpForm: (data: FormData) => Promise<void>;
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
   };
   shippingMethods: string[];
+  userEmail?: string; //the email of the user accessing the order view
 };
 export function WooOrderView({
   orderId,
   storeUrl,
   getOrder,
   getProducts,
+  onSubmitHelpForm,
   permissions,
   shippingMethods,
   special,
+  userEmail,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
@@ -54,6 +61,7 @@ export function WooOrderView({
   const [ratedShippingMethods, setRatedShippingMethods] = useState(
     [] as RatedShippingMethod[]
   );
+  const [helpMode, setHelpMode] = useState(false);
 
   async function onClickSave() {
     if (!order || !products) return;
@@ -66,22 +74,53 @@ export function WooOrderView({
 
     setLoading(true);
     try {
-      const updated = await updateOrderAction(storeUrl, {
-        ...order,
-        line_items: lineItemsWithDeletions,
-        shipping: {
-          ...order.shipping,
-          first_name: order.shipping.firstName,
-          last_name: order.shipping.lastName,
-          address_1: order.shipping.address1,
-          address_2: order.shipping.address2,
-        },
-        shipping_lines: order.shippingLines,
-      });
-      setOrder(updated);
-
-      const updatedMethods = await getUpdatedShippingMethods(updated, products);
+      //first get updated methods based on any changed shipping info
+      const updatedMethods = await getUpdatedShippingMethods(order, products);
       setRatedShippingMethods(updatedMethods);
+
+      //then check if we still have a valid shipping method selected
+      //treat a method as valid even if it got an API response of 429.
+      //the below auto-switch behavior should not affect the user just because of rate limiting.
+      const selectedMethod = order.shippingLines[0]?.method_title;
+      const validMethods = updatedMethods.filter(
+        (method) =>
+          method.total !== null &&
+          (method.statusCode === 200 || method.statusCode === 429)
+      );
+      const selectedValidMethod = validMethods.find(
+        (method) => method.name === selectedMethod
+      );
+
+      //if not, force the first valid one to be selected instead; NEVER save a shipping method that isn't valid for the shipping address
+      //if there are no valid methods anymore, save an error string
+      const firstValidMethod = validMethods[0];
+      const forcedMethod = {
+        id: order.shippingLines[0]?.id || 0,
+        method_title: firstValidMethod
+          ? firstValidMethod.name
+          : "SHIPPING METHOD ERROR",
+      };
+      const newShippingLines = selectedValidMethod
+        ? order.shippingLines
+        : [forcedMethod];
+
+      const updated = await updateOrderAction(
+        storeUrl,
+        {
+          ...order,
+          line_items: lineItemsWithDeletions,
+          shipping: {
+            ...order.shipping,
+            first_name: order.shipping.firstName,
+            last_name: order.shipping.lastName,
+            address_1: order.shipping.address1,
+            address_2: order.shipping.address2,
+          },
+          shipping_lines: newShippingLines,
+        },
+        userEmail || ""
+      );
+      setOrder(updated);
 
       setValuesMaybeUnsynced(false);
     } catch (error) {
@@ -131,47 +170,32 @@ export function WooOrderView({
       return order?.shipping.country !== "CA" || !method.includes("UPS");
     });
 
+    const {
+      firstName,
+      lastName,
+      address1,
+      address2,
+      city,
+      state,
+      postcode,
+      country,
+    } = order.shipping;
+
     const ratedMethods: RatedShippingMethod[] = await Promise.all(
-      permittedShippingMethods.map(async (method) => {
-        const nullResult: RatedShippingMethod = {
-          name: method,
-          total: null,
-        };
-
-        const matchingData = upsShippingCodes.find(
-          (code) => code.exactString === method
-        );
-        if (!matchingData) return nullResult;
-
-        const ratingResponse = await getUpsRate({
-          service: {
-            code: matchingData.code,
-            description: "abc",
-          },
-          shipTo: {
-            Name: `${order.shipping.firstName} ${order.shipping.lastName}`,
-            Address: {
-              AddressLine: [order.shipping.address1, order.shipping.address2],
-              City: order.shipping.city,
-              CountryCode: order.shipping.country,
-              PostalCode: order.shipping.postcode,
-              StateProvinceCode: order.shipping.state,
-            },
-          },
-          weight: totalWeight,
-        });
-        if (!ratingResponse.ok) {
-          console.error(`UPS API response ${ratingResponse.status}`);
-          return nullResult;
-        }
-
-        const ratingJson = await ratingResponse.json();
-        const parsed = validateUpsRateResponse(ratingJson);
-        return {
-          name: method,
-          total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
-        };
-      })
+      permittedShippingMethods.map(async (method) =>
+        rateShippingMethod({
+          firstName,
+          lastName,
+          addressLine1: address1,
+          addressLine2: address2,
+          city,
+          stateCode: state,
+          postalCode: postcode,
+          countryCode: country,
+          method,
+          totalWeight,
+        })
+      )
     );
 
     return ratedMethods;
@@ -183,50 +207,67 @@ export function WooOrderView({
 
   return (
     <div className={styles["main"]}>
-      {loading && (
-        <div className={styles["update-overlay"]}>
-          <div>{`${order ? "Updating" : "Loading"}`} order...</div>
-        </div>
-      )}
-      {!order && !loading && <div>Error finding order.</div>}
-      {order && (
+      {!helpMode && (
         <>
-          <h2>Order {orderId}</h2>
-          <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
-          <LineItemTable
-            order={order}
-            setOrder={setOrder}
-            removeLineItemIds={removeLineItemIds}
-            setRemoveLineItemIds={setRemoveLineItemIds}
-            setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-          />
-          <div className={styles["extra-details-flex"]}>
-            <ShippingInfo
-              order={order}
-              ratedShippingMethods={ratedShippingMethods}
-              setOrder={setOrder}
-              setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-              permissions={permissions}
-            />
-            <TotalsArea
-              order={order}
-              ratedShippingMethods={ratedShippingMethods}
-            />
-          </div>
-          <div className={styles["submit-row"]}>
-            <button className={styles["submit"]} onClick={onClickSave}>
-              Save All Changes
-            </button>
-            {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
-              <FontAwesomeIcon
-                icon={faInfoCircle}
-                className={styles["info-circle"]}
-                size="2x"
-                title="Some values may be out-of-sync. Save changes to update."
+          {loading && (
+            <div className={styles["update-overlay"]}>
+              <div>{`${order ? "Updating" : "Loading"}`} order...</div>
+            </div>
+          )}
+          {!order && !loading && <div>Error finding order.</div>}
+          {order && (
+            <>
+              <h2>Order {orderId}</h2>
+              <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
+              <LineItemTable
+                order={order}
+                setOrder={setOrder}
+                removeLineItemIds={removeLineItemIds}
+                setRemoveLineItemIds={setRemoveLineItemIds}
+                setValuesMaybeUnsynced={setValuesMaybeUnsynced}
               />
-            )}
-          </div>
+              <div className={styles["extra-details-flex"]}>
+                <ShippingInfo
+                  order={order}
+                  ratedShippingMethods={ratedShippingMethods}
+                  setOrder={setOrder}
+                  setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                  permissions={permissions}
+                />
+                <TotalsArea
+                  order={order}
+                  ratedShippingMethods={ratedShippingMethods}
+                />
+              </div>
+              <div className={styles["submit-row"]}>
+                <button className={styles["submit"]} onClick={onClickSave}>
+                  Save All Changes
+                </button>
+                {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+                  <FontAwesomeIcon
+                    icon={faInfoCircle}
+                    className={styles["info-circle"]}
+                    size="2x"
+                    title="Some values may be out-of-sync. Save changes to update."
+                  />
+                )}
+                <button
+                  className={styles["help-button"]}
+                  onClick={() => setHelpMode(true)}
+                >
+                  <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
+                  my order
+                </button>
+              </div>
+            </>
+          )}
         </>
+      )}
+      {helpMode && (
+        <HelpForm
+          setHelpMode={setHelpMode}
+          onSubmitHelpForm={onSubmitHelpForm}
+        />
       )}
     </div>
   );

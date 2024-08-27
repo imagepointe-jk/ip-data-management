@@ -1,12 +1,8 @@
-//TODO: An IframeHelperProvider has been created to more easily get window data in an iframe context. If we need to continue using iframes for order approval, this should be refactored using the new helper.
-
 "use client";
 
+import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { WooOrderView } from "@/components/WooOrderView/WooOrderView";
-import {
-  validateOrderApprovalIframeData,
-  validateOrderApprovalServerData,
-} from "@/types/validations/orderApproval";
+import { validateOrderApprovalServerData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
@@ -21,38 +17,34 @@ import {
 } from "@/types/validations/woo";
 import { OrderApprovalServerData } from "@/types/schema/orderApproval";
 import { WooCommerceProduct } from "@/types/schema/woocommerce";
-import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
+import {
+  receiveOrderHelpForm,
+  receiveWorkflowEvent,
+} from "@/actions/orderWorkflow/misc";
+import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 
-type Action = "approve" | "deny" | null;
 export default function Page() {
+  return (
+    <IframeHelperProvider>
+      <Main />
+    </IframeHelperProvider>
+  );
+}
+
+function Main() {
   const [serverData, setServerData] = useState(
     null as OrderApprovalServerData | null
   );
   const [accessCode, setAccessCode] = useState("");
+  const { parentWindow, loading: iframeLoading } = useIframe();
   const [loading, setLoading] = useState(true);
-  const [actionRequest, setActionRequest] = useState(null as Action);
   const [actionSuccess, setActionSuccess] = useState(false);
   const [actionAttempted, setActionAttempted] = useState(false);
-
-  async function onReceiveParentWindowInfo(e: any) {
-    try {
-      const parsed = validateOrderApprovalIframeData(e.data);
-      const searchParams = new URLSearchParams(parsed.searchParams);
-      const accessCodeInParams = `${searchParams.get("code")}`;
-      setAccessCode(accessCodeInParams);
-      const dataResponse = await getOrderApprovalServerData(accessCodeInParams);
-      const dataJson = await dataResponse.json();
-      const dataFromServer = validateOrderApprovalServerData(dataJson);
-
-      const action = searchParams.get("action");
-      setActionRequest(action as Action | null);
-      if (action !== "approve") setLoading(false); //if "approve", we'll be immediately sending an async approval, so we will stay in the loading state for a bit longer
-      setServerData(dataFromServer);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
-  }
+  const search = new URLSearchParams(parentWindow.location?.search);
+  const accessCodeInParams = search.get("code")
+    ? `${search.get("code")}`
+    : null;
+  const action = search.get("action") ? `${search.get("action")}` : null;
 
   async function doApprove() {
     try {
@@ -108,23 +100,41 @@ export default function Page() {
     return nonNull;
   }
 
-  useEffect(() => {
-    window.addEventListener("message", onReceiveParentWindowInfo);
-    window.parent.postMessage({ type: "order-approval-request-url" }, "*");
+  async function onSubmitHelpForm(data: FormData) {
+    data.append("code", accessCode);
+    await receiveOrderHelpForm(data);
+  }
 
-    return () => {
-      window.removeEventListener("message", onReceiveParentWindowInfo);
-    };
-  }, []);
+  async function getServerData(accessCode: string) {
+    try {
+      const dataResponse = await getOrderApprovalServerData(accessCode);
+      const dataJson = await dataResponse.json();
+      const dataFromServer = validateOrderApprovalServerData(dataJson);
+
+      setServerData(dataFromServer);
+      if (action !== "approve") setLoading(false); //if "approve", we'll be immediately sending an async approval, so we will stay in the loading state for a bit longer
+    } catch (error) {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    if (actionRequest === "approve") doApprove();
-  }, [actionRequest]);
+    if (accessCodeInParams === null) return;
+
+    setAccessCode(accessCodeInParams);
+    getServerData(accessCodeInParams);
+  }, [accessCodeInParams]);
+
+  useEffect(() => {
+    if (action === "approve" && accessCode !== "") doApprove();
+  }, [action, accessCode]);
 
   return (
     <>
-      {loading && <div className={styles["status-message"]}>Loading...</div>}
-      {!serverData && !loading && <>Error.</>}
+      {(loading || iframeLoading) && (
+        <div className={styles["status-message"]}>Loading...</div>
+      )}
+      {!serverData && !loading && !iframeLoading && <>Error.</>}
       {serverData && (
         <div className={styles["main"]}>
           {/* Only show the buttons if an action hasn't been attempted yet */}
@@ -132,25 +142,25 @@ export default function Page() {
             <div className={styles["nav-buttons-container"]}>
               <button
                 className={styles["nav-button-review"]}
-                onClick={() => setActionRequest(null)}
+                onClick={() => parentWindow.setSearchParam("action", null)}
               >
                 Review
               </button>
               <button
                 className={styles["nav-button-approve"]}
-                onClick={() => setActionRequest("approve")}
+                onClick={() => parentWindow.setSearchParam("action", "approve")}
               >
                 Approve Now
               </button>
               <button
                 className={styles["nav-button-deny"]}
-                onClick={() => setActionRequest("deny")}
+                onClick={() => parentWindow.setSearchParam("action", "deny")}
               >
                 Deny
               </button>
             </div>
           )}
-          {actionRequest === "approve" && (
+          {action === "approve" && (
             <>
               {/* {loading && <>Sending approval...</>} */}
               {!loading && !actionSuccess && (
@@ -165,7 +175,7 @@ export default function Page() {
               )}
             </>
           )}
-          {actionRequest === "deny" && (
+          {action === "deny" && (
             <DenyForm
               loading={loading}
               onClickSubmit={doDeny}
@@ -173,30 +183,31 @@ export default function Page() {
               error={actionAttempted && !loading && !actionSuccess}
             />
           )}
-          <div
-            className={styles["order-view-container"]}
-            style={{ display: actionRequest === null ? undefined : "none" }}
-          >
-            <WooOrderView
-              orderId={serverData.orderId}
-              shippingMethods={serverData.shippingMethods.map(
-                (method) => method.name
-              )}
-              getOrder={getOrder}
-              getProducts={getProducts}
-              storeUrl={serverData.storeUrl}
-              permissions={{
-                shipping: {
-                  method: serverData.allowApproverChangeMethod
-                    ? "edit"
-                    : "hidden",
-                },
-              }}
-              special={{
-                allowUpsShippingToCanada: serverData.allowUpsToCanada,
-              }}
-            />
-          </div>
+          {action === null && (
+            <div className={styles["order-view-container"]}>
+              <WooOrderView
+                orderId={serverData.orderId}
+                shippingMethods={serverData.shippingMethods.map(
+                  (method) => method.name
+                )}
+                getOrder={getOrder}
+                getProducts={getProducts}
+                onSubmitHelpForm={onSubmitHelpForm}
+                storeUrl={serverData.storeUrl}
+                permissions={{
+                  shipping: {
+                    method: serverData.allowApproverChangeMethod
+                      ? "edit"
+                      : "hidden",
+                  },
+                }}
+                special={{
+                  allowUpsShippingToCanada: serverData.allowUpsToCanada,
+                }}
+                userEmail={serverData.userEmail}
+              />
+            </div>
+          )}
         </div>
       )}
     </>

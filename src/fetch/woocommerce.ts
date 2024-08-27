@@ -50,13 +50,17 @@ export async function getOrder(
     "Authorization",
     `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
   );
+  headers.append("Cache-Control", "no-store");
 
   const requestOptions = {
     method: "GET",
-    headers: headers,
+    headers,
   };
 
-  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, requestOptions);
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${id}`, {
+    ...requestOptions,
+    cache: "no-store",
+  });
 }
 
 export type OrderUpdateData = {
