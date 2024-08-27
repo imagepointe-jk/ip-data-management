@@ -33,6 +33,7 @@ type IframeHelperContext = {
   parentWindow: {
     location: ParentWindowData | null;
     requestNavigation: (href: string) => void;
+    setSearchParam: (name: string, value: string | null) => void;
   };
   loading: boolean;
 };
@@ -101,6 +102,23 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
     window.parent.postMessage(data, "*");
   }
 
+  function setSearch(newSearch: string) {
+    if (!parentWindowData) return;
+
+    const url = new URL(parentWindowData.href);
+    url.search = newSearch;
+    requestNavigation(url.toString());
+  }
+
+  function setSearchParam(name: string, value: string | null) {
+    if (!parentWindowData) return;
+
+    const search = new URLSearchParams(parentWindowData.search);
+    if (value === null) search.delete(name);
+    else search.set(name, value);
+    setSearch(search.toString());
+  }
+
   useEffect(() => {
     updateIframeHeight(window.innerWidth);
 
@@ -121,6 +139,7 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
         parentWindow: {
           location: parentWindowData,
           requestNavigation,
+          setSearchParam,
         },
         loading,
       }}

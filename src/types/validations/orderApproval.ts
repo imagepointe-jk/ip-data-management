@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { NextRequest } from "next/server";
 import { wooCommerceWebhookRequestSchema } from "../schema/woocommerce";
 import {
@@ -6,10 +5,6 @@ import {
   webstoreFormDataSchema,
 } from "../schema/orderApproval";
 import { findAllFormValues } from "@/utility/misc";
-
-export function validateOrderApprovalIframeData(data: any) {
-  return z.object({ url: z.string(), searchParams: z.string() }).parse(data);
-}
 
 export function validateOrderApprovalServerData(data: any) {
   return orderApprovalServerDataSchema.parse(data);
