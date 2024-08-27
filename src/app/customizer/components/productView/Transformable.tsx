@@ -7,15 +7,22 @@ import { clamp } from "@/utility/misc";
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
 
+export type TransformLimits = {
+  size?: {
+    min?: {
+      width?: number;
+      height?: number;
+    };
+    max?: {
+      width?: number;
+      height?: number;
+    };
+  };
+};
 type Props = {
   children: ReactNode;
   selected?: boolean;
-  limits?: {
-    size?: {
-      minWidth?: number;
-      minHeight?: number;
-    };
-  };
+  limits?: TransformLimits;
 };
 export function Transformable({ children, selected, limits }: Props) {
   const mainRef = useRef<Konva.Group>(null);
@@ -33,11 +40,16 @@ export function Transformable({ children, selected, limits }: Props) {
     node.scaleX(1);
     node.scaleY(1);
 
+    const minWidth = limits?.size?.min?.width || 0;
+    const maxWidth = limits?.size?.max?.width || Infinity;
+    const minHeight = limits?.size?.min?.height || 0;
+    const maxHeight = limits?.size?.max?.height || Infinity;
+
     setArtworkTransform(selectedEditorGuid, {
       x: node.x(),
       y: node.y(),
-      width: clamp(node.width() * scaleX, 50, Infinity),
-      height: clamp(node.height() * scaleY, 50, Infinity),
+      width: clamp(node.width() * scaleX, minWidth, maxWidth),
+      height: clamp(node.height() * scaleY, minHeight, maxHeight),
       rotationDegrees: node.rotation(),
     });
   }

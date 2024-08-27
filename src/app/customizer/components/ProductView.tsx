@@ -108,10 +108,8 @@ export function ProductView() {
         const locationInProductData = selectedProductData
           ? findLocationInProductData(selectedProductData, location.id)
           : undefined;
-        const { position, size } = convertDesignerObjectData(
-          editorSize,
-          editorSize,
-          {
+        const { position: locationPosition, size: locationSize } =
+          convertDesignerObjectData(editorSize, editorSize, {
             position: {
               x: locationInProductData?.positionX || 0,
               y: locationInProductData?.positionY || 0,
@@ -120,16 +118,15 @@ export function ProductView() {
               x: locationInProductData?.width || 0,
               y: locationInProductData?.height || 0,
             },
-          }
-        );
+          });
 
         return (
           <Layer
             key={location.id}
-            clipX={position.x}
-            clipY={position.y}
-            clipWidth={size.x}
-            clipHeight={size.y}
+            clipX={locationPosition.x}
+            clipY={locationPosition.y}
+            clipWidth={locationSize.x}
+            clipHeight={locationSize.y}
           >
             {location?.artworks.map((art) => {
               const { position, size } = convertDesignerObjectData(
@@ -147,6 +144,18 @@ export function ProductView() {
                   width={size.x}
                   height={size.y}
                   rotationDeg={art.objectData.rotationDegrees}
+                  limits={{
+                    size: {
+                      min: {
+                        width: 50,
+                        height: 50,
+                      },
+                      max: {
+                        width: locationSize.x,
+                        height: locationSize.y,
+                      },
+                    },
+                  }}
                 />
               );
             })}

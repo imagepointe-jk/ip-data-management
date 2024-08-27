@@ -1,6 +1,6 @@
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import useImage from "use-image";
-import { Transformable } from "./Transformable";
+import { Transformable, TransformLimits } from "./Transformable";
 import { Image } from "react-konva";
 import { useEditor } from "../../EditorContext";
 
@@ -12,6 +12,7 @@ type Props = {
   width: number;
   height: number;
   rotationDeg: number;
+  limits?: TransformLimits;
 };
 export function EditorImage({
   src,
@@ -21,12 +22,13 @@ export function EditorImage({
   x,
   y,
   rotationDeg,
+  limits,
 }: Props) {
   const { selectedEditorGuid, setSelectedEditorGuid } = useEditor();
   const [image] = useImage(src || IMAGE_NOT_FOUND_URL);
 
   return (
-    <Transformable selected={editorGuid === selectedEditorGuid}>
+    <Transformable selected={editorGuid === selectedEditorGuid} limits={limits}>
       <Image
         onClick={() => setSelectedEditorGuid(editorGuid)}
         image={image}
