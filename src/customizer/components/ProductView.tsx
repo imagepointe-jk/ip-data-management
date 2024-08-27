@@ -155,6 +155,16 @@ export function ProductView() {
                         height: locationSize.y,
                       },
                     },
+                    boundingRect: {
+                      topLeft: {
+                        x: locationPosition.x,
+                        y: locationPosition.y,
+                      },
+                      bottomRight: {
+                        x: locationPosition.x + locationSize.x,
+                        y: locationPosition.y + locationSize.y,
+                      },
+                    },
                   }}
                 />
               );

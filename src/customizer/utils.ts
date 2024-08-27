@@ -61,6 +61,42 @@ export function convertTransformArgs(
   };
 }
 
+export function calculateObjectPositionLimits(params: {
+  object: { width: number; height: number };
+  boundingRect?: {
+    topLeft: { x: number; y: number };
+    bottomRight: { x: number; y: number };
+  };
+}): { min: { x: number; y: number }; max: { x: number; y: number } } {
+  const { object, boundingRect } = params;
+
+  if (!boundingRect)
+    return {
+      min: {
+        x: 0,
+        y: 0,
+      },
+      max: {
+        x: Infinity,
+        y: Infinity,
+      },
+    };
+
+  const boundsWidth = boundingRect.bottomRight.x - boundingRect.topLeft.x;
+  const boundsHeight = boundingRect.bottomRight.y - boundingRect.topLeft.y;
+
+  return {
+    min: {
+      x: boundingRect.topLeft.x,
+      y: boundingRect.topLeft.y,
+    },
+    max: {
+      x: boundingRect.topLeft.x + boundsWidth - object.width,
+      y: boundingRect.topLeft.y + boundsHeight - object.height,
+    },
+  };
+}
+
 export function createInitialState(products: FullProductSettings[]) {
   const firstProduct = products[0];
   if (!firstProduct) throw new Error("No products");

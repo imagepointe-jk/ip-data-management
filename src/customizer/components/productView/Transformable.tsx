@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
 import { useEditor } from "../../EditorContext";
 import { clamp } from "@/utility/misc";
+import { calculateObjectPositionLimits } from "@/customizer/utils";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -16,6 +17,16 @@ export type TransformLimits = {
     max?: {
       width?: number;
       height?: number;
+    };
+  };
+  boundingRect?: {
+    topLeft: {
+      x: number;
+      y: number;
+    };
+    bottomRight: {
+      x: number;
+      y: number;
     };
   };
 };
@@ -45,11 +56,29 @@ export function Transformable({ children, selected, limits }: Props) {
     const minHeight = limits?.size?.min?.height || 0;
     const maxHeight = limits?.size?.max?.height || Infinity;
 
+    const newWidth = clamp(node.width() * scaleX, minWidth, maxWidth);
+    const newHeight = clamp(node.height() * scaleY, minHeight, maxHeight);
+
+    const { min: minPosition, max: maxPosition } =
+      calculateObjectPositionLimits({
+        object: {
+          width: newWidth,
+          height: newHeight,
+        },
+        boundingRect: limits?.boundingRect,
+      });
+
+    const clampedX = clamp(node.x(), minPosition.x, maxPosition.x);
+    const clampedY = clamp(node.y(), minPosition.y, maxPosition.y);
+
+    node.x(clampedX);
+    node.y(clampedY);
+
     setArtworkTransform(selectedEditorGuid, {
-      x: node.x(),
-      y: node.y(),
-      width: clamp(node.width() * scaleX, minWidth, maxWidth),
-      height: clamp(node.height() * scaleY, minHeight, maxHeight),
+      x: clampedX,
+      y: clampedY,
+      width: newWidth,
+      height: newHeight,
       rotationDegrees: node.rotation(),
     });
   }
@@ -58,9 +87,23 @@ export function Transformable({ children, selected, limits }: Props) {
     const node = mainRef.current?.children[0];
     if (!node || !selectedEditorGuid) return;
 
+    const { min, max } = calculateObjectPositionLimits({
+      object: {
+        width: node.width(),
+        height: node.height(),
+      },
+      boundingRect: limits?.boundingRect,
+    });
+
+    const clampedX = clamp(node.x(), min.x, max.x);
+    const clampedY = clamp(node.y(), min.y, max.y);
+
+    node.x(clampedX);
+    node.y(clampedY);
+
     setArtworkTransform(selectedEditorGuid, {
-      x: node.x(),
-      y: node.y(),
+      x: clampedX,
+      y: clampedY,
     });
   }
 
