@@ -1,0 +1,1 @@
+React components for the customizer have been moved out of the app directory to prevent a frequent server error where Next.js tried to load "canvas" server-side.
