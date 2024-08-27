@@ -10,22 +10,23 @@ import { DesignResults } from "./schema/designs";
 
 export type PlacedObject = {
   editorGuid: string; //the GUID for use within the editor. Needed to distinguish objects, e.g. when two of the same artwork are present.
-  position: {
+  positionNormalized: {
     x: number; //range 0-1
     y: number; //range 0-1
   };
-  size: {
+  sizeNormalized: {
     x: number; //range 0-1
     y: number; //range 0-1
   };
   rotationDegrees: number;
 };
 
-export type TransformArgs = {
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
+//absolute pixel values
+export type TransformArgsPx = {
+  xPx?: number;
+  yPx?: number;
+  widthPx?: number;
+  heightPx?: number;
   rotationDegrees?: number;
 };
 
@@ -81,6 +82,6 @@ export type EditorContext = {
   setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: FullProductSettings;
   deleteArtworkFromState: (guid: string) => void;
-  setArtworkTransform: (guid: string, transform: TransformArgs) => void;
+  setArtworkTransform: (guid: string, transform: TransformArgsPx) => void;
   addDesign: (designId: number, variationId?: number) => PlacedObject;
 };

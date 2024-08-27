@@ -75,11 +75,11 @@ export function ProductView() {
               editorSize,
               editorSize,
               {
-                position: {
+                positionNormalized: {
                   x: location.positionX || 0,
                   y: location.positionY || 0,
                 },
-                size: {
+                sizeNormalized: {
                   x: location.width || 0,
                   y: location.height || 0,
                 },
@@ -110,11 +110,11 @@ export function ProductView() {
           : undefined;
         const { position: locationPosition, size: locationSize } =
           convertDesignerObjectData(editorSize, editorSize, {
-            position: {
+            positionNormalized: {
               x: locationInProductData?.positionX || 0,
               y: locationInProductData?.positionY || 0,
             },
-            size: {
+            sizeNormalized: {
               x: locationInProductData?.width || 0,
               y: locationInProductData?.height || 0,
             },

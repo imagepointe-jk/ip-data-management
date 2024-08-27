@@ -75,10 +75,10 @@ export function Transformable({ children, selected, limits }: Props) {
     node.y(clampedY);
 
     setArtworkTransform(selectedEditorGuid, {
-      x: clampedX,
-      y: clampedY,
-      width: newWidth,
-      height: newHeight,
+      xPx: clampedX,
+      yPx: clampedY,
+      widthPx: newWidth,
+      heightPx: newHeight,
       rotationDegrees: node.rotation(),
     });
   }
@@ -102,8 +102,8 @@ export function Transformable({ children, selected, limits }: Props) {
     node.y(clampedY);
 
     setArtworkTransform(selectedEditorGuid, {
-      x: clampedX,
-      y: clampedY,
+      xPx: clampedX,
+      yPx: clampedY,
     });
   }
 

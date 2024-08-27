@@ -7,7 +7,7 @@ import {
   DesignStateLocation,
   DesignStateVariation,
   DesignStateView,
-  TransformArgs,
+  TransformArgsPx,
 } from "@/types/customizer";
 
 export function createLocationFrameInlineStyles(
@@ -28,19 +28,19 @@ export function convertDesignerObjectData(
   viewWidth: number,
   viewHeight: number,
   objectData: {
-    position: { x: number; y: number };
-    size: { x: number; y: number };
+    positionNormalized: { x: number; y: number };
+    sizeNormalized: { x: number; y: number };
   }
 ) {
-  const { position, size } = objectData;
+  const { positionNormalized, sizeNormalized } = objectData;
   return {
     position: {
-      x: position.x * viewWidth,
-      y: position.y * viewHeight,
+      x: positionNormalized.x * viewWidth,
+      y: positionNormalized.y * viewHeight,
     },
     size: {
-      x: size.x * viewWidth,
-      y: size.y * viewHeight,
+      x: sizeNormalized.x * viewWidth,
+      y: sizeNormalized.y * viewHeight,
     },
   };
 }
@@ -50,14 +50,14 @@ export function convertDesignerObjectData(
 export function convertTransformArgs(
   viewWidth: number,
   viewHeight: number,
-  transform: TransformArgs
+  transform: TransformArgsPx
 ) {
-  const { x, y, width, height } = transform;
+  const { xPx, yPx, widthPx, heightPx } = transform;
   return {
-    x: x ? x / viewWidth : undefined,
-    y: y ? y / viewHeight : undefined,
-    width: width ? width / viewWidth : undefined,
-    height: height ? height / viewHeight : undefined,
+    xNormalized: xPx ? xPx / viewWidth : undefined,
+    yNormalized: yPx ? yPx / viewHeight : undefined,
+    widthNormalized: widthPx ? widthPx / viewWidth : undefined,
+    heightNormalized: heightPx ? heightPx / viewHeight : undefined,
   };
 }
 

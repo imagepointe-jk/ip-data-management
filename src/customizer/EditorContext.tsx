@@ -16,7 +16,7 @@ import {
   EditorContext as EditorContextType,
   EditorDialog,
   PlacedObject,
-  TransformArgs,
+  TransformArgsPx,
 } from "@/types/customizer";
 import { DesignResults } from "@/types/schema/designs";
 import { createContext, ReactNode, useContext, useState } from "react";
@@ -92,20 +92,19 @@ export function EditorProvider({
 
   //expects absolute px amounts for position and size.
   //will convert to 0-1 range for storing in state.
-  function setArtworkTransform(guid: string, transform: TransformArgs) {
-    const { x, y, width, height } = convertTransformArgs(
-      editorSize,
-      editorSize,
-      transform
-    );
+  function setArtworkTransform(guid: string, transform: TransformArgsPx) {
+    const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
+      convertTransformArgs(editorSize, editorSize, transform);
     setDesignState((draft) => {
       const artwork = findArtworkInState(draft, guid);
       if (!artwork) return;
 
-      if (x) artwork.objectData.position.x = x;
-      if (y) artwork.objectData.position.y = y;
-      if (width) artwork.objectData.size.x = width;
-      if (height) artwork.objectData.size.y = height;
+      if (xNormalized) artwork.objectData.positionNormalized.x = xNormalized;
+      if (yNormalized) artwork.objectData.positionNormalized.y = yNormalized;
+      if (widthNormalized)
+        artwork.objectData.sizeNormalized.x = widthNormalized;
+      if (heightNormalized)
+        artwork.objectData.sizeNormalized.y = heightNormalized;
       if (transform.rotationDegrees)
         artwork.objectData.rotationDegrees = transform.rotationDegrees;
     });
@@ -139,11 +138,11 @@ export function EditorProvider({
     )[0]!;
 
     const newObject: PlacedObject = {
-      position: {
+      positionNormalized: {
         x: locationData.positionX,
         y: locationData.positionY,
       },
-      size: {
+      sizeNormalized: {
         //currently only supports square images
         //if a rectangular one is used, the aspect ratio will be forced into 1:1
         x: smallestSize,
