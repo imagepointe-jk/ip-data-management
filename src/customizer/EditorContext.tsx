@@ -1,9 +1,11 @@
 "use client";
 
 import {
+  convertDesignerObjectData,
   convertTransformArgs,
   createInitialState,
   findArtworkInState,
+  findLocationInProductData,
   findLocationInState,
   findLocationWithArtworkInState,
   findVariationInState,
@@ -110,6 +112,8 @@ export function EditorProvider({
   }
 
   function addDesign(designId: number, variationId?: number) {
+    if (!selectedProductData) throw new Error("No selected product data");
+
     const design = designResults.designs.find(
       (design) => design.id === designId
     );
@@ -122,14 +126,28 @@ export function EditorProvider({
         `Variation ${variationId} of design ${designId} not found.`
       );
 
+    const locationData = findLocationInProductData(
+      selectedProductData,
+      selectedLocationId
+    );
+    if (!locationData)
+      throw new Error(
+        `Location data for location ${selectedLocationId} not found`
+      );
+    const smallestSize = [locationData.width, locationData.height].sort(
+      (a, b) => a - b
+    )[0]!;
+
     const newObject: PlacedObject = {
       position: {
-        x: 0.5,
-        y: 0.2,
+        x: locationData.positionX,
+        y: locationData.positionY,
       },
       size: {
-        x: 0.2,
-        y: 0.2,
+        //currently only supports square images
+        //if a rectangular one is used, the aspect ratio will be forced into 1:1
+        x: smallestSize,
+        y: smallestSize,
       },
       rotationDegrees: 0,
       editorGuid: uuidv4(),
