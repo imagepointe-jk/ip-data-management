@@ -121,6 +121,14 @@ export async function getWorkflowInstance(id: number) {
   });
 }
 
+export async function getWorkflowInstanceByOrderId(orderId: number) {
+  return prisma.orderWorkflowInstance.findUnique({
+    where: {
+      wooCommerceOrderId: orderId,
+    },
+  });
+}
+
 export async function getWorkflowInstanceWithIncludes(id: number) {
   return prisma.orderWorkflowInstance.findUnique({
     where: {
@@ -209,28 +217,52 @@ export async function createAccessCode(
   });
 }
 
-export async function getAccessCodeWithIncludes(accessCode: string) {
-  return prisma.orderWorkflowAccessCode.findFirst({
-    where: {
-      guid: accessCode,
-    },
+const accessCodeIncludes = {
+  user: true,
+  workflowInstance: {
     include: {
-      user: true,
-      workflowInstance: {
+      parentWorkflow: {
         include: {
-          parentWorkflow: {
+          webstore: {
             include: {
-              webstore: {
-                include: {
-                  shippingMethods: true,
-                  shippingSettings: true,
-                },
-              },
+              shippingMethods: true,
+              shippingSettings: true,
             },
           },
         },
       },
     },
+  },
+};
+export async function getAccessCodeWithIncludes(accessCode: string) {
+  return prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      guid: accessCode,
+    },
+    include: accessCodeIncludes,
+  });
+}
+
+export async function getAccessCodeWithIncludesByOrderAndEmail(
+  orderId: number,
+  userEmail: string
+) {
+  return prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      AND: [
+        {
+          workflowInstance: {
+            wooCommerceOrderId: orderId,
+          },
+        },
+        {
+          user: {
+            email: userEmail,
+          },
+        },
+      ],
+    },
+    include: accessCodeIncludes,
   });
 }
 

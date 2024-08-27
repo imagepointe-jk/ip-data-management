@@ -155,7 +155,8 @@ export async function setUserEmail(id: number, email: string) {
 
 export async function updateOrderAction(
   storeUrl: string,
-  updateData: OrderUpdateData
+  updateData: OrderUpdateData,
+  userEmail: string //the email of the user initiating the update action
 ) {
   const webstore = await prisma.webstore.findUnique({
     where: {
@@ -172,7 +173,7 @@ export async function updateOrderAction(
     );
   const updateJson = await updateResponse.json();
   const parsed = parseWooCommerceOrderJson(updateJson);
-  handleOrderUpdated(parsed, storeUrl);
+  handleOrderUpdated(parsed, storeUrl, userEmail);
 
   return parsed;
 }

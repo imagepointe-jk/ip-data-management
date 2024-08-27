@@ -204,6 +204,7 @@ export default function Page() {
               special={{
                 allowUpsShippingToCanada: serverData.allowUpsToCanada,
               }}
+              userEmail={serverData.userEmail}
             />
           </div>
         </div>

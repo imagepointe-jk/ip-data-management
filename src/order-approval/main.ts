@@ -14,6 +14,8 @@ import {
   getWorkflowInstancePurchaser,
   setWorkflowInstanceDeniedReason,
   getAllApproversFor,
+  getAccessCodeWithIncludes,
+  getAccessCodeWithIncludesByOrderAndEmail,
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
@@ -306,14 +308,34 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
 
 export async function handleOrderUpdated(
   order: WooCommerceOrder,
-  storeUrl: string
+  storeUrl: string,
+  userEmail: string
 ) {
   const webstore = await getWebstore(storeUrl);
   if (!webstore) throw new Error(`No webstore with url ${storeUrl}`);
 
+  const foundCode = await getAccessCodeWithIncludesByOrderAndEmail(
+    order.id,
+    userEmail
+  );
+  if (!foundCode)
+    throw new Error(
+      `No access code found with user email ${userEmail} and order id ${order.id}`
+    );
+
+  const purchaser = await getWorkflowInstancePurchaser(
+    foundCode.workflowInstance.id
+  );
+  if (!purchaser)
+    throw new Error(
+      `No purchaser found for instance ${foundCode.workflowInstance.id}`
+    );
+
   const orderUpdatedEmails = webstore.orderUpdatedEmails
     ? webstore.orderUpdatedEmails.split(";")
     : [];
+  orderUpdatedEmails.push(purchaser.email);
+  orderUpdatedEmails.push(foundCode.user.email);
 
   const message = await createOrderUpdatedEmail(order, webstore.name);
 

@@ -40,6 +40,7 @@ type Props = {
     allowUpsShippingToCanada?: boolean;
   };
   shippingMethods: string[];
+  userEmail?: string; //the email of the user accessing the order view
 };
 export function WooOrderView({
   orderId,
@@ -50,6 +51,7 @@ export function WooOrderView({
   permissions,
   shippingMethods,
   special,
+  userEmail,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
@@ -102,18 +104,22 @@ export function WooOrderView({
         ? order.shippingLines
         : [forcedMethod];
 
-      const updated = await updateOrderAction(storeUrl, {
-        ...order,
-        line_items: lineItemsWithDeletions,
-        shipping: {
-          ...order.shipping,
-          first_name: order.shipping.firstName,
-          last_name: order.shipping.lastName,
-          address_1: order.shipping.address1,
-          address_2: order.shipping.address2,
+      const updated = await updateOrderAction(
+        storeUrl,
+        {
+          ...order,
+          line_items: lineItemsWithDeletions,
+          shipping: {
+            ...order.shipping,
+            first_name: order.shipping.firstName,
+            last_name: order.shipping.lastName,
+            address_1: order.shipping.address1,
+            address_2: order.shipping.address2,
+          },
+          shipping_lines: newShippingLines,
         },
-        shipping_lines: newShippingLines,
-      });
+        userEmail || ""
+      );
       setOrder(updated);
 
       setValuesMaybeUnsynced(false);
