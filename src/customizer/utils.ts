@@ -8,7 +8,7 @@ import {
   DesignStateVariation,
   DesignStateView,
   TransformArgsPx,
-} from "@/types/customizer";
+} from "@/types/schema/customizer";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric

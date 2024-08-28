@@ -17,7 +17,7 @@ import {
   EditorDialog,
   PlacedObject,
   TransformArgsPx,
-} from "@/types/customizer";
+} from "@/types/schema/customizer";
 import { DesignResults } from "@/types/schema/designs";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { useImmer } from "use-immer";
