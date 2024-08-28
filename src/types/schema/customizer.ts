@@ -95,4 +95,6 @@ export type EditorContext = {
   deleteArtworkFromState: (guid: string) => void;
   setArtworkTransform: (guid: string, transform: TransformArgsPx) => void;
   addDesign: (designId: number, variationId?: number) => PlacedObject;
+  addVariation: (variationId: number) => void;
+  removeVariation: (variationId: number) => void;
 };

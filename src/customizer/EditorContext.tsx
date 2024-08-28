@@ -13,6 +13,7 @@ import {
 } from "@/customizer/utils";
 import { FullProductSettings } from "@/db/access/customizer";
 import {
+  DesignStateVariation,
   EditorContext as EditorContextType,
   EditorDialog,
   PlacedObject,
@@ -169,6 +170,83 @@ export function EditorProvider({
     return newObject;
   }
 
+  function addVariation(variationId: number) {
+    if (!selectedProductData) throw new Error("No selected product data");
+
+    const existingVariation = findVariationInState(designState, variationId);
+    if (existingVariation)
+      throw new Error(
+        `Tried to add additional instance of variation ${variationId}`
+      );
+
+    const variationData = selectedProductData.variations.find(
+      (variation) => variation.id === variationId
+    );
+    if (!variationData)
+      throw new Error(`Variation id ${variationId} not found`);
+
+    setDesignState((draft) => {
+      const product = draft.products.find(
+        (product) => product.id === selectedProductData.id
+      )!;
+      const newVariation: DesignStateVariation = {
+        id: variationData.id,
+        views: variationData.views.map((view) => ({
+          id: view.id,
+          locations: view.locations.map((location) => ({
+            id: location.id,
+            artworks: [],
+          })),
+        })),
+      };
+
+      product.variations.push(newVariation);
+    });
+
+    const firstView = variationData.views[0];
+    if (!firstView) throw new Error("No views");
+
+    const firstLocation = firstView.locations[0];
+    if (!firstLocation) throw new Error("No locations");
+
+    setSelectedVariationId(variationId);
+    setSelectedViewId(firstView.id);
+    setSelectedLocationId(firstLocation.id);
+  }
+
+  function removeVariation(variationId: number) {
+    if (!selectedProductData) throw new Error("No selected product data");
+
+    const productInState = designState.products.find(
+      (product) => product.id === selectedProductData.id
+    );
+    const variationToSelect = productInState?.variations.filter(
+      (variation) => variation.id !== variationId
+    )[0];
+    if (!variationToSelect) throw new Error("Can't delete last variation");
+
+    const viewToSelect = variationToSelect.views[0];
+    if (!viewToSelect) throw new Error("No view to select");
+
+    const locationToSelect = viewToSelect.locations[0];
+    if (!locationToSelect) throw new Error("No location to select");
+
+    setDesignState((draft) => {
+      const product = draft.products.find(
+        (product) => product.id === selectedProductData.id
+      );
+      if (!product) return;
+
+      product.variations = product.variations.filter(
+        (variation) => variation.id !== variationId
+      );
+    });
+
+    setSelectedVariationId(variationToSelect.id);
+    setSelectedViewId(viewToSelect.id);
+    setSelectedLocationId(locationToSelect.id);
+  }
+
   return (
     <EditorContext.Provider
       value={{
@@ -186,6 +264,8 @@ export function EditorProvider({
         deleteArtworkFromState,
         setArtworkTransform,
         addDesign,
+        addVariation,
+        removeVariation,
       }}
     >
       {children}

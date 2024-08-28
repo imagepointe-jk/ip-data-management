@@ -5,20 +5,67 @@ import { useEditor } from "../EditorContext";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditor();
-  const productColors =
-    selectedProductData?.variations.map((variation) => variation.color) || [];
 
   return (
-    <div className={styles["color-choices-container"]}>
-      {productColors.map((color) => (
-        <button key={color.id} className={styles["color-choice"]}>
-          <div
-            className={styles["color-choice-swatch"]}
-            style={{ backgroundColor: `#${color.hexCode}` }}
-          ></div>
-          <div>{color.name}</div>
-        </button>
+    <div className={styles["variation-choices-container"]}>
+      {selectedProductData.variations.map((variation) => (
+        <VariationChoice key={variation.id} variationId={variation.id} />
       ))}
+    </div>
+  );
+}
+
+type VariationChoiceProps = {
+  variationId: number;
+};
+function VariationChoice({ variationId }: VariationChoiceProps) {
+  const { selectedProductData, designState, addVariation, removeVariation } =
+    useEditor();
+
+  const variationData = selectedProductData.variations.find(
+    (variation) => variation.id === variationId
+  );
+  const isVariationInCart = !!designState.products.find(
+    (product) =>
+      !!product.variations.find((variation) => variation.id === variationId)
+  );
+  const totalVariationsThisProduct =
+    designState.products.find(
+      (product) => product.id === selectedProductData.id
+    )?.variations.length || 0;
+  const removeAllowed = totalVariationsThisProduct > 1;
+
+  function onClickAdd() {
+    if (isVariationInCart) return;
+    addVariation(variationId);
+  }
+
+  function onClickRemove() {
+    if (!isVariationInCart && removeAllowed) return;
+    removeVariation(variationId);
+  }
+
+  return (
+    <div className={styles["variation-choice"]}>
+      {variationData && (
+        <>
+          <div
+            className={styles["variation-choice-swatch"]}
+            style={{ backgroundColor: `#${variationData.color.hexCode}` }}
+          ></div>
+          <div>{variationData.color.name}</div>
+          <button disabled={!isVariationInCart}>Edit</button>
+          <button onClick={onClickAdd} disabled={isVariationInCart}>
+            Add
+          </button>
+          <button
+            onClick={onClickRemove}
+            disabled={!isVariationInCart || !removeAllowed}
+          >
+            Remove
+          </button>
+        </>
+      )}
     </div>
   );
 }

@@ -61,24 +61,31 @@
   display: block;
 }
 
-.color-choices-container {
+.variation-choices-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.color-choice {
+.variation-choice {
   display: flex;
   align-items: center;
+  justify-content: sp;
   font-size: 1rem;
   padding: 10px;
   gap: 10px;
+  border: 1px solid gray;
+  border-radius: 10px;
 }
 
-.color-choice-swatch {
+.variation-choice-swatch {
   width: 20px;
   height: 20px;
   border-radius: 100px;
+}
+
+.variation-choice button {
+  display: block;
 }
 
 .product-view-frame {
