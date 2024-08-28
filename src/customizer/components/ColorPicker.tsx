@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditor } from "../EditorContext";
+import { useEditor } from "../EditorProvider";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditor();

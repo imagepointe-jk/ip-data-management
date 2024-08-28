@@ -9,6 +9,7 @@ import {
   DesignStateView,
   TransformArgsPx,
 } from "@/types/schema/customizer";
+import { FullProductSettingsSerializable } from "./redux/slices";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -210,4 +211,18 @@ export function findViewInProductData(data: FullProductSettings, id: number) {
   return data.variations
     .flatMap((variation) => variation.views)
     .find((view) => view.id === id);
+}
+
+export function makeProductDataSerializable(
+  data: FullProductSettings[]
+): FullProductSettingsSerializable[] {
+  return data.map((item) => {
+    const newData: FullProductSettingsSerializable = {
+      ...item,
+      createdAt: "",
+      updatedAt: "",
+      //the Date object in the original type causes problems with Redux, and it's not needed for the customizer
+    };
+    return newData;
+  });
 }

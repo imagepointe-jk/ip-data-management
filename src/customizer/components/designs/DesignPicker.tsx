@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useEditor } from "../../EditorContext";
+import { useEditor } from "../../EditorProvider";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { getArrayPage } from "@/utility/misc";
 import { PageControls } from "@/components/PageControls";

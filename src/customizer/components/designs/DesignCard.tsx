@@ -1,6 +1,6 @@
 import { DesignWithIncludes } from "@/types/schema/designs";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditor } from "../../EditorContext";
+import { useEditor } from "../../EditorProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,

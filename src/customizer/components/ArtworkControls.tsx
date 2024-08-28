@@ -1,5 +1,5 @@
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditor } from "../EditorContext";
+import { useEditor } from "../EditorProvider";
 
 export function ArtworkControls() {
   const { deleteArtworkFromState, selectedEditorGuid } = useEditor();

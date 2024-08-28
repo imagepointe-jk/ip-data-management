@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ColorPicker } from "./ColorPicker";
-import { useEditor } from "../EditorContext";
+import { useEditor } from "../EditorProvider";
 import { DesignPicker } from "./designs/DesignPicker";
 import { UserUploads } from "./UserUploads";
 

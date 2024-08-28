@@ -3,8 +3,11 @@
 "use client";
 
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-import { EditorProps, EditorProvider } from "./EditorContext";
+// import { EditorProps, EditorProvider } from "./EditorContext";
 import { Editor } from "./Editor";
+import { EditorProps, EditorProvider } from "./EditorProvider";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 type Props = Omit<EditorProps, "initialProductId">;
 export default function EditorHelper({ designs, productData }: Props) {
@@ -17,12 +20,24 @@ export default function EditorHelper({ designs, productData }: Props) {
   if (!id) return <h1>Invalid params.</h1>;
 
   return (
-    <EditorProvider
-      designs={designs}
-      initialProductId={+id}
-      productData={productData}
-    >
-      <Editor />
-    </EditorProvider>
+    <Provider store={store}>
+      <EditorProvider
+        designs={designs}
+        initialProductId={+id}
+        productData={productData}
+      >
+        <Editor />
+      </EditorProvider>
+    </Provider>
   );
+
+  // return (
+  //   <EditorProvider
+  //     designs={designs}
+  //     initialProductId={+id}
+  //     productData={productData}
+  //   >
+  //     <Editor />
+  //   </EditorProvider>
+  // );
 }

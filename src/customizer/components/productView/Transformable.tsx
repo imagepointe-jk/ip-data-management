@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
-import { useEditor } from "../../EditorContext";
+import { useEditor } from "../../EditorProvider";
 import { clamp } from "@/utility/misc";
 import { calculateObjectPositionLimits } from "@/customizer/utils";
 

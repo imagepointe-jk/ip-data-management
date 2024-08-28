@@ -2,7 +2,7 @@ import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import useImage from "use-image";
 import { Transformable, TransformLimits } from "./Transformable";
 import { Image } from "react-konva";
-import { useEditor } from "../../EditorContext";
+import { useEditor } from "../../EditorProvider";
 
 type Props = {
   src?: string;

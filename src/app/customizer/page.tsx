@@ -7,7 +7,7 @@ const EditorHelper = dynamic(() => import("@/customizer/EditorHelper"), {
 //recommended by Konva dev here: https://github.com/konvajs/react-konva#usage-with-nextjs
 import { getDesigns } from "@/db/access/designs";
 import { getProductSettingsWithIncludes } from "@/db/access/customizer";
-import { populateProductData } from "@/customizer/handleData";
+import { populateProductData } from "@/app/customizer/handleData";
 
 export default async function Page() {
   //given the current size of our data, there is nothing wrong with getting all designs/products on load and sending to client

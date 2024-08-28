@@ -6,7 +6,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
 import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
-import { useEditor } from "../EditorContext";
+import { useEditor } from "../EditorProvider";
 import { EditorImage } from "./productView/EditorImage";
 import {
   convertDesignerObjectData,
