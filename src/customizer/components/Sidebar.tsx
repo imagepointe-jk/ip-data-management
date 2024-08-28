@@ -7,19 +7,25 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ColorPicker } from "./ColorPicker";
-import { useEditor } from "../EditorProvider";
 import { DesignPicker } from "./designs/DesignPicker";
 import { UserUploads } from "./UserUploads";
+import { useSelector } from "react-redux";
+import { StoreType } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { setDialogOpen } from "../redux/slices/editor";
 
 export function Sidebar() {
-  const { dialogOpen, setDialogOpen } = useEditor();
+  const dialogOpen = useSelector(
+    (state: StoreType) => state.editorState.dialogOpen
+  );
+  const dispatch = useDispatch();
 
   return (
     <div className={styles["side-container"]}>
       <div className={`${styles["sidebar"]} ${styles["floating-container"]}`}>
         <button
           className={styles["sidebar-button"]}
-          onClick={() => setDialogOpen("designs")}
+          onClick={() => dispatch(setDialogOpen("designs"))}
         >
           <FontAwesomeIcon icon={faStar} size={"2x"} />
           <div>Designs</div>

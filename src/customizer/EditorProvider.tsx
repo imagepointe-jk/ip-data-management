@@ -5,7 +5,7 @@ import { DesignResults } from "@/types/schema/designs";
 import { ReactNode, useEffect } from "react";
 import { createInitialState, makeProductDataSerializable } from "./utils";
 import { useDispatch } from "react-redux";
-import { setData } from "./redux/slices";
+import { setData } from "./redux/slices/productData";
 
 export type EditorProps = {
   initialProductId: number;

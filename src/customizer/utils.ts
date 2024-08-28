@@ -9,7 +9,7 @@ import {
   DesignStateView,
   TransformArgsPx,
 } from "@/types/schema/customizer";
-import { FullProductSettingsSerializable } from "./redux/slices";
+import { FullProductSettingsSerializable } from "./redux/slices/productData";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
