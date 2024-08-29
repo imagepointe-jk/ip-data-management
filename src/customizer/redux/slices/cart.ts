@@ -9,7 +9,7 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setProducts: (state, action: PayloadAction<DesignState>) => {
+    setCartProducts: (state, action: PayloadAction<DesignState>) => {
       state.products = action.payload.products;
     },
     deleteArtworkFromState: (
@@ -39,7 +39,7 @@ export const cartSlice = createSlice({
 });
 
 export const {
-  setProducts,
+  setCartProducts,
   addDesign,
   addVariation,
   deleteArtworkFromState,

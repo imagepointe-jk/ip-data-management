@@ -10,11 +10,11 @@ const initialState: { data: FullProductSettingsSerializable[] | null } = {
   data: null,
 };
 
-export const dataSlice = createSlice({
+export const productDataSlice = createSlice({
   name: "productData",
   initialState,
   reducers: {
-    setData: (
+    setProductData: (
       state,
       action: PayloadAction<FullProductSettingsSerializable[]>
     ) => {
@@ -23,4 +23,4 @@ export const dataSlice = createSlice({
   },
 });
 
-export const { setData } = dataSlice.actions;
+export const { setProductData } = productDataSlice.actions;

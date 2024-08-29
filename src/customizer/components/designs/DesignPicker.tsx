@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useEditor } from "../../EditorProvider";
+// import { useEditor } from "../../EditorProvider";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { getArrayPage } from "@/utility/misc";
 import { PageControls } from "@/components/PageControls";
 import { DesignResults, DesignWithIncludes } from "@/types/schema/designs";
 import { DesignCard } from "./DesignCard";
+import { useSelector } from "react-redux";
+import { StoreType } from "@/customizer/redux/store";
+import { useDesignDataSelector } from "@/customizer/redux/slices/designData";
 
 const pageSize = 20;
 
 export function DesignPicker() {
-  const { designResults } = useEditor();
+  // const { designResults } = useEditor();
+  const designResults = useDesignDataSelector();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const filtered = filterDesigns(designResults, search);

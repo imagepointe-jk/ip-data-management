@@ -1,6 +1,6 @@
 import { DesignWithIncludes } from "@/types/schema/designs";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditor } from "../../EditorProvider";
+// import { useEditor } from "../../EditorProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -9,13 +9,20 @@ import {
 import { useState } from "react";
 import { wrap } from "@/utility/misc";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { useDispatch } from "react-redux";
+import { addDesign } from "@/customizer/redux/slices/cart";
+import {
+  setDialogOpen,
+  setSelectedEditorGuid,
+} from "@/customizer/redux/slices/editor";
 
 type Props = {
   design: DesignWithIncludes;
 };
 export function DesignCard({ design }: Props) {
-  const { addDesign, setDialogOpen, setSelectedEditorGuid } = useEditor();
+  // const { addDesign, setDialogOpen, setSelectedEditorGuid } = useEditor();
   const [viewIndex, setViewIndex] = useState(0); //0 is parent design, greater than 0 is variations (so 1 is variations[0])
+  const dispatch = useDispatch();
   const imageUrl =
     viewIndex === 0
       ? design.imageUrl
@@ -28,9 +35,9 @@ export function DesignCard({ design }: Props) {
   function onClickAdd() {
     const variationId =
       viewIndex > 0 ? design.variations[viewIndex - 1]?.id : undefined;
-    const added = addDesign(design.id, variationId);
-    setDialogOpen(null);
-    setSelectedEditorGuid(added.editorGuid);
+    dispatch(addDesign({ designId: design.id, variationId }));
+    // dispatch(setDialogOpen(null));
+    // dispatch(setSelectedEditorGuid(added.editorGuid));
   }
 
   function onClickArrow(direction: "left" | "right") {
