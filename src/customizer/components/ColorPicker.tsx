@@ -1,10 +1,15 @@
 "use client";
 
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditor } from "../EditorProvider";
+import { useEditorSelectors } from "../redux/slices/editor";
+import { findVariationInState } from "../utils";
+import { useSelector } from "react-redux";
+import { StoreType } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { addVariation, removeVariation } from "../redux/slices/cart";
 
 export function ColorPicker() {
-  const { selectedProductData } = useEditor();
+  const { selectedProductData } = useEditorSelectors();
 
   return (
     <div className={styles["variation-choices-container"]}>
@@ -19,30 +24,27 @@ type VariationChoiceProps = {
   variationId: number;
 };
 function VariationChoice({ variationId }: VariationChoiceProps) {
-  const { selectedProductData, designState, addVariation, removeVariation } =
-    useEditor();
+  const { selectedProductData } = useEditorSelectors();
+  const cart = useSelector((state: StoreType) => state.cart);
+  const dispatch = useDispatch();
 
   const variationData = selectedProductData.variations.find(
     (variation) => variation.id === variationId
   );
-  const isVariationInCart = !!designState.products.find(
-    (product) =>
-      !!product.variations.find((variation) => variation.id === variationId)
-  );
+  const isVariationInCart = !!findVariationInState(cart, variationId);
   const totalVariationsThisProduct =
-    designState.products.find(
-      (product) => product.id === selectedProductData.id
-    )?.variations.length || 0;
+    cart.products.find((product) => product.id === selectedProductData.id)
+      ?.variations.length || 0;
   const removeAllowed = totalVariationsThisProduct > 1;
 
   function onClickAdd() {
     if (isVariationInCart) return;
-    addVariation(variationId);
+    dispatch(addVariation({ variationId }));
   }
 
   function onClickRemove() {
     if (!isVariationInCart && removeAllowed) return;
-    removeVariation(variationId);
+    removeVariation({ variationId });
   }
 
   return (

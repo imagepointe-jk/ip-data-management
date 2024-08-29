@@ -6,6 +6,15 @@ import { ReactNode, useEffect } from "react";
 import { createInitialState, makeProductDataSerializable } from "./utils";
 import { useDispatch } from "react-redux";
 import { setData } from "./redux/slices/productData";
+import { setProducts } from "./redux/slices/cart";
+import { useSelector } from "react-redux";
+import { StoreType } from "./redux/store";
+import {
+  setSelectedLocationId,
+  setSelectedProductId,
+  setSelectedVariationId,
+  setSelectedViewId,
+} from "./redux/slices/editor";
 
 export type EditorProps = {
   initialProductId: number;
@@ -18,12 +27,30 @@ export function EditorProvider({
   initialProductId,
   productData,
 }: EditorProps & { children: ReactNode }) {
+  const {
+    initialLocation,
+    initialVariation,
+    initialView,
+    initialProduct,
+    initialDesignState,
+  } = createInitialState(productData);
   const serializableData = makeProductDataSerializable(productData);
   const dispatch = useDispatch();
+  const productDataInStore = useSelector(
+    (state: StoreType) => state.productData
+  );
 
   useEffect(() => {
     dispatch(setData(serializableData));
+    dispatch(setProducts(initialDesignState));
+    dispatch(setSelectedProductId(initialProduct.id));
+    dispatch(setSelectedVariationId(initialVariation.id));
+    dispatch(setSelectedViewId(initialView.id));
+    dispatch(setSelectedLocationId(initialLocation.id));
   }, []);
+
+  //don't render the editor until necessary data has been stored in redux
+  if (productDataInStore.data === null) return <></>;
 
   return <>{children}</>;
 }

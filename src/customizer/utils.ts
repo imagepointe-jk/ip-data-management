@@ -146,6 +146,7 @@ export function createInitialState(products: FullProductSettings[]) {
 
   return {
     initialDesignState,
+    initialProduct: firstProduct,
     initialVariation,
     initialView,
     initialLocation,
@@ -199,7 +200,7 @@ export function findLocationInState(state: DesignState, id: number) {
 }
 
 export function findLocationInProductData(
-  data: FullProductSettings,
+  data: FullProductSettingsSerializable,
   id: number
 ) {
   return data.variations
@@ -207,7 +208,10 @@ export function findLocationInProductData(
     .find((location) => location.id === id);
 }
 
-export function findViewInProductData(data: FullProductSettings, id: number) {
+export function findViewInProductData(
+  data: FullProductSettingsSerializable,
+  id: number
+) {
   return data.variations
     .flatMap((variation) => variation.views)
     .find((view) => view.id === id);

@@ -14,8 +14,8 @@ export function Editor() {
     <div>
       <div className={styles["main"]}>
         <Sidebar />
-        {/* <ProductView />
-        {selectedEditorGuid && <ArtworkControls />} */}
+        <ProductView />
+        {/* {selectedEditorGuid && <ArtworkControls />} */}
       </div>
     </div>
   );

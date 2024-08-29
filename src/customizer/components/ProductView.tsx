@@ -6,24 +6,26 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
 import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
-import { useEditor } from "../EditorProvider";
 import { EditorImage } from "./productView/EditorImage";
 import {
   convertDesignerObjectData,
   findLocationInProductData,
   findViewInProductData,
 } from "../utils";
+import {
+  setSelectedEditorGuid,
+  setSelectedLocationId,
+  useEditorSelectors,
+} from "../redux/slices/editor";
+import { useDispatch } from "react-redux";
 
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
-  const {
-    selectedView,
-    setSelectedEditorGuid,
-    selectedProductData,
-    selectedLocation,
-    setSelectedLocationId,
-  } = useEditor();
+  const { selectedLocation, selectedView, selectedProductData } =
+    useEditorSelectors();
+  const dispatch = useDispatch();
+
   const viewInProductData = findViewInProductData(
     selectedProductData,
     selectedView.id
@@ -36,7 +38,7 @@ export function ProductView() {
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
       e.target === e.target.getStage() || e.target === productImgRef.current;
-    if (clickedOnEmpty) setSelectedEditorGuid(null);
+    if (clickedOnEmpty) dispatch(setSelectedEditorGuid(null));
   }
 
   return (
@@ -97,7 +99,7 @@ export function ProductView() {
                 strokeWidth={4}
                 opacity={selectedLocation.id === location.id ? 1 : 0.3}
                 onClick={() => {
-                  setSelectedLocationId(location.id);
+                  dispatch(setSelectedLocationId(location.id));
                   setSelectedEditorGuid(null);
                 }}
               />

@@ -32,14 +32,14 @@ export function Sidebar() {
         </button>
         <button
           className={styles["sidebar-button"]}
-          onClick={() => setDialogOpen("colors")}
+          onClick={() => dispatch(setDialogOpen("colors"))}
         >
           <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />
           <div>Colors</div>
         </button>
         <button
           className={styles["sidebar-button"]}
-          onClick={() => setDialogOpen("upload")}
+          onClick={() => dispatch(setDialogOpen("upload"))}
         >
           <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />
           <div>My Art</div>
@@ -52,7 +52,7 @@ export function Sidebar() {
           {dialogOpen === "upload" && <UserUploads />}
           <button
             className={styles["dialog-x"]}
-            onClick={() => setDialogOpen(null)}
+            onClick={() => dispatch(setDialogOpen(null))}
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
