@@ -39,10 +39,11 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
   const variationData = selectedProductData.variations.find(
     (variation) => variation.id === variationId
   );
-  const isVariationInCart = !!findVariationInState(cart, variationId);
+  const isVariationInCart = !!findVariationInState(cart.present, variationId);
   const totalVariationsThisProduct =
-    cart.products.find((product) => product.id === selectedProductData.id)
-      ?.variations.length || 0;
+    cart.present.products.find(
+      (product) => product.id === selectedProductData.id
+    )?.variations.length || 0;
   const removeAllowed = totalVariationsThisProduct > 1;
 
   function onClickAdd() {
@@ -68,7 +69,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
   function onClickRemove() {
     if (!isVariationInCart && removeAllowed) return;
 
-    const productInState = cart.products.find(
+    const productInState = cart.present.products.find(
       (product) => product.id === selectedProductData.id
     );
     const variationToSelect = productInState?.variations.filter(

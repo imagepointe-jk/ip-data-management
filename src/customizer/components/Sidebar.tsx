@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { setDialogOpen } from "../redux/slices/editor";
+import { ActionCreators } from "redux-undo";
 
 export function Sidebar() {
   const dialogOpen = useSelector(
@@ -44,6 +45,8 @@ export function Sidebar() {
           <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />
           <div>My Art</div>
         </button>
+        <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
+        <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
       </div>
       {dialogOpen !== null && (
         <div className={`${styles["dialog"]} ${styles["floating-container"]}`}>

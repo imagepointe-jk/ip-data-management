@@ -66,9 +66,15 @@ export function useEditorSelectors() {
   const selectedProductData = data.find(
     (product) => product.id === selectedProductId
   );
-  const selectedVariation = findVariationInState(state, selectedVariationId);
-  const selectedView = findViewInState(state, selectedViewId);
-  const selectedLocation = findLocationInState(state, selectedLocationId);
+  const selectedVariation = findVariationInState(
+    state.present,
+    selectedVariationId
+  );
+  const selectedView = findViewInState(state.present, selectedViewId);
+  const selectedLocation = findLocationInState(
+    state.present,
+    selectedLocationId
+  );
 
   if (!selectedProductData)
     throw new Error(`Invalid product id ${selectedProductId} selected`);

@@ -20,6 +20,7 @@ import {
   setSelectedViewId,
 } from "./redux/slices/editor";
 import { setDesignData } from "./redux/slices/designData";
+import { ActionCreators } from "redux-undo";
 
 export type EditorProps = {
   initialProductId: number;
@@ -56,6 +57,9 @@ export function EditorProvider({
     dispatch(setSelectedVariationId(initialVariation.id));
     dispatch(setSelectedViewId(initialView.id));
     dispatch(setSelectedLocationId(initialLocation.id));
+
+    //don't remember the above actions as undoable history
+    dispatch(ActionCreators.clearHistory());
   }, []);
 
   //don't render the editor until the above useEffect has stored necessary data in redux
