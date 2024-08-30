@@ -1,6 +1,6 @@
 import {
-  DesignState,
-  DesignStateVariation,
+  CartState,
+  CartStateProductVariation,
   PlacedObject,
   TransformArgsPx,
 } from "@/types/schema/customizer";
@@ -17,7 +17,7 @@ import {
 import { FullProductSettingsSerializable } from "./productData";
 import { editorSize } from "@/customizer/components/ProductView";
 
-const initialState: DesignState = {
+const initialState: CartState = {
   products: [],
 };
 
@@ -25,7 +25,7 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setCartProducts: (state, action: PayloadAction<DesignState>) => {
+    setCartProducts: (state, action: PayloadAction<CartState>) => {
       state.products = action.payload.products;
     },
     deleteArtworkFromState: (
@@ -132,7 +132,7 @@ export const cartSlice = createSlice({
         objectData: newObject,
       });
     },
-    addVariation: (
+    addProductVariation: (
       state,
       action: PayloadAction<{
         variationId: number;
@@ -156,7 +156,7 @@ export const cartSlice = createSlice({
       const productInState = state.products.find(
         (product) => product.id === targetProductData.id
       )!;
-      const newVariation: DesignStateVariation = {
+      const newVariation: CartStateProductVariation = {
         id: variationData.id,
         views: variationData.views.map((view) => ({
           id: view.id,
@@ -169,7 +169,7 @@ export const cartSlice = createSlice({
 
       productInState?.variations.push(newVariation);
     },
-    removeVariation: (
+    removeProductVariation: (
       state,
       action: PayloadAction<{ targetProductId: number; variationId: number }>
     ) => {
@@ -191,8 +191,8 @@ export const cartSlice = createSlice({
 export const {
   setCartProducts,
   addDesign,
-  addVariation,
+  addProductVariation,
   deleteArtworkFromState,
-  removeVariation,
+  removeProductVariation,
   setArtworkTransform,
 } = cartSlice.actions;

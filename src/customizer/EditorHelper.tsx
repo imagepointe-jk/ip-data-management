@@ -3,7 +3,6 @@
 "use client";
 
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-// import { EditorProps, EditorProvider } from "./EditorContext";
 import { Editor } from "./Editor";
 import { EditorProps, EditorProvider } from "./EditorProvider";
 import { Provider } from "react-redux";
@@ -30,14 +29,4 @@ export default function EditorHelper({ designs, productData }: Props) {
       </EditorProvider>
     </Provider>
   );
-
-  // return (
-  //   <EditorProvider
-  //     designs={designs}
-  //     initialProductId={+id}
-  //     productData={productData}
-  //   >
-  //     <Editor />
-  //   </EditorProvider>
-  // );
 }

@@ -4,10 +4,8 @@ import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { deleteArtworkFromState } from "../redux/slices/cart";
 import { setSelectedEditorGuid } from "../redux/slices/editor";
-// import { useEditor } from "../EditorProvider";
 
 export function ArtworkControls() {
-  // const { deleteArtworkFromState, selectedEditorGuid } = useEditor();
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );

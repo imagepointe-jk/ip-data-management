@@ -11,7 +11,10 @@ import { findVariationInState } from "../utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { addVariation, removeVariation } from "../redux/slices/cart";
+import {
+  addProductVariation,
+  removeProductVariation,
+} from "../redux/slices/cart";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();
@@ -52,7 +55,10 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     if (!firstLocation) throw new Error("No locations");
 
     dispatch(
-      addVariation({ variationId, targetProductData: selectedProductData })
+      addProductVariation({
+        variationId,
+        targetProductData: selectedProductData,
+      })
     );
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
@@ -77,7 +83,10 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     if (!locationToSelect) throw new Error("No location to select");
 
     dispatch(
-      removeVariation({ targetProductId: selectedProductData.id, variationId })
+      removeProductVariation({
+        targetProductId: selectedProductData.id,
+        variationId,
+      })
     );
     dispatch(setSelectedVariationId(variationToSelect.id));
     dispatch(setSelectedViewId(viewToSelect.id));

@@ -1,6 +1,4 @@
-import { DesignWithIncludes } from "@/types/schema/designs";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-// import { useEditor } from "../../EditorProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -28,7 +26,6 @@ type Props = {
   design: DesignWithIncludesSerializable;
 };
 export function DesignCard({ design }: Props) {
-  // const { addDesign, setDialogOpen, setSelectedEditorGuid } = useEditor();
   const [viewIndex, setViewIndex] = useState(0); //0 is parent design, greater than 0 is variations (so 1 is variations[0])
   const dispatch = useDispatch();
   const designData = useDesignDataSelector();

@@ -22,7 +22,7 @@ const objectDataSchema = z.object({
   rotationDegrees: z.number(),
 });
 
-const designStateArtwork = z.object({
+const cartStateArtworkSchema = z.object({
   imageUrl: z.string(),
   identifiers: z.object({
     designId: z.number(),
@@ -31,28 +31,28 @@ const designStateArtwork = z.object({
   objectData: objectDataSchema,
 });
 
-const designStateLocation = z.object({
+const cartStateProductLocationSchema = z.object({
   id: z.number(),
-  artworks: z.array(designStateArtwork),
+  artworks: z.array(cartStateArtworkSchema),
 });
 
-const designStateView = z.object({
+const cartStateProductViewSchema = z.object({
   id: z.number(),
-  locations: z.array(designStateLocation),
+  locations: z.array(cartStateProductLocationSchema),
 });
 
-const designStateVariation = z.object({
+const cartStateProductVariationSchema = z.object({
   id: z.number(),
-  views: z.array(designStateView),
+  views: z.array(cartStateProductViewSchema),
 });
 
-const designStateProduct = z.object({
+const cartStateProductSchema = z.object({
   id: z.number(),
-  variations: z.array(designStateVariation),
+  variations: z.array(cartStateProductVariationSchema),
 });
 
-export const designStateSchema = z.object({
-  products: z.array(designStateProduct),
+export const cartStateSchema = z.object({
+  products: z.array(cartStateProductSchema),
 });
 
 export type PlacedObject = z.infer<typeof objectDataSchema>;
@@ -66,11 +66,15 @@ export type TransformArgsPx = {
   rotationDegrees?: number;
 };
 
-export type DesignStateArtwork = z.infer<typeof designStateArtwork>;
-export type DesignStateLocation = z.infer<typeof designStateLocation>;
-export type DesignStateView = z.infer<typeof designStateView>;
-export type DesignStateVariation = z.infer<typeof designStateVariation>;
-export type DesignState = z.infer<typeof designStateSchema>;
+export type CartStateArtwork = z.infer<typeof cartStateArtworkSchema>;
+export type CartStateProductLocation = z.infer<
+  typeof cartStateProductLocationSchema
+>;
+export type CartStateProductView = z.infer<typeof cartStateProductViewSchema>;
+export type CartStateProductVariation = z.infer<
+  typeof cartStateProductVariationSchema
+>;
+export type CartState = z.infer<typeof cartStateSchema>;
 
 export type EditorDialog = "colors" | "designs" | "upload" | null;
 
@@ -82,12 +86,12 @@ export type VariationWithIncludes = CustomProductSettingsVariation & {
 };
 export type EditorContext = {
   designResults: DesignResults;
-  designState: DesignState;
+  designState: CartState;
   selectedEditorGuid: string | null;
   setSelectedEditorGuid: (guid: string | null) => void;
-  selectedVariation: DesignStateVariation;
-  selectedView: DesignStateView;
-  selectedLocation: DesignStateLocation;
+  selectedVariation: CartStateProductVariation;
+  selectedView: CartStateProductView;
+  selectedLocation: CartStateProductLocation;
   setSelectedLocationId: (id: number) => void;
   dialogOpen: EditorDialog;
   setDialogOpen: (dialog: EditorDialog) => void;

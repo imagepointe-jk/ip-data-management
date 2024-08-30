@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
 import { setSelectedEditorGuid } from "@/customizer/redux/slices/editor";
-// import { useEditor } from "../../EditorProvider";
 
 type Props = {
   src?: string;
@@ -28,7 +27,6 @@ export function EditorImage({
   rotationDeg,
   limits,
 }: Props) {
-  // const { selectedEditorGuid, setSelectedEditorGuid } = useEditor();
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );

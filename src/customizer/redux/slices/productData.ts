@@ -1,5 +1,4 @@
 import { FullProductSettings } from "@/db/access/customizer";
-import { DesignState } from "@/types/schema/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type FullProductSettingsSerializable = Omit<

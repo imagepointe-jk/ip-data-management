@@ -1,7 +1,6 @@
 import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
-// import { useEditor } from "../../EditorProvider";
 import { clamp } from "@/utility/misc";
 import { calculateObjectPositionLimits } from "@/customizer/utils";
 import { useSelector } from "react-redux";
@@ -46,7 +45,6 @@ export function Transformable({ children, selected, limits }: Props) {
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
   const dispatch = useDispatch();
-  // const { setArtworkTransform, selectedEditorGuid } = useEditor();
 
   function onTransformEnd() {
     const transformer = transformerRef.current;

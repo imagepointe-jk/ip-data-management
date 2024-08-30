@@ -3,10 +3,10 @@ import {
   FullProductSettings,
 } from "@/db/access/customizer";
 import {
-  DesignState,
-  DesignStateLocation,
-  DesignStateVariation,
-  DesignStateView,
+  CartState,
+  CartStateProductLocation,
+  CartStateProductVariation,
+  CartStateProductView,
   TransformArgsPx,
 } from "@/types/schema/customizer";
 import { FullProductSettingsSerializable } from "./redux/slices/productData";
@@ -104,6 +104,9 @@ export function calculateObjectPositionLimits(params: {
 }
 
 export function createInitialState(products: FullProductSettings[]) {
+  //this becomes the first product added to the user's cart
+  //currently this just picks the first one from our customizer db
+  //will eventually need to be whatever id was specified in the URL
   const firstProduct = products[0];
   if (!firstProduct) throw new Error("No products");
 
@@ -116,20 +119,20 @@ export function createInitialState(products: FullProductSettings[]) {
   const firstLocation = firstView.locations[0];
   if (!firstLocation) throw new Error("No locations");
 
-  const initialLocation: DesignStateLocation = {
+  const initialLocation: CartStateProductLocation = {
     id: firstLocation.id,
     artworks: [],
   };
-  const initialView: DesignStateView = {
+  const initialView: CartStateProductView = {
     id: firstView.id,
     locations: [initialLocation],
   };
-  const initialVariation: DesignStateVariation = {
+  const initialVariation: CartStateProductVariation = {
     id: firstVariation.id,
     views: [initialView],
   };
 
-  const initialDesignState: DesignState = {
+  const initialDesignState: CartState = {
     products: [
       {
         id: firstProduct.id,
@@ -158,32 +161,32 @@ export function createInitialState(products: FullProductSettings[]) {
   };
 }
 
-function allVariations(state: DesignState) {
+function allVariations(state: CartState) {
   return state.products.flatMap((product) => product.variations);
 }
 
-function allViews(state: DesignState) {
+function allViews(state: CartState) {
   return allVariations(state).flatMap((variation) => variation.views);
 }
 
-function allLocations(state: DesignState) {
+function allLocations(state: CartState) {
   return allViews(state).flatMap((view) => view.locations);
 }
 
-function allArtworks(state: DesignState) {
+function allArtworks(state: CartState) {
   return allLocations(state).flatMap((location) => location.artworks);
 }
 
-export function findVariationInState(state: DesignState, id: number) {
+export function findVariationInState(state: CartState, id: number) {
   return allVariations(state).find((variation) => variation.id === id);
 }
 
-export function findViewInState(state: DesignState, id: number) {
+export function findViewInState(state: CartState, id: number) {
   return allViews(state).find((location) => location.id === id);
 }
 
 export function findLocationWithArtworkInState(
-  state: DesignState,
+  state: CartState,
   artworkGuid: string
 ) {
   return allLocations(state).find(
@@ -194,13 +197,13 @@ export function findLocationWithArtworkInState(
   );
 }
 
-export function findArtworkInState(state: DesignState, guid: string) {
+export function findArtworkInState(state: CartState, guid: string) {
   return allArtworks(state).find(
     (artwork) => artwork.objectData.editorGuid === guid
   );
 }
 
-export function findLocationInState(state: DesignState, id: number) {
+export function findLocationInState(state: CartState, id: number) {
   return allLocations(state).find((location) => location.id === id);
 }
 
