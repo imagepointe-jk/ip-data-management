@@ -1,5 +1,6 @@
 import {
   DesignState,
+  DesignStateVariation,
   PlacedObject,
   TransformArgsPx,
 } from "@/types/schema/customizer";
@@ -11,6 +12,7 @@ import {
   findLocationInProductData,
   findLocationInState,
   findLocationWithArtworkInState,
+  findVariationInState,
 } from "@/customizer/utils";
 import { FullProductSettingsSerializable } from "./productData";
 import { editorSize } from "@/customizer/components/ProductView";
@@ -130,11 +132,59 @@ export const cartSlice = createSlice({
         objectData: newObject,
       });
     },
-    addVariation: (state, action: PayloadAction<{ variationId: number }>) => {},
+    addVariation: (
+      state,
+      action: PayloadAction<{
+        variationId: number;
+        targetProductData: FullProductSettingsSerializable;
+      }>
+    ) => {
+      const { targetProductData, variationId } = action.payload;
+
+      const existingVariation = findVariationInState(state, variationId);
+      if (existingVariation)
+        throw new Error(
+          `Tried to add additional instance of variation ${variationId}`
+        );
+
+      const variationData = targetProductData.variations.find(
+        (variation) => variation.id === variationId
+      );
+      if (!variationData)
+        throw new Error(`Variation id ${variationId} not found`);
+
+      const productInState = state.products.find(
+        (product) => product.id === targetProductData.id
+      )!;
+      const newVariation: DesignStateVariation = {
+        id: variationData.id,
+        views: variationData.views.map((view) => ({
+          id: view.id,
+          locations: view.locations.map((location) => ({
+            id: location.id,
+            artworks: [],
+          })),
+        })),
+      };
+
+      productInState?.variations.push(newVariation);
+    },
     removeVariation: (
       state,
-      action: PayloadAction<{ variationId: number }>
-    ) => {},
+      action: PayloadAction<{ targetProductId: number; variationId: number }>
+    ) => {
+      const { targetProductId, variationId } = action.payload;
+
+      const productInState = state.products.find(
+        (product) => product.id === targetProductId
+      );
+      if (!productInState)
+        throw new Error(`Product id ${targetProductId} not found in state`);
+
+      productInState.variations = productInState.variations.filter(
+        (variation) => variation.id !== variationId
+      );
+    },
   },
 });
 

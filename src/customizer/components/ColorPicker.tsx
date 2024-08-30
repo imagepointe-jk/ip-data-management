@@ -1,7 +1,12 @@
 "use client";
 
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
-import { useEditorSelectors } from "../redux/slices/editor";
+import {
+  setSelectedLocationId,
+  setSelectedVariationId,
+  setSelectedViewId,
+  useEditorSelectors,
+} from "../redux/slices/editor";
 import { findVariationInState } from "../utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
@@ -38,13 +43,45 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
   const removeAllowed = totalVariationsThisProduct > 1;
 
   function onClickAdd() {
-    if (isVariationInCart) return;
-    dispatch(addVariation({ variationId }));
+    if (isVariationInCart || !variationData) return;
+
+    const firstView = variationData.views[0];
+    if (!firstView) throw new Error("No views");
+
+    const firstLocation = firstView.locations[0];
+    if (!firstLocation) throw new Error("No locations");
+
+    dispatch(
+      addVariation({ variationId, targetProductData: selectedProductData })
+    );
+    dispatch(setSelectedVariationId(variationData.id));
+    dispatch(setSelectedViewId(firstView.id));
+    dispatch(setSelectedLocationId(firstLocation.id));
   }
 
   function onClickRemove() {
     if (!isVariationInCart && removeAllowed) return;
-    removeVariation({ variationId });
+
+    const productInState = cart.products.find(
+      (product) => product.id === selectedProductData.id
+    );
+    const variationToSelect = productInState?.variations.filter(
+      (variation) => variation.id !== variationId
+    )[0];
+    if (!variationToSelect) throw new Error("Can't delete last variation");
+
+    const viewToSelect = variationToSelect.views[0];
+    if (!viewToSelect) throw new Error("No view to select");
+
+    const locationToSelect = viewToSelect.locations[0];
+    if (!locationToSelect) throw new Error("No location to select");
+
+    dispatch(
+      removeVariation({ targetProductId: selectedProductData.id, variationId })
+    );
+    dispatch(setSelectedVariationId(variationToSelect.id));
+    dispatch(setSelectedViewId(viewToSelect.id));
+    dispatch(setSelectedLocationId(locationToSelect.id));
   }
 
   return (
