@@ -14,15 +14,28 @@ import { addDesign } from "@/customizer/redux/slices/cart";
 import {
   setDialogOpen,
   setSelectedEditorGuid,
+  useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
+import {
+  DesignWithIncludesSerializable,
+  useDesignDataSelector,
+} from "@/customizer/redux/slices/designData";
+import { useSelector } from "react-redux";
+import { StoreType } from "@/customizer/redux/store";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
-  design: DesignWithIncludes;
+  design: DesignWithIncludesSerializable;
 };
 export function DesignCard({ design }: Props) {
   // const { addDesign, setDialogOpen, setSelectedEditorGuid } = useEditor();
   const [viewIndex, setViewIndex] = useState(0); //0 is parent design, greater than 0 is variations (so 1 is variations[0])
   const dispatch = useDispatch();
+  const designData = useDesignDataSelector();
+  const { selectedProductData } = useEditorSelectors();
+  const selectedLocationId = useSelector(
+    (store: StoreType) => store.editorState.selectedLocationId
+  );
   const imageUrl =
     viewIndex === 0
       ? design.imageUrl
@@ -35,9 +48,19 @@ export function DesignCard({ design }: Props) {
   function onClickAdd() {
     const variationId =
       viewIndex > 0 ? design.variations[viewIndex - 1]?.id : undefined;
-    dispatch(addDesign({ designId: design.id, variationId }));
-    // dispatch(setDialogOpen(null));
-    // dispatch(setSelectedEditorGuid(added.editorGuid));
+    const newGuid = uuidv4();
+    dispatch(
+      addDesign({
+        designId: design.id,
+        variationId,
+        targetLocationId: selectedLocationId,
+        designData: designData.designs,
+        targetProductData: selectedProductData,
+        newGuid,
+      })
+    );
+    dispatch(setDialogOpen(null));
+    dispatch(setSelectedEditorGuid(newGuid));
   }
 
   function onClickArrow(direction: "left" | "right") {

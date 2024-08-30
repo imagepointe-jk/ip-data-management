@@ -3,7 +3,11 @@
 import { FullProductSettings } from "@/db/access/customizer";
 import { DesignResults } from "@/types/schema/designs";
 import { ReactNode, useEffect } from "react";
-import { createInitialState, makeProductDataSerializable } from "./utils";
+import {
+  createInitialState,
+  makeDesignResultsSerializable,
+  makeProductDataSerializable,
+} from "./utils";
 import { useDispatch } from "react-redux";
 import { setProductData } from "./redux/slices/productData";
 import { setCartProducts } from "./redux/slices/cart";
@@ -43,9 +47,10 @@ export function EditorProvider({
       initialDesignState,
     } = createInitialState(productData);
     const serializableData = makeProductDataSerializable(productData);
+    const serializableDesigns = makeDesignResultsSerializable(designs);
 
     dispatch(setProductData(serializableData));
-    dispatch(setDesignData(designs));
+    dispatch(setDesignData(serializableDesigns));
     dispatch(setCartProducts(initialDesignState));
     dispatch(setSelectedProductId(initialProduct.id));
     dispatch(setSelectedVariationId(initialVariation.id));
@@ -139,95 +144,94 @@ export function EditorProvider({
 //   if (!selectedLocation)
 //     throw new Error(`Selected location ${selectedLocationId} not found`);
 
-//   function deleteArtworkFromState(guid: string) {
-//     setDesignState((draft) => {
-//       const locationWithArtwork = findLocationWithArtworkInState(draft, guid);
-//       if (!locationWithArtwork) return;
-//       locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
-//         (artwork) => artwork.objectData.editorGuid !== guid
-//       );
-//     });
-//     setSelectedEditorGuid(null);
-//   }
-
-//   //expects absolute px amounts for position and size.
-//   //will convert to 0-1 range for storing in state.
-//   function setArtworkTransform(guid: string, transform: TransformArgsPx) {
-//     const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
-//       convertTransformArgs(editorSize, editorSize, transform);
-//     setDesignState((draft) => {
-//       const artwork = findArtworkInState(draft, guid);
-//       if (!artwork) return;
-
-//       if (xNormalized) artwork.objectData.positionNormalized.x = xNormalized;
-//       if (yNormalized) artwork.objectData.positionNormalized.y = yNormalized;
-//       if (widthNormalized)
-//         artwork.objectData.sizeNormalized.x = widthNormalized;
-//       if (heightNormalized)
-//         artwork.objectData.sizeNormalized.y = heightNormalized;
-//       if (transform.rotationDegrees)
-//         artwork.objectData.rotationDegrees = transform.rotationDegrees;
-//     });
-//   }
-
-//   function addDesign(designId: number, variationId?: number) {
-//     if (!selectedProductData) throw new Error("No selected product data");
-
-//     const design = designResults.designs.find(
-//       (design) => design.id === designId
+// function deleteArtworkFromState(guid: string) {
+//   setDesignState((draft) => {
+//     const locationWithArtwork = findLocationWithArtworkInState(draft, guid);
+//     if (!locationWithArtwork) return;
+//     locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
+//       (artwork) => artwork.objectData.editorGuid !== guid
 //     );
-//     const variation = design?.variations.find(
-//       (variation) => variation.id === variationId
-//     );
-//     if (!design) throw new Error(`Design ${designId} not found.`);
-//     if (!variation && variationId !== undefined)
-//       throw new Error(
-//         `Variation ${variationId} of design ${designId} not found.`
-//       );
+//   });
+//   setSelectedEditorGuid(null);
+// }
 
-//     const locationData = findLocationInProductData(
-//       selectedProductData,
-//       selectedLocationId
-//     );
-//     if (!locationData)
-//       throw new Error(
-//         `Location data for location ${selectedLocationId} not found`
-//       );
-//     const smallestSize = [locationData.width, locationData.height].sort(
-//       (a, b) => a - b
-//     )[0]!;
+// //expects absolute px amounts for position and size.
+// //will convert to 0-1 range for storing in state.
+// function setArtworkTransform(guid: string, transform: TransformArgsPx) {
+//   const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
+//     convertTransformArgs(editorSize, editorSize, transform);
+//   setDesignState((draft) => {
+//     const artwork = findArtworkInState(draft, guid);
+//     if (!artwork) return;
 
-//     const newObject: PlacedObject = {
-//       positionNormalized: {
-//         x: locationData.positionX,
-//         y: locationData.positionY,
+//     if (xNormalized) artwork.objectData.positionNormalized.x = xNormalized;
+//     if (yNormalized) artwork.objectData.positionNormalized.y = yNormalized;
+//     if (widthNormalized) artwork.objectData.sizeNormalized.x = widthNormalized;
+//     if (heightNormalized)
+//       artwork.objectData.sizeNormalized.y = heightNormalized;
+//     if (transform.rotationDegrees)
+//       artwork.objectData.rotationDegrees = transform.rotationDegrees;
+//   });
+// }
+
+// function addDesign(designId: number, variationId?: number) {
+//   if (!selectedProductData) throw new Error("No selected product data");
+
+//   const design = designResults.designs.find(
+//     (design) => design.id === designId
+//   );
+//   const variation = design?.variations.find(
+//     (variation) => variation.id === variationId
+//   );
+//   if (!design) throw new Error(`Design ${designId} not found.`);
+//   if (!variation && variationId !== undefined)
+//     throw new Error(
+//       `Variation ${variationId} of design ${designId} not found.`
+//     );
+
+//   const locationData = findLocationInProductData(
+//     selectedProductData,
+//     selectedLocationId
+//   );
+//   if (!locationData)
+//     throw new Error(
+//       `Location data for location ${selectedLocationId} not found`
+//     );
+//   const smallestSize = [locationData.width, locationData.height].sort(
+//     (a, b) => a - b
+//   )[0]!;
+
+//   const newObject: PlacedObject = {
+//     positionNormalized: {
+//       x: locationData.positionX,
+//       y: locationData.positionY,
+//     },
+//     sizeNormalized: {
+//       //currently only supports square images
+//       //if a rectangular one is used, the aspect ratio will be forced into 1:1
+//       x: smallestSize,
+//       y: smallestSize,
+//     },
+//     rotationDegrees: 0,
+//     editorGuid: uuidv4(),
+//   };
+
+//   setDesignState((draft) => {
+//     const location = findLocationInState(draft, selectedLocationId);
+//     if (!location) return;
+
+//     location.artworks.push({
+//       imageUrl: variation?.imageUrl || design.imageUrl,
+//       identifiers: {
+//         designId: design.id,
+//         variationId: variation?.id,
 //       },
-//       sizeNormalized: {
-//         //currently only supports square images
-//         //if a rectangular one is used, the aspect ratio will be forced into 1:1
-//         x: smallestSize,
-//         y: smallestSize,
-//       },
-//       rotationDegrees: 0,
-//       editorGuid: uuidv4(),
-//     };
-
-//     setDesignState((draft) => {
-//       const location = findLocationInState(draft, selectedLocationId);
-//       if (!location) return;
-
-//       location.artworks.push({
-//         imageUrl: variation?.imageUrl || design.imageUrl,
-//         identifiers: {
-//           designId: design.id,
-//           variationId: variation?.id,
-//         },
-//         objectData: newObject,
-//       });
+//       objectData: newObject,
 //     });
+//   });
 
-//     return newObject;
-//   }
+//   return newObject;
+// }
 
 //   function addVariation(variationId: number) {
 //     if (!selectedProductData) throw new Error("No selected product data");

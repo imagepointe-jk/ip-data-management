@@ -1,9 +1,13 @@
 import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
-import { useEditor } from "../../EditorProvider";
+// import { useEditor } from "../../EditorProvider";
 import { clamp } from "@/utility/misc";
 import { calculateObjectPositionLimits } from "@/customizer/utils";
+import { useSelector } from "react-redux";
+import { StoreType } from "@/customizer/redux/store";
+import { useDispatch } from "react-redux";
+import { setArtworkTransform } from "@/customizer/redux/slices/cart";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -38,7 +42,11 @@ type Props = {
 export function Transformable({ children, selected, limits }: Props) {
   const mainRef = useRef<Konva.Group>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
-  const { setArtworkTransform, selectedEditorGuid } = useEditor();
+  const selectedEditorGuid = useSelector(
+    (store: StoreType) => store.editorState.selectedEditorGuid
+  );
+  const dispatch = useDispatch();
+  // const { setArtworkTransform, selectedEditorGuid } = useEditor();
 
   function onTransformEnd() {
     const transformer = transformerRef.current;
@@ -74,13 +82,18 @@ export function Transformable({ children, selected, limits }: Props) {
     node.x(clampedX);
     node.y(clampedY);
 
-    setArtworkTransform(selectedEditorGuid, {
-      xPx: clampedX,
-      yPx: clampedY,
-      widthPx: newWidth,
-      heightPx: newHeight,
-      rotationDegrees: node.rotation(),
-    });
+    dispatch(
+      setArtworkTransform({
+        guid: selectedEditorGuid,
+        transform: {
+          xPx: clampedX,
+          yPx: clampedY,
+          widthPx: newWidth,
+          heightPx: newHeight,
+          rotationDegrees: node.rotation(),
+        },
+      })
+    );
   }
 
   function onDragEnd() {
@@ -101,10 +114,15 @@ export function Transformable({ children, selected, limits }: Props) {
     node.x(clampedX);
     node.y(clampedY);
 
-    setArtworkTransform(selectedEditorGuid, {
-      xPx: clampedX,
-      yPx: clampedY,
-    });
+    dispatch(
+      setArtworkTransform({
+        guid: selectedEditorGuid,
+        transform: {
+          xPx: clampedX,
+          yPx: clampedY,
+        },
+      })
+    );
   }
 
   useEffect(() => {

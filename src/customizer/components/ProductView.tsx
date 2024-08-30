@@ -67,7 +67,7 @@ export function ProductView() {
           width={550}
           height={550}
           onMouseEnter={() => setShowLocationFrames(true)}
-          onClick={() => setSelectedEditorGuid(null)}
+          onClick={() => dispatch(setSelectedEditorGuid(null))}
         />
       </Layer>
       <Layer>
@@ -100,7 +100,7 @@ export function ProductView() {
                 opacity={selectedLocation.id === location.id ? 1 : 0.3}
                 onClick={() => {
                   dispatch(setSelectedLocationId(location.id));
-                  setSelectedEditorGuid(null);
+                  dispatch(setSelectedEditorGuid(null));
                 }}
               />
             );

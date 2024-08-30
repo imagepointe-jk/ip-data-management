@@ -10,6 +10,11 @@ import {
   TransformArgsPx,
 } from "@/types/schema/customizer";
 import { FullProductSettingsSerializable } from "./redux/slices/productData";
+import { DesignResults } from "@/types/schema/designs";
+import {
+  DesignResultsSerializable,
+  DesignWithIncludesSerializable,
+} from "./redux/slices/designData";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -229,4 +234,20 @@ export function makeProductDataSerializable(
     };
     return newData;
   });
+}
+
+export function makeDesignResultsSerializable(
+  data: DesignResults
+): DesignResultsSerializable {
+  const newData: DesignResultsSerializable = {
+    ...data,
+    designs: data.designs.map((design) => {
+      const serializable: DesignWithIncludesSerializable = {
+        ...design,
+        date: "",
+      };
+      return serializable;
+    }),
+  };
+  return newData;
 }

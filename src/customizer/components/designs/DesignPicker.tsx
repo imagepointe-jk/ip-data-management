@@ -9,7 +9,11 @@ import { DesignResults, DesignWithIncludes } from "@/types/schema/designs";
 import { DesignCard } from "./DesignCard";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
-import { useDesignDataSelector } from "@/customizer/redux/slices/designData";
+import {
+  DesignResultsSerializable,
+  DesignWithIncludesSerializable,
+  useDesignDataSelector,
+} from "@/customizer/redux/slices/designData";
 
 const pageSize = 20;
 
@@ -58,9 +62,12 @@ export function DesignPicker() {
 }
 
 //small client-side filter function since we're currently getting all design data at once
-function filterDesigns(designResults: DesignResults, search?: string) {
-  const filtered: DesignWithIncludes[] = designResults.designs.filter(
-    (design) => {
+function filterDesigns(
+  designResults: DesignResultsSerializable,
+  search?: string
+) {
+  const filtered: DesignWithIncludesSerializable[] =
+    designResults.designs.filter((design) => {
       const subcategoryNames = design.designSubcategories.map(
         (sub) => sub.name
       );
@@ -75,8 +82,7 @@ function filterDesigns(designResults: DesignResults, search?: string) {
             str.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())
           )
         : true;
-    }
-  );
+    });
 
   return filtered;
 }

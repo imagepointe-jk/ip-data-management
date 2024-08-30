@@ -9,13 +9,16 @@ import { StoreType } from "./redux/store";
 
 export function Editor() {
   // const { selectedEditorGuid } = useEditor();
+  const selectedEditorGuid = useSelector(
+    (store: StoreType) => store.editorState.selectedEditorGuid
+  );
 
   return (
     <div>
       <div className={styles["main"]}>
         <Sidebar />
         <ProductView />
-        {/* {selectedEditorGuid && <ArtworkControls />} */}
+        {selectedEditorGuid && <ArtworkControls />}
       </div>
     </div>
   );
