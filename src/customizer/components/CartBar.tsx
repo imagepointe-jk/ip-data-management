@@ -4,7 +4,7 @@ import { StoreType } from "../redux/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { setDialogOpen } from "../redux/slices/editor";
+import { setModalOpen } from "../redux/slices/editor";
 import { countCartItems } from "../utils";
 
 export function CartBar() {
@@ -18,7 +18,7 @@ export function CartBar() {
     >
       <button
         className={styles["cart-bar-button"]}
-        onClick={() => dispatch(setDialogOpen("cart"))}
+        onClick={() => dispatch(setModalOpen("cart"))}
       >
         <div>
           <FontAwesomeIcon icon={faCartShopping} /> Cart

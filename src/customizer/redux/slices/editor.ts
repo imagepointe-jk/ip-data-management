@@ -6,10 +6,11 @@ import {
   findVariationInCart,
   findViewInCart,
 } from "@/customizer/utils";
-import { EditorDialog } from "@/types/schema/customizer";
+import { EditorDialog, EditorModal } from "@/types/schema/customizer";
 
 type EditorState = {
   dialogOpen: EditorDialog;
+  modalOpen: EditorModal;
   selectedEditorGuid: string | null;
   selectedProductId: number;
   selectedVariationId: number;
@@ -18,6 +19,7 @@ type EditorState = {
 };
 const initialState: EditorState = {
   dialogOpen: null,
+  modalOpen: null,
   selectedEditorGuid: null,
   selectedProductId: -1,
   selectedVariationId: -1,
@@ -31,6 +33,9 @@ export const editorSlice = createSlice({
   reducers: {
     setDialogOpen: (state, action: PayloadAction<EditorDialog>) => {
       state.dialogOpen = action.payload;
+    },
+    setModalOpen: (state, action: PayloadAction<EditorModal>) => {
+      state.modalOpen = action.payload;
     },
     setSelectedEditorGuid: (state, action: PayloadAction<string | null>) => {
       state.selectedEditorGuid = action.payload;
@@ -98,6 +103,7 @@ export function useEditorSelectors() {
 
 export const {
   setDialogOpen,
+  setModalOpen,
   setSelectedEditorGuid,
   setSelectedLocationId,
   setSelectedProductId,

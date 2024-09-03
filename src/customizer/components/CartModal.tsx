@@ -6,7 +6,7 @@ import {
   CartStateProduct,
   CartStateProductVariation,
 } from "@/types/schema/customizer";
-import { setDialogOpen, useEditorSelectors } from "../redux/slices/editor";
+import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
 import { useDispatch } from "react-redux";
 import { FullProductSettingsSerializable } from "../redux/slices/productData";
 
@@ -19,7 +19,7 @@ export function CartModal() {
       windowClassName={styles["cart-modal"]}
       xButtonClassName={styles["cart-x"]}
       bgStyle={{ position: "sticky", height: "100%" }}
-      onClickClose={() => dispatch(setDialogOpen(null))}
+      onClickClose={() => dispatch(setModalOpen(null))}
     >
       <div>
         {cart.present.products.map((item) => (

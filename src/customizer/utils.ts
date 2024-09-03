@@ -207,7 +207,7 @@ export function findLocationInCart(cart: CartState, id: number) {
   return allLocationsInCart(cart).find((location) => location.id === id);
 }
 
-//each variation counts as a separate cart item, so count the total variations of all products combined
+//each variation is treated as a separate cart item, so count the total variations of all products combined
 export function countCartItems(cart: CartState) {
   return cart.products.flatMap((product) => product.variations).length;
 }

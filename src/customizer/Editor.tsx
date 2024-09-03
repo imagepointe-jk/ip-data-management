@@ -12,8 +12,8 @@ export function Editor() {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
-  const openDialog = useSelector(
-    (store: StoreType) => store.editorState.dialogOpen
+  const openModal = useSelector(
+    (store: StoreType) => store.editorState.modalOpen
   );
 
   return (
@@ -22,7 +22,7 @@ export function Editor() {
         <Sidebar />
         <ProductView />
         <CartBar />
-        {openDialog === "cart" && <CartModal />}
+        {openModal === "cart" && <CartModal />}
         {selectedEditorGuid && <ArtworkControls />}
       </div>
     </div>
