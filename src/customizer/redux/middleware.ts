@@ -8,9 +8,9 @@ import {
   setSelectedViewId,
 } from "./slices/editor";
 import {
-  findLocationInState,
-  findVariationInState,
-  findViewInState,
+  findLocationInCart,
+  findVariationInCart,
+  findViewInCart,
 } from "../utils";
 
 //did not find a good way with redux-undo to resolve some post-undo/post-redo states.
@@ -49,7 +49,7 @@ export const recoveryMiddleware: Middleware =
         selectedProduct = firstProduct;
       }
 
-      let selectedVariation = findVariationInState(cart, selectedVariationId);
+      let selectedVariation = findVariationInCart(cart, selectedVariationId);
       if (!selectedVariation) {
         let firstVariation = selectedProduct.variations[0];
         if (!firstVariation)
@@ -58,7 +58,7 @@ export const recoveryMiddleware: Middleware =
         selectedVariation = firstVariation;
       }
 
-      let selectedView = findViewInState(cart, selectedViewId);
+      let selectedView = findViewInCart(cart, selectedViewId);
       if (!selectedView) {
         let firstView = selectedVariation.views[0];
         if (!firstView)
@@ -67,7 +67,7 @@ export const recoveryMiddleware: Middleware =
         selectedView = firstView;
       }
 
-      let selectedLocation = findLocationInState(cart, selectedLocationId);
+      let selectedLocation = findLocationInCart(cart, selectedLocationId);
       if (!selectedLocation) {
         let firstLocation = selectedView.locations[0];
         if (!firstLocation)

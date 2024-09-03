@@ -8,11 +8,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
 import {
   convertTransformArgs,
-  findArtworkInState,
+  findArtworkInCart,
   findLocationInProductData,
-  findLocationInState,
-  findLocationWithArtworkInState,
-  findVariationInState,
+  findLocationInCart,
+  findLocationWithArtworkInCart,
+  findVariationInCart,
 } from "@/customizer/utils";
 import { FullProductSettingsSerializable } from "./productData";
 import { editorSize } from "@/customizer/components/ProductView";
@@ -33,7 +33,7 @@ export const cartSlice = createSlice({
       action: PayloadAction<{ guid: string }>
     ) => {
       const { guid } = action.payload;
-      const locationWithArtwork = findLocationWithArtworkInState(state, guid);
+      const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
       if (!locationWithArtwork)
         throw new Error("Could not find artwork to delete");
       locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
@@ -49,7 +49,7 @@ export const cartSlice = createSlice({
       const { guid, transform } = action.payload;
       const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
         convertTransformArgs(editorSize, editorSize, transform);
-      const artwork = findArtworkInState(state, guid);
+      const artwork = findArtworkInCart(state, guid);
       if (!artwork) throw new Error("No artwork found to transform");
 
       if (xNormalized) artwork.objectData.positionNormalized.x = xNormalized;
@@ -119,7 +119,7 @@ export const cartSlice = createSlice({
         editorGuid: newGuid,
       };
 
-      const locationInState = findLocationInState(state, targetLocationId);
+      const locationInState = findLocationInCart(state, targetLocationId);
       if (!locationInState)
         throw new Error(`Location ${targetLocationId} not found in state`);
 
@@ -141,7 +141,7 @@ export const cartSlice = createSlice({
     ) => {
       const { targetProductData, variationId } = action.payload;
 
-      const existingVariation = findVariationInState(state, variationId);
+      const existingVariation = findVariationInCart(state, variationId);
       if (existingVariation)
         throw new Error(
           `Tried to add additional instance of variation ${variationId}`

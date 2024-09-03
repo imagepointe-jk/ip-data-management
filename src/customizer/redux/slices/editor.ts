@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { StoreType } from "../store";
 import {
-  findLocationInState,
-  findVariationInState,
-  findViewInState,
+  findLocationInCart,
+  findVariationInCart,
+  findViewInCart,
 } from "@/customizer/utils";
 
 type EditorDialog = "colors" | "designs" | "upload" | null;
@@ -66,12 +66,12 @@ export function useEditorSelectors() {
   const selectedProductData = data.find(
     (product) => product.id === selectedProductId
   );
-  const selectedVariation = findVariationInState(
+  const selectedVariation = findVariationInCart(
     state.present,
     selectedVariationId
   );
-  const selectedView = findViewInState(state.present, selectedViewId);
-  const selectedLocation = findLocationInState(
+  const selectedView = findViewInCart(state.present, selectedViewId);
+  const selectedLocation = findLocationInCart(
     state.present,
     selectedLocationId
   );

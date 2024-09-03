@@ -7,7 +7,7 @@ import {
   setSelectedViewId,
   useEditorSelectors,
 } from "../redux/slices/editor";
-import { findVariationInState } from "../utils";
+import { findVariationInCart } from "../utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
@@ -39,7 +39,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
   const variationData = selectedProductData.variations.find(
     (variation) => variation.id === variationId
   );
-  const isVariationInCart = !!findVariationInState(cart.present, variationId);
+  const isVariationInCart = !!findVariationInCart(cart.present, variationId);
   const totalVariationsThisProduct =
     cart.present.products.find(
       (product) => product.id === selectedProductData.id

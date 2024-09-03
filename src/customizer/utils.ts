@@ -161,35 +161,35 @@ export function createInitialState(products: FullProductSettings[]) {
   };
 }
 
-function allVariations(state: CartState) {
-  return state.products.flatMap((product) => product.variations);
+function allVariationsInCart(cart: CartState) {
+  return cart.products.flatMap((product) => product.variations);
 }
 
-function allViews(state: CartState) {
-  return allVariations(state).flatMap((variation) => variation.views);
+function allViewsInCart(cart: CartState) {
+  return allVariationsInCart(cart).flatMap((variation) => variation.views);
 }
 
-function allLocations(state: CartState) {
-  return allViews(state).flatMap((view) => view.locations);
+function allLocationsInCart(cart: CartState) {
+  return allViewsInCart(cart).flatMap((view) => view.locations);
 }
 
-function allArtworks(state: CartState) {
-  return allLocations(state).flatMap((location) => location.artworks);
+function allArtworksInCart(cart: CartState) {
+  return allLocationsInCart(cart).flatMap((location) => location.artworks);
 }
 
-export function findVariationInState(state: CartState, id: number) {
-  return allVariations(state).find((variation) => variation.id === id);
+export function findVariationInCart(cart: CartState, id: number) {
+  return allVariationsInCart(cart).find((variation) => variation.id === id);
 }
 
-export function findViewInState(state: CartState, id: number) {
-  return allViews(state).find((location) => location.id === id);
+export function findViewInCart(cart: CartState, id: number) {
+  return allViewsInCart(cart).find((location) => location.id === id);
 }
 
-export function findLocationWithArtworkInState(
-  state: CartState,
+export function findLocationWithArtworkInCart(
+  cart: CartState,
   artworkGuid: string
 ) {
-  return allLocations(state).find(
+  return allLocationsInCart(cart).find(
     (location) =>
       !!location.artworks.find(
         (artwork) => artwork.objectData.editorGuid === artworkGuid
@@ -197,14 +197,14 @@ export function findLocationWithArtworkInState(
   );
 }
 
-export function findArtworkInState(state: CartState, guid: string) {
-  return allArtworks(state).find(
+export function findArtworkInCart(cart: CartState, guid: string) {
+  return allArtworksInCart(cart).find(
     (artwork) => artwork.objectData.editorGuid === guid
   );
 }
 
-export function findLocationInState(state: CartState, id: number) {
-  return allLocations(state).find((location) => location.id === id);
+export function findLocationInCart(cart: CartState, id: number) {
+  return allLocationsInCart(cart).find((location) => location.id === id);
 }
 
 export function findLocationInProductData(
