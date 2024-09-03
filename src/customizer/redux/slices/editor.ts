@@ -6,8 +6,8 @@ import {
   findVariationInCart,
   findViewInCart,
 } from "@/customizer/utils";
+import { EditorDialog } from "@/types/schema/customizer";
 
-type EditorDialog = "colors" | "designs" | "upload" | null;
 type EditorState = {
   dialogOpen: EditorDialog;
   selectedEditorGuid: string | null;
@@ -92,6 +92,7 @@ export function useEditorSelectors() {
     selectedVariation,
     selectedView,
     selectedLocation,
+    allProductData: data,
   };
 }
 

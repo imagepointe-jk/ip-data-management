@@ -74,9 +74,10 @@ export type CartStateProductView = z.infer<typeof cartStateProductViewSchema>;
 export type CartStateProductVariation = z.infer<
   typeof cartStateProductVariationSchema
 >;
+export type CartStateProduct = z.infer<typeof cartStateProductSchema>;
 export type CartState = z.infer<typeof cartStateSchema>;
 
-export type EditorDialog = "colors" | "designs" | "upload" | null;
+export type EditorDialog = "colors" | "designs" | "upload" | "cart" | null;
 
 export type ViewWithIncludes = CustomProductView & {
   locations: CustomProductDecorationLocationNumeric[];
