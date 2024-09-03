@@ -7,9 +7,10 @@ import {
   CartStateProductLocation,
   CartStateProductVariation,
   CartStateProductView,
+  PopulatedProductSettings,
+  PopulatedProductSettingsSerializable,
   TransformArgsPx,
 } from "@/types/schema/customizer";
-import { FullProductSettingsSerializable } from "./redux/slices/productData";
 import { DesignResults } from "@/types/schema/designs";
 import {
   DesignResultsSerializable,
@@ -213,7 +214,7 @@ export function countCartItems(cart: CartState) {
 }
 
 export function findLocationInProductData(
-  data: FullProductSettingsSerializable,
+  data: PopulatedProductSettingsSerializable,
   id: number
 ) {
   return data.variations
@@ -222,7 +223,7 @@ export function findLocationInProductData(
 }
 
 export function findViewInProductData(
-  data: FullProductSettingsSerializable,
+  data: PopulatedProductSettingsSerializable,
   id: number
 ) {
   return data.variations
@@ -231,10 +232,10 @@ export function findViewInProductData(
 }
 
 export function makeProductDataSerializable(
-  data: FullProductSettings[]
-): FullProductSettingsSerializable[] {
+  data: PopulatedProductSettings[]
+): PopulatedProductSettingsSerializable[] {
   return data.map((item) => {
-    const newData: FullProductSettingsSerializable = {
+    const newData: PopulatedProductSettingsSerializable = {
       ...item,
       createdAt: "",
       updatedAt: "",

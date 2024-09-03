@@ -1,6 +1,5 @@
 "use client";
 
-import { FullProductSettings } from "@/db/access/customizer";
 import { DesignResults } from "@/types/schema/designs";
 import { ReactNode, useEffect } from "react";
 import {
@@ -21,11 +20,12 @@ import {
 } from "./redux/slices/editor";
 import { setDesignData } from "./redux/slices/designData";
 import { ActionCreators } from "redux-undo";
+import { PopulatedProductSettings } from "@/types/schema/customizer";
 
 export type EditorProps = {
   initialProductId: number;
   designs: DesignResults;
-  productData: FullProductSettings[];
+  productData: PopulatedProductSettings[];
 };
 export function EditorProvider({
   children,

@@ -86,6 +86,17 @@ export type ViewWithIncludes = CustomProductView & {
 export type VariationWithIncludes = CustomProductSettingsVariation & {
   views: ViewWithIncludes[];
 };
+export type PopulatedProductSettings = FullProductSettings & {
+  product: { name: string; weight: string } | undefined;
+};
+export type PopulatedProductSettingsSerializable = Omit<
+  FullProductSettings,
+  "createdAt" | "updatedAt"
+> & {
+  createdAt: string;
+  updatedAt: string;
+  product: { name: string; weight: string } | undefined;
+};
 export type EditorContext = {
   designResults: DesignResults;
   designState: CartState;
@@ -97,7 +108,7 @@ export type EditorContext = {
   setSelectedLocationId: (id: number) => void;
   dialogOpen: EditorDialog;
   setDialogOpen: (dialog: EditorDialog) => void;
-  selectedProductData: FullProductSettings;
+  selectedProductData: PopulatedProductSettings;
   deleteArtworkFromState: (guid: string) => void;
   setArtworkTransform: (guid: string, transform: TransformArgsPx) => void;
   addDesign: (designId: number, variationId?: number) => PlacedObject;

@@ -2,6 +2,7 @@ import {
   CartState,
   CartStateProductVariation,
   PlacedObject,
+  PopulatedProductSettingsSerializable,
   TransformArgsPx,
 } from "@/types/schema/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -14,7 +15,6 @@ import {
   findLocationWithArtworkInCart,
   findVariationInCart,
 } from "@/customizer/utils";
-import { FullProductSettingsSerializable } from "./productData";
 import { editorSize } from "@/customizer/components/ProductView";
 
 const initialState: CartState = {
@@ -68,7 +68,7 @@ export const cartSlice = createSlice({
         variationId?: number;
         targetLocationId: number;
         designData: DesignWithIncludesSerializable[];
-        targetProductData: FullProductSettingsSerializable;
+        targetProductData: PopulatedProductSettingsSerializable;
         newGuid: string;
       }>
     ) => {
@@ -136,7 +136,7 @@ export const cartSlice = createSlice({
       state,
       action: PayloadAction<{
         variationId: number;
-        targetProductData: FullProductSettingsSerializable;
+        targetProductData: PopulatedProductSettingsSerializable;
       }>
     ) => {
       const { targetProductData, variationId } = action.payload;

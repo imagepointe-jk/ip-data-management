@@ -5,10 +5,10 @@ import { StoreType } from "../redux/store";
 import {
   CartStateProduct,
   CartStateProductVariation,
+  PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
 import { useDispatch } from "react-redux";
-import { FullProductSettingsSerializable } from "../redux/slices/productData";
 
 export function CartModal() {
   const cart = useSelector((store: StoreType) => store.cart);
@@ -55,7 +55,7 @@ function CartProductGroup({ productInState }: CartProductProps) {
 }
 
 type CartProductVariationProps = {
-  productData: FullProductSettingsSerializable;
+  productData: PopulatedProductSettingsSerializable;
   variationInState: CartStateProductVariation;
 };
 function CartProductVariation({
@@ -65,17 +65,23 @@ function CartProductVariation({
   const variationData = productData.variations.find(
     (variation) => variation.id === variationInState.id
   );
+  const wooCommerceProductData = productData.product;
 
   return (
     <div>
-      Product Name
-      <div className={styles["cart-item-img-container"]}>
-        <img
-          className={styles["cart-item-img"]}
-          src={variationData?.views[0]?.imageUrl}
-          alt=""
-        />
-      </div>
+      {!variationData || (!wooCommerceProductData && <>Product error.</>)}
+      {variationData && wooCommerceProductData && (
+        <>
+          {`${wooCommerceProductData.name} (${variationData.color.name})`}
+          <div className={styles["cart-item-img-container"]}>
+            <img
+              className={styles["cart-item-img"]}
+              src={variationData.views[0]?.imageUrl}
+              alt=""
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
