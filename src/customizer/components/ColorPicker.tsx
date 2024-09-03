@@ -2,6 +2,7 @@
 
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import {
+  setSelectedEditorGuid,
   setSelectedLocationId,
   setSelectedVariationId,
   setSelectedViewId,
@@ -46,6 +47,21 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     )?.variations.length || 0;
   const removeAllowed = totalVariationsThisProduct > 1;
 
+  function onClickEdit() {
+    if (!isVariationInCart || !variationData) return;
+
+    const firstView = variationData.views[0];
+    if (!firstView) throw new Error("No views");
+
+    const firstLocation = firstView.locations[0];
+    if (!firstLocation) throw new Error("No locations");
+
+    dispatch(setSelectedVariationId(variationData.id));
+    dispatch(setSelectedViewId(firstView.id));
+    dispatch(setSelectedLocationId(firstLocation.id));
+    dispatch(setSelectedEditorGuid(null));
+  }
+
   function onClickAdd() {
     if (isVariationInCart || !variationData) return;
 
@@ -61,9 +77,11 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
         targetProductData: selectedProductData,
       })
     );
+
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
     dispatch(setSelectedLocationId(firstLocation.id));
+    dispatch(setSelectedEditorGuid(null));
   }
 
   function onClickRemove() {
@@ -92,6 +110,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     dispatch(setSelectedVariationId(variationToSelect.id));
     dispatch(setSelectedViewId(viewToSelect.id));
     dispatch(setSelectedLocationId(locationToSelect.id));
+    dispatch(setSelectedEditorGuid(null));
   }
 
   return (
@@ -103,7 +122,9 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
             style={{ backgroundColor: `#${variationData.color.hexCode}` }}
           ></div>
           <div>{variationData.color.name}</div>
-          <button disabled={!isVariationInCart}>Edit</button>
+          <button onClick={onClickEdit} disabled={!isVariationInCart}>
+            Edit
+          </button>
           <button onClick={onClickAdd} disabled={isVariationInCart}>
             Add
           </button>
