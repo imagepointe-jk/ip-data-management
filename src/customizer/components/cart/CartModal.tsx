@@ -1,13 +1,13 @@
 import { Modal } from "@/components/Modal";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { useSelector } from "react-redux";
-import { StoreType } from "../redux/store";
+import { StoreType } from "../../redux/store";
 import {
   CartStateProduct,
   CartStateProductVariation,
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
-import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
+import { setModalOpen, useEditorSelectors } from "../../redux/slices/editor";
 import { useDispatch } from "react-redux";
 
 export function CartModal() {

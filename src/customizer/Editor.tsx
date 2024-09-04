@@ -6,7 +6,7 @@ import { ArtworkControls } from "./components/ArtworkControls";
 import { useSelector } from "react-redux";
 import { StoreType } from "./redux/store";
 import { CartBar } from "./components/CartBar";
-import { CartModal } from "./components/CartModal";
+import { CartModal } from "./components/cart/CartModal";
 import { ViewControls } from "./components/ViewControls";
 
 export function Editor() {
