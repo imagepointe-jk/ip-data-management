@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { StoreType } from "./redux/store";
 import { CartBar } from "./components/CartBar";
 import { CartModal } from "./components/CartModal";
+import { ViewControls } from "./components/ViewControls";
 
 export function Editor() {
   const selectedEditorGuid = useSelector(
@@ -22,6 +23,7 @@ export function Editor() {
         <Sidebar />
         <ProductView />
         <CartBar />
+        <ViewControls />
         {openModal === "cart" && <CartModal />}
         {selectedEditorGuid && <ArtworkControls />}
       </div>
