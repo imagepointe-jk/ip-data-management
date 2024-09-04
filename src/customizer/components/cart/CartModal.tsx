@@ -2,13 +2,10 @@ import { Modal } from "@/components/Modal";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../../redux/store";
-import {
-  CartStateProduct,
-  CartStateProductVariation,
-  PopulatedProductSettingsSerializable,
-} from "@/types/schema/customizer";
+import { CartStateProduct } from "@/types/schema/customizer";
 import { setModalOpen, useEditorSelectors } from "../../redux/slices/editor";
 import { useDispatch } from "react-redux";
+import { CartProductVariation } from "./CartProductVariation";
 
 export function CartModal() {
   const cart = useSelector((store: StoreType) => store.cart);
@@ -50,38 +47,6 @@ function CartProductGroup({ productInState }: CartProductProps) {
             variationInState={variation}
           />
         ))}
-    </div>
-  );
-}
-
-type CartProductVariationProps = {
-  productData: PopulatedProductSettingsSerializable;
-  variationInState: CartStateProductVariation;
-};
-function CartProductVariation({
-  variationInState,
-  productData,
-}: CartProductVariationProps) {
-  const variationData = productData.variations.find(
-    (variation) => variation.id === variationInState.id
-  );
-  const wooCommerceProductData = productData.product;
-
-  return (
-    <div>
-      {!variationData || (!wooCommerceProductData && <>Product error.</>)}
-      {variationData && wooCommerceProductData && (
-        <>
-          {`${wooCommerceProductData.name} (${variationData.color.name})`}
-          <div className={styles["cart-item-img-container"]}>
-            <img
-              className={styles["cart-item-img"]}
-              src={variationData.views[0]?.imageUrl}
-              alt=""
-            />
-          </div>
-        </>
-      )}
     </div>
   );
 }

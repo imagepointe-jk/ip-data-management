@@ -253,9 +253,29 @@
   cursor: pointer;
 }
 
+.cart-item-flex {
+  display: flex;
+}
+
+.cart-item-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cart-item-form label {
+  display: block;
+}
+
+.cart-item-form input {
+  width: 100px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
 .cart-item-img-container {
-  width: 200px;
-  height: 200px;
+  max-width: 200px;
+  max-height: 200px;
 }
 
 .cart-item-img {
