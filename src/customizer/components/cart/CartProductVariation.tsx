@@ -1,5 +1,6 @@
 import {
   CartStateProductVariation,
+  CartStateProductView,
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner.module.css";
@@ -19,12 +20,19 @@ export function CartProductVariation({ variationInState, productData }: Props) {
       {!variationData || (!wooCommerceProductData && <>Product error.</>)}
       {variationData && wooCommerceProductData && (
         <>
-          <div className={styles["cart-item-img-container"]}>
-            <img
-              className={styles["cart-item-img"]}
-              src={variationData.views[0]?.imageUrl}
-              alt=""
-            />
+          <div className={styles["cart-item-views-container"]}>
+            {variationInState.views.map((view) => {
+              const viewData = variationData.views.find(
+                (viewData) => viewData.id === view.id
+              );
+              return (
+                <CartProductVariationView
+                  key={view.id}
+                  viewInState={view}
+                  viewData={viewData}
+                />
+              );
+            })}
           </div>
           <div>
             {`${wooCommerceProductData.name} (${variationData.color.name})`}
@@ -33,6 +41,57 @@ export function CartProductVariation({ variationInState, productData }: Props) {
               variationInState={variationInState}
             />
           </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+type CartProductVariationViewProps = {
+  viewInState: CartStateProductView;
+  viewData?: {
+    name: string;
+    imageUrl: string;
+  };
+};
+function CartProductVariationView({
+  viewInState,
+  viewData,
+}: CartProductVariationViewProps) {
+  return (
+    <div className={styles["cart-item-img-container"]}>
+      {!viewData && <>View error.</>}
+      {viewData && (
+        <>
+          {viewInState.locations.map((location) =>
+            location.artworks.map((artwork) => {
+              const {
+                imageUrl,
+                objectData: {
+                  editorGuid,
+                  positionNormalized,
+                  rotationDegrees,
+                  sizeNormalized,
+                },
+              } = artwork;
+
+              return (
+                <img
+                  key={editorGuid}
+                  src={imageUrl}
+                  style={{
+                    position: "absolute",
+                    left: `${positionNormalized.x * 100}%`,
+                    top: `${positionNormalized.y * 100}%`,
+                    width: `${sizeNormalized.x * 100}%`,
+                    height: `${sizeNormalized.y * 100}%`,
+                    rotate: `${rotationDegrees}deg`,
+                  }}
+                />
+              );
+            })
+          )}
+          <img className={styles["cart-item-img"]} src={viewData.imageUrl} />
         </>
       )}
     </div>
