@@ -6,9 +6,11 @@ import { CartStateProduct } from "@/types/schema/customizer";
 import { setModalOpen, useEditorSelectors } from "../../redux/slices/editor";
 import { useDispatch } from "react-redux";
 import { CartProductVariation } from "./CartProductVariation";
+import { useState } from "react";
+import { CartQuoteStep } from "./CartQuoteStep";
 
 export function CartModal() {
-  const cart = useSelector((store: StoreType) => store.cart);
+  const [step, setStep] = useState("review" as "review" | "quote");
   const dispatch = useDispatch();
 
   return (
@@ -19,11 +21,38 @@ export function CartModal() {
       onClickClose={() => dispatch(setModalOpen(null))}
     >
       <div>
+        {step === "review" && <CartReviewStep />}
+        {step === "quote" && <CartQuoteStep />}
+      </div>
+      <div className={styles["cart-step-buttons-container"]}>
+        {step === "review" && (
+          <>
+            <button onClick={() => setStep("quote")}>Continue</button>
+          </>
+        )}
+        {step === "quote" && (
+          <>
+            <button onClick={() => setStep("review")}>Back</button>
+            <button>Submit</button>
+          </>
+        )}
+      </div>
+    </Modal>
+  );
+}
+
+function CartReviewStep() {
+  const cart = useSelector((store: StoreType) => store.cart);
+
+  return (
+    <>
+      <h2>My Cart</h2>
+      <div className={styles["cart-items-container"]}>
         {cart.present.products.map((item) => (
           <CartProductGroup key={item.id} productInState={item} />
         ))}
       </div>
-    </Modal>
+    </>
   );
 }
 
