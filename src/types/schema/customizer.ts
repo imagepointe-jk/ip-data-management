@@ -41,7 +41,7 @@ const cartStateProductViewSchema = z.object({
   locations: z.array(cartStateProductLocationSchema),
 });
 
-const cartStateProductVariationSchema = z.object({
+export const cartStateProductVariationSchema = z.object({
   id: z.number(),
   views: z.array(cartStateProductViewSchema),
 });

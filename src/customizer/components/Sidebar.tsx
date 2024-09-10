@@ -12,14 +12,31 @@ import { UserUploads } from "./UserUploads";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { setDialogOpen } from "../redux/slices/editor";
+import { setDialogOpen, useEditorSelectors } from "../redux/slices/editor";
 import { ActionCreators } from "redux-undo";
+import { forceClientDownloadBlob } from "@/utility/misc";
+import { getRenderedVariationViews } from "@/fetch/client/customizer";
 
 export function Sidebar() {
   const dialogOpen = useSelector(
     (state: StoreType) => state.editorState.dialogOpen
   );
   const dispatch = useDispatch();
+  const { selectedVariation } = useEditorSelectors();
+
+  async function downloadDesign() {
+    try {
+      const response = await getRenderedVariationViews(selectedVariation);
+      if (!response.ok) {
+        const json = await response.json();
+        throw new Error(json.message);
+      }
+      const blob = await response.blob();
+      forceClientDownloadBlob(blob, "my-design");
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className={styles["side-container"]}>
@@ -47,6 +64,7 @@ export function Sidebar() {
         </button>
         <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
         <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
+        <button onClick={downloadDesign}>Download Design</button>
       </div>
       {dialogOpen !== null && (
         <div className={`${styles["dialog"]} ${styles["floating-container"]}`}>

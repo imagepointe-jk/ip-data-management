@@ -197,3 +197,12 @@ export function clamp(value: number, min: number, max: number) {
   if (value > max) return max;
   return value;
 }
+
+export function forceClientDownloadBlob(blob: Blob, downloadName: string) {
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = downloadName;
+  link.click();
+}

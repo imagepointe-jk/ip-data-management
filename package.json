@@ -16,7 +16,9 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@prisma/client": "^5.13.0",
     "@reduxjs/toolkit": "^2.2.7",
+    "archiver": "^7.0.1",
     "bcryptjs": "^2.4.3",
+    "canvas": "^2.11.2",
     "handlebars": "^4.7.8",
     "immer": "^10.1.1",
     "konva": "^9.3.14",
@@ -36,6 +38,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",
