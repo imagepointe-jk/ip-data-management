@@ -5,6 +5,8 @@ import { SelectProductStep } from "./starterSteps/SelectProductStep";
 import { SelectVariationStep } from "./starterSteps/SelectVariationStep";
 import { StepButtons } from "./starterSteps/StepButtons";
 import { WelcomeStep } from "./starterSteps/WelcomeStep";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   productData: PopulatedProductSettings[];
@@ -50,6 +52,25 @@ export function StarterSteps({
     if (stepIndex > 0) setStepIndex(stepIndex - 1);
   }
 
+  function onClickSkip() {
+    const productId = clickedProductId || productData[0]?.wooCommerceId;
+    if (!productId) {
+      console.error("Can't skip because no valid product ID could be found!");
+      return;
+    }
+
+    const variationId =
+      clickedVariationId ||
+      productData.find((product) => product.wooCommerceId === productId)
+        ?.variations[0]?.id;
+    if (!variationId) {
+      console.error("Can't skip because no valid variation ID could be found!");
+      return;
+    }
+
+    onCompleteSteps(productId, variationId);
+  }
+
   return (
     <div className={styles["main"]}>
       <div className={styles["starter-step-progress-container"]}>
@@ -87,6 +108,12 @@ export function StarterSteps({
           showSelectedProduct={productStep}
         />
       </div>
+      <button
+        className={styles["starter-step-skip-button"]}
+        onClick={onClickSkip}
+      >
+        <div>Skip Intro</div> <FontAwesomeIcon icon={faXmark} size="2x" />
+      </button>
     </div>
   );
 }
