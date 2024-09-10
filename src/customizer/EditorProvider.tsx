@@ -24,6 +24,7 @@ import { PopulatedProductSettings } from "@/types/schema/customizer";
 
 export type EditorProps = {
   initialProductId: number;
+  initialVariationId: number;
   designs: DesignResults;
   productData: PopulatedProductSettings[];
 };
@@ -31,6 +32,7 @@ export function EditorProvider({
   children,
   designs,
   initialProductId,
+  initialVariationId,
   productData,
 }: EditorProps & { children: ReactNode }) {
   const dispatch = useDispatch();
@@ -46,7 +48,7 @@ export function EditorProvider({
       initialView,
       initialProduct,
       initialDesignState,
-    } = createInitialState(productData);
+    } = createInitialState(productData, initialProductId, initialVariationId);
     const serializableData = makeProductDataSerializable(productData);
     const serializableDesigns = makeDesignResultsSerializable(designs);
 

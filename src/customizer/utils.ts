@@ -104,17 +104,25 @@ export function calculateObjectPositionLimits(params: {
   };
 }
 
-export function createInitialState(products: FullProductSettings[]) {
+export function createInitialState(
+  products: FullProductSettings[],
+  initialProductId: number,
+  initialVariationId: number
+) {
   //this becomes the first product added to the user's cart
   //currently this just picks the first one from our customizer db
   //will eventually need to be whatever id was specified in the URL
-  const firstProduct = products[0];
-  if (!firstProduct) throw new Error("No products");
+  const initialProduct = products.find(
+    (product) => product.wooCommerceId === initialProductId
+  );
+  if (!initialProduct) throw new Error("No initial product");
 
-  const firstVariation = firstProduct.variations[0];
-  if (!firstVariation) throw new Error("No variations");
+  const initialVariation = initialProduct.variations.find(
+    (variation) => variation.id === initialVariationId
+  );
+  if (!initialVariation) throw new Error("No initial variation");
 
-  const firstView = firstVariation.views[0];
+  const firstView = initialVariation.views[0];
   if (!firstView) throw new Error("No views");
 
   const firstLocation = firstView.locations[0];
@@ -128,19 +136,19 @@ export function createInitialState(products: FullProductSettings[]) {
     id: firstView.id,
     locations: [initialLocation],
   };
-  const initialVariation: CartStateProductVariation = {
-    id: firstVariation.id,
+  const initialVariationState: CartStateProductVariation = {
+    id: initialVariation.id,
     views: [initialView],
   };
 
   const initialDesignState: CartState = {
     products: [
       {
-        id: firstProduct.id,
+        id: initialProduct.id,
         variations: [
           {
-            id: firstVariation.id,
-            views: firstVariation.views.map((view) => ({
+            id: initialVariation.id,
+            views: initialVariation.views.map((view) => ({
               id: view.id,
               locations: view.locations.map((location) => ({
                 id: location.id,
@@ -155,8 +163,8 @@ export function createInitialState(products: FullProductSettings[]) {
 
   return {
     initialDesignState,
-    initialProduct: firstProduct,
-    initialVariation,
+    initialProduct,
+    initialVariation: initialVariationState,
     initialView,
     initialLocation,
   };

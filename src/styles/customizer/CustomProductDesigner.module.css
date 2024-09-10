@@ -346,3 +346,110 @@
   border: none;
   cursor: pointer;
 }
+
+.starter-step-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 30px;
+}
+
+.starter-step-progress-container {
+  width: 80%;
+  height: 5px;
+  background-color: lightgray;
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  top: 50px;
+}
+
+.starter-step-progress-bar {
+  background-color: #006ac6;
+  transition: 0.2s;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.starter-step-instructions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.starter-step-instruction-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.starter-step-cards-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 90%;
+  height: 350px;
+  overflow: auto;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.starter-step-card {
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.starter-step-card-clicked {
+  outline: 5px solid #006ac6;
+}
+
+.starter-step-card:hover {
+  scale: 110%;
+}
+
+.starter-step-card-text {
+  max-width: 200px;
+  text-align: center;
+}
+
+.starter-step-card-img-container {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.starter-step-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.starter-step-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.starter-step-buttons-container button {
+  display: block;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.starter-step-buttons-message {
+  height: 30px;
+}
