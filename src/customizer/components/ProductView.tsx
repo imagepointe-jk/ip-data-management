@@ -6,7 +6,6 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
 import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
-import { EditorImage } from "./productView/EditorImage";
 import {
   convertDesignerObjectData,
   findLocationInProductData,
@@ -14,16 +13,16 @@ import {
 } from "../utils";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
   useEditorSelectors,
 } from "../redux/slices/editor";
 import { useDispatch } from "react-redux";
+import { LocationFrames } from "./productView/LocationFrames";
+import { LocationWithArtworks } from "./productView/LocationWithArtworks";
 
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
-  const { selectedLocation, selectedView, selectedProductData } =
-    useEditorSelectors();
+  const { selectedView, selectedProductData } = useEditorSelectors();
   const dispatch = useDispatch();
 
   const viewInProductData = findViewInProductData(
@@ -50,17 +49,18 @@ export function ProductView() {
       onMouseDown={onClickStage}
     >
       <Layer>
-        {/* Detect mouse starting to leave product image */}
+        {/* Product image */}
+
         <Image
           ref={productImgRef}
           image={image}
           width={editorSize}
           height={editorSize}
-          onMouseEnter={() => setShowLocationFrames(false)}
+          onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
         />
-      </Layer>
-      <Layer>
-        {/* Detect mouse hovering over product image */}
+
+        {/* Central area: location frames visible when mouse is over this rect */}
+
         <Rect
           x={50}
           y={50}
@@ -69,43 +69,16 @@ export function ProductView() {
           onMouseEnter={() => setShowLocationFrames(true)}
           onClick={() => dispatch(setSelectedEditorGuid(null))}
         />
-      </Layer>
-      <Layer>
-        {showLocationFrames &&
-          viewInProductData.locations.map((location) => {
-            const { position, size } = convertDesignerObjectData(
-              editorSize,
-              editorSize,
-              {
-                positionNormalized: {
-                  x: location.positionX || 0,
-                  y: location.positionY || 0,
-                },
-                sizeNormalized: {
-                  x: location.width || 0,
-                  y: location.height || 0,
-                },
-              }
-            );
 
-            return (
-              <Rect
-                key={location.id}
-                x={position.x}
-                y={position.y}
-                width={size.x}
-                height={size.y}
-                stroke={"gray"}
-                strokeWidth={4}
-                opacity={selectedLocation.id === location.id ? 1 : 0.3}
-                onClick={() => {
-                  dispatch(setSelectedLocationId(location.id));
-                  dispatch(setSelectedEditorGuid(null));
-                }}
-              />
-            );
-          })}
+        {/* Location frames */}
+
+        {showLocationFrames && (
+          <LocationFrames locations={viewInProductData.locations} />
+        )}
       </Layer>
+
+      {/* Locations with artwork */}
+
       {selectedView.locations.map((location) => {
         const locationInProductData = selectedProductData
           ? findLocationInProductData(selectedProductData, location.id)
@@ -130,47 +103,11 @@ export function ProductView() {
             clipWidth={locationSize.x}
             clipHeight={locationSize.y}
           >
-            {location?.artworks.map((art) => {
-              const { position, size } = convertDesignerObjectData(
-                editorSize,
-                editorSize,
-                art.objectData
-              );
-              return (
-                <EditorImage
-                  key={art.objectData.editorGuid}
-                  editorGuid={art.objectData.editorGuid}
-                  src={art.imageUrl}
-                  x={position.x}
-                  y={position.y}
-                  width={size.x}
-                  height={size.y}
-                  rotationDeg={art.objectData.rotationDegrees}
-                  limits={{
-                    size: {
-                      min: {
-                        width: 50,
-                        height: 50,
-                      },
-                      max: {
-                        width: locationSize.x,
-                        height: locationSize.y,
-                      },
-                    },
-                    boundingRect: {
-                      topLeft: {
-                        x: locationPosition.x,
-                        y: locationPosition.y,
-                      },
-                      bottomRight: {
-                        x: locationPosition.x + locationSize.x,
-                        y: locationPosition.y + locationSize.y,
-                      },
-                    },
-                  }}
-                />
-              );
-            })}
+            <LocationWithArtworks
+              locationInState={location}
+              locationPosition={locationPosition}
+              locationSize={locationSize}
+            />
           </Layer>
         );
       })}
