@@ -1,4 +1,5 @@
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/sidebar.module.css";
+import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import {
   faCloudArrowUp,
   faPaintBrush,
@@ -39,24 +40,24 @@ export function Sidebar() {
   }
 
   return (
-    <div className={styles["side-container"]}>
-      <div className={`${styles["sidebar"]} ${styles["floating-container"]}`}>
+    <div className={stylesMain["side-container"]}>
+      <div className={`${styles["main"]} ${stylesMain["floating-container"]}`}>
         <button
-          className={styles["sidebar-button"]}
+          // className={styles["sidebar-button"]}
           onClick={() => dispatch(setDialogOpen("designs"))}
         >
           <FontAwesomeIcon icon={faStar} size={"2x"} />
           <div>Designs</div>
         </button>
         <button
-          className={styles["sidebar-button"]}
+          // className={styles["sidebar-button"]}
           onClick={() => dispatch(setDialogOpen("colors"))}
         >
           <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />
           <div>Colors</div>
         </button>
         <button
-          className={styles["sidebar-button"]}
+          // className={styles["sidebar-button"]}
           onClick={() => dispatch(setDialogOpen("upload"))}
         >
           <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />
@@ -67,12 +68,14 @@ export function Sidebar() {
         <button onClick={downloadDesign}>Download Design</button>
       </div>
       {dialogOpen !== null && (
-        <div className={`${styles["dialog"]} ${styles["floating-container"]}`}>
+        <div
+          className={`${stylesMain["dialog"]} ${stylesMain["floating-container"]}`}
+        >
           {dialogOpen === "colors" && <ColorPicker />}
           {dialogOpen === "designs" && <DesignPicker />}
           {dialogOpen === "upload" && <UserUploads />}
           <button
-            className={styles["dialog-x"]}
+            className={stylesMain["dialog-x"]}
             onClick={() => dispatch(setDialogOpen(null))}
           >
             <FontAwesomeIcon icon={faXmark} />

@@ -1,11 +1,11 @@
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 
 export function CartQuoteStep() {
   return (
     <>
       <div>
         <h2>Contact Information</h2>
-        <div className={styles["cart-contact-form"]}>
+        <div className={styles["contact-form"]}>
           <div>
             <label htmlFor="first-name">First Name</label>
             <input type="text" name="first-name" id="first-name" />

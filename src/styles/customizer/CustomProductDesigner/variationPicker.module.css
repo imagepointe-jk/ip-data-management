@@ -1,0 +1,26 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: sp;
+  font-size: 1rem;
+  padding: 10px;
+  gap: 10px;
+  border: 1px solid gray;
+  border-radius: 10px;
+}
+
+.choice-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+}
+
+.choice button {
+  display: block;
+}

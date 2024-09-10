@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { ProductView } from "./components/ProductView";
 import { Sidebar } from "./components/Sidebar";
 import { ArtworkControls } from "./components/ArtworkControls";

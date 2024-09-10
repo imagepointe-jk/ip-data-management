@@ -1,6 +1,6 @@
 import { PopulatedProductSettings } from "@/types/schema/customizer";
 import { Card } from "./Card";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 
 type Props = {
   productData: PopulatedProductSettings[];
@@ -15,7 +15,7 @@ export function SelectProductStep({
   return (
     <>
       <h1>Select a Product</h1>
-      <div className={styles["starter-step-cards-container"]}>
+      <div className={styles["cards-container"]}>
         {productData.map((product) => (
           <Card
             key={product.id}

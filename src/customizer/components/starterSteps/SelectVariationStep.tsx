@@ -1,5 +1,5 @@
 import { PopulatedProductSettings } from "@/types/schema/customizer";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 import { Card } from "./Card";
 
 type Props = {
@@ -22,7 +22,7 @@ export function SelectVariationStep({
   return (
     <>
       <h1>Select a Color</h1>
-      <div className={styles["starter-step-cards-container"]}>
+      <div className={styles["cards-container"]}>
         {product.variations.map((variation) => (
           <Card
             key={variation.id}

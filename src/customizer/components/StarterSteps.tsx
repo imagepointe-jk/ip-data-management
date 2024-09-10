@@ -1,4 +1,5 @@
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
+import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { PopulatedProductSettings } from "@/types/schema/customizer";
 import { useEffect, useState } from "react";
 import { SelectProductStep } from "./starterSteps/SelectProductStep";
@@ -72,14 +73,14 @@ export function StarterSteps({
   }
 
   return (
-    <div className={styles["main"]}>
-      <div className={styles["starter-step-progress-container"]}>
+    <div className={stylesMain["main"]}>
+      <div className={styles["progress-container"]}>
         <div
-          className={styles["starter-step-progress-bar"]}
+          className={styles["progress-bar"]}
           style={{ right: `${100 - ((stepIndex + 1) / totalSteps) * 100}%` }}
         ></div>
       </div>
-      <div className={styles["starter-step-main"]}>
+      <div className={styles["main"]}>
         {welcomeStep && <WelcomeStep />}
         {productStep && (
           <SelectProductStep
@@ -108,10 +109,7 @@ export function StarterSteps({
           showSelectedProduct={productStep}
         />
       </div>
-      <button
-        className={styles["starter-step-skip-button"]}
-        onClick={onClickSkip}
-      >
+      <button className={styles["skip-button"]} onClick={onClickSkip}>
         <div>Skip Intro</div> <FontAwesomeIcon icon={faXmark} size="2x" />
       </button>
     </div>

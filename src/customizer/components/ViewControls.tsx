@@ -4,7 +4,7 @@ import {
   selectPreviousView,
   useEditorSelectors,
 } from "../redux/slices/editor";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { StoreType } from "../redux/store";
 import { findViewInProductData } from "../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

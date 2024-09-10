@@ -1,4 +1,4 @@
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/designPicker.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -68,8 +68,8 @@ export function DesignCard({ design }: Props) {
   }
 
   return (
-    <div className={styles["design-card"]}>
-      <div className={styles["design-img-container"]}>
+    <div className={styles["card"]}>
+      <div className={styles["img-container"]}>
         <img
           className={styles["contained-img"]}
           src={imageUrl || IMAGE_NOT_FOUND_URL}
@@ -77,22 +77,22 @@ export function DesignCard({ design }: Props) {
             backgroundColor: `#${bgColor}`,
           }}
         />
-        <button className={styles["design-add-button"]} onClick={onClickAdd}>
+        <button className={styles["add-button"]} onClick={onClickAdd}>
           + Add
         </button>
         {design.variations.length > 0 && (
           <>
-            <div className={styles["design-variations-notification"]}>
+            <div className={styles["variations-notification"]}>
               {design.variations.length + 1} variations
             </div>
             <button
-              className={`${styles["design-card-arrow"]} ${styles["design-card-arrow-left"]}`}
+              className={`${styles["card-arrow"]} ${styles["card-arrow-left"]}`}
               onClick={() => onClickArrow("left")}
             >
               <FontAwesomeIcon icon={faChevronLeft} />
             </button>
             <button
-              className={`${styles["design-card-arrow"]} ${styles["design-card-arrow-right"]}`}
+              className={`${styles["card-arrow"]} ${styles["card-arrow-right"]}`}
               onClick={() => onClickArrow("right")}
             >
               <FontAwesomeIcon icon={faChevronRight} />

@@ -3,7 +3,7 @@ import {
   CartStateProductView,
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 
 type Props = {
   productData: PopulatedProductSettingsSerializable;

@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
   setSelectedEditorGuid,
   setSelectedLocationId,
@@ -21,7 +21,7 @@ export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();
 
   return (
-    <div className={styles["variation-choices-container"]}>
+    <div className={styles["main"]}>
       {selectedProductData.variations.map((variation) => (
         <VariationChoice key={variation.id} variationId={variation.id} />
       ))}
@@ -114,11 +114,11 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
   }
 
   return (
-    <div className={styles["variation-choice"]}>
+    <div className={styles["choice"]}>
       {variationData && (
         <>
           <div
-            className={styles["variation-choice-swatch"]}
+            className={styles["choice-swatch"]}
             style={{ backgroundColor: `#${variationData.color.hexCode}` }}
           ></div>
           <div>{variationData.color.name}</div>

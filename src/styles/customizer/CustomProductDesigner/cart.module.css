@@ -1,0 +1,97 @@
+.modal {
+  border-radius: 10px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  padding: 25px;
+  background-color: white;
+  cursor: initial;
+  width: 550px;
+  height: 550px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.x {
+  border: none;
+  background: none;
+  scale: 150%;
+  position: absolute;
+  top: 7px;
+  right: 4px;
+  cursor: pointer;
+}
+
+.cart-items-container {
+  max-height: 425px;
+  overflow: auto;
+}
+
+.step-buttons-container {
+  display: flex;
+  margin-top: 20px;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.step-buttons-container button {
+  display: block;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.cart-item-flex {
+  display: flex;
+}
+
+.cart-item-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cart-item-form label {
+  display: block;
+}
+
+.cart-item-form input {
+  width: 100px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.cart-item-views-container {
+  flex: 0 0 200px;
+}
+
+.cart-item-img-container {
+  width: 100%;
+  height: 200px;
+  position: relative;
+}
+
+.cart-item-img {
+  width: 100%;
+  height: 100%;
+}
+
+.contact-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.contact-form label {
+  display: block;
+}
+
+.contact-form input {
+  font-size: 1rem;
+  padding: 5px;
+}

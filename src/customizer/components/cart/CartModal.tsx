@@ -1,5 +1,5 @@
 import { Modal } from "@/components/Modal";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../../redux/store";
 import { CartStateProduct } from "@/types/schema/customizer";
@@ -15,8 +15,8 @@ export function CartModal() {
 
   return (
     <Modal
-      windowClassName={styles["cart-modal"]}
-      xButtonClassName={styles["cart-x"]}
+      windowClassName={styles["modal"]}
+      xButtonClassName={styles["x"]}
       bgStyle={{ position: "sticky", height: "100%" }}
       onClickClose={() => dispatch(setModalOpen(null))}
     >
@@ -24,7 +24,7 @@ export function CartModal() {
         {step === "review" && <CartReviewStep />}
         {step === "quote" && <CartQuoteStep />}
       </div>
-      <div className={styles["cart-step-buttons-container"]}>
+      <div className={styles["step-buttons-container"]}>
         {step === "review" && (
           <>
             <button onClick={() => setStep("quote")}>Continue</button>

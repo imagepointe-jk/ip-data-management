@@ -1,0 +1,12 @@
+.main {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.main button {
+  display: block;
+}

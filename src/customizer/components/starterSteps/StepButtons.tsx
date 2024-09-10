@@ -1,4 +1,4 @@
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 import { PopulatedProductSettings } from "@/types/schema/customizer";
 
 type Props = {
@@ -23,7 +23,7 @@ export function StepButtons({
 }: Props) {
   return (
     <div>
-      <div className={styles["starter-step-buttons-message"]}>
+      <div className={styles["buttons-message"]}>
         {showSelectedProduct && clickedProductId !== null && (
           <>
             You selected:{" "}
@@ -35,7 +35,7 @@ export function StepButtons({
           </>
         )}
       </div>
-      <div className={styles["starter-step-buttons-container"]}>
+      <div className={styles["buttons-container"]}>
         <button onClick={onClickBack} disabled={!allowBack}>
           Back
         </button>

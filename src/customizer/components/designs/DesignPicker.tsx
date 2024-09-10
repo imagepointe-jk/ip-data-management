@@ -6,7 +6,7 @@ import {
   DesignWithIncludesSerializable,
   useDesignDataSelector,
 } from "@/customizer/redux/slices/designData";
-import styles from "@/styles/customizer/CustomProductDesigner.module.css";
+import styles from "@/styles/customizer/CustomProductDesigner/designPicker.module.css";
 import { getArrayPage } from "@/utility/misc";
 import { useState } from "react";
 import { DesignCard } from "./DesignCard";
@@ -26,14 +26,14 @@ export function DesignPicker() {
     <div>
       <div>
         <input
-          className={styles["design-search"]}
+          className={styles["search"]}
           type="text"
           placeholder="Search designs..."
           onChange={(e) => setSearch(e.target.value)}
           value={search}
         />
       </div>
-      <div className={styles["design-results"]}>
+      <div className={styles["results"]}>
         {resultsPage.map((design) => (
           <DesignCard key={design.id} design={design} />
         ))}
@@ -47,7 +47,7 @@ export function DesignPicker() {
           buttonOverrides={{
             onClickPageNumber: (clicked) => setPage(clicked),
           }}
-          mainClassName={styles["design-page-numbers"]}
+          mainClassName={styles["page-numbers"]}
           buttonClassName={styles["page-button"]}
           activeButtonClassName={`${styles["page-button"]} ${styles["current"]}`}
         />
