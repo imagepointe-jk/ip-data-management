@@ -1,4 +1,4 @@
-import { uploadFileAction } from "@/actions/dropbox";
+import { uploadMediaAction } from "@/actions/wordpress";
 import { ChangeEvent } from "react";
 
 export function UserUploads() {
@@ -8,14 +8,16 @@ export function UserUploads() {
     const file = files[0];
     if (!file) return;
 
-    console.log(file.name);
+    const withNewFilename = new File([file], "example-42.png", {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+    const formData = new FormData();
+    formData.append("file", withNewFilename);
+
     try {
-      console.log("uploading...");
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("filename", "example-43");
-      await uploadFileAction(formData);
-      console.log("done");
+      const hostedUrl = await uploadMediaAction(formData);
+      console.log("uploaded at", hostedUrl);
     } catch (error) {
       console.error(error);
     }

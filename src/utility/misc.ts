@@ -1,4 +1,6 @@
+import { AppError } from "@/error";
 import crypto from "crypto";
+import { INTERNAL_SERVER_ERROR } from "./statusCodes";
 
 export function convertDateToDefaultInputValue(date: Date) {
   return date.toISOString().substring(0, 10);
@@ -205,4 +207,15 @@ export function forceClientDownloadBlob(blob: Blob, downloadName: string) {
   link.href = url;
   link.download = downloadName;
   link.click();
+}
+
+export function getEnvVariable(name: string) {
+  const value = process.env[name];
+  if (!value)
+    throw new AppError({
+      type: "Environment",
+      serverMessage: `Environment variable ${name} not found!`,
+      statusCode: INTERNAL_SERVER_ERROR,
+    });
+  return value;
 }
