@@ -1,0 +1,26 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-label-as-button {
+  background-color: #006ac6;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: block;
+  width: 100px;
+  text-align: center;
+}
+
+.upload-label-as-button input[type="file"] {
+  display: none;
+}
+
+.spinner {
+  color: white;
+  width: 18px;
+  height: 18px;
+}
