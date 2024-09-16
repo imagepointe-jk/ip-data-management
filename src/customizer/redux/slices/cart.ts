@@ -20,6 +20,19 @@ import { editorSize } from "@/customizer/components/ProductView";
 const initialState: CartState = {
   products: [],
 };
+type AddArtworkPayload = {
+  addDesignPayload?: {
+    designId: number;
+    variationId?: number;
+    designData: DesignWithIncludesSerializable[];
+  };
+  addUploadPayload?: {
+    uploadedUrl: string;
+  };
+  targetLocationId: number;
+  targetProductData: PopulatedProductSettingsSerializable;
+  newGuid: string;
+};
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -61,35 +74,35 @@ export const cartSlice = createSlice({
       if (transform.rotationDegrees)
         artwork.objectData.rotationDegrees = transform.rotationDegrees;
     },
-    addDesign: (
-      state,
-      action: PayloadAction<{
-        designId: number;
-        variationId?: number;
-        targetLocationId: number;
-        designData: DesignWithIncludesSerializable[];
-        targetProductData: PopulatedProductSettingsSerializable;
-        newGuid: string;
-      }>
-    ) => {
+    addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
       const {
-        designData,
-        designId,
-        variationId,
+        addDesignPayload,
+        addUploadPayload,
         targetLocationId,
         targetProductData,
         newGuid,
       } = action.payload;
-      const design = designData.find((design) => design.id === designId);
-      const variation = design?.variations.find(
-        (variation) => variation.id === variationId
-      );
+      let imageUrl = null as string | null;
 
-      if (!design) throw new Error(`Design ${designId} not found.`);
-      if (!variation && variationId !== undefined)
-        throw new Error(
-          `Variation ${variationId} of design ${designId} not found.`
+      if (addDesignPayload) {
+        const { designData, designId, variationId } = addDesignPayload;
+        const design = designData.find((design) => design.id === designId);
+        const variation = design?.variations.find(
+          (variation) => variation.id === variationId
         );
+
+        if (!design) throw new Error(`Design ${designId} not found.`);
+        if (!variation && variationId !== undefined)
+          throw new Error(
+            `Variation ${variationId} of design ${designId} not found.`
+          );
+
+        imageUrl = variation?.imageUrl || design.imageUrl;
+      } else if (addUploadPayload) {
+        imageUrl = addUploadPayload.uploadedUrl;
+      } else {
+        throw new Error("Invalid payload.");
+      }
 
       const locationData = findLocationInProductData(
         targetProductData,
@@ -124,10 +137,14 @@ export const cartSlice = createSlice({
         throw new Error(`Location ${targetLocationId} not found in state`);
 
       locationInState.artworks.push({
-        imageUrl: variation?.imageUrl || design.imageUrl,
+        imageUrl,
         identifiers: {
-          designId: design.id,
-          variationId: variation?.id,
+          designIdentifiers: addDesignPayload
+            ? {
+                designId: addDesignPayload.designId,
+                variationId: addDesignPayload.variationId,
+              }
+            : undefined,
         },
         objectData: newObject,
       });

@@ -48,10 +48,12 @@ export function DesignCard({ design }: Props) {
     const newGuid = uuidv4();
     dispatch(
       addDesign({
-        designId: design.id,
-        variationId,
+        addDesignPayload: {
+          designId: design.id,
+          variationId,
+          designData: designData.designs,
+        },
         targetLocationId: selectedLocationId,
-        designData: designData.designs,
         targetProductData: selectedProductData,
         newGuid,
       })

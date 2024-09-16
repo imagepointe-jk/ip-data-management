@@ -25,9 +25,13 @@ const objectDataSchema = z.object({
 const cartStateArtworkSchema = z.object({
   imageUrl: z.string(),
   identifiers: z.object({
-    designId: z.number(),
-    variationId: z.number().optional(),
-  }), //will also be used to point to URI of any user-uploaded artwork
+    designIdentifiers: z
+      .object({
+        designId: z.number(),
+        variationId: z.number().optional(),
+      })
+      .optional(),
+  }),
   objectData: objectDataSchema,
 });
 
