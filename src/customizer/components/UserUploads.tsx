@@ -8,7 +8,7 @@ export function UserUploads() {
     const file = files[0];
     if (!file) return;
 
-    const withNewFilename = new File([file], "example-42.png", {
+    const withNewFilename = new File([file], "customizer-upload.png", {
       type: file.type,
       lastModified: file.lastModified,
     });
@@ -16,7 +16,7 @@ export function UserUploads() {
     formData.append("file", withNewFilename);
 
     try {
-      const hostedUrl = await uploadMediaAction(formData);
+      const hostedUrl = await uploadMediaAction(formData, 8);
       console.log("uploaded at", hostedUrl);
     } catch (error) {
       console.error(error);

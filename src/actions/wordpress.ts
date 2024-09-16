@@ -3,10 +3,13 @@
 import { AppError } from "@/error";
 import { uploadMedia } from "@/fetch/wordpress";
 
-export async function uploadMediaAction(formData: FormData) {
+export async function uploadMediaAction(
+  formData: FormData,
+  realMediaLibraryFolderId?: number
+) {
   try {
     const file = formData.get("file") as File;
-    const response = await uploadMedia(file);
+    const response = await uploadMedia(file, realMediaLibraryFolderId);
 
     const json = await response.json();
     if (!response.ok) throw new Error(JSON.stringify(json));

@@ -1,6 +1,9 @@
 import { getEnvVariable } from "@/utility/misc";
 
-export async function uploadMedia(file: File) {
+export async function uploadMedia(
+  file: File,
+  realMediaLibraryFolderId?: number
+) {
   const key = getEnvVariable("IP_WP_APPLICATION_USERNAME");
   const secret = getEnvVariable("IP_WP_APPLICATION_PASSWORD");
   const headers = new Headers();
@@ -9,6 +12,9 @@ export async function uploadMedia(file: File) {
 
   const formdata = new FormData();
   formdata.append("file", file);
+  if (realMediaLibraryFolderId !== undefined) {
+    formdata.append("rmlFolder", `${realMediaLibraryFolderId}`);
+  }
 
   const requestOptions = {
     method: "POST",
