@@ -1,10 +1,11 @@
 import { uploadMediaAction } from "@/actions/wordpress";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import styles from "@/styles/customizer/CustomProductDesigner/upload.module.css";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 
 export function UserUploads() {
   const [status, setStatus] = useState("idle" as "idle" | "loading" | "error");
+  const inputRef = useRef(null as HTMLInputElement | null);
 
   async function onChoose(e: ChangeEvent<HTMLInputElement>) {
     if (status === "loading") return;
@@ -25,6 +26,11 @@ export function UserUploads() {
       const hostedUrl = await uploadMediaAction(formData, 8);
       console.log("uploaded at", hostedUrl);
       setStatus("idle");
+
+      if (inputRef.current !== null) {
+        //@ts-ignore
+        inputRef.current.value = null;
+      }
     } catch (error) {
       setStatus("error");
       console.error(error);
@@ -41,7 +47,12 @@ export function UserUploads() {
         {status === "loading" && (
           <LoadingIndicator className={styles["spinner"]} />
         )}
-        <input id="customizer-upload" type="file" onChange={onChoose} />
+        <input
+          id="customizer-upload"
+          type="file"
+          onChange={onChoose}
+          ref={inputRef}
+        />
       </label>
       {status === "error" && (
         <div style={{ color: "red" }}>There was an error.</div>
