@@ -14,6 +14,7 @@ import {
   findLocationInCart,
   findLocationWithArtworkInCart,
   findVariationInCart,
+  findTextInCart,
 } from "@/customizer/utils";
 import { editorSize } from "@/customizer/components/ProductView";
 
@@ -92,7 +93,7 @@ export const cartSlice = createSlice({
         (artwork) => artwork.objectData.editorGuid !== guid
       );
     },
-    setArtworkTransform: (
+    setObjectTransform: (
       state,
       action: PayloadAction<{ guid: string; transform: TransformArgsPx }>
     ) => {
@@ -101,17 +102,17 @@ export const cartSlice = createSlice({
       const { guid, transform } = action.payload;
       const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
         convertTransformArgs(editorSize, editorSize, transform);
-      const artwork = findArtworkInCart(state, guid);
-      if (!artwork) throw new Error("No artwork found to transform");
+      const object =
+        findArtworkInCart(state, guid) || findTextInCart(state, guid);
+      if (!object) throw new Error("No object found to transform");
 
-      if (xNormalized) artwork.objectData.positionNormalized.x = xNormalized;
-      if (yNormalized) artwork.objectData.positionNormalized.y = yNormalized;
-      if (widthNormalized)
-        artwork.objectData.sizeNormalized.x = widthNormalized;
+      if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
+      if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
+      if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
       if (heightNormalized)
-        artwork.objectData.sizeNormalized.y = heightNormalized;
+        object.objectData.sizeNormalized.y = heightNormalized;
       if (transform.rotationDegrees)
-        artwork.objectData.rotationDegrees = transform.rotationDegrees;
+        object.objectData.rotationDegrees = transform.rotationDegrees;
     },
     addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
       const {
@@ -172,7 +173,12 @@ export const cartSlice = createSlice({
         throw new Error(`Location ${targetLocationId} not found in state`);
 
       locationInState.texts.push({
-        text: "New Text",
+        textData: {
+          text: "New Text",
+          style: {
+            fontSize: 20,
+          },
+        },
         objectData: createNewObjectData(
           targetProductData,
           targetLocationId,
@@ -244,5 +250,5 @@ export const {
   addProductVariation,
   deleteArtworkFromState,
   removeProductVariation,
-  setArtworkTransform,
+  setObjectTransform,
 } = cartSlice.actions;

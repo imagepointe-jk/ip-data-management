@@ -1,8 +1,7 @@
 import { convertDesignerObjectData } from "@/customizer/utils";
-import { EditorImage } from "./EditorImage";
 import { editorSize } from "../ProductView";
 import { CartStateProductLocation } from "@/types/schema/customizer";
-import { Text } from "react-konva";
+import { EditorObject } from "./EditorObject";
 
 type Props = {
   locationInState: CartStateProductLocation;
@@ -29,37 +28,22 @@ export function RenderedLocation({
           art.objectData
         );
         return (
-          <EditorImage
+          <EditorObject
             key={art.objectData.editorGuid}
             editorGuid={art.objectData.editorGuid}
-            src={art.imageUrl}
+            imageData={{ src: art.imageUrl }}
             x={position.x}
             y={position.y}
             width={size.x}
             height={size.y}
             rotationDeg={art.objectData.rotationDegrees}
-            limits={{
-              size: {
-                min: {
-                  width: 50,
-                  height: 50,
-                },
-                max: {
-                  width: locationSize.x,
-                  height: locationSize.y,
-                },
+            limits={createObjectLimits(
+              {
+                x: locationSize.x,
+                y: locationSize.y,
               },
-              boundingRect: {
-                topLeft: {
-                  x: locationPosition.x,
-                  y: locationPosition.y,
-                },
-                bottomRight: {
-                  x: locationPosition.x + locationSize.x,
-                  y: locationPosition.y + locationSize.y,
-                },
-              },
-            }}
+              { x: locationPosition.x, y: locationPosition.y }
+            )}
           />
         );
       })}
@@ -70,23 +54,58 @@ export function RenderedLocation({
           text.objectData
         );
         return (
-          <Text
+          <EditorObject
             key={text.objectData.editorGuid}
-            text={text.text}
+            editorGuid={text.objectData.editorGuid}
             x={position.x}
             y={position.y}
             width={size.x}
-            fontSize={20}
-            fill={text.style?.hexCode}
-            align={text.style?.align}
-            fontStyle={text.style?.fontStyle}
-            strokeWidth={text.style?.strokeWidth}
-            textDecoration={text.style?.textDecoration}
-            stroke={text.style?.strokeHexCode}
             rotationDeg={text.objectData.rotationDegrees}
+            textData={text.textData}
+            limits={createObjectLimits(
+              {
+                x: locationSize.x,
+                y: locationSize.y,
+              },
+              { x: locationPosition.x, y: locationPosition.y }
+            )}
           />
         );
       })}
     </>
   );
+}
+
+function createObjectLimits(
+  locationSize: {
+    x: number;
+    y: number;
+  },
+  locationPosition: {
+    x: number;
+    y: number;
+  }
+) {
+  return {
+    size: {
+      min: {
+        width: 50,
+        height: 50,
+      },
+      max: {
+        width: locationSize.x,
+        height: locationSize.y,
+      },
+    },
+    boundingRect: {
+      topLeft: {
+        x: locationPosition.x,
+        y: locationPosition.y,
+      },
+      bottomRight: {
+        x: locationPosition.x + locationSize.x,
+        y: locationPosition.y + locationSize.y,
+      },
+    },
+  };
 }

@@ -7,6 +7,7 @@ import {
   CartStateProductLocation,
   CartStateProductVariation,
   CartStateProductView,
+  PlacedObject,
   PopulatedProductSettings,
   PopulatedProductSettingsSerializable,
   TransformArgsPx,
@@ -188,6 +189,10 @@ function allArtworksInCart(cart: CartState) {
   return allLocationsInCart(cart).flatMap((location) => location.artworks);
 }
 
+function allTextsInCart(cart: CartState) {
+  return allLocationsInCart(cart).flatMap((location) => location.texts);
+}
+
 export function findVariationInCart(cart: CartState, id: number) {
   return allVariationsInCart(cart).find((variation) => variation.id === id);
 }
@@ -211,6 +216,12 @@ export function findLocationWithArtworkInCart(
 export function findArtworkInCart(cart: CartState, guid: string) {
   return allArtworksInCart(cart).find(
     (artwork) => artwork.objectData.editorGuid === guid
+  );
+}
+
+export function findTextInCart(cart: CartState, guid: string) {
+  return allTextsInCart(cart).find(
+    (text) => text.objectData.editorGuid === guid
   );
 }
 

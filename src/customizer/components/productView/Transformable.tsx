@@ -6,7 +6,7 @@ import { calculateObjectPositionLimits } from "@/customizer/utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
-import { setArtworkTransform } from "@/customizer/redux/slices/cart";
+import { setObjectTransform } from "@/customizer/redux/slices/cart";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -81,7 +81,7 @@ export function Transformable({ children, selected, limits }: Props) {
     node.y(clampedY);
 
     dispatch(
-      setArtworkTransform({
+      setObjectTransform({
         guid: selectedEditorGuid,
         transform: {
           xPx: clampedX,
@@ -113,7 +113,7 @@ export function Transformable({ children, selected, limits }: Props) {
     node.y(clampedY);
 
     dispatch(
-      setArtworkTransform({
+      setObjectTransform({
         guid: selectedEditorGuid,
         transform: {
           xPx: clampedX,

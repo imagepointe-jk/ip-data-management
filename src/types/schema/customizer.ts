@@ -22,6 +22,21 @@ const objectDataSchema = z.object({
   rotationDegrees: z.number(),
 });
 
+const textDataSchema = z.object({
+  text: z.string(),
+  style: z
+    .object({
+      fontSize: z.number().optional(),
+      hexCode: z.string().optional(),
+      align: z.enum(["left", "center", "right"]).optional(),
+      fontStyle: z.enum(["italic", "bold", "italic bold"]).optional(),
+      textDecoration: z.enum(["underline", "line-through"]).optional(),
+      strokeHexCode: z.string().optional(),
+      strokeWidth: z.number().optional(),
+    })
+    .optional(),
+});
+
 const cartStateArtworkSchema = z.object({
   imageUrl: z.string(),
   identifiers: z.object({
@@ -37,18 +52,7 @@ const cartStateArtworkSchema = z.object({
 
 const cartStateTextSchema = z.object({
   objectData: objectDataSchema,
-  text: z.string(),
-  style: z
-    .object({
-      fontSize: z.number().optional(),
-      hexCode: z.string().optional(),
-      align: z.enum(["left", "center", "right"]).optional(),
-      fontStyle: z.enum(["italic", "bold", "italic bold"]).optional(),
-      textDecoration: z.enum(["underline", "line-through"]).optional(),
-      strokeHexCode: z.string().optional(),
-      strokeWidth: z.number().optional(),
-    })
-    .optional(),
+  textData: textDataSchema,
 });
 
 const cartStateProductLocationSchema = z.object({
@@ -77,6 +81,7 @@ export const cartStateSchema = z.object({
 });
 
 export type PlacedObject = z.infer<typeof objectDataSchema>;
+export type EditorTextData = z.infer<typeof textDataSchema>;
 
 //absolute pixel values
 export type TransformArgsPx = {
