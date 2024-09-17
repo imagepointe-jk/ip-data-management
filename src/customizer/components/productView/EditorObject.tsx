@@ -4,7 +4,10 @@ import { Transformable, TransformLimits } from "./Transformable";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
-import { setSelectedEditorGuid } from "@/customizer/redux/slices/editor";
+import {
+  setDialogOpen,
+  setSelectedEditorGuid,
+} from "@/customizer/redux/slices/editor";
 import { Image, Text } from "react-konva";
 import { EditorTextData } from "@/types/schema/customizer";
 
@@ -41,11 +44,16 @@ export function EditorObject({
   if (!textData && !imageData)
     throw new Error("EditorObject has no image data or text data!");
 
+  function onClick(isText?: boolean) {
+    dispatch(setSelectedEditorGuid(editorGuid));
+    if (isText) dispatch(setDialogOpen("text"));
+  }
+
   return (
     <Transformable selected={editorGuid === selectedEditorGuid} limits={limits}>
       {textData && (
         <Text
-          onClick={() => dispatch(setSelectedEditorGuid(editorGuid))}
+          onClick={() => onClick(true)}
           key={editorGuid}
           text={textData.text}
           x={x}
@@ -54,16 +62,16 @@ export function EditorObject({
           fontSize={textData.style?.fontSize}
           fill={textData.style?.hexCode}
           align={textData.style?.align}
-          fontStyle={textData.style?.fontStyle}
-          strokeWidth={textData.style?.strokeWidth}
-          textDecoration={textData.style?.textDecoration}
-          stroke={textData.style?.strokeHexCode}
+          fontStyle={textData.style?.fontStyle || undefined}
+          strokeWidth={textData.style?.strokeWidth || undefined}
+          textDecoration={textData.style?.textDecoration || undefined}
+          stroke={textData.style?.strokeHexCode || undefined}
           rotationDeg={rotationDeg}
         />
       )}
       {imageData && (
         <Image
-          onClick={() => dispatch(setSelectedEditorGuid(editorGuid))}
+          onClick={() => onClick()}
           image={image}
           width={width}
           height={height}

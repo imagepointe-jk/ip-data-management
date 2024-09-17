@@ -1,6 +1,7 @@
 import { uploadMediaAction } from "@/actions/wordpress";
 import { ChangeEvent, useRef, useState } from "react";
 import styles from "@/styles/customizer/CustomProductDesigner/upload.module.css";
+import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { useDispatch } from "react-redux";
 import { addDesign } from "../redux/slices/cart";
@@ -70,7 +71,7 @@ export function UserUploads() {
       <div>Add your own artwork to this design.</div>
       <label
         htmlFor="customizer-upload"
-        className={styles["upload-label-as-button"]}
+        className={`${stylesMain["basic-button"]} ${styles["upload-label-as-button"]}`}
       >
         {status !== "loading" && <>Select a File...</>}
         {status === "loading" && (

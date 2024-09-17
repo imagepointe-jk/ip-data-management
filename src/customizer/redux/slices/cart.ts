@@ -1,6 +1,8 @@
 import {
   CartState,
   CartStateProductVariation,
+  EditorTextData,
+  EditorTextStyle,
   PlacedObject,
   PopulatedProductSettingsSerializable,
   TransformArgsPx,
@@ -38,6 +40,10 @@ type AddTextPayload = {
   targetLocationId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
+};
+type EditTextPayload = Omit<EditorTextData, "text"> & {
+  text?: string;
+  guid: string;
 };
 
 function createNewObjectData(
@@ -177,6 +183,8 @@ export const cartSlice = createSlice({
           text: "New Text",
           style: {
             fontSize: 20,
+            hexCode: "#000000",
+            align: "left",
           },
         },
         objectData: createNewObjectData(
@@ -185,6 +193,34 @@ export const cartSlice = createSlice({
           newGuid
         ),
       });
+    },
+    editText: (state, action: PayloadAction<EditTextPayload>) => {
+      const { guid, style: incomingStyle, text: incomingText } = action.payload;
+      const text = findTextInCart(state, guid);
+      if (!text) throw new Error("Text not found");
+
+      const { textData } = text;
+      if (incomingText !== undefined) textData.text = incomingText;
+
+      if (!incomingStyle) return;
+
+      const newStyle: EditorTextStyle = {};
+      text.textData.style = text.textData.style || newStyle;
+
+      if (incomingStyle.align) text.textData.style.align = incomingStyle.align;
+      if (incomingStyle.fontSize)
+        text.textData.style.fontSize = incomingStyle.fontSize;
+      if (incomingStyle.fontStyle !== undefined)
+        text.textData.style.fontStyle = incomingStyle.fontStyle || undefined;
+      if (incomingStyle.hexCode !== undefined)
+        text.textData.style.hexCode = incomingStyle.hexCode || undefined;
+      if (incomingStyle.strokeHexCode !== undefined)
+        text.textData.style.strokeHexCode =
+          incomingStyle.strokeHexCode || undefined;
+      if (incomingStyle.strokeWidth !== undefined)
+        text.textData.style.strokeWidth = incomingStyle.strokeWidth;
+      if (incomingStyle.textDecoration !== undefined)
+        text.textData.style.textDecoration = incomingStyle.textDecoration;
     },
     addProductVariation: (
       state,
@@ -251,4 +287,5 @@ export const {
   deleteArtworkFromState,
   removeProductVariation,
   setObjectTransform,
+  editText,
 } = cartSlice.actions;

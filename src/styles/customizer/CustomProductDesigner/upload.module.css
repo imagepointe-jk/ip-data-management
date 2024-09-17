@@ -9,17 +9,6 @@
   margin-bottom: 0;
 }
 
-.upload-label-as-button {
-  background-color: #006ac6;
-  color: white;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-  display: block;
-  width: 200px;
-  text-align: center;
-}
-
 .upload-label-as-button input[type="file"] {
   display: none;
 }
