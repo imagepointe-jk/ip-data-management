@@ -213,6 +213,13 @@ export function findLocationWithArtworkInCart(
   );
 }
 
+export function findLocationWithTextInCart(cart: CartState, textGuid: string) {
+  return allLocationsInCart(cart).find(
+    (location) =>
+      !!location.texts.find((text) => text.objectData.editorGuid === textGuid)
+  );
+}
+
 export function findArtworkInCart(cart: CartState, guid: string) {
   return allArtworksInCart(cart).find(
     (artwork) => artwork.objectData.editorGuid === guid

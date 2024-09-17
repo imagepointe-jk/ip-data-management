@@ -17,6 +17,7 @@ import {
   findLocationWithArtworkInCart,
   findVariationInCart,
   findTextInCart,
+  findLocationWithTextInCart,
 } from "@/customizer/utils";
 import { editorSize } from "@/customizer/components/ProductView";
 
@@ -97,6 +98,14 @@ export const cartSlice = createSlice({
         throw new Error("Could not find artwork to delete");
       locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
         (artwork) => artwork.objectData.editorGuid !== guid
+      );
+    },
+    deleteTextFromState: (state, action: PayloadAction<{ guid: string }>) => {
+      const { guid } = action.payload;
+      const locationWithText = findLocationWithTextInCart(state, guid);
+      if (!locationWithText) throw new Error("Could not find text to delete");
+      locationWithText.texts = locationWithText.texts.filter(
+        (text) => text.objectData.editorGuid !== guid
       );
     },
     setObjectTransform: (
@@ -285,6 +294,7 @@ export const {
   addText,
   addProductVariation,
   deleteArtworkFromState,
+  deleteTextFromState,
   removeProductVariation,
   setObjectTransform,
   editText,
