@@ -10,3 +10,10 @@
 .main button {
   display: block;
 }
+
+.text-button-t {
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 0.8;
+  font-family: "Courier New", Courier, monospace;
+}

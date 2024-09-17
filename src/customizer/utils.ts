@@ -131,6 +131,7 @@ export function createInitialState(
   const initialLocation: CartStateProductLocation = {
     id: firstLocation.id,
     artworks: [],
+    texts: [],
   };
   const initialView: CartStateProductView = {
     id: firstView.id,
@@ -153,6 +154,7 @@ export function createInitialState(
               locations: view.locations.map((location) => ({
                 id: location.id,
                 artworks: [],
+                texts: [],
               })),
             })),
           },

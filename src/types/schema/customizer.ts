@@ -35,9 +35,26 @@ const cartStateArtworkSchema = z.object({
   objectData: objectDataSchema,
 });
 
+const cartStateTextSchema = z.object({
+  objectData: objectDataSchema,
+  text: z.string(),
+  style: z
+    .object({
+      fontSize: z.number().optional(),
+      hexCode: z.string().optional(),
+      align: z.enum(["left", "center", "right"]).optional(),
+      fontStyle: z.enum(["italic", "bold", "italic bold"]).optional(),
+      textDecoration: z.enum(["underline", "line-through"]).optional(),
+      strokeHexCode: z.string().optional(),
+      strokeWidth: z.number().optional(),
+    })
+    .optional(),
+});
+
 const cartStateProductLocationSchema = z.object({
   id: z.number(),
   artworks: z.array(cartStateArtworkSchema),
+  texts: z.array(cartStateTextSchema),
 });
 
 const cartStateProductViewSchema = z.object({
@@ -81,7 +98,7 @@ export type CartStateProductVariation = z.infer<
 export type CartStateProduct = z.infer<typeof cartStateProductSchema>;
 export type CartState = z.infer<typeof cartStateSchema>;
 
-export type EditorDialog = "colors" | "designs" | "upload" | null;
+export type EditorDialog = "colors" | "designs" | "upload" | "text" | null;
 export type EditorModal = "cart" | null;
 
 export type ViewWithIncludes = CustomProductView & {

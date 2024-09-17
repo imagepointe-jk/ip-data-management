@@ -2,6 +2,7 @@ import { convertDesignerObjectData } from "@/customizer/utils";
 import { EditorImage } from "./EditorImage";
 import { editorSize } from "../ProductView";
 import { CartStateProductLocation } from "@/types/schema/customizer";
+import { Text } from "react-konva";
 
 type Props = {
   locationInState: CartStateProductLocation;
@@ -14,7 +15,7 @@ type Props = {
     y: number;
   };
 };
-export function LocationWithArtworks({
+export function RenderedLocation({
   locationInState,
   locationSize,
   locationPosition,
@@ -59,6 +60,30 @@ export function LocationWithArtworks({
                 },
               },
             }}
+          />
+        );
+      })}
+      {locationInState.texts.map((text) => {
+        const { position, size } = convertDesignerObjectData(
+          editorSize,
+          editorSize,
+          text.objectData
+        );
+        return (
+          <Text
+            key={text.objectData.editorGuid}
+            text={text.text}
+            x={position.x}
+            y={position.y}
+            width={size.x}
+            fontSize={20}
+            fill={text.style?.hexCode}
+            align={text.style?.align}
+            fontStyle={text.style?.fontStyle}
+            strokeWidth={text.style?.strokeWidth}
+            textDecoration={text.style?.textDecoration}
+            stroke={text.style?.strokeHexCode}
+            rotationDeg={text.objectData.rotationDegrees}
           />
         );
       })}

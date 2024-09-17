@@ -17,6 +17,7 @@ import { setDialogOpen, useEditorSelectors } from "../redux/slices/editor";
 import { ActionCreators } from "redux-undo";
 import { forceClientDownloadBlob } from "@/utility/misc";
 import { getRenderedVariationViews } from "@/fetch/client/customizer";
+import { TextEditor } from "./text/TextEditor";
 
 export function Sidebar() {
   const dialogOpen = useSelector(
@@ -42,26 +43,21 @@ export function Sidebar() {
   return (
     <div className={stylesMain["side-container"]}>
       <div className={`${styles["main"]} ${stylesMain["floating-container"]}`}>
-        <button
-          // className={styles["sidebar-button"]}
-          onClick={() => dispatch(setDialogOpen("designs"))}
-        >
+        <button onClick={() => dispatch(setDialogOpen("designs"))}>
           <FontAwesomeIcon icon={faStar} size={"2x"} />
           <div>Designs</div>
         </button>
-        <button
-          // className={styles["sidebar-button"]}
-          onClick={() => dispatch(setDialogOpen("colors"))}
-        >
+        <button onClick={() => dispatch(setDialogOpen("colors"))}>
           <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />
           <div>Colors</div>
         </button>
-        <button
-          // className={styles["sidebar-button"]}
-          onClick={() => dispatch(setDialogOpen("upload"))}
-        >
+        <button onClick={() => dispatch(setDialogOpen("upload"))}>
           <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />
           <div>My Art</div>
+        </button>
+        <button onClick={() => dispatch(setDialogOpen("text"))}>
+          <div className={styles["text-button-t"]}>T</div>
+          <div>Text</div>
         </button>
         <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
         <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
@@ -74,6 +70,7 @@ export function Sidebar() {
           {dialogOpen === "colors" && <ColorPicker />}
           {dialogOpen === "designs" && <DesignPicker />}
           {dialogOpen === "upload" && <UserUploads />}
+          {dialogOpen === "text" && <TextEditor />}
           <button
             className={stylesMain["dialog-x"]}
             onClick={() => dispatch(setDialogOpen(null))}

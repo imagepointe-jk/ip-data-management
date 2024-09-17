@@ -17,7 +17,7 @@ import {
 } from "../redux/slices/editor";
 import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
-import { LocationWithArtworks } from "./productView/LocationWithArtworks";
+import { RenderedLocation } from "./productView/RenderedLocation";
 
 export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
@@ -103,7 +103,7 @@ export function ProductView() {
             clipWidth={locationSize.x}
             clipHeight={locationSize.y}
           >
-            <LocationWithArtworks
+            <RenderedLocation
               locationInState={location}
               locationPosition={locationPosition}
               locationSize={locationSize}
