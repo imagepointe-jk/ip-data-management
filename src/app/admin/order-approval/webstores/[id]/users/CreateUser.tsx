@@ -20,27 +20,29 @@ export function CreateUser({ webstoreId }: Props) {
   }
 
   return (
-    <details className="content-frame" style={{ width: "400px" }}>
-      <summary>Add User</summary>
-      <div>
-        Name{" "}
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+    <div className="content-frame" style={{ width: "400px" }}>
+      <div className="input-group-heading">Add User</div>
+      <div className="vert-flex-group">
+        <div>
+          <label className="input-label">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="input-label">Email</label>
+          <input
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <button onClick={onClickAdd}>+ Add User</button>
+        </div>
       </div>
-      <div>
-        Email{" "}
-        <input
-          type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </div>
-      <div>
-        <button onClick={onClickAdd}>+ Add User</button>
-      </div>
-    </details>
+    </div>
   );
 }

@@ -21,37 +21,35 @@ export function CreateWorkflow({ webstores }: Props) {
   }
 
   return (
-    <details>
-      <summary>Create New Workflow</summary>
-      <div>
-        Name{" "}
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+    <>
+      <div className="input-group-heading">Create New Workflow</div>
+      <div className="vert-flex-group">
+        <div>
+          <label className="input-label">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="input-label">Webstore</label>
+          <select
+            name="webstore-select"
+            onChange={(e) => setWebstoreId(+e.target.value)}
+            defaultValue={webstoreId}
+          >
+            {webstores.map((webstore) => (
+              <option key={webstore.id} value={webstore.id}>
+                {webstore.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <button onClick={create}>+ Create</button>
+        </div>
       </div>
-      <div>
-        Webstore
-        {webstores.map((webstore) => (
-          <div key={webstore.id}>
-            <label htmlFor={`webstore-id-${webstore.id}`}>
-              <input
-                type="radio"
-                name="webstore-id"
-                id={`webstore-id-${webstore.id}`}
-                value={webstore.id}
-                onChange={(e) => setWebstoreId(+e.target.value)}
-                checked={webstore.id === webstoreId}
-              />
-              {webstore.name}
-            </label>
-          </div>
-        ))}
-      </div>
-      <div>
-        <button onClick={create}>+ Create</button>
-      </div>
-    </details>
+    </>
   );
 }

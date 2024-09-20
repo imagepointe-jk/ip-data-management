@@ -20,9 +20,11 @@ export default async function AdminLayout({
   return (
     <>
       <AdminNavbar />
-      <SessionProvider basePath={BASE_PATH} session={session}>
-        <ToastProvider>{children}</ToastProvider>
-      </SessionProvider>
+      <div className="main-content">
+        <SessionProvider basePath={BASE_PATH} session={session}>
+          <ToastProvider>{children}</ToastProvider>
+        </SessionProvider>
+      </div>
     </>
   );
 }

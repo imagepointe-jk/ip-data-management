@@ -16,7 +16,7 @@ export default function NavbarLinks() {
       <li>
         <Link
           href="/admin/users"
-          className={path === "/admin/users" ? "current" : ""}
+          className={path.startsWith("/admin/users") ? "current" : ""}
         >
           Users
         </Link>
@@ -24,7 +24,7 @@ export default function NavbarLinks() {
       <li>
         <Link
           href="/admin/designs"
-          className={path === "/admin/designs" ? "current" : ""}
+          className={path.startsWith("/admin/designs") ? "current" : ""}
         >
           Designs
         </Link>
@@ -32,7 +32,7 @@ export default function NavbarLinks() {
       <li>
         <Link
           href="/admin/hubspot"
-          className={path === "/admin/hubspot" ? "current" : ""}
+          className={path.startsWith("/admin/hubspot") ? "current" : ""}
         >
           HubSpot
         </Link>
@@ -40,7 +40,7 @@ export default function NavbarLinks() {
       <li>
         <Link
           href="/admin/customizer"
-          className={path === "/admin/customizer" ? "current" : ""}
+          className={path.startsWith("/admin/customizer") ? "current" : ""}
         >
           Customizer
         </Link>
@@ -48,7 +48,7 @@ export default function NavbarLinks() {
       <li>
         <Link
           href="/admin/order-approval"
-          className={path === "/admin/order-approval" ? "current" : ""}
+          className={path.startsWith("/admin/order-approval") ? "current" : ""}
         >
           Order Approval
         </Link>

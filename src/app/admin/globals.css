@@ -89,8 +89,8 @@ a.normal-link:visited {
 }
 
 .main-content {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 button {
@@ -147,7 +147,8 @@ button.button-small {
 
 select,
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="email"] {
   font-size: 0.9rem;
   padding: 8px;
 }
@@ -156,11 +157,38 @@ input[type="number"] {
   width: 70px;
 }
 
+input.input-major {
+  font-size: 1.125rem;
+}
+
 .content-frame {
   background-color: rgb(235, 235, 235);
   padding: 15px;
   border-radius: 10px;
   border: 1px solid var(--color-alpha);
+}
+
+.content-frame-minor {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.input-group-heading {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.vert-flex-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.85rem;
 }
 
 table {
