@@ -143,12 +143,12 @@ export async function processFormattedText(
     const user = workflow.webstore.users.find(
       (user) => user.email === userEmail
     );
-    if (!user) throw new Error(`User with email ${userEmail} not found.`);
+    if (!user) console.error(`User with email ${userEmail} not found.`);
     const accessCode = instance.accessCodes.find(
       (code) => code.user.email === userEmail
     );
     if (!accessCode)
-      throw new Error(
+      console.error(
         `Access code not found for user ${userEmail} on workflow instance ${instance.id}.`
       );
 
@@ -169,8 +169,8 @@ export async function processFormattedText(
       processed = replacer.fn({
         text: processed,
         wcOrder: parsedOrder,
-        accessCode: accessCode.guid,
-        userName: user.name,
+        accessCode: accessCode?.guid || "ACCESS_CODE_NOT_FOUND",
+        userName: user?.name || "USER_NOT_FOUND",
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
       });
