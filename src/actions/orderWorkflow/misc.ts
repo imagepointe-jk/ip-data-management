@@ -8,7 +8,10 @@ import {
 } from "@/order-approval/main";
 import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
 import { sendEmail } from "@/utility/mail";
-import { createSupportEmail } from "@/order-approval/mail/mail";
+import {
+  createSupportEmail,
+  processFormattedText,
+} from "@/order-approval/mail/mail";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -174,4 +177,11 @@ export async function receiveOrderHelpForm(formData: FormData) {
       console.error(`Error sending support request email to ${address}`, error);
     }
   }
+}
+
+export async function processFormattedTextAction(e: FormData) {
+  const id = +`${e.get("id")}`;
+  const email = `${e.get("email")}`;
+  const text = (e.get("text") || "").toString();
+  return processFormattedText(text, id, email);
 }

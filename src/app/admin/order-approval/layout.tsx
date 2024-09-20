@@ -19,6 +19,11 @@ export default function Layout({ children }: { children: ReactNode }) {
               Webstores
             </Link>
           </li>
+          <li>
+            <Link href="/admin/order-approval/tools" className="normal-link">
+              Tools
+            </Link>
+          </li>
         </ul>
       </nav>
       {children}
