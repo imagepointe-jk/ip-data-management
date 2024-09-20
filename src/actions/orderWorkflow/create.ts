@@ -57,6 +57,8 @@ export async function createWebstore(formData: FormData) {
     allowApproverChangeMethod,
     allowUpsToCanada,
     shippingMethodIds,
+    customOrderApprovedEmail,
+    useCustomOrderApprovedEmail,
   } = validateWebstoreFormData(formData);
   const {
     ciphertext: apiKey,
@@ -84,6 +86,8 @@ export async function createWebstore(formData: FormData) {
       salesPersonEmail,
       otherSupportEmails,
       orderUpdatedEmails,
+      useCustomOrderApprovedEmail,
+      customOrderApprovedEmail,
     },
     allowApproverChangeMethod,
     allowUpsToCanada,

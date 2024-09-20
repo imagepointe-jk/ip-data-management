@@ -75,6 +75,8 @@ export async function updateWebstore(formData: FormData) {
     otherSupportEmails,
     salesPersonEmail,
     salesPersonName,
+    customOrderApprovedEmail,
+    useCustomOrderApprovedEmail,
   } = validateWebstoreFormData(formData);
   if (isNaN(+`${id}`))
     throw new Error(`Invalid webstore id ${id}. This is a bug.`);
@@ -117,6 +119,8 @@ export async function updateWebstore(formData: FormData) {
       otherSupportEmails,
       salesPersonEmail,
       salesPersonName,
+      customOrderApprovedEmail,
+      useCustomOrderApprovedEmail,
     },
   });
 

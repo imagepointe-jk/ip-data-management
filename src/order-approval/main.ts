@@ -19,7 +19,7 @@ import {
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
-import { decrypt } from "@/utility/misc";
+import { getEnvVariable } from "@/utility/misc";
 import {
   OrderWorkflowInstance,
   OrderWorkflowStep,
@@ -188,9 +188,26 @@ async function doWorkflowApprovedAction(
     `=====================Marking workflow instance ${workflowInstance.id} as "APPROVED"`
   );
   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
-  const shippingMessage = await createShippingEmail(workflowInstance.id);
+
+  const parentWorkflow = await getWorkflowWithIncludes(
+    workflowInstance.parentWorkflowId
+  );
+  if (!parentWorkflow) throw new Error("No parent workflow");
+  const {
+    webstore: { useCustomOrderApprovedEmail, customOrderApprovedEmail },
+  } = parentWorkflow;
+  const shippingEmail = getEnvVariable("IP_SHIPPING_EMAIL");
+
+  const shippingMessage = useCustomOrderApprovedEmail
+    ? await processFormattedText(
+        customOrderApprovedEmail || "",
+        workflowInstance.id,
+        shippingEmail
+      )
+    : await createShippingEmail(workflowInstance.id);
+
   await sendEmail(
-    `${process.env.IP_SHIPPING_EMAIL}`,
+    shippingEmail,
     `Order ${workflowInstance.wooCommerceOrderId} Approved`,
     shippingMessage
   );

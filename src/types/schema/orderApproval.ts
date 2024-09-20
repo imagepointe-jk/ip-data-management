@@ -26,6 +26,8 @@ export const webstoreFormDataSchema = z.object({
   shippingMethodIds: z.array(z.number()),
   allowApproverChangeMethod: z.boolean(),
   allowUpsToCanada: z.boolean(),
+  customOrderApprovedEmail: z.string(),
+  useCustomOrderApprovedEmail: z.boolean(),
 });
 
 export const orderApprovalServerDataSchema = z.object({

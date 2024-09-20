@@ -6,7 +6,7 @@ import { useToast } from "@/components/ToastProvider";
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, ReactNode, useState } from "react";
 
 type Props = {
   existingWebstore: UnwrapPromise<ReturnType<typeof getWebstoreWithIncludes>>;
@@ -15,8 +15,16 @@ type Props = {
     name: string;
     serviceCode: number | null;
   }[];
+  shortcodeReference: ReactNode;
 };
-export function EditingForm({ existingWebstore, shippingMethods }: Props) {
+export function EditingForm({
+  existingWebstore,
+  shippingMethods,
+  shortcodeReference,
+}: Props) {
+  const [useCustomEmail, setUseCustomEmail] = useState(
+    existingWebstore ? existingWebstore.useCustomOrderApprovedEmail : false
+  );
   const toast = useToast();
   const router = useRouter();
 
@@ -132,6 +140,41 @@ export function EditingForm({ existingWebstore, shippingMethods }: Props) {
             required={!existingWebstore}
           />
         </div>
+        <div>
+          <label
+            htmlFor="use-custom-order-approved-email"
+            className="input-label"
+          >
+            <input
+              type="checkbox"
+              name="use-custom-order-approved-email"
+              id="use-custom-order-approved-email"
+              checked={useCustomEmail}
+              onChange={(e) => setUseCustomEmail(e.target.checked)}
+            />
+            Use custom "order approved" email
+          </label>
+        </div>
+        {useCustomEmail && (
+          <>
+            <div>
+              <label
+                htmlFor="custom-order-approved-email"
+                className="input-label"
+              >
+                Custom "order approved" email
+              </label>
+              <textarea
+                name="custom-order-approved-email"
+                id="custom-order-approved-email"
+                cols={60}
+                rows={10}
+                defaultValue={existingWebstore?.customOrderApprovedEmail || ""}
+              ></textarea>
+            </div>
+            {shortcodeReference}
+          </>
+        )}
       </div>
       <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
       <h2>Shipping Options</h2>

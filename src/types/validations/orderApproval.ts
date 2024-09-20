@@ -152,5 +152,8 @@ export function validateWebstoreFormData(formData: FormData) {
       formData.get("allow-approver-change-method") === "on",
     allowUpsToCanada: formData.get("allow-ups-to-canada") === "on",
     shippingMethodIds: formData.getAll("shipping-methods").map((item) => +item),
+    customOrderApprovedEmail: formData.get("custom-order-approved-email"),
+    useCustomOrderApprovedEmail:
+      formData.get("use-custom-order-approved-email") === "on",
   });
 }

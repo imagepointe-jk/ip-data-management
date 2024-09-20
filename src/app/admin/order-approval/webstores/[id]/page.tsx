@@ -4,6 +4,7 @@ import {
 } from "@/db/access/orderApproval";
 import Link from "next/link";
 import { EditingForm } from "./EditingForm";
+import { ShortcodeReference } from "../../ShortcodeReference";
 
 type Props = {
   params: {
@@ -30,6 +31,7 @@ export default async function Page({ params }: Props) {
       <EditingForm
         existingWebstore={existingWebstore}
         shippingMethods={shippingMethods}
+        shortcodeReference={<ShortcodeReference />}
       />
     </>
   );

@@ -143,24 +143,26 @@ model CustomProductDecorationLocation {
 }
 
 model Webstore {
-  id                  Int                       @id @default(autoincrement())
-  name                String
-  organizationName    String
-  url                 String                    @unique
-  apiKey              String //encrypted
-  apiKeyEncryptIv     String
-  apiKeyEncryptTag    String
-  apiSecret           String //encrypted
-  apiSecretEncryptIv  String
-  apiSecretEncryptTag String
-  salesPersonName     String                    @default("None")
-  salesPersonEmail    String                    @default("None")
-  otherSupportEmails  String? //when a customer submits a help form, the email will also go to all of these addresses
-  orderUpdatedEmails  String?
-  shippingSettings    WebstoreShippingSettings?
-  shippingMethods     WebstoreShippingMethod[]
-  workflows           OrderWorkflow[]
-  users               OrderWorkflowUser[]
+  id                          Int                       @id @default(autoincrement())
+  name                        String
+  organizationName            String
+  url                         String                    @unique
+  apiKey                      String //encrypted
+  apiKeyEncryptIv             String
+  apiKeyEncryptTag            String
+  apiSecret                   String //encrypted
+  apiSecretEncryptIv          String
+  apiSecretEncryptTag         String
+  salesPersonName             String                    @default("None")
+  salesPersonEmail            String                    @default("None")
+  otherSupportEmails          String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails          String?
+  customOrderApprovedEmail    String?
+  useCustomOrderApprovedEmail Boolean                   @default(false)
+  shippingSettings            WebstoreShippingSettings?
+  shippingMethods             WebstoreShippingMethod[]
+  workflows                   OrderWorkflow[]
+  users                       OrderWorkflowUser[]
 }
 
 model WebstoreShippingSettings {
