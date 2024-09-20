@@ -15,27 +15,28 @@ import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type Replacer = {
   description: string;
-  fn: (
-    text: string,
-    wcOrder: WooCommerceOrder,
-    userName: string,
-    accessCode: string,
-    webstore: Webstore
-  ) => string;
+  fn: (inputs: {
+    text: string;
+    wcOrder: WooCommerceOrder;
+    userName: string;
+    accessCode: string;
+    webstore: Webstore;
+    denyReason: string | null;
+  }) => string;
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
 };
 export const replacers: Replacer[] = [
   {
     description: "Insert <br> for HTML",
-    fn: (text: string) => text.replace(/\r\n/g, "<br>"),
+    fn: ({ text }) => text.replace(/\r\n/g, "<br>"),
     automatic: true,
   },
   {
     description: "Insert order details",
     shortcode: "{order}",
     automatic: false,
-    fn: (text, wcOrder) =>
+    fn: ({ text, wcOrder }) =>
       text.replace(/\{order\}/gi, () => {
         const templateSource = fs.readFileSync(
           path.resolve(
@@ -53,13 +54,13 @@ export const replacers: Replacer[] = [
     description: "Insert user's name",
     shortcode: "{user}",
     automatic: false,
-    fn: (text, _, userEmail) => text.replace(/\{user\}/gi, () => userEmail),
+    fn: ({ text, userName }) => text.replace(/\{user\}/gi, () => userName),
   },
   {
     description: "Approver's 'approve' link",
     shortcode: "{approve}",
     automatic: false,
-    fn: (text, _, __, accessCode, webstore) =>
+    fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{approve\}/gi,
         `<a href="${createApproverFrontEndUrl(
@@ -73,7 +74,7 @@ export const replacers: Replacer[] = [
     description: "Approver's 'deny' link",
     shortcode: "{deny}",
     automatic: false,
-    fn: (text, _, __, accessCode, webstore) =>
+    fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{deny\}/gi,
         `<a href="${createApproverFrontEndUrl(
@@ -87,7 +88,7 @@ export const replacers: Replacer[] = [
     description: "Approver's link to review/edit order",
     shortcode: "{edit}",
     automatic: false,
-    fn: (text, _, __, accessCode, webstore) =>
+    fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{edit\}/gi,
         `<a href="${createApproverFrontEndUrl(
@@ -100,7 +101,7 @@ export const replacers: Replacer[] = [
     description: "Link to order details in WooCommerce backend",
     shortcode: "{order-wc}",
     automatic: false,
-    fn: (text, wcOrder, _, __, webstore) =>
+    fn: ({ text, wcOrder, webstore }) =>
       text.replace(
         /\{order-wc\}/,
         `<a href="${webstore.url}/wp-admin/post.php?post=${wcOrder.id}&action=edit">View Order</a>`
@@ -110,14 +111,20 @@ export const replacers: Replacer[] = [
     description: "Store name",
     shortcode: "{store}",
     automatic: false,
-    fn: (text, _, __, ___, webstore) =>
-      text.replace(/\{store\}/, webstore.name),
+    fn: ({ text, webstore }) => text.replace(/\{store\}/, webstore.name),
   },
   {
     description: "Order ID",
     shortcode: "{order-id}",
     automatic: false,
-    fn: (text, wcOrder) => text.replace(/\{order-id\}/, `${wcOrder.id}`),
+    fn: ({ text, wcOrder }) => text.replace(/\{order-id\}/, `${wcOrder.id}`),
+  },
+  {
+    description: "Reason given for order denial",
+    shortcode: "{deny-reason}",
+    automatic: false,
+    fn: ({ text, denyReason }) =>
+      text.replace(/\{deny-reason\}/, `${denyReason || "(no denial reason)"}`),
   },
 ];
 
@@ -159,13 +166,14 @@ export async function processFormattedText(
 
     let processed = text;
     for (const replacer of replacers) {
-      processed = replacer.fn(
-        processed,
-        parsedOrder,
-        user.name,
-        accessCode.guid,
-        workflow.webstore
-      );
+      processed = replacer.fn({
+        text: processed,
+        wcOrder: parsedOrder,
+        accessCode: accessCode.guid,
+        userName: user.name,
+        webstore: workflow.webstore,
+        denyReason: instance.deniedReason,
+      });
     }
     return processed;
   } catch (error) {
