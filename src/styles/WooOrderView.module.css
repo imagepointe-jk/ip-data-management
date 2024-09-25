@@ -181,6 +181,10 @@ td.line-item-x-container {
 }
 
 .info-circle {
+  color: #006ac6;
+}
+
+.info-circle-warning {
   display: block;
   color: #e78200;
 }
@@ -234,6 +238,11 @@ td.line-item-x-container {
 
 .help-error {
   color: rgb(202, 0, 0);
+}
+
+.edit-help-text {
+  margin-top: 10px;
+  font-size: 0.8rem;
 }
 
 @media screen and (max-width: 768px) {

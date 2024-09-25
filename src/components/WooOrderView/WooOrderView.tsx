@@ -17,6 +17,7 @@ import {
 } from "@/types/schema/woocommerce";
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
 import { HelpForm } from "./HelpForm";
+import { CONTACT_US_URL } from "@/constants";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -244,6 +245,17 @@ export function WooOrderView({
                   ratedShippingMethods={ratedShippingMethods}
                 />
               </div>
+              <div className={styles["edit-help-text"]}>
+                <FontAwesomeIcon
+                  icon={faInfoCircle}
+                  className={styles["info-circle"]}
+                />
+                You may edit quantities, shipping methods and remove products if
+                needed. Please keep in mind once a product is removed it cannot
+                be added back on this order page. Please{" "}
+                <a href={CONTACT_US_URL}>contact us</a> if you need help with
+                changing an order by following the link below.
+              </div>
               <div className={styles["submit-row"]}>
                 <button className={styles["submit"]} onClick={onClickSave}>
                   Save All Changes
@@ -251,7 +263,7 @@ export function WooOrderView({
                 {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
                   <FontAwesomeIcon
                     icon={faInfoCircle}
-                    className={styles["info-circle"]}
+                    className={styles["info-circle-warning"]}
                     size="2x"
                     title="Some values may be out-of-sync. Save changes to update."
                   />
