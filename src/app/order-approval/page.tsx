@@ -1,7 +1,7 @@
 "use client";
 
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
-import { WooOrderView } from "@/components/WooOrderView/WooOrderView";
+import { OrderEditForm } from "@/app/order-approval/OrderEditForm/OrderEditForm";
 import { validateOrderApprovalServerData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
@@ -167,7 +167,7 @@ function Main() {
           )}
           {action === null && (
             <div className={styles["order-view-container"]}>
-              <WooOrderView
+              <OrderEditForm
                 orderId={serverData.orderId}
                 shippingMethods={serverData.shippingMethods.map(
                   (method) => method.name

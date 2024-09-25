@@ -43,7 +43,7 @@ type Props = {
   shippingMethods: string[];
   userEmail?: string; //the email of the user accessing the order view
 };
-export function WooOrderView({
+export function OrderEditForm({
   orderId,
   storeUrl,
   getOrder,

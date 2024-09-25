@@ -1,7 +1,7 @@
 import { CONTACT_US_URL } from "@/constants";
 import styles from "@/styles/WooOrderView.module.css";
 import { FormEvent, useState } from "react";
-import { ButtonWithLoading } from "../ButtonWithLoading";
+import { ButtonWithLoading } from "../../../components/ButtonWithLoading";
 
 type Props = {
   setHelpMode: (b: boolean) => void;

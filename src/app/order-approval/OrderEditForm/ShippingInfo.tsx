@@ -1,6 +1,6 @@
 import styles from "@/styles/WooOrderView.module.css";
 import { Dispatch, SetStateAction } from "react";
-import { Permission, RatedShippingMethod } from "./WooOrderView";
+import { Permission, RatedShippingMethod } from "./OrderEditForm";
 import { CONTACT_US_URL } from "@/constants";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 

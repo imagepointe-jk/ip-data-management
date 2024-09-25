@@ -1,4 +1,4 @@
-import { RatedShippingMethod } from "@/components/WooOrderView/WooOrderView";
+import { RatedShippingMethod } from "@/app/order-approval/OrderEditForm/OrderEditForm";
 import {
   getUpsRate,
   getUspsDomesticPrice,

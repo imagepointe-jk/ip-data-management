@@ -1,5 +1,5 @@
 import styles from "@/styles/WooOrderView.module.css";
-import { RatedShippingMethod } from "./WooOrderView";
+import { RatedShippingMethod } from "./OrderEditForm";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 type Props = {
