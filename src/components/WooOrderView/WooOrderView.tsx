@@ -90,14 +90,19 @@ export function WooOrderView({
       const selectedValidMethod = validMethods.find(
         (method) => method.name === selectedMethod
       );
+      const validMethodsSorted = [...validMethods].sort((a, b) => {
+        const aTotal = a.total ? +a.total : Number.MAX_SAFE_INTEGER;
+        const bTotal = b.total ? +b.total : Number.MAX_SAFE_INTEGER; // make sure that any methods with NULL totals get pushed to the end
+        return aTotal - bTotal;
+      });
 
       //if not, force the first valid one to be selected instead; NEVER save a shipping method that isn't valid for the shipping address
       //if there are no valid methods anymore, save an error string
-      const firstValidMethod = validMethods[0];
+      const cheapestValidMethod = validMethodsSorted[0];
       const forcedMethod = {
         id: order.shippingLines[0]?.id || 0,
-        method_title: firstValidMethod
-          ? firstValidMethod.name
+        method_title: cheapestValidMethod
+          ? cheapestValidMethod.name
           : "SHIPPING METHOD ERROR",
       };
       const newShippingLines = selectedValidMethod
