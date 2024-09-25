@@ -4,6 +4,12 @@
   align-items: center;
 }
 
+.info-text {
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 30px;
+}
+
 .status-message {
   margin-top: 100px;
   text-align: center;
@@ -25,7 +31,7 @@
 .nav-buttons-container {
   display: flex;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-top: 30px;
 }
 
 .nav-buttons-container button {
