@@ -18,6 +18,12 @@
   width: 100%;
 }
 
+.info-text {
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 30px;
+}
+
 .column-right-align {
   text-align: right;
 }

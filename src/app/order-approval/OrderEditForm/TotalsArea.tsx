@@ -1,4 +1,4 @@
-import styles from "@/styles/WooOrderView.module.css";
+import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { RatedShippingMethod } from "./OrderEditForm";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 

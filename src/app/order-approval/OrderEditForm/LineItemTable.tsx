@@ -1,4 +1,4 @@
-import styles from "@/styles/WooOrderView.module.css";
+import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/styles/WooOrderView.module.css";
+import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import {
   faInfoCircle,
   faQuestionCircle,
@@ -18,6 +18,7 @@ import {
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
 import { HelpForm } from "./HelpForm";
 import { CONTACT_US_URL } from "@/constants";
+import { NavButtons } from "../NavButtons";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -42,6 +43,7 @@ type Props = {
   };
   shippingMethods: string[];
   userEmail?: string; //the email of the user accessing the order view
+  showNavButtons: boolean;
 };
 export function OrderEditForm({
   orderId,
@@ -53,6 +55,7 @@ export function OrderEditForm({
   shippingMethods,
   special,
   userEmail,
+  showNavButtons,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
@@ -212,80 +215,87 @@ export function OrderEditForm({
   }, []);
 
   return (
-    <div className={styles["main"]}>
-      {!helpMode && (
-        <>
-          {loading && (
-            <div className={styles["update-overlay"]}>
-              <div>{`${order ? "Updating" : "Loading"}`} order...</div>
-            </div>
-          )}
-          {!order && !loading && <div>Error finding order.</div>}
-          {order && (
-            <>
-              <h2>Order {orderId}</h2>
-              <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
-              <LineItemTable
-                order={order}
-                setOrder={setOrder}
-                removeLineItemIds={removeLineItemIds}
-                setRemoveLineItemIds={setRemoveLineItemIds}
-                setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-              />
-              <div className={styles["extra-details-flex"]}>
-                <ShippingInfo
+    <>
+      <div className={styles["info-text"]}>
+        Please review the following order and make changes if needed. Once
+        finished, please save your changes and then approve or deny the order.
+      </div>
+      <div className={styles["main"]}>
+        {!helpMode && (
+          <>
+            {loading && (
+              <div className={styles["update-overlay"]}>
+                <div>{`${order ? "Updating" : "Loading"}`} order...</div>
+              </div>
+            )}
+            {!order && !loading && <div>Error finding order.</div>}
+            {order && (
+              <>
+                <h2>Order {orderId}</h2>
+                <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
+                <LineItemTable
                   order={order}
-                  ratedShippingMethods={ratedShippingMethods}
                   setOrder={setOrder}
+                  removeLineItemIds={removeLineItemIds}
+                  setRemoveLineItemIds={setRemoveLineItemIds}
                   setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-                  permissions={permissions}
                 />
-                <TotalsArea
-                  order={order}
-                  ratedShippingMethods={ratedShippingMethods}
-                />
-              </div>
-              <div className={styles["edit-help-text"]}>
-                <FontAwesomeIcon
-                  icon={faInfoCircle}
-                  className={styles["info-circle"]}
-                />
-                You may edit quantities, shipping methods and remove products if
-                needed. Please keep in mind once a product is removed it cannot
-                be added back on this order page. Please{" "}
-                <a href={CONTACT_US_URL}>contact us</a> if you need help with
-                changing an order by following the link below.
-              </div>
-              <div className={styles["submit-row"]}>
-                <button className={styles["submit"]} onClick={onClickSave}>
-                  Save All Changes
-                </button>
-                {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+                <div className={styles["extra-details-flex"]}>
+                  <ShippingInfo
+                    order={order}
+                    ratedShippingMethods={ratedShippingMethods}
+                    setOrder={setOrder}
+                    setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                    permissions={permissions}
+                  />
+                  <TotalsArea
+                    order={order}
+                    ratedShippingMethods={ratedShippingMethods}
+                  />
+                </div>
+                <div className={styles["edit-help-text"]}>
                   <FontAwesomeIcon
                     icon={faInfoCircle}
-                    className={styles["info-circle-warning"]}
-                    size="2x"
-                    title="Some values may be out-of-sync. Save changes to update."
+                    className={styles["info-circle"]}
                   />
-                )}
-                <button
-                  className={styles["help-button"]}
-                  onClick={() => setHelpMode(true)}
-                >
-                  <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
-                  my order
-                </button>
-              </div>
-            </>
-          )}
-        </>
-      )}
-      {helpMode && (
-        <HelpForm
-          setHelpMode={setHelpMode}
-          onSubmitHelpForm={onSubmitHelpForm}
-        />
-      )}
-    </div>
+                  You may edit quantities, shipping methods and remove products
+                  if needed. Please keep in mind once a product is removed it
+                  cannot be added back on this order page. Please{" "}
+                  <a href={CONTACT_US_URL}>contact us</a> if you need help with
+                  changing an order by following the link below.
+                </div>
+                <div className={styles["submit-row"]}>
+                  <button className={styles["submit"]} onClick={onClickSave}>
+                    Save All Changes
+                  </button>
+                  {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className={styles["info-circle-warning"]}
+                      size="2x"
+                      title="Some values may be out-of-sync. Save changes to update."
+                    />
+                  )}
+                  <button
+                    className={styles["help-button"]}
+                    onClick={() => setHelpMode(true)}
+                  >
+                    <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
+                    my order
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        )}
+        {helpMode && (
+          <HelpForm
+            setHelpMode={setHelpMode}
+            onSubmitHelpForm={onSubmitHelpForm}
+          />
+        )}
+      </div>
+      {showNavButtons && <NavButtons beforeApproveNow={onClickSave} />}
+    </>
   );
 }

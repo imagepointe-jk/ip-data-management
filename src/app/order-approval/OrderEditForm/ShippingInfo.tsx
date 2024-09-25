@@ -1,4 +1,4 @@
-import styles from "@/styles/WooOrderView.module.css";
+import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { Dispatch, SetStateAction } from "react";
 import { Permission, RatedShippingMethod } from "./OrderEditForm";
 import { CONTACT_US_URL } from "@/constants";

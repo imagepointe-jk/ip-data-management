@@ -137,11 +137,6 @@ function Main() {
       {!serverData && !loading && !iframeLoading && <>Error.</>}
       {serverData && (
         <div className={styles["main"]}>
-          <div className={styles["info-text"]}>
-            Please review the following order and make changes if needed. Once
-            finished, please save your changes and then approve or deny the
-            order.
-          </div>
           {action === "approve" && (
             <>
               {/* {loading && <>Sending approval...</>} */}
@@ -187,30 +182,8 @@ function Main() {
                   allowUpsShippingToCanada: serverData.allowUpsToCanada,
                 }}
                 userEmail={serverData.userEmail}
+                showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet
               />
-            </div>
-          )}
-          {/* Only show the buttons if an action hasn't been attempted yet */}
-          {!actionSuccess && !actionAttempted && (
-            <div className={styles["nav-buttons-container"]}>
-              <button
-                className={styles["nav-button-review"]}
-                onClick={() => parentWindow.setSearchParam("action", null)}
-              >
-                Review
-              </button>
-              <button
-                className={styles["nav-button-approve"]}
-                onClick={() => parentWindow.setSearchParam("action", "approve")}
-              >
-                Approve Now
-              </button>
-              <button
-                className={styles["nav-button-deny"]}
-                onClick={() => parentWindow.setSearchParam("action", "deny")}
-              >
-                Deny
-              </button>
             </div>
           )}
         </div>
