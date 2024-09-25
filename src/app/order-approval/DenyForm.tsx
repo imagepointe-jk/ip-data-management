@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
+import { NavButtons } from "./NavButtons";
 
 type Props = {
   onClickSubmit: (reason: string) => void;
@@ -54,6 +55,7 @@ export default function DenyForm({
               There was an error. Please contact us.
             </div>
           )}
+          <NavButtons />
         </>
       )}
     </>

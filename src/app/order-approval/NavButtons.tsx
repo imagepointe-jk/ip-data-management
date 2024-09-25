@@ -2,14 +2,14 @@ import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 
 type Props = {
-  beforeApproveNow: () => Promise<void>;
+  beforeApproveNow?: () => Promise<void>;
 };
 
 export function NavButtons({ beforeApproveNow }: Props) {
   const { parentWindow } = useIframe();
 
   async function onClickApproveNow() {
-    await beforeApproveNow();
+    if (beforeApproveNow) await beforeApproveNow();
     parentWindow.setSearchParam("action", "approve");
   }
 
