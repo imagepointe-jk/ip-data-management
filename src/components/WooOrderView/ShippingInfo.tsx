@@ -177,8 +177,9 @@ export function ShippingInfo({
           <div className={styles["shipping-methods-container"]}>
             <h4>Shipping Method</h4>
             {validShippingMethods.length === 0 && (
-              <div>
-                No valid shipping methods found. Please{" "}
+              <div style={{ marginBottom: "10px" }}>
+                No valid shipping methods found. Please check your shipping
+                information for typos, misspellings, etc. Otherwise, please{" "}
                 <a href={CONTACT_US_URL}>contact us</a> for assistance.
               </div>
             )}
