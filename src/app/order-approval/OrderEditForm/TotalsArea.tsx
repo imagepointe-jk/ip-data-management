@@ -54,8 +54,9 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
         </div>
       ))}
       <div className={styles["info-box"]}>
-        *Shipping Total and Grand Total are estimates only. Please allow time
-        for processing prior to shipping.
+        *Shipping costs listed are estimates only. Actual shipping charges may
+        be more or less than shown. Please allow 24-48 business hours (M-F) to
+        process the order plus estimated delivery time for your order to arrive.
       </div>
     </div>
   );
