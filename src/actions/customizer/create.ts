@@ -1,4 +1,5 @@
 "use server";
+import { CustomProductRequest } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 
 export async function createVariation(parentSettingsId: number) {
@@ -57,4 +58,14 @@ export async function createLocation(parentViewId: number) {
     width: created.width.toNumber(),
     height: created.height.toNumber(),
   };
+}
+
+export async function createQuoteRequest(
+  data: Omit<CustomProductRequest, "id" | "createdAt">
+) {
+  const created = await prisma.customProductRequest.create({
+    data,
+  });
+
+  return created;
 }

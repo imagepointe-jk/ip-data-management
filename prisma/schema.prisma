@@ -142,6 +142,18 @@ model CustomProductDecorationLocation {
   frameColor   String            @default("808080") //hex code expected
 }
 
+model CustomProductRequest {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  company   String
+  local     String?
+  comments  String?
+  cartJson  String
+  createdAt DateTime @default(now())
+}
+
 model Webstore {
   id                          Int                       @id @default(autoincrement())
   name                        String

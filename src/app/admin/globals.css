@@ -227,6 +227,7 @@ table thead th .clickable .sort-arrows .down {
 table thead th > div,
 table tbody td {
   padding: 10px;
+  padding-left: 2px;
 }
 
 table tbody tr:nth-child(even) td {

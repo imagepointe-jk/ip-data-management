@@ -90,6 +90,29 @@ export async function getFullProductSettings(
   return convertFullProductSettings(settings);
 }
 
+export async function getQuoteRequests(params: {
+  page: number;
+  perPage: number;
+}) {
+  const { page, perPage } = params;
+
+  const [paginatedResults, allResults] = await prisma.$transaction([
+    prisma.customProductRequest.findMany({
+      take: perPage,
+      skip: perPage * (page - 1),
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+    prisma.customProductRequest.findMany(),
+  ]);
+
+  return {
+    totalResults: allResults.length,
+    results: paginatedResults,
+  };
+}
+
 //the productSettings data arrives with numbers in Decimal form.
 //convert to make them more usable in various places.
 function convertFullProductSettings(
