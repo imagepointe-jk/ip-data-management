@@ -3,6 +3,7 @@ import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.cs
 import {
   faCloudArrowUp,
   faPaintBrush,
+  faQuestionCircle,
   faStar,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +19,7 @@ import { ActionCreators } from "redux-undo";
 import { forceClientDownloadBlob } from "@/utility/misc";
 import { getRenderedVariationViews } from "@/fetch/client/customizer";
 import { TextEditor } from "./text/TextEditor";
+import { Help } from "./Help";
 
 export function Sidebar() {
   const dialogOpen = useSelector(
@@ -62,6 +64,10 @@ export function Sidebar() {
         <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
         <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
         <button onClick={downloadDesign}>Download Design</button>
+        <button onClick={() => dispatch(setDialogOpen("help"))}>
+          <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />
+          <div>Help</div>
+        </button>
       </div>
       {dialogOpen !== null && (
         <div
@@ -71,6 +77,7 @@ export function Sidebar() {
           {dialogOpen === "designs" && <DesignPicker />}
           {dialogOpen === "upload" && <UserUploads />}
           {dialogOpen === "text" && <TextEditor />}
+          {dialogOpen === "help" && <Help />}
           <button
             className={stylesMain["dialog-x"]}
             onClick={() => dispatch(setDialogOpen(null))}

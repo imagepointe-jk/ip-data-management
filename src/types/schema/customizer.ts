@@ -108,7 +108,13 @@ export type CartStateProductVariation = z.infer<
 export type CartStateProduct = z.infer<typeof cartStateProductSchema>;
 export type CartState = z.infer<typeof cartStateSchema>;
 
-export type EditorDialog = "colors" | "designs" | "upload" | "text" | null;
+export type EditorDialog =
+  | "colors"
+  | "designs"
+  | "upload"
+  | "text"
+  | "help"
+  | null;
 export type EditorModal = "cart" | null;
 
 export type ViewWithIncludes = CustomProductView & {
