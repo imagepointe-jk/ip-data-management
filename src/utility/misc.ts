@@ -219,3 +219,13 @@ export function getEnvVariable(name: string) {
     });
   return value;
 }
+
+export function checkEnvVariable(value: string | undefined, isClient = false) {
+  if (!value)
+    throw new AppError({
+      type: "Environment",
+      serverMessage: isClient ? undefined : "Undefined environment variable!",
+      clientMessage: isClient ? "Undefined environment variable!" : undefined,
+      statusCode: INTERNAL_SERVER_ERROR,
+    });
+}

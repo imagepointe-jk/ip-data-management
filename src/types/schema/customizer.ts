@@ -84,6 +84,16 @@ export const cartStateSchema = z.object({
   products: z.array(cartStateProductSchema),
 });
 
+export const quoteRequestSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string(),
+  company: z.string(),
+  local: z.string().optional(),
+  comments: z.string().optional(),
+  cart: cartStateSchema,
+});
+
 export type PlacedObject = z.infer<typeof objectDataSchema>;
 export type EditorTextData = z.infer<typeof textDataSchema>;
 export type EditorTextStyle = z.infer<typeof textStyleSchema>;
@@ -134,6 +144,7 @@ export type PopulatedProductSettingsSerializable = Omit<
   updatedAt: string;
   product: { name: string; weight: string } | undefined;
 };
+export type QuoteRequestData = z.infer<typeof quoteRequestSchema>;
 export type EditorContext = {
   designResults: DesignResults;
   designState: CartState;

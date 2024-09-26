@@ -1,4 +1,11 @@
-import { CartStateProductVariation } from "@/types/schema/customizer";
+import {
+  CartStateProductVariation,
+  QuoteRequestData,
+} from "@/types/schema/customizer";
+import { checkEnvVariable } from "@/utility/misc";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+checkEnvVariable(baseUrl);
 
 export async function getRenderedVariationViews(
   variation: CartStateProductVariation
@@ -16,4 +23,13 @@ export async function getRenderedVariationViews(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/customizer/render/variation`,
     requestOptions
   );
+}
+
+export async function submitQuoteRequest(data: QuoteRequestData) {
+  const requestOptions = {
+    method: "POST",
+    body: JSON.stringify(data),
+  };
+
+  return fetch(`${baseUrl}/api/customizer/quote/request`, requestOptions);
 }

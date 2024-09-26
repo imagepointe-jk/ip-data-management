@@ -9,13 +9,17 @@
   cursor: initial;
   width: 550px;
   height: 550px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .modal h2 {
   margin-top: 0;
+}
+
+.modal-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .x {
@@ -94,4 +98,21 @@
 .contact-form input {
   font-size: 1rem;
   padding: 5px;
+}
+
+.request-error {
+  border: 1px solid red;
+  background-color: rgba(255, 0, 0, 0.151);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.submit-button {
+  width: 100px;
+}
+
+.submit-spinner {
+  filter: sepia(100) brightness(0.4) saturate(15) hue-rotate(158deg);
+  width: 15px;
+  height: 15px;
 }
