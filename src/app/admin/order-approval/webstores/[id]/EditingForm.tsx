@@ -162,7 +162,7 @@ export function EditingForm({
                 htmlFor="custom-order-approved-email"
                 className="input-label"
               >
-                Custom "order approved" email
+                Custom &quot;order approved&quot; email
               </label>
               <textarea
                 name="custom-order-approved-email"
