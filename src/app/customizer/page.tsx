@@ -17,9 +17,6 @@ export default async function Page() {
   });
   const settings = await getProductSettingsWithIncludes();
   const productData = await populateProductData(settings);
-  console.log(
-    `${settings.length} settings records, ${productData.length} populated records`
-  );
 
   return (
     <IframeHelperProvider>
