@@ -8,7 +8,7 @@ import { store } from "./redux/store";
 import { useEffect, useState } from "react";
 import { StarterSteps } from "./components/StarterSteps";
 
-type Props = Omit<EditorProps, "initialProductId">;
+type Props = Omit<EditorProps, "initialProductId" | "initialVariationId">;
 export default function EditorHelper({ designs, productData }: Props) {
   const iframe = useIframe();
   const [initialProductId, setInitialProductId] = useState(
