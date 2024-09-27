@@ -11,6 +11,7 @@ type Props = {
   children?: ReactNode; //will be used instead of normal text if provided
   normalText?: string; //expected if no children provided
   loading: boolean;
+  disabled?: boolean;
   onClick?: () => void;
 };
 export function ButtonWithLoading({
@@ -20,10 +21,16 @@ export function ButtonWithLoading({
   normalText,
   spinnerClassName,
   loading,
+  disabled,
   onClick,
 }: Props) {
   return (
-    <button className={className} onClick={onClick} style={style}>
+    <button
+      className={className}
+      onClick={onClick}
+      style={style}
+      disabled={disabled}
+    >
       {loading ? (
         <LoadingIndicator className={spinnerClassName || styles["spinner"]} />
       ) : (
