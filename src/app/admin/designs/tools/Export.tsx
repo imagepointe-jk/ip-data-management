@@ -1,14 +1,19 @@
 "use client";
 
+import { exportAndSend } from "@/actions/designs/misc";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useToast } from "@/components/ToastProvider";
 import { useState } from "react";
 
 export function Export() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
 
   async function onClickExport() {
+    setLoading(true);
+    await exportAndSend(email);
+    setLoading(false);
     toast.toast(`Export sent to ${email}.`, "success");
   }
 
@@ -22,12 +27,13 @@ export function Export() {
       <div className="vert-flex-group">
         <input
           type="email"
+          name="email"
           placeholder="Email Address"
           onChange={(e) => setEmail(e.target.value)}
         />
         <div>
           <ButtonWithLoading
-            loading={false}
+            loading={loading}
             normalText="Export"
             onClick={onClickExport}
           />
