@@ -152,7 +152,7 @@ export function EditingForm({
               checked={useCustomEmail}
               onChange={(e) => setUseCustomEmail(e.target.checked)}
             />
-            Use custom "order approved" email
+            Use custom &quot;order approved&quot; email
           </label>
         </div>
         {useCustomEmail && (
