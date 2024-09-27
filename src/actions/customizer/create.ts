@@ -2,6 +2,14 @@
 import { CustomProductRequest } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 
+export async function createCustomizableProduct(wooCommerceId: number) {
+  return prisma.customProductSettings.create({
+    data: {
+      wooCommerceId,
+    },
+  });
+}
+
 export async function createVariation(parentSettingsId: number) {
   const firstColor = await prisma.color.findFirst({
     orderBy: {

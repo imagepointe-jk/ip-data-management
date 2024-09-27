@@ -114,7 +114,7 @@ model CustomProductSettings {
 
 model CustomProductSettingsVariation {
   id               Int                   @id @default(autoincrement())
-  parentSettings   CustomProductSettings @relation(fields: [parentSettingsId], references: [id])
+  parentSettings   CustomProductSettings @relation(fields: [parentSettingsId], references: [id], onDelete: Cascade)
   parentSettingsId Int
   views            CustomProductView[]
   color            Color                 @relation(fields: [colorId], references: [id])
