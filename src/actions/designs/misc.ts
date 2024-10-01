@@ -24,6 +24,8 @@ export async function exportAndSend(email: string) {
       variations: {
         include: {
           color: true,
+          designSubcategories: true,
+          designTags: true,
         },
       },
     },
@@ -67,6 +69,14 @@ export async function exportAndSend(email: string) {
         ImageUrl: variation.imageUrl,
         DefaultBackgroundColorName: variation.color.name,
         DefaultBackgroundColorHexCode: variation.color.hexCode,
+        Subcategories: variation.designSubcategories
+          .map((sub) => sub.name)
+          .join(" | "),
+        SubcategoryIds: variation.designSubcategories
+          .map((sub) => sub.id)
+          .join(" | "),
+        Tags: variation.designTags.map((tag) => tag.name).join(" | "),
+        TagIds: variation.designTags.map((tag) => tag.id).join(" | "),
       });
     }
   }
