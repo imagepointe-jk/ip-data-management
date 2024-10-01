@@ -74,3 +74,7 @@ export async function getDesignTags() {
     },
   });
 }
+
+export async function getDesignTypes() {
+  return prisma.designType.findMany();
+}

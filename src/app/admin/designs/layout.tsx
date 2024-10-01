@@ -21,6 +21,11 @@ export default function Layout({ children }: { children: ReactNode }) {
               Tags
             </Link>
           </li>
+          <li>
+            <Link href="/admin/designs/categories" className="normal-link">
+              Categories
+            </Link>
+          </li>
         </ul>
       </nav>
       {children}

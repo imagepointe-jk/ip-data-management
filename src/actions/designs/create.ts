@@ -68,3 +68,24 @@ export async function createTag(name: string) {
     },
   });
 }
+
+export async function createCategory(name: string, designTypeId: number) {
+  return prisma.designCategory.create({
+    data: {
+      name,
+      designTypeId,
+    },
+  });
+}
+
+export async function createSubcategory(
+  name: string,
+  parentCategoryId: number
+) {
+  return prisma.designSubcategory.create({
+    data: {
+      name,
+      designCategoryId: parentCategoryId,
+    },
+  });
+}
