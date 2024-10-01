@@ -60,3 +60,11 @@ export async function createDesignVariation(parentDesignId: number) {
     },
   });
 }
+
+export async function createTag(name: string) {
+  return await prisma.designTag.create({
+    data: {
+      name,
+    },
+  });
+}

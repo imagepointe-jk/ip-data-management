@@ -193,6 +193,7 @@ input.input-major {
 
 table {
   border-collapse: collapse;
+  text-align: left;
 }
 
 table thead th {

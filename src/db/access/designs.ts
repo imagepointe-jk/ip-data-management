@@ -65,3 +65,12 @@ export async function getDesignCategoryHierarchy() {
     },
   });
 }
+
+export async function getDesignTags() {
+  return await prisma.designTag.findMany({
+    include: {
+      designs: true,
+      designVariations: true,
+    },
+  });
+}
