@@ -1,5 +1,10 @@
 import { findAllFormValues } from "@/utility/misc";
-import { designFormDataSchema, quoteRequestSchema } from "../schema/designs";
+import {
+  designDataInterchangeRowSchema,
+  designFormDataSchema,
+  quoteRequestSchema,
+} from "../schema/designs";
+import { z } from "zod";
 
 function extractDesignVariationFormData(formData: FormData) {
   const variationColorFields = findAllFormValues(formData, (name) =>
@@ -88,4 +93,8 @@ export function validateDesignFormData(formData: FormData) {
 
 export function validateQuoteRequest(json: any) {
   return quoteRequestSchema.parse(json);
+}
+
+export function validateDesignDataInput(data: any) {
+  return z.array(designDataInterchangeRowSchema).parse(data);
 }

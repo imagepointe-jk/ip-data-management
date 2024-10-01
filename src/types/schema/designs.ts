@@ -51,6 +51,27 @@ export const quoteRequestSchema = z.object({
   items: z.array(quoteRequestItemSchema),
 });
 
+export const designDataInterchangeRowSchema = z.object({
+  ID: z.number(),
+  Name: z.string().nullable().optional(),
+  Description: z.string().nullable().optional(),
+  ParentID: z.number().optional(),
+  ParentDesignNumber: z.string().optional(),
+  DesignNumber: z.string(),
+  ImageUrl: z.string(),
+  DesignType: z.string().optional(),
+  DefaultBackgroundColorName: z.string(),
+  DefaultBackgroundColorHexCode: z.string(),
+  Featured: z.boolean().optional(),
+  Status: z.string().optional(),
+  Tags: z.string().optional(),
+  TagIds: z.string().optional(),
+  Subcategories: z.string().optional(),
+  SubcategoryIds: z.string().optional(),
+  Date: z.string().optional(),
+  Priority: z.number().optional(),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -97,3 +118,7 @@ export type DesignCategoryWithIncludes = DesignCategory & {
   designSubcategories: DesignSubcategory[];
   designType: DesignType;
 };
+
+export type DesignDataInterchangeRow = z.infer<
+  typeof designDataInterchangeRowSchema
+>;

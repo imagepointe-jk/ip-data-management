@@ -1,8 +1,14 @@
 "use server";
 
-import { dataToSheetBuffer } from "@/utility/spreadsheet";
+import {
+  dataToSheetBuffer,
+  getSheetFromBuffer,
+  sheetToJson,
+} from "@/utility/spreadsheet";
 import { prisma } from "../../../prisma/client";
 import { sendEmail } from "@/utility/mail";
+import { DesignDataInterchangeRow } from "@/types/schema/designs";
+import { validateDesignDataInput } from "@/types/validations/designs";
 
 export async function exportAndSend(email: string) {
   const designs = await prisma.design.findMany({
@@ -26,25 +32,7 @@ export async function exportAndSend(email: string) {
     },
   });
 
-  const rows: {
-    ID: number;
-    Name?: string | null;
-    Description?: string | null;
-    ParentID?: number;
-    DesignNumber: string;
-    ImageUrl: string;
-    DesignType?: string;
-    DefaultBackgroundColorName: string;
-    DefaultBackgroundColorHexCode: string;
-    Featured?: boolean;
-    Status?: string;
-    Tags?: string;
-    TagIds?: string;
-    Subcategories?: string;
-    SubcategoryIds?: string;
-    Date?: string;
-    Priority?: number;
-  }[] = [];
+  const rows: DesignDataInterchangeRow[] = [];
 
   for (const design of designs) {
     rows.push({
@@ -74,6 +62,7 @@ export async function exportAndSend(email: string) {
       rows.push({
         ID: variation.id,
         ParentID: design.id,
+        ParentDesignNumber: design.designNumber,
         DesignNumber: design.designNumber,
         ImageUrl: variation.imageUrl,
         DefaultBackgroundColorName: variation.color.name,
@@ -86,4 +75,14 @@ export async function exportAndSend(email: string) {
   await sendEmail(email, "Design Library Export", "Design Library Export", [
     { content: sheet, filename: "design-library-export.xlsx" },
   ]);
+}
+
+export async function importDesigns(formData: FormData) {
+  const input = formData.get("sheet");
+  if (!(input instanceof File)) throw new Error("Invalid file");
+
+  const arrayBuffer = await input.arrayBuffer();
+  const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Designs");
+  const json = sheetToJson(sheet);
+  const parsed = validateDesignDataInput(json);
 }
