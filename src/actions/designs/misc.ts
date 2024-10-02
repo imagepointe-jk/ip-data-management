@@ -90,7 +90,7 @@ export async function exportAndSend(email: string) {
 
 export async function importDesigns(formData: FormData) {
   const input = formData.get("sheet");
-  if (!(input instanceof File)) throw new Error("Invalid file");
+  if (!(input instanceof Blob)) throw new Error("Invalid file");
 
   const arrayBuffer = await input.arrayBuffer();
   const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Designs");
