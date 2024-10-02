@@ -9,6 +9,7 @@ import { prisma } from "../../../prisma/client";
 import { sendEmail } from "@/utility/mail";
 import { DesignDataInterchangeRow } from "@/types/schema/designs";
 import { validateDesignDataInput } from "@/types/validations/designs";
+import { DesignSubcategory, DesignTag } from "@prisma/client";
 
 export async function exportAndSend(email: string) {
   const designs = await prisma.design.findMany({
@@ -95,4 +96,135 @@ export async function importDesigns(formData: FormData) {
   const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Designs");
   const json = sheetToJson(sheet);
   const parsed = validateDesignDataInput(json);
+  const screenPrint = (await prisma.designType.findFirst({
+    where: {
+      name: "Screen Print",
+    },
+  }))!;
+  const embroidery = (await prisma.designType.findFirst({
+    where: {
+      name: "Embroidery",
+    },
+  }))!;
+  const subcategoryCache: { [key: string]: DesignSubcategory } = {};
+  const tagCache: { [key: string]: DesignTag } = {};
+
+  async function getSubcategory(name: string) {
+    const fromCache = subcategoryCache[name];
+    if (fromCache) return fromCache;
+
+    const fromDb = await prisma.designSubcategory.findFirst({
+      where: {
+        name,
+      },
+    });
+    if (!fromDb) throw new Error(`Subcategory ${name} not found.`);
+    subcategoryCache[name] = fromDb;
+    return fromDb;
+  }
+
+  async function getTag(name: string) {
+    const fromCache = tagCache[name];
+    if (fromCache) return fromCache;
+
+    const fromDb = await prisma.designTag.findFirst({
+      where: {
+        name,
+      },
+    });
+    if (!fromDb) throw new Error(`Tag ${name} not found.`);
+    tagCache[name] = fromDb;
+    return fromDb;
+  }
+
+  for (const item of parsed) {
+    const {
+      DefaultBackgroundColorName,
+      DesignNumber,
+      ImageUrl,
+      Date: DateStr,
+      Description,
+      DesignType,
+      Featured,
+      Name,
+      ParentDesignNumber,
+      Priority,
+      Status,
+      Subcategories,
+      Tags,
+    } = item;
+    const isVariation = item.ParentDesignNumber !== undefined;
+    try {
+      const color = await prisma.color.findUnique({
+        where: {
+          name: DefaultBackgroundColorName,
+        },
+      });
+      if (!color)
+        throw new Error(
+          `Background color ${DefaultBackgroundColorName} not found.`
+        );
+      const subcategoriesSplit = Subcategories?.split(/\s*\|\s*/g) || [];
+      const tagsSplit = Tags?.split(/\s*\|\s*/g) || [];
+      const subcategories = await Promise.all(
+        subcategoriesSplit.map(async (name) => getSubcategory(name))
+      );
+      const tags = await Promise.all(
+        tagsSplit.map(async (name) => getTag(name))
+      );
+
+      if (!isVariation) {
+        await prisma.design.create({
+          data: {
+            name: Name,
+            description: Description,
+            designNumber: DesignNumber,
+            imageUrl: ImageUrl,
+            designTypeId:
+              DesignType === "Screen Print" ? screenPrint.id : embroidery.id,
+            defaultBackgroundColorId: color.id,
+            featured: Featured,
+            status: Status,
+            date: DateStr ? new Date(DateStr) : undefined,
+            priority: Priority,
+            designSubcategories: {
+              connect: subcategories.map((sub) => ({ id: sub.id })),
+            },
+            designTags: {
+              connect: tags.map((tag) => ({ id: tag.id })),
+            },
+          },
+        });
+        console.log(`Imported design number ${DesignNumber}`);
+      } else {
+        const parentDesign = await prisma.design.findFirst({
+          where: {
+            designNumber: ParentDesignNumber,
+          },
+        });
+        if (!parentDesign)
+          throw new Error("The parent of the variation could not be found.");
+
+        await prisma.designVariation.create({
+          data: {
+            colorId: color.id,
+            parentDesignId: parentDesign.id,
+            imageUrl: ImageUrl,
+            designSubcategories: {
+              connect: subcategories.map((sub) => ({ id: sub.id })),
+            },
+            designTags: {
+              connect: tags.map((tag) => ({ id: tag.id })),
+            },
+          },
+        });
+        console.log(`Imported variation of design number ${DesignNumber}`);
+      }
+    } catch (error) {
+      console.error(
+        `Failed to create design or variation with design number ${DesignNumber}. The following error was thrown: `,
+        error
+      );
+    }
+  }
 }
