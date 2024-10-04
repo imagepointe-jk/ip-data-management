@@ -15,7 +15,6 @@ export default async function Page() {
   const designs = await getDesigns({
     perPage: 9999,
   });
-  console.log(`GOT ${designs.totalResults} DESIGNS`);
   const settings = await getProductSettingsWithIncludes();
   const productData = await populateProductData(settings);
 
