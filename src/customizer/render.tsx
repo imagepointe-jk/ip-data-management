@@ -53,6 +53,36 @@ export async function renderCartProductView(
       });
       layer.add(img);
     }
+    for (const text of location.texts) {
+      const { rotationDegrees } = text.objectData;
+      const { position, size } = convertDesignerObjectData(
+        stageSize,
+        stageSize,
+        text.objectData
+      );
+      const {
+        textData: { text: textStr, style },
+      } = text;
+
+      const textKonva = new Konva.Text({
+        fill: style?.hexCode,
+        fontSize: style?.fontSize,
+        //@ts-expect-error: Assume that fontStyle will be undefined OR one of the valid strings
+        fontStyle: style?.fontStyle,
+        align: style?.align,
+        //@ts-expect-error: Assume that textDecoration will be undefined OR one of the valid strings
+        textDecoration: style?.textDecoration,
+        stroke: style?.strokeHexCode || undefined,
+        strokeWidth: style?.strokeWidth,
+        x: position.x,
+        y: position.y,
+        width: size.x,
+        height: size.y,
+        rotation: rotationDegrees,
+        text: textStr,
+      });
+      layer.add(textKonva);
+    }
   }
 
   const frame = stage.toCanvas({ pixelRatio: 2 });
