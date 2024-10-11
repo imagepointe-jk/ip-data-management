@@ -28,11 +28,12 @@ export async function getRenderedVariationViews(
 
 export async function getRenderedSingleView(
   view: CartStateProductView,
-  bgImgUrl: string
+  bgImgUrl: string,
+  renderScale?: number
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
-  const raw = JSON.stringify({ view, bgImgUrl });
+  const raw = JSON.stringify({ view, bgImgUrl, renderScale });
   const requestOptions = {
     method: "POST",
     headers,

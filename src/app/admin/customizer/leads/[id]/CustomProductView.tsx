@@ -1,8 +1,6 @@
-import { getRenderedSingleView } from "@/fetch/client/customizer";
-import { CartStateProductView } from "@/types/schema/customizer";
-import { useEffect, useState } from "react";
+import { RenderedProductView } from "@/customizer/components/RenderedProductView";
 import styles from "@/styles/customizer/LeadSingleView.module.css";
-import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { CartStateProductView } from "@/types/schema/customizer";
 
 type Props = {
   view: CartStateProductView;
@@ -16,38 +14,16 @@ export function CustomProductView({
   viewName,
   expanded,
 }: Props) {
-  const [imgSrc, setImgSrc] = useState(null as string | null);
-  const [loading, setLoading] = useState(true);
-
-  async function getImage() {
-    try {
-      const imgResponse = await getRenderedSingleView(view, bgImgUrl);
-      if (!imgResponse.ok) {
-        throw new Error(`Response status ${imgResponse.status}`);
-      }
-      const blob = await imgResponse.blob();
-      const url = URL.createObjectURL(blob);
-      setImgSrc(url);
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    getImage();
-  }, []);
-
   return (
     <div className={styles["variation-view-main"]}>
-      <div
-        className={`${styles["variation-view-img-container"]} ${
-          expanded ? styles["expanded"] : ""
-        }`}
-      >
-        {loading && <LoadingIndicator className={styles["img-loading"]} />}
-        {imgSrc && <img src={imgSrc} />}
-      </div>
+      <RenderedProductView
+        bgImgUrl={bgImgUrl}
+        view={view}
+        containerStyle={
+          expanded ? { width: "600px", height: "600px" } : undefined
+        }
+        renderScale={2}
+      />
       <div>({viewName})</div>
     </div>
   );

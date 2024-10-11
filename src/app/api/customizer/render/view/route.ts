@@ -1,15 +1,9 @@
 import { easyCorsInit } from "@/constants";
 import { renderCartProductView } from "@/customizer/render";
-import {
-  validateCartStateProductVariation,
-  validateCartStateProductView,
-} from "@/types/validations/customizer";
-import archiver from "archiver";
-import { NextRequest, NextResponse } from "next/server";
-import { Writable } from "stream";
-import { prisma } from "../../../../../../prisma/client";
+import { validateCartStateProductView } from "@/types/validations/customizer";
 import { message } from "@/utility/misc";
 import { INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
+import { NextRequest, NextResponse } from "next/server";
 
 //render a single view of a product design and send the image file back
 export async function POST(request: NextRequest) {
@@ -17,8 +11,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = validateCartStateProductView(body.view);
     const bgImgUrl = `${body.bgImgUrl}`;
+    const renderScale = !isNaN(+body.renderScale)
+      ? +body.renderScale
+      : undefined;
 
-    const rendered = await renderCartProductView(parsed, bgImgUrl);
+    const rendered = await renderCartProductView(parsed, bgImgUrl, renderScale);
 
     return new NextResponse(rendered, {
       ...easyCorsInit,
