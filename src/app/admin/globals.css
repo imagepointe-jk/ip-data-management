@@ -242,3 +242,8 @@ table tbody tr.selected td {
 .danger {
   color: var(--color-danger);
 }
+
+.data-label {
+  font-weight: bold;
+  font-size: 0.825rem;
+}

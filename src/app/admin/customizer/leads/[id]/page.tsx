@@ -3,8 +3,7 @@ import {
   getQuoteRequest,
 } from "@/db/access/customizer";
 import { validateCartState } from "@/types/validations/customizer";
-import { DesignView } from "./DesignView";
-import { getDesigns } from "@/db/access/designs";
+import { CustomProductsDisplay } from "./CustomProductsDisplay";
 import { populateProductData } from "@/app/customizer/handleData";
 
 type Props = {
@@ -23,14 +22,47 @@ export default async function Page({ params }: Props) {
   const parsedCart = validateCartState(parsedJson);
 
   const settings = await getProductSettingsWithIncludes();
+  const populatedSettings = await populateProductData(settings);
 
   return (
     <>
       <h1>
         Lead from {lead.firstName} {lead.lastName}
       </h1>
-      <p>Submitted: {lead.createdAt.toLocaleString()}</p>
-      <DesignView cart={parsedCart} productSettings={settings} />
+      <div className="vert-flex-group">
+        <div>
+          <div className="data-label">First Name</div>
+          <div>{lead.firstName}</div>
+        </div>
+        <div>
+          <div className="data-label">Last Name</div>
+          <div>{lead.lastName}</div>
+        </div>
+        <div>
+          <div className="data-label">Email</div>
+          <div>{lead.email}</div>
+        </div>
+        <div>
+          <div className="data-label">Company</div>
+          <div>{lead.company}</div>
+        </div>
+        <div>
+          <div className="data-label">Local</div>
+          <div>{lead.local || "N/A"}</div>
+        </div>
+        <div>
+          <div className="data-label">Submitted On</div>
+          <div>{lead.createdAt.toLocaleString()}</div>
+        </div>
+        <div>
+          <div className="data-label">Comments</div>
+          <div style={{ maxWidth: "500px" }}>{lead.comments || "N/A"}</div>
+        </div>
+      </div>
+      <CustomProductsDisplay
+        cart={parsedCart}
+        productSettings={populatedSettings}
+      />
     </>
   );
 }
