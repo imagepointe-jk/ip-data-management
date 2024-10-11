@@ -3,6 +3,7 @@
 import GenericTable from "@/components/GenericTable";
 import { CustomProductRequest } from "@prisma/client";
 import styles from "@/styles/customizer/LeadsResultsTable.module.css";
+import Link from "next/link";
 
 type Props = {
   requests: CustomProductRequest[];
@@ -40,6 +41,12 @@ export default function ResultsTable({ requests }: Props) {
         {
           headerName: "Received",
           createCell: (data) => data.createdAt.toLocaleString(),
+        },
+        {
+          headerName: "",
+          createCell: (data) => (
+            <Link href={`/admin/customizer/leads/${data.id}`}>View</Link>
+          ),
         },
       ]}
     />

@@ -113,6 +113,14 @@ export async function getQuoteRequests(params: {
   };
 }
 
+export async function getQuoteRequest(id: number) {
+  return prisma.customProductRequest.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
 //the productSettings data arrives with numbers in Decimal form.
 //convert to make them more usable in various places.
 function convertFullProductSettings(

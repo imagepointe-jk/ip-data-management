@@ -1,5 +1,6 @@
 import {
   CartStateProductVariation,
+  CartStateProductView,
   QuoteRequestData,
 } from "@/types/schema/customizer";
 import { checkEnvVariable } from "@/utility/misc";
@@ -21,6 +22,25 @@ export async function getRenderedVariationViews(
 
   return fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/customizer/render/variation`,
+    requestOptions
+  );
+}
+
+export async function getRenderedSingleView(
+  view: CartStateProductView,
+  bgImgUrl: string
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  const raw = JSON.stringify({ view, bgImgUrl });
+  const requestOptions = {
+    method: "POST",
+    headers,
+    body: raw,
+  };
+
+  return fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/customizer/render/view`,
     requestOptions
   );
 }

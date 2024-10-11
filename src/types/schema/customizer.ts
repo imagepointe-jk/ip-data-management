@@ -65,7 +65,7 @@ const cartStateProductLocationSchema = z.object({
   texts: z.array(cartStateTextSchema),
 });
 
-const cartStateProductViewSchema = z.object({
+export const cartStateProductViewSchema = z.object({
   id: z.number(),
   locations: z.array(cartStateProductLocationSchema),
 });
