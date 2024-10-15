@@ -80,73 +80,55 @@ function CartProductVariationForm({
 }: CartProductVariationFormProps) {
   const dispatch = useDispatch();
   const { quantities } = variationInState;
+  const fields = [
+    {
+      size: "s",
+      label: "Small",
+      value: quantities.s,
+      createNewQuantities: (value: number) => ({ s: value }),
+    },
+    {
+      size: "m",
+      label: "Medium",
+      value: quantities.m,
+      createNewQuantities: (value: number) => ({ m: value }),
+    },
+    {
+      size: "l",
+      label: "Large",
+      value: quantities.l,
+      createNewQuantities: (value: number) => ({ l: value }),
+    },
+    {
+      size: "xl",
+      label: "XL",
+      value: quantities.xl,
+      createNewQuantities: (value: number) => ({ xl: value }),
+    },
+  ];
 
   return (
     <div className={styles["cart-item-form"]}>
-      <div>
-        <label htmlFor={`${variationInState.id}-size-s`}>Small</label>
-        <input
-          type="number"
-          id={`${variationInState.id}-size-s`}
-          value={quantities.s}
-          onChange={(e) =>
-            dispatch(
-              changeProductVariationQuantities({
-                targetVariationId: variationInState.id,
-                newQuantities: { s: +e.target.value },
-              })
-            )
-          }
-        />
-      </div>
-      <div>
-        <label htmlFor={`${variationInState.id}-size-m`}>Medium</label>
-        <input
-          type="number"
-          id={`${variationInState.id}-size-m`}
-          value={quantities.m}
-          onChange={(e) =>
-            dispatch(
-              changeProductVariationQuantities({
-                targetVariationId: variationInState.id,
-                newQuantities: { m: +e.target.value },
-              })
-            )
-          }
-        />
-      </div>
-      <div>
-        <label htmlFor={`${variationInState.id}-size-l`}>Large</label>
-        <input
-          type="number"
-          id={`${variationInState.id}-size-l`}
-          value={quantities.l}
-          onChange={(e) =>
-            dispatch(
-              changeProductVariationQuantities({
-                targetVariationId: variationInState.id,
-                newQuantities: { l: +e.target.value },
-              })
-            )
-          }
-        />
-      </div>
-      <div>
-        <label htmlFor={`${variationInState.id}-size-xl`}>XL</label>
-        <input
-          type="number"
-          id={`${variationInState.id}-size-xl`}
-          value={quantities.xl}
-          onChange={(e) =>
-            dispatch(
-              changeProductVariationQuantities({
-                targetVariationId: variationInState.id,
-                newQuantities: { xl: +e.target.value },
-              })
-            )
-          }
-        />
-      </div>
+      {fields.map((field) => (
+        <div key={field.size}>
+          <label htmlFor={`${variationInState.id}-size-${field.size}`}>
+            {field.label}
+          </label>
+          <input
+            type="number"
+            id={`${variationInState.id}-size-${field.size}`}
+            value={field.value}
+            onChange={(e) =>
+              dispatch(
+                changeProductVariationQuantities({
+                  targetVariationId: variationInState.id,
+                  newQuantities: field.createNewQuantities(+e.target.value),
+                })
+              )
+            }
+          />
+        </div>
+      ))}
     </div>
   );
 }
