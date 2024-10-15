@@ -2,14 +2,14 @@ import { CartStateProductView } from "@/types/schema/customizer";
 import { Image } from "canvas";
 import Konva from "konva";
 import { convertDesignerObjectData } from "./utils";
-import { editorSize } from "./components/ProductView";
+import { productEditorSize } from "@/constants";
 
 export async function renderCartProductView(
   view: CartStateProductView,
   bgImgUrl: string,
   renderScale = 1
 ): Promise<Buffer> {
-  const stageSize = editorSize;
+  const stageSize = productEditorSize;
   //ts ignore is used in this function due to what seems to be some shortcomings in Konva type definitions.
   //the official docs say that you shouldn't need to provide a container to Konva.Stage when using in Node.js.
   //@ts-ignore

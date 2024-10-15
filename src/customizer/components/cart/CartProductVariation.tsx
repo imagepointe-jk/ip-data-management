@@ -4,6 +4,7 @@ import {
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
+import { RenderedProductView } from "../RenderedProductView";
 
 type Props = {
   productData: PopulatedProductSettingsSerializable;
@@ -59,42 +60,11 @@ function CartProductVariationView({
   viewData,
 }: CartProductVariationViewProps) {
   return (
-    <div className={styles["cart-item-img-container"]}>
-      {!viewData && <>View error.</>}
-      {viewData && (
-        <>
-          {viewInState.locations.map((location) =>
-            location.artworks.map((artwork) => {
-              const {
-                imageUrl,
-                objectData: {
-                  editorGuid,
-                  positionNormalized,
-                  rotationDegrees,
-                  sizeNormalized,
-                },
-              } = artwork;
-
-              return (
-                <img
-                  key={editorGuid}
-                  src={imageUrl}
-                  style={{
-                    position: "absolute",
-                    left: `${positionNormalized.x * 100}%`,
-                    top: `${positionNormalized.y * 100}%`,
-                    width: `${sizeNormalized.x * 100}%`,
-                    height: `${sizeNormalized.y * 100}%`,
-                    rotate: `${rotationDegrees}deg`,
-                  }}
-                />
-              );
-            })
-          )}
-          <img className={styles["cart-item-img"]} src={viewData.imageUrl} />
-        </>
-      )}
-    </div>
+    <RenderedProductView
+      bgImgUrl={viewData?.imageUrl || ""}
+      view={viewInState}
+      renderScale={0.3}
+    />
   );
 }
 

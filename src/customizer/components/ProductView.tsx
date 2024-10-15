@@ -1,6 +1,6 @@
 "use client";
 
-import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { IMAGE_NOT_FOUND_URL, productEditorSize } from "@/constants";
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useRef, useState } from "react";
@@ -18,8 +18,6 @@ import {
 import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
 import { RenderedLocation } from "./productView/RenderedLocation";
-
-export const editorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 
 export function ProductView() {
   const { selectedView, selectedProductData } = useEditorSelectors();
@@ -42,8 +40,8 @@ export function ProductView() {
 
   return (
     <Stage
-      width={editorSize}
-      height={editorSize}
+      width={productEditorSize}
+      height={productEditorSize}
       style={{ position: "absolute", left: "300px", top: "25px" }}
       scale={{ x: 1, y: 1 }}
       onMouseDown={onClickStage}
@@ -54,8 +52,8 @@ export function ProductView() {
         <Image
           ref={productImgRef}
           image={image}
-          width={editorSize}
-          height={editorSize}
+          width={productEditorSize}
+          height={productEditorSize}
           onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
         />
 
@@ -84,7 +82,7 @@ export function ProductView() {
           ? findLocationInProductData(selectedProductData, location.id)
           : undefined;
         const { position: locationPosition, size: locationSize } =
-          convertDesignerObjectData(editorSize, editorSize, {
+          convertDesignerObjectData(productEditorSize, productEditorSize, {
             positionNormalized: {
               x: locationInProductData?.positionX || 0,
               y: locationInProductData?.positionY || 0,
