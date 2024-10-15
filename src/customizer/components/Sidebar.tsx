@@ -14,33 +14,17 @@ import { UserUploads } from "./UserUploads";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { setDialogOpen, useEditorSelectors } from "../redux/slices/editor";
+import { setDialogOpen } from "../redux/slices/editor";
 import { ActionCreators } from "redux-undo";
-import { forceClientDownloadBlob } from "@/utility/misc";
-import { getRenderedVariationViews } from "@/fetch/client/customizer";
 import { TextEditor } from "./text/TextEditor";
 import { Help } from "./Help";
+import { DownloadDesign } from "./DownloadDesign";
 
 export function Sidebar() {
   const dialogOpen = useSelector(
     (state: StoreType) => state.editorState.dialogOpen
   );
   const dispatch = useDispatch();
-  const { selectedVariation } = useEditorSelectors();
-
-  async function downloadDesign() {
-    try {
-      const response = await getRenderedVariationViews(selectedVariation);
-      if (!response.ok) {
-        const json = await response.json();
-        throw new Error(json.message);
-      }
-      const blob = await response.blob();
-      forceClientDownloadBlob(blob, "my-design");
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   return (
     <div className={stylesMain["side-container"]}>
@@ -63,7 +47,9 @@ export function Sidebar() {
         </button>
         <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
         <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
-        <button onClick={downloadDesign}>Download Design</button>
+        <button onClick={() => dispatch(setDialogOpen("download"))}>
+          Download Design
+        </button>
         <button onClick={() => dispatch(setDialogOpen("help"))}>
           <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />
           <div>Help</div>
@@ -78,6 +64,7 @@ export function Sidebar() {
           {dialogOpen === "upload" && <UserUploads />}
           {dialogOpen === "text" && <TextEditor />}
           {dialogOpen === "help" && <Help />}
+          {dialogOpen === "download" && <DownloadDesign />}
           <button
             className={stylesMain["dialog-x"]}
             onClick={() => dispatch(setDialogOpen(null))}

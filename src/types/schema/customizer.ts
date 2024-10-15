@@ -135,6 +135,7 @@ export type EditorDialog =
   | "upload"
   | "text"
   | "help"
+  | "download"
   | null;
 export type EditorModal = "cart" | null;
 
