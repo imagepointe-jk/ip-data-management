@@ -37,29 +37,85 @@ export function CustomProductsDisplay({ cart, productSettings }: Props) {
               const variationFromDb = productFromDb?.variations.find(
                 (dbVariation) => dbVariation.id === variation.id
               );
+              const { quantities } = variation;
+              const quantityTotal =
+                quantities.s +
+                quantities.m +
+                quantities.l +
+                quantities.xl +
+                quantities["2xl"] +
+                quantities["3xl"] +
+                quantities["4xl"] +
+                quantities["5xl"] +
+                quantities["6xl"];
 
               return (
                 <div
                   key={variation.id}
-                  className="content-frame-minor vert-flex-group"
+                  className="content-frame-minor horz-flex-group"
                 >
-                  <div>
-                    <div className="data-label">Color</div>
-                    <div>{variationFromDb?.color.name || "UNKNOWN COLOR"}</div>
-                  </div>
-                  <div>
-                    <div className="data-label">Sizes/Quantities</div>
-                    <ul>
-                      <li>S: {variation.quantities.s}</li>
-                      <li>M: {variation.quantities.m}</li>
-                      <li>L: {variation.quantities.l}</li>
-                      <li>XL: {variation.quantities.xl}</li>
-                      <li>2XL: {variation.quantities["2xl"]}</li>
-                      <li>3XL: {variation.quantities["3xl"]}</li>
-                      <li>4XL: {variation.quantities["4xl"]}</li>
-                      <li>5XL: {variation.quantities["5xl"]}</li>
-                      <li>6XL: {variation.quantities["6xl"]}</li>
-                    </ul>
+                  <div className="vert-flex-group">
+                    <div>
+                      <div className="data-label">Color</div>
+                      <div>
+                        {variationFromDb?.color.name || "UNKNOWN COLOR"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="data-label">Sizes/Quantities</div>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Size</th>
+                            <th>Quantity</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Small</td>
+                            <td>{quantities.s}</td>
+                          </tr>
+                          <tr>
+                            <td>Medium</td>
+                            <td>{quantities.m}</td>
+                          </tr>
+                          <tr>
+                            <td>Large</td>
+                            <td>{quantities.l}</td>
+                          </tr>
+                          <tr>
+                            <td>XL</td>
+                            <td>{quantities.xl}</td>
+                          </tr>
+                          <tr>
+                            <td>2XL</td>
+                            <td>{quantities["2xl"]}</td>
+                          </tr>
+                          <tr>
+                            <td>3XL</td>
+                            <td>{quantities["3xl"]}</td>
+                          </tr>
+                          <tr>
+                            <td>4XL</td>
+                            <td>{quantities["4xl"]}</td>
+                          </tr>
+                          <tr>
+                            <td>5XL</td>
+                            <td>{quantities["5xl"]}</td>
+                          </tr>
+                          <tr>
+                            <td>6XL</td>
+                            <td>{quantities["6xl"]}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <strong>TOTAL</strong>
+                            </td>
+                            <td>{quantityTotal}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   {/* Within each variation, show all the views of the product, and render the views based on the cart data */}

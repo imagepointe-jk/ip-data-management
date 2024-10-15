@@ -186,6 +186,11 @@ input.input-major {
   gap: 15px;
 }
 
+.horz-flex-group {
+  display: flex;
+  gap: 15px;
+}
+
 .input-label {
   display: block;
   font-size: 0.85rem;
