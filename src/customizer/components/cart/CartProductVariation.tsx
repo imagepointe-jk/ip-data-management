@@ -5,6 +5,8 @@ import {
 } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import { RenderedProductView } from "../RenderedProductView";
+import { useDispatch } from "react-redux";
+import { changeProductVariationQuantities } from "@/customizer/redux/slices/cart";
 
 type Props = {
   productData: PopulatedProductSettingsSerializable;
@@ -76,23 +78,74 @@ function CartProductVariationForm({
   productData,
   variationInState,
 }: CartProductVariationFormProps) {
+  const dispatch = useDispatch();
+  const { quantities } = variationInState;
+
   return (
     <div className={styles["cart-item-form"]}>
       <div>
         <label htmlFor={`${variationInState.id}-size-s`}>Small</label>
-        <input type="number" id={`${variationInState.id}-size-s`} />
+        <input
+          type="number"
+          id={`${variationInState.id}-size-s`}
+          value={quantities.s}
+          onChange={(e) =>
+            dispatch(
+              changeProductVariationQuantities({
+                targetVariationId: variationInState.id,
+                newQuantities: { s: +e.target.value },
+              })
+            )
+          }
+        />
       </div>
       <div>
         <label htmlFor={`${variationInState.id}-size-m`}>Medium</label>
-        <input type="number" id={`${variationInState.id}-size-m`} />
+        <input
+          type="number"
+          id={`${variationInState.id}-size-m`}
+          value={quantities.m}
+          onChange={(e) =>
+            dispatch(
+              changeProductVariationQuantities({
+                targetVariationId: variationInState.id,
+                newQuantities: { m: +e.target.value },
+              })
+            )
+          }
+        />
       </div>
       <div>
         <label htmlFor={`${variationInState.id}-size-l`}>Large</label>
-        <input type="number" id={`${variationInState.id}-size-l`} />
+        <input
+          type="number"
+          id={`${variationInState.id}-size-l`}
+          value={quantities.l}
+          onChange={(e) =>
+            dispatch(
+              changeProductVariationQuantities({
+                targetVariationId: variationInState.id,
+                newQuantities: { l: +e.target.value },
+              })
+            )
+          }
+        />
       </div>
       <div>
         <label htmlFor={`${variationInState.id}-size-xl`}>XL</label>
-        <input type="number" id={`${variationInState.id}-size-xl`} />
+        <input
+          type="number"
+          id={`${variationInState.id}-size-xl`}
+          value={quantities.xl}
+          onChange={(e) =>
+            dispatch(
+              changeProductVariationQuantities({
+                targetVariationId: variationInState.id,
+                newQuantities: { xl: +e.target.value },
+              })
+            )
+          }
+        />
       </div>
     </div>
   );

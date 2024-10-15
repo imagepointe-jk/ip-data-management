@@ -1,7 +1,7 @@
 import { convertDesignerObjectData } from "@/customizer/utils";
-import { editorSize } from "../ProductView";
 import { CartStateProductLocation } from "@/types/schema/customizer";
 import { EditorObject } from "./EditorObject";
+import { productEditorSize } from "@/constants";
 
 type Props = {
   locationInState: CartStateProductLocation;
@@ -23,8 +23,8 @@ export function RenderedLocation({
     <>
       {locationInState.artworks.map((art) => {
         const { position, size } = convertDesignerObjectData(
-          editorSize,
-          editorSize,
+          productEditorSize,
+          productEditorSize,
           art.objectData
         );
         return (
@@ -49,8 +49,8 @@ export function RenderedLocation({
       })}
       {locationInState.texts.map((text) => {
         const { position, size } = convertDesignerObjectData(
-          editorSize,
-          editorSize,
+          productEditorSize,
+          productEditorSize,
           text.objectData
         );
         return (

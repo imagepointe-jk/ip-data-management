@@ -1,5 +1,4 @@
 import { convertDesignerObjectData } from "@/customizer/utils";
-import { editorSize } from "../ProductView";
 import { Rect } from "react-konva";
 import { useDispatch } from "react-redux";
 import {
@@ -7,6 +6,7 @@ import {
   setSelectedLocationId,
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
+import { productEditorSize } from "@/constants";
 
 type Props = {
   locations: {
@@ -25,8 +25,8 @@ export function LocationFrames({ locations }: Props) {
     <>
       {locations.map((location) => {
         const { position, size } = convertDesignerObjectData(
-          editorSize,
-          editorSize,
+          productEditorSize,
+          productEditorSize,
           {
             positionNormalized: {
               x: location.positionX || 0,

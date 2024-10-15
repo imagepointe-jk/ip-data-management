@@ -39,8 +39,28 @@ export function CustomProductsDisplay({ cart, productSettings }: Props) {
               );
 
               return (
-                <div key={variation.id} className="content-frame-minor">
-                  <div>{variationFromDb?.color.name || "UNKNOWN COLOR"}</div>
+                <div
+                  key={variation.id}
+                  className="content-frame-minor vert-flex-group"
+                >
+                  <div>
+                    <div className="data-label">Color</div>
+                    <div>{variationFromDb?.color.name || "UNKNOWN COLOR"}</div>
+                  </div>
+                  <div>
+                    <div className="data-label">Sizes/Quantities</div>
+                    <ul>
+                      <li>S: {variation.quantities.s}</li>
+                      <li>M: {variation.quantities.m}</li>
+                      <li>L: {variation.quantities.l}</li>
+                      <li>XL: {variation.quantities.xl}</li>
+                      <li>2XL: {variation.quantities["2xl"]}</li>
+                      <li>3XL: {variation.quantities["3xl"]}</li>
+                      <li>4XL: {variation.quantities["4xl"]}</li>
+                      <li>5XL: {variation.quantities["5xl"]}</li>
+                      <li>6XL: {variation.quantities["6xl"]}</li>
+                    </ul>
+                  </div>
 
                   {/* Within each variation, show all the views of the product, and render the views based on the cart data */}
 

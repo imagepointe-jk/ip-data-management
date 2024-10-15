@@ -73,6 +73,17 @@ export const cartStateProductViewSchema = z.object({
 export const cartStateProductVariationSchema = z.object({
   id: z.number(),
   views: z.array(cartStateProductViewSchema),
+  quantities: z.object({
+    s: z.number(),
+    m: z.number(),
+    l: z.number(),
+    xl: z.number(),
+    ["2xl"]: z.number(),
+    ["3xl"]: z.number(),
+    ["4xl"]: z.number(),
+    ["5xl"]: z.number(),
+    ["6xl"]: z.number(),
+  }),
 });
 
 const cartStateProductSchema = z.object({

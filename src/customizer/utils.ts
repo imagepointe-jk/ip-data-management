@@ -141,6 +141,17 @@ export function createInitialState(
   const initialVariationState: CartStateProductVariation = {
     id: initialVariation.id,
     views: [initialView],
+    quantities: {
+      "2xl": 0,
+      "3xl": 0,
+      "4xl": 0,
+      "5xl": 0,
+      "6xl": 0,
+      l: 0,
+      m: 0,
+      s: 0,
+      xl: 0,
+    },
   };
 
   const initialDesignState: CartState = {
@@ -158,6 +169,17 @@ export function createInitialState(
                 texts: [],
               })),
             })),
+            quantities: {
+              "2xl": 0,
+              "3xl": 0,
+              "4xl": 0,
+              "5xl": 0,
+              "6xl": 0,
+              l: 0,
+              m: 0,
+              s: 0,
+              xl: 0,
+            },
           },
         ],
       },

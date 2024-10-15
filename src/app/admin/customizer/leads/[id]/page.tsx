@@ -5,6 +5,7 @@ import {
 import { validateCartState } from "@/types/validations/customizer";
 import { CustomProductsDisplay } from "./CustomProductsDisplay";
 import { populateProductData } from "@/app/customizer/handleData";
+import { inspect } from "util";
 
 type Props = {
   params: {
@@ -20,6 +21,7 @@ export default async function Page({ params }: Props) {
 
   const parsedJson = JSON.parse(lead.cartJson);
   const parsedCart = validateCartState(parsedJson);
+  console.log(inspect(parsedCart, false, null));
 
   const settings = await getProductSettingsWithIncludes();
   const populatedSettings = await populateProductData(settings);
