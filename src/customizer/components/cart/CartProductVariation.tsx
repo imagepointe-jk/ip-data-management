@@ -105,6 +105,36 @@ function CartProductVariationForm({
       value: quantities.xl,
       createNewQuantities: (value: number) => ({ xl: value }),
     },
+    {
+      size: "2xl",
+      label: "2XL",
+      value: quantities["2xl"],
+      createNewQuantities: (value: number) => ({ ["2xl"]: value }),
+    },
+    {
+      size: "3xl",
+      label: "3XL",
+      value: quantities["3xl"],
+      createNewQuantities: (value: number) => ({ ["3xl"]: value }),
+    },
+    {
+      size: "4xl",
+      label: "4XL",
+      value: quantities["4xl"],
+      createNewQuantities: (value: number) => ({ ["4xl"]: value }),
+    },
+    {
+      size: "5xl",
+      label: "5XL",
+      value: quantities["5xl"],
+      createNewQuantities: (value: number) => ({ ["5xl"]: value }),
+    },
+    {
+      size: "6xl",
+      label: "6XL",
+      value: quantities["6xl"],
+      createNewQuantities: (value: number) => ({ ["6xl"]: value }),
+    },
   ];
 
   return (
