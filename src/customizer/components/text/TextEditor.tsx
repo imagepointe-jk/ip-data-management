@@ -5,7 +5,7 @@ import {
 } from "@/customizer/redux/slices/editor";
 import { StoreType } from "@/customizer/redux/store";
 import { findTextInCart } from "@/customizer/utils";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
@@ -21,6 +21,7 @@ import {
   faStrikethrough,
   faUnderline,
 } from "@fortawesome/free-solid-svg-icons";
+import debounce from "lodash.debounce";
 
 export function TextEditor() {
   const dispatch = useDispatch();
@@ -33,6 +34,20 @@ export function TextEditor() {
   const selectedText = selectedEditorGuid
     ? findTextInCart(store.cart.present, selectedEditorGuid)
     : undefined;
+  const onChangeColor = useCallback(
+    debounce((hexCode: string) => {
+      if (!selectedEditorGuid || !selectedText) return;
+      dispatch(
+        editText({
+          guid: selectedEditorGuid,
+          style: {
+            hexCode,
+          },
+        })
+      );
+    }, 500),
+    [selectedEditorGuid, selectedText]
+  );
 
   function onClickAdd() {
     const newGuid = uuidv4();
@@ -108,19 +123,6 @@ export function TextEditor() {
         guid: selectedEditorGuid,
         style: {
           align: clickedAlign,
-        },
-      })
-    );
-  }
-
-  function onChangeColor(hexCode: string) {
-    if (!selectedEditorGuid || !selectedText) return;
-
-    dispatch(
-      editText({
-        guid: selectedEditorGuid,
-        style: {
-          hexCode,
         },
       })
     );
