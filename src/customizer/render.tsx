@@ -64,8 +64,18 @@ export async function renderCartProductView(
           renderSize,
           text.objectData
         );
+        const unscaledFontSize = text.textData.style?.fontSize;
         return {
-          textData: text.textData,
+          textData: {
+            text: text.textData.text,
+            style: {
+              ...text.textData.style,
+              fontSize: unscaledFontSize
+                ? unscaledFontSize * renderScale
+                : undefined,
+            },
+          },
+
           objectData: {
             position,
             size,
