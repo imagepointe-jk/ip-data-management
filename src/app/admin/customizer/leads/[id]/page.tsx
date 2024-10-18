@@ -21,7 +21,6 @@ export default async function Page({ params }: Props) {
 
   const parsedJson = JSON.parse(lead.cartJson);
   const parsedCart = validateCartState(parsedJson);
-  console.log(inspect(parsedCart, false, null));
 
   const settings = await getProductSettingsWithIncludes();
   const populatedSettings = await populateProductData(settings);
