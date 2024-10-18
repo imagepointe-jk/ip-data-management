@@ -1,8 +1,9 @@
 import { getRenderedSingleView } from "@/fetch/client/customizer";
 import { CartStateProductView } from "@/types/schema/customizer";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useState } from "react";
 import styles from "@/styles/customizer/RenderedProductView.module.css";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
+import debounce from "lodash.debounce";
 
 type Props = {
   view: CartStateProductView;
@@ -21,28 +22,30 @@ export function RenderedProductView({
 }: Props) {
   const [imgSrc, setImgSrc] = useState(null as string | null);
   const [loading, setLoading] = useState(true);
-
-  async function getImage() {
-    try {
-      const imgResponse = await getRenderedSingleView(
-        view,
-        bgImgUrl,
-        renderScale
-      );
-      if (!imgResponse.ok) {
-        throw new Error(`Response status ${imgResponse.status}`);
+  const getImageDebounced = useCallback(
+    debounce(async () => {
+      try {
+        const imgResponse = await getRenderedSingleView(
+          view,
+          bgImgUrl,
+          renderScale
+        );
+        if (!imgResponse.ok) {
+          throw new Error(`Response status ${imgResponse.status}`);
+        }
+        const blob = await imgResponse.blob();
+        const url = URL.createObjectURL(blob);
+        setImgSrc(url);
+      } catch (error) {
+        console.error(error);
       }
-      const blob = await imgResponse.blob();
-      const url = URL.createObjectURL(blob);
-      setImgSrc(url);
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
-  }
+      setLoading(false);
+    }, 100),
+    []
+  );
 
   useEffect(() => {
-    getImage();
+    getImageDebounced();
   }, []);
 
   return (

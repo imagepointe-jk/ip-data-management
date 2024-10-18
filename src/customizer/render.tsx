@@ -1,7 +1,22 @@
 import { CartStateProductView } from "@/types/schema/customizer";
 import { productEditorSize } from "@/constants";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 import { convertDesignerObjectData } from "./utils";
+
+//! A cached browser will be running constantly in order to reduce cold start up time for renders.
+//! Monitor resource usage, and consider a cron job that periodically restarts the browser during off-hours.
+let cachedBrowser: Browser | null = null;
+let browserBeingInitialized: Promise<Browser> | null = null;
+async function getBrowser() {
+  if (cachedBrowser) return cachedBrowser;
+  if (browserBeingInitialized) return browserBeingInitialized;
+
+  browserBeingInitialized = puppeteer.launch();
+  cachedBrowser = await browserBeingInitialized;
+  browserBeingInitialized = null;
+
+  return cachedBrowser;
+}
 
 //use puppeteer to render a single view with Konva and a real chromium browser
 export async function renderCartProductView(
@@ -9,7 +24,7 @@ export async function renderCartProductView(
   bgImgUrl: string,
   renderScale = 1
 ) {
-  const browser = await puppeteer.launch();
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   await page.setContent(`
@@ -154,6 +169,6 @@ export async function renderCartProductView(
   if (!canvas) throw new Error("no canvas");
   const screenshotBuffer = await canvas.screenshot({ type: "jpeg" });
 
-  await browser.close();
+  await page.close();
   return screenshotBuffer;
 }
