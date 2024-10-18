@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       if (!viewData) throw new Error(`Invalid view data id ${view.id}`);
 
       const rendered = await renderCartProductView(view, viewData.imageUrl);
-      archive.append(rendered, { name: `${viewData.name}.jpg` });
+      archive.append(Buffer.from(rendered), { name: `${viewData.name}.jpg` });
     }
 
     await archive.finalize();
