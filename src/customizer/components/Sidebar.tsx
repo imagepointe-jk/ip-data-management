@@ -44,12 +44,12 @@ export function Sidebar() {
       dialogToOpen: "designs",
     },
     {
-      text: "Colors",
+      text: "Product Color",
       iconElement: <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />,
       dialogToOpen: "colors",
     },
     {
-      text: "My Art",
+      text: "Upload Art",
       iconElement: <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />,
       dialogToOpen: "upload",
     },
