@@ -2,13 +2,36 @@
   width: 90px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   height: 100%;
   box-sizing: border-box;
+  padding: 0;
+  background-color: #4b4b4b;
+  overflow: hidden;
 }
 
 .main button {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 15px;
+  background: none;
+  border: none;
+  color: rgb(230, 230, 230);
+  cursor: pointer;
+}
+
+.main button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main .active,
+.main .active:hover {
+  background-color: #006ac6;
+}
+
+.main .active {
+  color: white;
 }
 
 .text-button-t {

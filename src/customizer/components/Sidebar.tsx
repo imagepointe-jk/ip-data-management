@@ -2,9 +2,12 @@ import styles from "@/styles/customizer/CustomProductDesigner/sidebar.module.css
 import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import {
   faCloudArrowUp,
+  faDownload,
   faPaintBrush,
   faQuestionCircle,
+  faRedo,
   faStar,
+  faUndo,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,41 +22,83 @@ import { ActionCreators } from "redux-undo";
 import { TextEditor } from "./text/TextEditor";
 import { Help } from "./Help";
 import { DownloadDesign } from "./DownloadDesign";
+import { EditorDialog } from "@/types/schema/customizer";
+import { ReactNode } from "react";
 
+type Button = {
+  text: string;
+  iconElement: ReactNode;
+  dialogToOpen?: EditorDialog;
+  onClickExtra?: () => void; //a function to call on click that doesn't involve opening a dialog
+};
 export function Sidebar() {
   const dialogOpen = useSelector(
     (state: StoreType) => state.editorState.dialogOpen
   );
   const dispatch = useDispatch();
 
+  const buttons: Button[] = [
+    {
+      text: "Designs",
+      iconElement: <FontAwesomeIcon icon={faStar} size={"2x"} />,
+      dialogToOpen: "designs",
+    },
+    {
+      text: "Colors",
+      iconElement: <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />,
+      dialogToOpen: "colors",
+    },
+    {
+      text: "My Art",
+      iconElement: <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />,
+      dialogToOpen: "upload",
+    },
+    {
+      text: "Text",
+      iconElement: <div className={styles["text-button-t"]}>T</div>,
+      dialogToOpen: "text",
+    },
+    {
+      text: "Undo",
+      iconElement: <FontAwesomeIcon icon={faUndo} size={"2x"} />,
+      onClickExtra: () => dispatch(ActionCreators.undo()),
+    },
+    {
+      text: "Redo",
+      iconElement: <FontAwesomeIcon icon={faRedo} size={"2x"} />,
+      onClickExtra: () => dispatch(ActionCreators.redo()),
+    },
+    {
+      text: "Download Design",
+      iconElement: <FontAwesomeIcon icon={faDownload} size={"2x"} />,
+      dialogToOpen: "download",
+    },
+    {
+      text: "Help",
+      iconElement: <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />,
+      dialogToOpen: "help",
+    },
+  ];
+
   return (
     <div className={stylesMain["side-container"]}>
       <div className={`${styles["main"]} ${stylesMain["floating-container"]}`}>
-        <button onClick={() => dispatch(setDialogOpen("designs"))}>
-          <FontAwesomeIcon icon={faStar} size={"2x"} />
-          <div>Designs</div>
-        </button>
-        <button onClick={() => dispatch(setDialogOpen("colors"))}>
-          <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />
-          <div>Colors</div>
-        </button>
-        <button onClick={() => dispatch(setDialogOpen("upload"))}>
-          <FontAwesomeIcon icon={faCloudArrowUp} size={"2x"} />
-          <div>My Art</div>
-        </button>
-        <button onClick={() => dispatch(setDialogOpen("text"))}>
-          <div className={styles["text-button-t"]}>T</div>
-          <div>Text</div>
-        </button>
-        <button onClick={() => dispatch(ActionCreators.undo())}>Undo</button>
-        <button onClick={() => dispatch(ActionCreators.redo())}>Redo</button>
-        <button onClick={() => dispatch(setDialogOpen("download"))}>
-          Download Design
-        </button>
-        <button onClick={() => dispatch(setDialogOpen("help"))}>
-          <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />
-          <div>Help</div>
-        </button>
+        {buttons.map((button, i) => (
+          <button
+            key={i}
+            className={
+              dialogOpen === button.dialogToOpen ? styles["active"] : undefined
+            }
+            onClick={() => {
+              if (button.dialogToOpen)
+                dispatch(setDialogOpen(button.dialogToOpen));
+              if (button.onClickExtra) button.onClickExtra();
+            }}
+          >
+            {button.iconElement}
+            <div>{button.text}</div>
+          </button>
+        ))}
       </div>
       {dialogOpen !== null && (
         <div
