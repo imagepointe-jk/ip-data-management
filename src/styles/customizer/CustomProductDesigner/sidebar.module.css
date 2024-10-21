@@ -10,6 +10,7 @@
 }
 
 .main button {
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,7 +28,7 @@
 
 .main .active,
 .main .active:hover {
-  background-color: #006ac6;
+  background-color: var(--color-alpha);
 }
 
 .main .active {

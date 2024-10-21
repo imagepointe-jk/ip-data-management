@@ -71,7 +71,7 @@ export function UserUploads() {
       <div>Add your own artwork to this design.</div>
       <label
         htmlFor="customizer-upload"
-        className={`${stylesMain["basic-button"]} ${styles["upload-label-as-button"]}`}
+        className={`basic-button ${styles["upload-label-as-button"]}`}
       >
         {status !== "loading" && <>Select a File...</>}
         {status === "loading" && (

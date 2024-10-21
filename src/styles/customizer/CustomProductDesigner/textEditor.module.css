@@ -24,10 +24,11 @@
   height: 40px;
   border-radius: 3px;
   border: 1px solid lightgray;
-  cursor: pointer;
+  background-color: white;
+  color: black;
 }
 
 .style-button-active {
-  outline: 2px solid #006ac6;
+  outline: 2px solid var(--color-alpha);
   background-color: white;
 }

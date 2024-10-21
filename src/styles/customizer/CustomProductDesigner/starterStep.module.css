@@ -18,7 +18,7 @@
 }
 
 .progress-bar {
-  background-color: #006ac6;
+  background-color: var(--color-alpha);
   transition: 0.2s;
   position: absolute;
   left: 0;
@@ -62,7 +62,7 @@
 }
 
 .card-clicked {
-  outline: 5px solid #006ac6;
+  outline: 5px solid var(--color-alpha);
 }
 
 .card:hover {
@@ -113,6 +113,5 @@
   align-items: center;
   gap: 10px;
   background: none;
-  border: none;
-  cursor: pointer;
+  color: black;
 }

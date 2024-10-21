@@ -9,6 +9,11 @@
   margin-bottom: 0;
 }
 
+.upload-label-as-button {
+  width: 200px;
+  display: block;
+}
+
 .upload-label-as-button input[type="file"] {
   display: none;
 }

@@ -43,13 +43,13 @@
   color: white;
   padding: 5px;
   border-radius: 100px;
-  background-color: #006ac6;
+  background-color: var(--color-alpha);
   border: 1px solid white;
   font-size: 0.75rem;
 }
 
 .card-arrow {
-  background-color: #006ac6;
+  background-color: var(--color-alpha);
   color: white;
   padding: 5px 8px;
   border-radius: 100px;
@@ -77,16 +77,11 @@
 .add-button {
   opacity: 0;
   transition: 0.2s;
-  padding: 10px;
   border-radius: 100px;
-  color: white;
-  background-color: #006ac6;
   position: absolute;
   bottom: 0;
   left: 50%;
   translate: -50% 0;
-  cursor: pointer;
-  border: none;
 }
 
 .card:hover .add-button {

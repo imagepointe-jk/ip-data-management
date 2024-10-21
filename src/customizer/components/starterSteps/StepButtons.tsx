@@ -36,7 +36,11 @@ export function StepButtons({
         )}
       </div>
       <div className={styles["buttons-container"]}>
-        <button onClick={onClickBack} disabled={!allowBack}>
+        <button
+          className="button-minor"
+          onClick={onClickBack}
+          disabled={!allowBack}
+        >
           Back
         </button>
         <button onClick={onClickContinue} disabled={!allowContinue}>

@@ -75,7 +75,11 @@ export function CartModal() {
           )}
           {step === "quote" && (
             <>
-              <button type="button" onClick={() => setStep("review")}>
+              <button
+                type="button"
+                className="button-minor"
+                onClick={() => setStep("review")}
+              >
                 Back
               </button>
               <button className={styles["submit-button"]}>

@@ -8,6 +8,7 @@ import { StoreType } from "./redux/store";
 import { CartBar } from "./components/CartBar";
 import { CartModal } from "./components/cart/CartModal";
 import { ViewControls } from "./components/ViewControls";
+import "@/styles/customizer/CustomProductDesigner/main.css";
 
 export function Editor() {
   const selectedEditorGuid = useSelector(
