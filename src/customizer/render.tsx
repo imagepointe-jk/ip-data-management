@@ -11,7 +11,9 @@ async function getBrowser() {
   if (cachedBrowser) return cachedBrowser;
   if (browserBeingInitialized) return browserBeingInitialized;
 
-  browserBeingInitialized = puppeteer.launch();
+  browserBeingInitialized = puppeteer.launch({
+    args: ["--no-sandbox"],
+  });
   cachedBrowser = await browserBeingInitialized;
   browserBeingInitialized = null;
 
