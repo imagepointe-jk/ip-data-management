@@ -1,11 +1,12 @@
+import { envServer } from "@/env";
 import { getEnvVariable } from "@/utility/misc";
 
 export async function uploadMedia(
   file: File,
   realMediaLibraryFolderId?: number
 ) {
-  const key = getEnvVariable("IP_WP_APPLICATION_USERNAME");
-  const secret = getEnvVariable("IP_WP_APPLICATION_PASSWORD");
+  const key = envServer.IP_WP_APPLICATION_USERNAME;
+  const secret = envServer.IP_WP_APPLICATION_PASSWORD;
   const headers = new Headers();
 
   headers.append("Authorization", `Basic ${btoa(`${key}:${secret}`)}`);
