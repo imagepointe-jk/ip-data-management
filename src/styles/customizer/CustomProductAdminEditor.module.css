@@ -2,7 +2,11 @@
   display: flex;
   height: 600px;
   border: 1px solid lightgray;
-  max-width: 1000px;
+  max-width: 1200px;
+}
+
+.sidebars-container {
+  display: flex;
 }
 
 .sidebar {
@@ -16,7 +20,7 @@
   width: 150px;
 }
 
-.sidebar input,
+.sidebar input[type="number"],
 .sidebar select {
   box-sizing: border-box;
   width: 100%;
@@ -41,6 +45,10 @@
 
 .add-variation {
   font-weight: 800;
+}
+
+.sidebar-2 {
+  border-left: 1px solid gray;
 }
 
 .editor-area {
@@ -236,4 +244,16 @@
 .save {
   display: block;
   font-size: 1.5rem;
+}
+
+.variation-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  text-align: left;
+}
+
+.variation-sizes label {
+  display: block;
+  width: 60px;
 }

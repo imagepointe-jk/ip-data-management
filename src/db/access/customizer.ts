@@ -4,6 +4,7 @@ import {
   CustomProductSettings,
   CustomProductSettingsVariation,
   CustomProductView,
+  ProductSizeOptions,
 } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -37,6 +38,7 @@ export async function getProductSettingsWithIncludes() {
             },
           },
           color: true,
+          sizeOptions: true,
         },
       },
     },
@@ -53,6 +55,8 @@ export type CustomProductDecorationLocationNumeric = {
 
 export type FullProductSettings = CustomProductSettings & {
   variations: (CustomProductSettingsVariation & { color: Color } & {
+    sizeOptions: ProductSizeOptions | null;
+  } & {
     views: (CustomProductView & {
       locations: CustomProductDecorationLocationNumeric[];
     })[];
@@ -80,6 +84,7 @@ export async function getFullProductSettings(
             },
           },
           color: true,
+          sizeOptions: true,
         },
       },
     },
@@ -130,6 +135,7 @@ function convertFullProductSettings(
         locations: CustomProductDecorationLocation[];
       })[];
       color: Color;
+      sizeOptions: ProductSizeOptions | null;
     })[];
   }
 ): FullProductSettings {
@@ -137,6 +143,7 @@ function convertFullProductSettings(
     ...settings,
     variations: settings.variations.map((variation) => ({
       ...variation,
+      sizeOptions: variation.sizeOptions,
       views: variation.views.map((view) => ({
         ...view,
         locations: view.locations.map((location) => ({

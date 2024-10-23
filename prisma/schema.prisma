@@ -119,6 +119,7 @@ model CustomProductSettingsVariation {
   views            CustomProductView[]
   color            Color                 @relation(fields: [colorId], references: [id])
   colorId          Int
+  sizeOptions      ProductSizeOptions?
 }
 
 model CustomProductView {
@@ -152,6 +153,21 @@ model CustomProductRequest {
   comments  String?
   cartJson  String
   createdAt DateTime @default(now())
+}
+
+model ProductSizeOptions {
+  id                               Int                            @id @default(autoincrement())
+  sizeSmall                        Boolean                        @default(false)
+  sizeMedium                       Boolean                        @default(false)
+  sizeLarge                        Boolean                        @default(false)
+  sizeXL                           Boolean                        @default(false)
+  size2XL                          Boolean                        @default(false)
+  size3XL                          Boolean                        @default(false)
+  size4XL                          Boolean                        @default(false)
+  size5XL                          Boolean                        @default(false)
+  size6XL                          Boolean                        @default(false)
+  customProductSettingsVariation   CustomProductSettingsVariation @relation(fields: [customProductSettingsVariationId], references: [id])
+  customProductSettingsVariationId Int                            @unique
 }
 
 model Webstore {

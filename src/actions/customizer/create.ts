@@ -29,10 +29,14 @@ export async function createVariation(parentSettingsId: number) {
           imageUrl: "",
         },
       },
+      sizeOptions: {
+        create: {},
+      },
     },
     include: {
       color: true,
       views: true,
+      sizeOptions: true,
     },
   });
 }

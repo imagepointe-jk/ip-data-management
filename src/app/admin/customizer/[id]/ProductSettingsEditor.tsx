@@ -8,9 +8,9 @@ import { LocationSettingsBox } from "./components/LocationSettingsBox";
 import { ProductView } from "./components/ProductView";
 import { SaveArea } from "./components/SaveArea";
 import { Sidebar } from "./components/Sidebar";
-import { VariationSettingsBox } from "./components/VariationSettingsBox";
 import { ViewArrows } from "./components/ViewArrows";
 import { Color } from "@prisma/client";
+import { VariationSettings } from "./components/VariationSettings";
 
 export type ExpandedDialog = null | "location";
 type Props = {
@@ -92,24 +92,25 @@ export default function ProductSettingsEditor({
 
   return (
     <div className={styles["main-flex"]}>
-      <Sidebar
-        selectedVariationId={variationId}
-        setLocationId={setLocationId}
-        setSettings={setSettings}
-        setVariationId={setVariationId}
-        setViewId={setViewId}
-        settings={settings}
-      />
-      <div className={styles["editor-area"]}>
-        <VariationSettingsBox
+      <div className={styles["sidebars-container"]}>
+        <Sidebar
           selectedVariationId={variationId}
+          setLocationId={setLocationId}
+          setSettings={setSettings}
           setVariationId={setVariationId}
+          setViewId={setViewId}
           settings={settings}
+        />
+        <VariationSettings
+          colors={colors}
+          selectedVariationId={variationId}
           setSettings={setSettings}
           variation={variation}
-          colors={colors}
+          setVariationId={setVariationId}
+          settings={settings}
         />
-
+      </div>
+      <div className={styles["editor-area"]}>
         {/* View Name */}
 
         <input
