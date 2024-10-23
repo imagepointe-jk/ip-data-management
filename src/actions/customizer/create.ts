@@ -19,6 +19,10 @@ export async function createVariation(parentSettingsId: number) {
   if (!firstColor)
     throw new Error("No colors in the database to connect to a new variation.");
 
+  const sizeOptions = await prisma.productSizeOptions.create({
+    data: {},
+  });
+
   return prisma.customProductSettingsVariation.create({
     data: {
       parentSettingsId,
@@ -29,6 +33,7 @@ export async function createVariation(parentSettingsId: number) {
           imageUrl: "",
         },
       },
+      productSizeOptionsId: sizeOptions.id,
     },
     include: {
       color: true,
