@@ -113,13 +113,14 @@ model CustomProductSettings {
 }
 
 model CustomProductSettingsVariation {
-  id               Int                   @id @default(autoincrement())
-  parentSettings   CustomProductSettings @relation(fields: [parentSettingsId], references: [id], onDelete: Cascade)
-  parentSettingsId Int
-  views            CustomProductView[]
-  color            Color                 @relation(fields: [colorId], references: [id])
-  colorId          Int
-  sizeOptions      ProductSizeOptions?
+  id                   Int                   @id @default(autoincrement())
+  parentSettings       CustomProductSettings @relation(fields: [parentSettingsId], references: [id], onDelete: Cascade)
+  parentSettingsId     Int
+  views                CustomProductView[]
+  color                Color                 @relation(fields: [colorId], references: [id])
+  colorId              Int
+  sizeOptions          ProductSizeOptions?   @relation(fields: [productSizeOptionsId], references: [id])
+  productSizeOptionsId Int?                  @unique
 }
 
 model CustomProductView {
@@ -156,18 +157,17 @@ model CustomProductRequest {
 }
 
 model ProductSizeOptions {
-  id                               Int                            @id @default(autoincrement())
-  sizeSmall                        Boolean                        @default(false)
-  sizeMedium                       Boolean                        @default(false)
-  sizeLarge                        Boolean                        @default(false)
-  sizeXL                           Boolean                        @default(false)
-  size2XL                          Boolean                        @default(false)
-  size3XL                          Boolean                        @default(false)
-  size4XL                          Boolean                        @default(false)
-  size5XL                          Boolean                        @default(false)
-  size6XL                          Boolean                        @default(false)
-  customProductSettingsVariation   CustomProductSettingsVariation @relation(fields: [customProductSettingsVariationId], references: [id])
-  customProductSettingsVariationId Int                            @unique
+  id                             Int                             @id @default(autoincrement())
+  sizeSmall                      Boolean                         @default(false)
+  sizeMedium                     Boolean                         @default(false)
+  sizeLarge                      Boolean                         @default(false)
+  sizeXL                         Boolean                         @default(false)
+  size2XL                        Boolean                         @default(false)
+  size3XL                        Boolean                         @default(false)
+  size4XL                        Boolean                         @default(false)
+  size5XL                        Boolean                         @default(false)
+  size6XL                        Boolean                         @default(false)
+  customProductSettingsVariation CustomProductSettingsVariation?
 }
 
 model Webstore {
