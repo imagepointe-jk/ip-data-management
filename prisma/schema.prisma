@@ -119,8 +119,8 @@ model CustomProductSettingsVariation {
   views                CustomProductView[]
   color                Color                 @relation(fields: [colorId], references: [id])
   colorId              Int
-  sizeOptions          ProductSizeOptions?   @relation(fields: [productSizeOptionsId], references: [id])
-  productSizeOptionsId Int?                  @unique
+  sizeOptions          ProductSizeOptions    @relation(fields: [productSizeOptionsId], references: [id])
+  productSizeOptionsId Int                   @unique
 }
 
 model CustomProductView {
