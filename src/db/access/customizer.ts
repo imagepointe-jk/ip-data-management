@@ -55,7 +55,7 @@ export type CustomProductDecorationLocationNumeric = {
 
 export type FullProductSettings = CustomProductSettings & {
   variations: (CustomProductSettingsVariation & { color: Color } & {
-    sizeOptions: ProductSizeOptions | null;
+    sizeOptions: ProductSizeOptions;
   } & {
     views: (CustomProductView & {
       locations: CustomProductDecorationLocationNumeric[];
@@ -135,7 +135,7 @@ function convertFullProductSettings(
         locations: CustomProductDecorationLocation[];
       })[];
       color: Color;
-      sizeOptions: ProductSizeOptions | null;
+      sizeOptions: ProductSizeOptions;
     })[];
   }
 ): FullProductSettings {

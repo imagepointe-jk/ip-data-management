@@ -15,7 +15,7 @@ type Props = {
   variation:
     | (CustomProductSettingsVariation & {
         color: Color;
-        sizeOptions: ProductSizeOptions | null;
+        sizeOptions: ProductSizeOptions;
       })
     | undefined;
   colors: Color[];
@@ -33,7 +33,66 @@ export function VariationSettings({
   const fields = [
     {
       label: "S",
-      defaultChecked: variation?.sizeOptions?.sizeSmall,
+      defaultChecked: variation?.sizeOptions.sizeSmall,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.sizeSmall = state;
+      },
+    },
+    {
+      label: "M",
+      defaultChecked: variation?.sizeOptions.sizeMedium,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.sizeMedium = state;
+      },
+    },
+    {
+      label: "L",
+      defaultChecked: variation?.sizeOptions.sizeLarge,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.sizeLarge = state;
+      },
+    },
+    {
+      label: "XL",
+      defaultChecked: variation?.sizeOptions.sizeXL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.sizeXL = state;
+      },
+    },
+    {
+      label: "2XL",
+      defaultChecked: variation?.sizeOptions.size2XL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.size2XL = state;
+      },
+    },
+    {
+      label: "3XL",
+      defaultChecked: variation?.sizeOptions.size3XL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.size3XL = state;
+      },
+    },
+    {
+      label: "4XL",
+      defaultChecked: variation?.sizeOptions.size4XL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.size4XL = state;
+      },
+    },
+    {
+      label: "5XL",
+      defaultChecked: variation?.sizeOptions.size5XL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.size5XL = state;
+      },
+    },
+    {
+      label: "6XL",
+      defaultChecked: variation?.sizeOptions.size6XL,
+      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+        options.size6XL = state;
+      },
     },
   ];
 
@@ -59,6 +118,18 @@ export function VariationSettings({
     }
   }
 
+  function onChangeSizeOption(
+    state: boolean,
+    updateOptionsFn: (state: boolean, options: ProductSizeOptions) => void
+  ) {
+    setSettings((draft) => {
+      const variation = draft.variations.find(
+        (variation) => variation.id === selectedVariationId
+      );
+      if (variation) updateOptionsFn(state, variation.sizeOptions);
+    });
+  }
+
   function onChangeColor(id: number) {
     setSettings((draft) => {
       const variation = draft.variations.find(
@@ -79,43 +150,22 @@ export function VariationSettings({
         <div>
           <div>Available Sizes</div>
           <div className={styles["variation-sizes"]}>
-            <label>
-              <input
-                type="checkbox"
-                onChange={(e) => console.log(e.target.checked)}
-              />
-              S
-            </label>
-            <label>
-              <input type="checkbox" />M
-            </label>
-            <label>
-              <input type="checkbox" />L
-            </label>
-            <label>
-              <input type="checkbox" />
-              XL
-            </label>
-            <label>
-              <input type="checkbox" />
-              2XL
-            </label>
-            <label>
-              <input type="checkbox" />
-              3XL
-            </label>
-            <label>
-              <input type="checkbox" />
-              4XL
-            </label>
-            <label>
-              <input type="checkbox" />
-              5XL
-            </label>
-            <label>
-              <input type="checkbox" />
-              6XL
-            </label>
+            {variation &&
+              fields.map((field) => (
+                <label key={`${variation.id}-${field.label}`}>
+                  <input
+                    type="checkbox"
+                    defaultChecked={field.defaultChecked}
+                    onChange={(e) =>
+                      onChangeSizeOption(
+                        e.target.checked,
+                        field.updateOptionsFn
+                      )
+                    }
+                  />
+                  {field.label}
+                </label>
+              ))}
           </div>
         </div>
         <div>

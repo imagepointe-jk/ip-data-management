@@ -16,14 +16,32 @@ export async function updateProductSettings(settings: FullProductSettings) {
 
   await Promise.all([
     ...variations.map((variation) =>
-      prisma.customProductSettingsVariation.update({
-        where: {
-          id: variation.id,
-        },
-        data: {
-          colorId: variation.colorId,
-        },
-      })
+      Promise.all([
+        prisma.customProductSettingsVariation.update({
+          where: {
+            id: variation.id,
+          },
+          data: {
+            colorId: variation.colorId,
+          },
+        }),
+        prisma.productSizeOptions.update({
+          where: {
+            id: variation.sizeOptions.id,
+          },
+          data: {
+            sizeSmall: variation.sizeOptions.sizeSmall,
+            sizeMedium: variation.sizeOptions.sizeMedium,
+            sizeLarge: variation.sizeOptions.sizeLarge,
+            sizeXL: variation.sizeOptions.sizeXL,
+            size2XL: variation.sizeOptions.size2XL,
+            size3XL: variation.sizeOptions.size3XL,
+            size4XL: variation.sizeOptions.size4XL,
+            size5XL: variation.sizeOptions.size5XL,
+            size6XL: variation.sizeOptions.size6XL,
+          },
+        }),
+      ])
     ),
     ...allLocations.map((location) =>
       prisma.customProductDecorationLocation.update({
