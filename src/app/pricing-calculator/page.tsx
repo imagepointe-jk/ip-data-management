@@ -1,9 +1,15 @@
 "use client";
 
-export default function PricingCalculator() {
+import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
+import { WCProductProvider } from "./WCProductProvider";
+import { PricingCalculator } from "./PricingCalculator";
+
+export default function Page() {
   return (
-    <>
-      <h1>Hello World Pricing Calculator</h1>
-    </>
+    <IframeHelperProvider>
+      <WCProductProvider>
+        <PricingCalculator />
+      </WCProductProvider>
+    </IframeHelperProvider>
   );
 }
