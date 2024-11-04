@@ -25,6 +25,13 @@ export const calculatePriceParamsSchema = z.object({
   quantities: z.array(z.number()),
   locations: z.array(decorationLocationSchema),
 });
+export const iframeDataSchema = z.object({
+  decorationType: z.string(),
+  isAllPoly: z.boolean(),
+  isSweatshirt: z.boolean(),
+  markupSchedule: z.string(),
+  net: z.number(),
+});
 
 export type DecorationLocation = z.infer<typeof decorationLocationSchema>;
 export type CalculatePriceParams = z.infer<typeof calculatePriceParamsSchema>;

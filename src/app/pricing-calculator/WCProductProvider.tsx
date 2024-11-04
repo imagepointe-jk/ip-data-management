@@ -1,3 +1,4 @@
+import { validateIframeData } from "@/types/validations/pricing";
 import {
   createContext,
   ReactNode,
@@ -6,8 +7,11 @@ import {
   useState,
 } from "react";
 
-type WCProductContext = {
+type WCProductData = {
   base_price: number;
+};
+type WCProductContext = {
+  productData: WCProductData;
 };
 
 const WCProductContext = createContext(null as WCProductContext | null);
@@ -23,17 +27,14 @@ type Props = {
   children: ReactNode;
 };
 export function WCProductProvider({ children }: Props) {
-  const [testVal, setTestVal] = useState(42);
+  const [productData, setProductData] = useState(null as WCProductData | null);
 
   function onParentWindowResponse(e: any) {
-    if (
-      ["react-devtools-content-script", "react-devtools-bridge"].includes(
-        e.data.source
-      )
-    )
-      return; //ignore messages from devtools
+    if (e.data.type !== "ip-pricing-calculator-request") return;
+
     try {
-      console.log(e.data);
+      const parsed = validateIframeData(e.data);
+      setProductData({ base_price: parsed.net });
     } catch (error) {
       console.error("Invalid parent window response");
     }
@@ -47,12 +48,14 @@ export function WCProductProvider({ children }: Props) {
     window.addEventListener("message", onParentWindowResponse);
 
     postMessage({
-      type: "ip-pricing-calculator-test",
+      type: "ip-pricing-calculator-request",
     });
   }, []);
 
+  if (!productData) return <></>;
+
   return (
-    <WCProductContext.Provider value={{ base_price: testVal }}>
+    <WCProductContext.Provider value={{ productData }}>
       {children}
     </WCProductContext.Provider>
   );
