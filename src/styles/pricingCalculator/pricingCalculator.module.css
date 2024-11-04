@@ -1,0 +1,31 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: lightgray;
+  box-sizing: border-box;
+}
+
+.input-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-container label {
+  display: block;
+  font-weight: bold;
+  color: #666666;
+}
+
+.main select,
+.main input {
+  font-size: 1.125rem;
+  padding: 5px;
+  border-radius: 5px;
+  width: 160px;
+}
+
+.main input {
+  border: 1px solid black;
+}

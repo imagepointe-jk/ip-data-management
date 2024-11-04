@@ -10,6 +10,7 @@ const productTypes = [
 ] as const;
 const productCalcTypeSchema = z.enum(productTypes);
 const decorationTypes = ["Screen Print", "Embroidery"] as const;
+const decorationTypeSchema = z.enum(decorationTypes);
 const decorationLocationSchema = z.object({
   colorCount: z.number().optional(),
   stitchCount: z.number().optional(),
@@ -21,7 +22,7 @@ export const calculatePriceParamsSchema = z.object({
     isAllPoly: z.boolean().optional(),
     isSweatshirt: z.boolean().optional(),
   }),
-  decorationType: z.enum(decorationTypes),
+  decorationType: decorationTypeSchema,
   quantities: z.array(z.number()),
   locations: z.array(decorationLocationSchema),
 });
@@ -33,6 +34,7 @@ export const iframeDataSchema = z.object({
   net: z.number(),
 });
 
+export type DecorationType = z.infer<typeof decorationTypeSchema>;
 export type DecorationLocation = z.infer<typeof decorationLocationSchema>;
 export type CalculatePriceParams = z.infer<typeof calculatePriceParamsSchema>;
 export type ProductCalcType = z.infer<typeof productCalcTypeSchema>;
