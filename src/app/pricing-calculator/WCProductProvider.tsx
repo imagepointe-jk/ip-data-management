@@ -30,7 +30,7 @@ export function WCProductProvider({ children }: Props) {
   const [productData, setProductData] = useState(null as WCProductData | null);
 
   function onParentWindowResponse(e: any) {
-    if (e.data.type !== "ip-pricing-calculator-request") return;
+    if (e.data.type !== "ip-pricing-calculator-response") return;
 
     try {
       const parsed = validateIframeData(e.data);
