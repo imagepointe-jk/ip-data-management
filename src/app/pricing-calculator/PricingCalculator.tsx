@@ -2,8 +2,8 @@ import { useProduct } from "./WCProductProvider";
 
 export function PricingCalculator() {
   const {
-    productData: { base_price },
+    productData: { net },
   } = useProduct();
 
-  return <h1>The test value is {base_price}</h1>;
+  return <h1>The test value is {net}</h1>;
 }

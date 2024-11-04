@@ -36,3 +36,4 @@ export const iframeDataSchema = z.object({
 export type DecorationLocation = z.infer<typeof decorationLocationSchema>;
 export type CalculatePriceParams = z.infer<typeof calculatePriceParamsSchema>;
 export type ProductCalcType = z.infer<typeof productCalcTypeSchema>;
+export type IframeData = z.infer<typeof iframeDataSchema>;

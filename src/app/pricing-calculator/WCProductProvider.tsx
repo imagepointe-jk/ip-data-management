@@ -1,3 +1,4 @@
+import { IframeData } from "@/types/schema/pricing";
 import { validateIframeData } from "@/types/validations/pricing";
 import {
   createContext,
@@ -7,11 +8,8 @@ import {
   useState,
 } from "react";
 
-type WCProductData = {
-  base_price: number;
-};
 type WCProductContext = {
-  productData: WCProductData;
+  productData: IframeData;
 };
 
 const WCProductContext = createContext(null as WCProductContext | null);
@@ -27,14 +25,14 @@ type Props = {
   children: ReactNode;
 };
 export function WCProductProvider({ children }: Props) {
-  const [productData, setProductData] = useState(null as WCProductData | null);
+  const [productData, setProductData] = useState(null as IframeData | null);
 
   function onParentWindowResponse(e: any) {
     if (e.data.type !== "ip-pricing-calculator-response") return;
 
     try {
       const parsed = validateIframeData(e.data);
-      setProductData({ base_price: parsed.net });
+      setProductData(parsed);
     } catch (error) {
       console.error("Invalid parent window response");
     }
