@@ -1,14 +1,18 @@
 import { createQuoteRequest } from "@/actions/customizer/create";
 import { handleRequestError } from "@/app/api/handleError";
+import { populateProductData } from "@/app/customizer/handleData";
 import { easyCorsInit } from "@/constants";
+import { sendQuoteRequestEmail } from "@/customizer/mail/mail";
+import { getProductSettingsWithIncludes } from "@/db/access/customizer";
 import { validateQuoteRequest } from "@/types/validations/customizer";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const quoteRequest = validateQuoteRequest(body);
     const { cart, company, email, firstName, lastName, comments, local } =
-      validateQuoteRequest(body);
+      quoteRequest;
     const created = await createQuoteRequest({
       firstName,
       lastName,
@@ -18,6 +22,11 @@ export async function POST(request: NextRequest) {
       comments: comments || null,
       cartJson: JSON.stringify(cart),
     });
+
+    const settings = await getProductSettingsWithIncludes();
+    const populated = await populateProductData(settings);
+
+    sendQuoteRequestEmail(quoteRequest, created.id);
 
     return Response.json(created, easyCorsInit);
   } catch (error) {
