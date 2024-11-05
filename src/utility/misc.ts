@@ -1,4 +1,4 @@
-import { AppError } from "@/error";
+import { AppError } from "../error";
 import crypto from "crypto";
 import { INTERNAL_SERVER_ERROR } from "./statusCodes";
 
