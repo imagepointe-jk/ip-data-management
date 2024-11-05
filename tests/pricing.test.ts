@@ -719,6 +719,34 @@ describe("Polos/jackets/sweats (emb)", () => {
       },
     });
   });
+  //test various combinations
+  test("Quantity 100, net 23.25, location with 10000 stitches, location with 5000 stitches, location with 15000 stitches, location with 10000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 66.18,
+      calcParams: {
+        productData: {
+          net: 23.25,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 10000,
+          },
+          {
+            stitchCount: 5000,
+          },
+          {
+            stitchCount: 15000,
+          },
+          {
+            stitchCount: 10000,
+          },
+        ],
+        quantities: [100],
+      },
+    });
+  });
 });
 
 describe("Hats/beanies (emb)", () => {
