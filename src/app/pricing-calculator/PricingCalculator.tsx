@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useProduct } from "./WCProductProvider";
 import {
   CalculatePriceParams,
@@ -11,8 +11,22 @@ import { PrintFields } from "./PrintFields";
 import { EmbroideryFields } from "./EmbroideryFields";
 import { getPriceEstimate } from "@/fetch/client/pricing";
 import { validateEstimateResponse } from "@/types/validations/pricing";
+import debounce from "lodash.debounce";
 
 export type StitchCount = "0k" | "5k" | "10k" | "15k";
+type BuildRequestDataParams = {
+  decorationType: DecorationType;
+  printLocations: number;
+  embLocations: number;
+  location1Colors: number;
+  location2Colors: number;
+  location3Colors: number;
+  location4Colors: number;
+  location1Stitches: StitchCount;
+  location2Stitches: StitchCount;
+  location3Stitches: StitchCount;
+  location4Stitches: StitchCount;
+};
 export function PricingCalculator() {
   const {
     productData: { net, markupSchedule },
@@ -62,6 +76,21 @@ export function PricingCalculator() {
         })
       : null;
   const quantityBreaks = [48, 72, 144, 288, 500];
+  const getPriceDebounced = useCallback(
+    debounce(async (params: BuildRequestDataParams) => {
+      try {
+        const response = await getPriceEstimate(buildRequestData(params));
+        if (!response.ok) throw new Error(`API error ${response.status}`);
+
+        const json = await response.json();
+        const parsed = validateEstimateResponse(json);
+        setEstimateResponse(parsed);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 2000),
+    []
+  );
 
   function stitchCountToNumber(stitchCount: StitchCount) {
     return +stitchCount.replace("k", "") * 1000;
@@ -94,7 +123,22 @@ export function PricingCalculator() {
     }
   }
 
-  function buildRequestData(): CalculatePriceParams {
+  function buildRequestData(
+    params: BuildRequestDataParams
+  ): CalculatePriceParams {
+    const {
+      decorationType,
+      embLocations,
+      location1Colors,
+      location1Stitches,
+      location2Colors,
+      location2Stitches,
+      location3Colors,
+      location3Stitches,
+      location4Colors,
+      location4Stitches,
+      printLocations,
+    } = params;
     const locationCount =
       decorationType === "Screen Print" ? printLocations : embLocations;
     const requestData: CalculatePriceParams = {
@@ -147,21 +191,34 @@ export function PricingCalculator() {
     return requestData;
   }
 
-  async function getPrice() {
-    try {
-      const response = await getPriceEstimate(buildRequestData());
-      if (!response.ok) throw new Error(`API error ${response.status}`);
+  //   async function getPrice() {
+  //     try {
+  //       const response = await getPriceEstimate(buildRequestData());
+  //       if (!response.ok) throw new Error(`API error ${response.status}`);
 
-      const json = await response.json();
-      const parsed = validateEstimateResponse(json);
-      setEstimateResponse(parsed);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  //       const json = await response.json();
+  //       const parsed = validateEstimateResponse(json);
+  //       setEstimateResponse(parsed);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
 
   useEffect(() => {
-    getPrice();
+    setEstimateResponse(null);
+    getPriceDebounced({
+      decorationType,
+      embLocations,
+      location1Colors,
+      location1Stitches,
+      location2Colors,
+      location2Stitches,
+      location3Colors,
+      location3Stitches,
+      location4Colors,
+      location4Stitches,
+      printLocations,
+    });
   }, [
     quantity,
     decorationType,
