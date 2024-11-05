@@ -28,18 +28,24 @@ type BuildRequestDataParams = {
   location4Stitches: StitchCount;
 };
 export function PricingCalculator() {
+  //data from WC product
   const {
     productData: { net, markupSchedule },
   } = useProduct();
   const productType = markupScheduleToProductType(markupSchedule);
   const allowPrint = productType === "tshirt" || productType === "polo";
   const allowEmbroidery = productType !== "tshirt";
+
+  //form state
+
   const [quantity, setQuantity] = useState(100);
   const [printLocations, setPrintLocations] = useState(1);
   const [embLocations, setEmbLocations] = useState(1);
   const [decorationType, setDecorationType] = useState(
     (allowPrint ? "Screen Print" : "Embroidery") as DecorationType
   );
+
+  //form state (location counts)
 
   const [location1Colors, setLocation1Colors] = useState(1);
   const [location2Colors, setLocation2Colors] = useState(1);
@@ -59,12 +65,17 @@ export function PricingCalculator() {
     "0k" as StitchCount
   );
 
+  //API response
+
   const [estimateResponse, setEstimateResponse] = useState(
     null as EstimateResponse | null
   );
 
+  //sort to make sure we search the results in ascending order
   if (estimateResponse !== null)
     estimateResponse.results.sort((a, b) => a.quantity - b.quantity);
+
+  //main estimate for the quantity the user entered
   const estimateForRequestedQuantity =
     quantity >= 48 && estimateResponse !== null
       ? estimateResponse.results.find((thisItem, i, arr) => {
@@ -75,7 +86,10 @@ export function PricingCalculator() {
           );
         })
       : null;
+
   const quantityBreaks = [48, 72, 144, 288, 500];
+
+  //debounced function for getting the price via API
   const getPriceDebounced = useCallback(
     debounce(async (params: BuildRequestDataParams) => {
       try {
@@ -88,7 +102,7 @@ export function PricingCalculator() {
       } catch (error) {
         console.error(error);
       }
-    }, 2000),
+    }, 500),
     []
   );
 
@@ -191,19 +205,7 @@ export function PricingCalculator() {
     return requestData;
   }
 
-  //   async function getPrice() {
-  //     try {
-  //       const response = await getPriceEstimate(buildRequestData());
-  //       if (!response.ok) throw new Error(`API error ${response.status}`);
-
-  //       const json = await response.json();
-  //       const parsed = validateEstimateResponse(json);
-  //       setEstimateResponse(parsed);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-
+  //get the price again when any form state changes
   useEffect(() => {
     setEstimateResponse(null);
     getPriceDebounced({
@@ -237,6 +239,8 @@ export function PricingCalculator() {
   return (
     <div className={styles["main"]}>
       <div className={styles["row"]}>
+        {/* Decoration method */}
+
         <label htmlFor="decoration-type" className={styles["label"]}>
           Decoration Method
         </label>
@@ -250,6 +254,9 @@ export function PricingCalculator() {
           {allowEmbroidery && <option value="Embroidery">Embroidery</option>}
         </select>
       </div>
+
+      {/* Quantity */}
+
       <div className={styles["row"]}>
         <label htmlFor="quantity" className={styles["label"]}>
           Quantity
@@ -262,6 +269,9 @@ export function PricingCalculator() {
           onChange={(e) => setQuantity(+e.target.value)}
         />
       </div>
+
+      {/* Print/emb fields */}
+
       {decorationType === "Screen Print" && (
         <PrintFields
           printLocations={printLocations}
@@ -290,6 +300,9 @@ export function PricingCalculator() {
           setLocation4Stitches={setLocation4Stitches}
         />
       )}
+
+      {/* The estimate for the quantity entered by the user */}
+
       <hr />
       <div className={styles["row"]}>
         <div className={styles["label"]}>Estimate</div>
@@ -302,6 +315,9 @@ export function PricingCalculator() {
         </div>
       </div>
       <hr />
+
+      {/* Price breaks */}
+
       <div className={styles["expandable-toggle"]}>+ View Price Breaks</div>
       <div className={styles["vert-flex-group"]}>
         {quantityBreaks.map((thisQuantity, i, arr) => {
