@@ -12,6 +12,8 @@ import { EmbroideryFields } from "./EmbroideryFields";
 import { getPriceEstimate } from "@/fetch/client/pricing";
 import { validateEstimateResponse } from "@/types/validations/pricing";
 import debounce from "lodash.debounce";
+import { ExpandableSection } from "./ExpandableSection";
+import { DecorationLocations } from "./DecorationLocations";
 
 export type StitchCount = "0k" | "5k" | "10k" | "15k";
 type BuildRequestDataParams = {
@@ -318,28 +320,32 @@ export function PricingCalculator() {
 
       {/* Price breaks */}
 
-      <div className={styles["expandable-toggle"]}>+ View Price Breaks</div>
-      <div className={styles["vert-flex-group"]}>
-        {quantityBreaks.map((thisQuantity, i, arr) => {
-          const nextQuantity = arr[i + 1];
-          const matchingResult = estimateResponse?.results.find(
-            (result) => result.quantity === thisQuantity
-          );
-          const rangeLabel = nextQuantity
-            ? `${thisQuantity}-${nextQuantity - 1}`
-            : `${thisQuantity}+`;
-          return (
-            <div key={thisQuantity} className={styles["price-break-row"]}>
-              <div>{rangeLabel}</div>
-              <div>
-                {matchingResult
-                  ? `$${matchingResult.result.toFixed(2)}`
-                  : "..."}
+      <ExpandableSection label="View Price Breaks">
+        <div className={styles["vert-flex-group"]}>
+          {quantityBreaks.map((thisQuantity, i, arr) => {
+            const nextQuantity = arr[i + 1];
+            const matchingResult = estimateResponse?.results.find(
+              (result) => result.quantity === thisQuantity
+            );
+            const rangeLabel = nextQuantity
+              ? `${thisQuantity}-${nextQuantity - 1}`
+              : `${thisQuantity}+`;
+            return (
+              <div key={thisQuantity} className={styles["price-break-row"]}>
+                <div>{rangeLabel}</div>
+                <div>
+                  {matchingResult
+                    ? `$${matchingResult.result.toFixed(2)}`
+                    : "..."}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </ExpandableSection>
+      <ExpandableSection label="View Decoration Locations">
+        <DecorationLocations />
+      </ExpandableSection>
     </div>
   );
 }

@@ -38,6 +38,8 @@
   text-align: center;
   font-weight: bold;
   font-size: 0.75rem;
+  cursor: pointer;
+  user-select: none;
 }
 
 .vert-flex-group {
@@ -49,4 +51,58 @@
 .price-break-row {
   display: flex;
   justify-content: space-between;
+}
+
+.decoration-locations-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.decoration-locations-img-container {
+  position: relative;
+}
+
+.decoration-location-icon {
+  position: absolute;
+  background-color: #006ac6;
+  border-radius: 100px;
+  color: white;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  user-select: none;
+}
+
+.left-chest {
+  top: 32px;
+  left: 91px;
+}
+
+.right-chest {
+  top: 32px;
+  left: 43px;
+}
+
+.full-front {
+  top: 68px;
+  left: 69px;
+}
+
+.left-sleeve {
+  top: 36px;
+  left: 4px;
+}
+
+.right-sleeve {
+  top: 36px;
+  left: 130px;
+}
+
+.full-back {
+  top: 48px;
+  left: 231px;
 }
