@@ -28,19 +28,19 @@ export function EmbroideryFields({
   const stitchOptions = [
     {
       value: "0k",
-      text: "Up to 5k stitches",
+      text: "Up to 4,999 stitches",
     },
     {
       value: "5k",
-      text: "5k-10k stitches",
+      text: "5k-9,999 stitches",
     },
     {
       value: "10k",
-      text: "10k-15k stitches",
+      text: "10k-14,999 stitches",
     },
     {
       value: "15k",
-      text: "15k-20k stitches",
+      text: "15k-19,999 stitches",
     },
   ];
 
