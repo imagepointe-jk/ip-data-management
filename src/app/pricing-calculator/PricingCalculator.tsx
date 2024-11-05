@@ -52,7 +52,7 @@ export function PricingCalculator() {
   if (estimateResponse !== null)
     estimateResponse.results.sort((a, b) => a.quantity - b.quantity);
   const estimateForRequestedQuantity =
-    estimateResponse !== null
+    quantity >= 48 && estimateResponse !== null
       ? estimateResponse.results.find((thisItem, i, arr) => {
           const nextItem = arr[i + 1];
           return (
