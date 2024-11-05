@@ -11,13 +11,33 @@ import { EmbroideryFields } from "./EmbroideryFields";
 import { getPriceEstimate } from "@/fetch/client/pricing";
 import { validateEstimateResponse } from "@/types/validations/pricing";
 
+export type StitchCount = "0k" | "5k" | "10k" | "15k";
 export function PricingCalculator() {
   const [quantity, setQuantity] = useState(100);
   const [printLocations, setPrintLocations] = useState(1);
   const [embLocations, setEmbLocations] = useState(1);
   const [decorationType, setDecorationType] = useState(
-    "Embroidery" as DecorationType
+    "Screen Print" as DecorationType
   );
+
+  const [location1Colors, setLocation1Colors] = useState(1);
+  const [location2Colors, setLocation2Colors] = useState(1);
+  const [location3Colors, setLocation3Colors] = useState(1);
+  const [location4Colors, setLocation4Colors] = useState(1);
+
+  const [location1Stitches, setLocation1Stitches] = useState(
+    "0k" as StitchCount
+  );
+  const [location2Stitches, setLocation2Stitches] = useState(
+    "0k" as StitchCount
+  );
+  const [location3Stitches, setLocation3Stitches] = useState(
+    "0k" as StitchCount
+  );
+  const [location4Stitches, setLocation4Stitches] = useState(
+    "0k" as StitchCount
+  );
+
   const [estimateResponse, setEstimateResponse] = useState(
     null as EstimateResponse | null
   );
@@ -39,12 +59,23 @@ export function PricingCalculator() {
       : null;
   const quantityBreaks = [48, 72, 144, 288, 500];
 
+  function stitchCountToNumber(stitchCount: StitchCount) {
+    return +stitchCount.replace("k", "") * 1000;
+  }
+
   function buildRequestData(): CalculatePriceParams {
-    return {
+    const locationCount =
+      decorationType === "Screen Print" ? printLocations : embLocations;
+    const requestData: CalculatePriceParams = {
       decorationType,
       locations: [
         {
-          colorCount: 1,
+          colorCount:
+            decorationType === "Screen Print" ? location1Colors : undefined,
+          stitchCount:
+            decorationType === "Embroidery"
+              ? stitchCountToNumber(location1Stitches)
+              : undefined,
         },
       ],
       productData: {
@@ -53,6 +84,36 @@ export function PricingCalculator() {
       },
       quantities: quantityBreaks,
     };
+
+    if (locationCount > 1)
+      requestData.locations.push({
+        colorCount:
+          decorationType === "Screen Print" ? location2Colors : undefined,
+        stitchCount:
+          decorationType === "Embroidery"
+            ? stitchCountToNumber(location2Stitches)
+            : undefined,
+      });
+    if (locationCount > 2)
+      requestData.locations.push({
+        colorCount:
+          decorationType === "Screen Print" ? location3Colors : undefined,
+        stitchCount:
+          decorationType === "Embroidery"
+            ? stitchCountToNumber(location3Stitches)
+            : undefined,
+      });
+    if (locationCount > 3)
+      requestData.locations.push({
+        colorCount:
+          decorationType === "Screen Print" ? location4Colors : undefined,
+        stitchCount:
+          decorationType === "Embroidery"
+            ? stitchCountToNumber(location4Stitches)
+            : undefined,
+      });
+
+    return requestData;
   }
 
   async function getPrice() {
@@ -61,7 +122,6 @@ export function PricingCalculator() {
       if (!response.ok) throw new Error(`API error ${response.status}`);
 
       const json = await response.json();
-      console.log(json);
       const parsed = validateEstimateResponse(json);
       setEstimateResponse(parsed);
     } catch (error) {
@@ -71,7 +131,20 @@ export function PricingCalculator() {
 
   useEffect(() => {
     getPrice();
-  }, [quantity]);
+  }, [
+    quantity,
+    decorationType,
+    printLocations,
+    embLocations,
+    location1Colors,
+    location2Colors,
+    location3Colors,
+    location4Colors,
+    location1Stitches,
+    location2Stitches,
+    location3Stitches,
+    location4Stitches,
+  ]);
 
   return (
     <div className={styles["main"]}>
@@ -105,12 +178,28 @@ export function PricingCalculator() {
         <PrintFields
           printLocations={printLocations}
           setPrintLocations={setPrintLocations}
+          location1Colors={location1Colors}
+          location2Colors={location2Colors}
+          location3Colors={location3Colors}
+          location4Colors={location4Colors}
+          setLocation1Colors={setLocation1Colors}
+          setLocation2Colors={setLocation2Colors}
+          setLocation3Colors={setLocation3Colors}
+          setLocation4Colors={setLocation4Colors}
         />
       )}
       {decorationType === "Embroidery" && (
         <EmbroideryFields
           embLocations={embLocations}
           setEmbLocations={setEmbLocations}
+          location1Stitches={location1Stitches}
+          location2Stitches={location2Stitches}
+          location3Stitches={location3Stitches}
+          location4Stitches={location4Stitches}
+          setLocation1Stitches={setLocation1Stitches}
+          setLocation2Stitches={setLocation2Stitches}
+          setLocation3Stitches={setLocation3Stitches}
+          setLocation4Stitches={setLocation4Stitches}
         />
       )}
       <hr />

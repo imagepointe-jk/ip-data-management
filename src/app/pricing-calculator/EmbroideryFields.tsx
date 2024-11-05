@@ -1,10 +1,30 @@
 import styles from "@/styles/pricingCalculator/pricingCalculator.module.css";
+import { StitchCount } from "./PricingCalculator";
 
 type Props = {
   embLocations: number;
   setEmbLocations: (value: number) => void;
+  location1Stitches: StitchCount;
+  location2Stitches: StitchCount;
+  location3Stitches: StitchCount;
+  location4Stitches: StitchCount;
+  setLocation1Stitches: (count: StitchCount) => void;
+  setLocation2Stitches: (count: StitchCount) => void;
+  setLocation3Stitches: (count: StitchCount) => void;
+  setLocation4Stitches: (count: StitchCount) => void;
 };
-export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
+export function EmbroideryFields({
+  embLocations,
+  setEmbLocations,
+  location1Stitches,
+  location2Stitches,
+  location3Stitches,
+  location4Stitches,
+  setLocation1Stitches,
+  setLocation2Stitches,
+  setLocation3Stitches,
+  setLocation4Stitches,
+}: Props) {
   const stitchOptions = [
     {
       value: "0k",
@@ -46,7 +66,12 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
         <label htmlFor="location-1-stitches" className={styles["label"]}>
           Location 1 Stitches
         </label>
-        <select name="location-1-stitches" id="location-1-stitches">
+        <select
+          name="location-1-stitches"
+          id="location-1-stitches"
+          value={location1Stitches}
+          onChange={(e) => setLocation1Stitches(e.target.value as StitchCount)}
+        >
           {stitchOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.text}
@@ -59,7 +84,14 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
           <label htmlFor="location-2-stitches" className={styles["label"]}>
             Location 2 Stitches
           </label>
-          <select name="location-2-stitches" id="location-2-stitches">
+          <select
+            name="location-2-stitches"
+            id="location-2-stitches"
+            value={location2Stitches}
+            onChange={(e) =>
+              setLocation2Stitches(e.target.value as StitchCount)
+            }
+          >
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
@@ -73,7 +105,14 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
           <label htmlFor="location-3-stitches" className={styles["label"]}>
             Location 3 Stitches
           </label>
-          <select name="location-3-stitches" id="location-3-stitches">
+          <select
+            name="location-3-stitches"
+            id="location-3-stitches"
+            value={location3Stitches}
+            onChange={(e) =>
+              setLocation3Stitches(e.target.value as StitchCount)
+            }
+          >
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
@@ -87,7 +126,14 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
           <label htmlFor="location-4-stitches" className={styles["label"]}>
             Location 4 Stitches
           </label>
-          <select name="location-4-stitches" id="location-4-stitches">
+          <select
+            name="location-4-stitches"
+            id="location-4-stitches"
+            value={location4Stitches}
+            onChange={(e) =>
+              setLocation4Stitches(e.target.value as StitchCount)
+            }
+          >
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}

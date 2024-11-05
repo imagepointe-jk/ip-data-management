@@ -3,8 +3,27 @@ import styles from "@/styles/pricingCalculator/pricingCalculator.module.css";
 type Props = {
   printLocations: number;
   setPrintLocations: (value: number) => void;
+  location1Colors: number;
+  location2Colors: number;
+  location3Colors: number;
+  location4Colors: number;
+  setLocation1Colors: (value: number) => void;
+  setLocation2Colors: (value: number) => void;
+  setLocation3Colors: (value: number) => void;
+  setLocation4Colors: (value: number) => void;
 };
-export function PrintFields({ printLocations, setPrintLocations }: Props) {
+export function PrintFields({
+  printLocations,
+  setPrintLocations,
+  location1Colors,
+  location2Colors,
+  location3Colors,
+  location4Colors,
+  setLocation1Colors,
+  setLocation2Colors,
+  setLocation3Colors,
+  setLocation4Colors,
+}: Props) {
   const colorOptions = [
     {
       value: "1",
@@ -42,7 +61,12 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
         <label htmlFor="location-1-colors" className={styles["label"]}>
           Location 1 Colors
         </label>
-        <select name="location-1-colors" id="location-1-colors">
+        <select
+          name="location-1-colors"
+          id="location-1-colors"
+          value={location1Colors}
+          onChange={(e) => setLocation1Colors(+e.target.value)}
+        >
           {colorOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.text}
@@ -55,7 +79,12 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
           <label htmlFor="location-2-colors" className={styles["label"]}>
             Location 2 Colors
           </label>
-          <select name="location-2-colors" id="location-2-colors">
+          <select
+            name="location-2-colors"
+            id="location-2-colors"
+            value={location2Colors}
+            onChange={(e) => setLocation2Colors(+e.target.value)}
+          >
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
@@ -69,7 +98,12 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
           <label htmlFor="location-3-colors" className={styles["label"]}>
             Location 3 Colors
           </label>
-          <select name="location-3-colors" id="location-3-colors">
+          <select
+            name="location-3-colors"
+            id="location-3-colors"
+            value={location3Colors}
+            onChange={(e) => setLocation3Colors(+e.target.value)}
+          >
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
@@ -83,7 +117,12 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
           <label htmlFor="location-4-colors" className={styles["label"]}>
             Location 4 Colors
           </label>
-          <select name="location-4-colors" id="location-4-colors">
+          <select
+            name="location-4-colors"
+            id="location-4-colors"
+            value={location4Colors}
+            onChange={(e) => setLocation4Colors(+e.target.value)}
+          >
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.text}
