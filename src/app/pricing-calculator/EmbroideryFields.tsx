@@ -26,8 +26,10 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
 
   return (
     <>
-      <div className={styles["input-container"]}>
-        <label htmlFor="emb-locations">Embroidery Locations</label>
+      <div className={styles["row"]}>
+        <label htmlFor="emb-locations" className={styles["label"]}>
+          Embroidery Locations
+        </label>
         <select
           name="emb-locations"
           id="emb-locations"
@@ -40,8 +42,10 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
           <option value="4">4</option>
         </select>
       </div>
-      <div className={styles["input-container"]}>
-        <label htmlFor="location-1-stitches">Location 1 Stitches</label>
+      <div className={styles["row"]}>
+        <label htmlFor="location-1-stitches" className={styles["label"]}>
+          Location 1 Stitches
+        </label>
         <select name="location-1-stitches" id="location-1-stitches">
           {stitchOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -51,8 +55,10 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
         </select>
       </div>
       {embLocations > 1 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-2-stitches">Location 2 Stitches</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-2-stitches" className={styles["label"]}>
+            Location 2 Stitches
+          </label>
           <select name="location-2-stitches" id="location-2-stitches">
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -63,8 +69,10 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
         </div>
       )}
       {embLocations > 2 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-3-stitches">Location 3 Stitches</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-3-stitches" className={styles["label"]}>
+            Location 3 Stitches
+          </label>
           <select name="location-3-stitches" id="location-3-stitches">
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -75,8 +83,10 @@ export function EmbroideryFields({ embLocations, setEmbLocations }: Props) {
         </div>
       )}
       {embLocations > 3 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-4-stitches">Location 4 Stitches</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-4-stitches" className={styles["label"]}>
+            Location 4 Stitches
+          </label>
           <select name="location-4-stitches" id="location-4-stitches">
             {stitchOptions.map((option) => (
               <option key={option.value} value={option.value}>

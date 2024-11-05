@@ -33,9 +33,18 @@ export const iframeDataSchema = z.object({
   markupSchedule: z.string(),
   net: z.number(),
 });
+export const estimateResponseSchema = z.object({
+  results: z.array(
+    z.object({
+      quantity: z.number(),
+      result: z.number(),
+    })
+  ),
+});
 
 export type DecorationType = z.infer<typeof decorationTypeSchema>;
 export type DecorationLocation = z.infer<typeof decorationLocationSchema>;
 export type CalculatePriceParams = z.infer<typeof calculatePriceParamsSchema>;
 export type ProductCalcType = z.infer<typeof productCalcTypeSchema>;
 export type IframeData = z.infer<typeof iframeDataSchema>;
+export type EstimateResponse = z.infer<typeof estimateResponseSchema>;

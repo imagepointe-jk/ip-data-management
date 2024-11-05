@@ -22,8 +22,10 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
 
   return (
     <>
-      <div className={styles["input-container"]}>
-        <label htmlFor="print-locations">Print Locations</label>
+      <div className={styles["row"]}>
+        <label htmlFor="print-locations" className={styles["label"]}>
+          Print Locations
+        </label>
         <select
           name="print-locations"
           id="print-locations"
@@ -36,8 +38,10 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
           <option value="4">4</option>
         </select>
       </div>
-      <div className={styles["input-container"]}>
-        <label htmlFor="location-1-colors">Location 1 Colors</label>
+      <div className={styles["row"]}>
+        <label htmlFor="location-1-colors" className={styles["label"]}>
+          Location 1 Colors
+        </label>
         <select name="location-1-colors" id="location-1-colors">
           {colorOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -47,8 +51,10 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
         </select>
       </div>
       {printLocations > 1 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-2-colors">Location 2 Colors</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-2-colors" className={styles["label"]}>
+            Location 2 Colors
+          </label>
           <select name="location-2-colors" id="location-2-colors">
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -59,8 +65,10 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
         </div>
       )}
       {printLocations > 2 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-3-colors">Location 3 Colors</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-3-colors" className={styles["label"]}>
+            Location 3 Colors
+          </label>
           <select name="location-3-colors" id="location-3-colors">
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -71,8 +79,10 @@ export function PrintFields({ printLocations, setPrintLocations }: Props) {
         </div>
       )}
       {printLocations > 3 && (
-        <div className={styles["input-container"]}>
-          <label htmlFor="location-4-colors">Location 4 Colors</label>
+        <div className={styles["row"]}>
+          <label htmlFor="location-4-colors" className={styles["label"]}>
+            Location 4 Colors
+          </label>
           <select name="location-4-colors" id="location-4-colors">
             {colorOptions.map((option) => (
               <option key={option.value} value={option.value}>

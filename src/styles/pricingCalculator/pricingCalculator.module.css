@@ -6,13 +6,13 @@
   box-sizing: border-box;
 }
 
-.input-container {
+.row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.input-container label {
+.label {
   display: block;
   font-weight: bold;
   color: #666666;
@@ -28,4 +28,25 @@
 
 .main input {
   border: 1px solid black;
+}
+
+.main hr {
+  width: 95%;
+}
+
+.expandable-toggle {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.vert-flex-group {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.price-break-row {
+  display: flex;
+  justify-content: space-between;
 }
