@@ -4,6 +4,7 @@ import {
   CalculatePriceParams,
   DecorationType,
   EstimateResponse,
+  ProductCalcType,
 } from "@/types/schema/pricing";
 import styles from "@/styles/pricingCalculator/pricingCalculator.module.css";
 import { PrintFields } from "./PrintFields";
@@ -13,11 +14,17 @@ import { validateEstimateResponse } from "@/types/validations/pricing";
 
 export type StitchCount = "0k" | "5k" | "10k" | "15k";
 export function PricingCalculator() {
+  const {
+    productData: { net, markupSchedule },
+  } = useProduct();
+  const productType = markupScheduleToProductType(markupSchedule);
+  const allowPrint = productType === "tshirt" || productType === "polo";
+  const allowEmbroidery = productType !== "tshirt";
   const [quantity, setQuantity] = useState(100);
   const [printLocations, setPrintLocations] = useState(1);
   const [embLocations, setEmbLocations] = useState(1);
   const [decorationType, setDecorationType] = useState(
-    "Screen Print" as DecorationType
+    (allowPrint ? "Screen Print" : "Embroidery") as DecorationType
   );
 
   const [location1Colors, setLocation1Colors] = useState(1);
@@ -41,9 +48,6 @@ export function PricingCalculator() {
   const [estimateResponse, setEstimateResponse] = useState(
     null as EstimateResponse | null
   );
-  const {
-    productData: { net, decorationType: decorationTypeProduct, markupSchedule },
-  } = useProduct();
 
   if (estimateResponse !== null)
     estimateResponse.results.sort((a, b) => a.quantity - b.quantity);
@@ -63,6 +67,33 @@ export function PricingCalculator() {
     return +stitchCount.replace("k", "") * 1000;
   }
 
+  //handle the old labeling system used in woocommerce for garments
+  //this will need to be changed if we switch to a different data structure for our WC products in the future
+  function markupScheduleToProductType(
+    markupSchedule: string
+  ): ProductCalcType {
+    switch (markupSchedule) {
+      case "one":
+        return "tshirt";
+      case "two":
+        return "polo";
+      case "three":
+        return "polo";
+      case "four":
+        return "hat";
+      case "five":
+        return "hat";
+      case "six":
+        return "hat";
+      case "seven":
+        return "hat";
+      case "eight":
+        return "hat";
+      default:
+        return "tshirt";
+    }
+  }
+
   function buildRequestData(): CalculatePriceParams {
     const locationCount =
       decorationType === "Screen Print" ? printLocations : embLocations;
@@ -80,7 +111,7 @@ export function PricingCalculator() {
       ],
       productData: {
         net,
-        type: "tshirt",
+        type: productType,
       },
       quantities: quantityBreaks,
     };
@@ -158,8 +189,8 @@ export function PricingCalculator() {
           value={decorationType}
           onChange={(e) => setDecorationType(e.target.value as DecorationType)}
         >
-          <option value="Screen Print">Screen Print</option>
-          <option value="Embroidery">Embroidery</option>
+          {allowPrint && <option value="Screen Print">Screen Print</option>}
+          {allowEmbroidery && <option value="Embroidery">Embroidery</option>}
         </select>
       </div>
       <div className={styles["row"]}>
