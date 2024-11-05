@@ -106,3 +106,8 @@
   top: 48px;
   left: 231px;
 }
+
+.order-terms {
+  font-size: 0.85rem;
+  font-style: italic;
+}

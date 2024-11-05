@@ -343,8 +343,22 @@ export function PricingCalculator() {
           })}
         </div>
       </ExpandableSection>
+
+      {/* Decoration location graphic */}
+
       <ExpandableSection label="View Decoration Locations">
         <DecorationLocations />
+      </ExpandableSection>
+
+      {/* Order terms */}
+
+      <ExpandableSection label="Show Order Terms">
+        <p className={styles["order-terms"]}>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
+          earum tempora officia fugit numquam aspernatur, provident ipsa et
+          exercitationem vel ullam dolorum obcaecati cum! Placeat repellat
+          laboriosam dolorum nobis itaque.
+        </p>
       </ExpandableSection>
     </div>
   );

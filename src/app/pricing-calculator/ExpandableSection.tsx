@@ -13,7 +13,7 @@ export function ExpandableSection({ children, label }: Props) {
         className={styles["expandable-toggle"]}
         onClick={() => setExpanded(!expanded)}
       >
-        + {label}
+        {expanded ? "-" : "+"} {label}
       </div>
       <div style={{ display: expanded ? "block" : "none" }}>{children}</div>
     </div>
