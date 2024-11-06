@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useProduct } from "./WCProductProvider";
 import {
   CalculatePriceParams,
@@ -14,6 +14,7 @@ import { validateEstimateResponse } from "@/types/validations/pricing";
 import debounce from "lodash.debounce";
 import { ExpandableSection } from "./ExpandableSection";
 import { DecorationLocations } from "./DecorationLocations";
+import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 
 export type StitchCount = "0k" | "5k" | "10k" | "15k";
 type BuildRequestDataParams = {
@@ -43,6 +44,16 @@ export function PricingCalculator() {
   const [expandedSection, setExpandedSection] = useState(
     null as "price breaks" | "locations" | "terms" | null
   );
+
+  //ref for main container
+
+  const mainRef = useRef(null as HTMLDivElement | null);
+
+  //hook into iframe provider to allow iframe height changes
+
+  const {
+    parentWindow: { requestHeightChange },
+  } = useIframe();
 
   //form state
 
@@ -244,8 +255,14 @@ export function PricingCalculator() {
     location4Stitches,
   ]);
 
+  useEffect(() => {
+    if (mainRef.current) {
+      requestHeightChange(mainRef.current.scrollHeight);
+    }
+  }, [decorationType, expandedSection, embLocations, printLocations]);
+
   return (
-    <div className={styles["main"]}>
+    <div className={styles["main"]} ref={mainRef}>
       <div className={styles["row"]}>
         {/* Decoration method */}
 
