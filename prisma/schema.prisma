@@ -85,7 +85,7 @@ model Color {
   hexCode               String                           @unique
   designs               Design[]
   designVariations      DesignVariation[]
-  customGarmentSettings CustomGarmentSettingsVariation[]
+  customProductSettings CustomProductSettingsVariation[]
 }
 
 model HubSpotSync {
@@ -97,40 +97,195 @@ model HubSpotSync {
   progress    Decimal //0 is no progress, 1 is complete
 }
 
-model CustomGarmentSettings {
+//base table for customizer product records.
+//this table should not contain any product-specific fields that might be varied,
+//such as color, material, size, etc.
+//these should instead be in the variation table.
+//a product that has "no variations" will in reality have exactly 1 variation treated as the base,
+//and every product should have at least one variation.
+model CustomProductSettings {
   id            Int                              @id @default(autoincrement())
   createdAt     DateTime                         @default(now())
   updatedAt     DateTime                         @updatedAt
   published     Boolean                          @default(false)
-  variations    CustomGarmentSettingsVariation[]
+  variations    CustomProductSettingsVariation[]
   wooCommerceId Int
 }
 
-model CustomGarmentSettingsVariation {
-  id               Int                   @id @default(autoincrement())
-  parentSettings   CustomGarmentSettings @relation(fields: [parentSettingsId], references: [id])
-  parentSettingsId Int
-  views            CustomGarmentView[]
-  color            Color                 @relation(fields: [colorId], references: [id])
-  colorId          Int
+model CustomProductSettingsVariation {
+  id                   Int                   @id @default(autoincrement())
+  parentSettings       CustomProductSettings @relation(fields: [parentSettingsId], references: [id], onDelete: Cascade)
+  parentSettingsId     Int
+  views                CustomProductView[]
+  color                Color                 @relation(fields: [colorId], references: [id])
+  colorId              Int
+  sizeOptions          ProductSizeOptions    @relation(fields: [productSizeOptionsId], references: [id])
+  productSizeOptionsId Int                   @unique
 }
 
-model CustomGarmentView {
+model CustomProductView {
   id                Int                               @id @default(autoincrement())
   name              String
-  parentVariation   CustomGarmentSettingsVariation    @relation(fields: [parentVariationId], references: [id])
+  parentVariation   CustomProductSettingsVariation    @relation(fields: [parentVariationId], references: [id], onDelete: Cascade)
   parentVariationId Int
-  locations         CustomGarmentDecorationLocation[]
+  locations         CustomProductDecorationLocation[]
   imageUrl          String
 }
 
-model CustomGarmentDecorationLocation {
+model CustomProductDecorationLocation {
   id           Int               @id @default(autoincrement())
   name         String
   positionX    Decimal
   positionY    Decimal
   width        Decimal
   height       Decimal
-  parentView   CustomGarmentView @relation(fields: [parentViewId], references: [id])
+  parentView   CustomProductView @relation(fields: [parentViewId], references: [id], onDelete: Cascade)
   parentViewId Int
+  frameColor   String            @default("808080") //hex code expected
+}
+
+model CustomProductRequest {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  company   String
+  local     String?
+  comments  String?
+  cartJson  String
+  createdAt DateTime @default(now())
+}
+
+model ProductSizeOptions {
+  id                             Int                             @id @default(autoincrement())
+  sizeSmall                      Boolean                         @default(false)
+  sizeMedium                     Boolean                         @default(false)
+  sizeLarge                      Boolean                         @default(false)
+  sizeXL                         Boolean                         @default(false)
+  size2XL                        Boolean                         @default(false)
+  size3XL                        Boolean                         @default(false)
+  size4XL                        Boolean                         @default(false)
+  size5XL                        Boolean                         @default(false)
+  size6XL                        Boolean                         @default(false)
+  customProductSettingsVariation CustomProductSettingsVariation?
+}
+
+model Webstore {
+  id                          Int                       @id @default(autoincrement())
+  name                        String
+  organizationName            String
+  url                         String                    @unique
+  apiKey                      String //encrypted
+  apiKeyEncryptIv             String
+  apiKeyEncryptTag            String
+  apiSecret                   String //encrypted
+  apiSecretEncryptIv          String
+  apiSecretEncryptTag         String
+  salesPersonName             String                    @default("None")
+  salesPersonEmail            String                    @default("None")
+  otherSupportEmails          String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails          String?
+  customOrderApprovedEmail    String?
+  useCustomOrderApprovedEmail Boolean                   @default(false)
+  shippingSettings            WebstoreShippingSettings?
+  shippingMethods             WebstoreShippingMethod[]
+  workflows                   OrderWorkflow[]
+  users                       OrderWorkflowUser[]
+}
+
+model WebstoreShippingSettings {
+  id                        Int      @id @default(autoincrement())
+  allowApproverChangeMethod Boolean
+  allowUpsToCanada          Boolean
+  webstoreId                Int      @unique
+  webstore                  Webstore @relation(fields: [webstoreId], references: [id])
+}
+
+model WebstoreShippingMethod {
+  id          Int        @id @default(autoincrement())
+  name        String
+  serviceCode Int?
+  webstores   Webstore[]
+}
+
+model OrderWorkflow {
+  id         Int                     @id @default(autoincrement())
+  name       String
+  webstoreId Int
+  webstore   Webstore                @relation(fields: [webstoreId], references: [id])
+  steps      OrderWorkflowStep[]
+  instances  OrderWorkflowInstance[]
+}
+
+model OrderWorkflowUser {
+  id          Int                       @id @default(autoincrement())
+  name        String
+  email       String                    @unique
+  isApprover  Boolean                   @default(false) //is this user an approver for their webstore?
+  webstoreId  Int
+  webstore    Webstore                  @relation(fields: [webstoreId], references: [id])
+  comments    OrderWorkflowComment[]
+  accessCodes OrderWorkflowAccessCode[]
+}
+
+model OrderWorkflowStep {
+  id                   Int                                @id @default(autoincrement())
+  name                 String
+  order                Int
+  actionTarget         String?
+  otherActionTargets   String? //any emails sent to actionTarget will also be sent to these
+  actionType           String
+  actionSubject        String?
+  actionMessage        String?
+  proceedImmediatelyTo String? //if defined, will proceed to the specified step without waiting for events
+  proceedListeners     OrderWorkflowStepProceedListener[]
+  workflowId           Int
+  workflow             OrderWorkflow                      @relation(fields: [workflowId], references: [id])
+}
+
+//when an event is received, it's checked against the current step's ProceedListeners.
+//if one is found matching in "type" and "from", the workflow will try to proceed to
+//whatever is specified by "goto" (usually a stringified step index or something like "next")
+model OrderWorkflowStepProceedListener {
+  id     Int               @id() @default(autoincrement())
+  name   String
+  type   String
+  from   String
+  goto   String
+  stepId Int
+  step   OrderWorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+}
+
+model OrderWorkflowInstance {
+  id                 Int                       @id @default(autoincrement())
+  status             String
+  wooCommerceOrderId Int                       @unique
+  currentStep        Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
+  deniedReason       String?
+  accessCodes        OrderWorkflowAccessCode[]
+  comments           OrderWorkflowComment[]
+  parentWorkflowId   Int
+  parentWorkflow     OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
+  createdAt          DateTime                  @default(now())
+  lastStartedAt      DateTime                  @default(now())
+}
+
+model OrderWorkflowComment {
+  id               Int                   @id @default(autoincrement())
+  userId           Int
+  instanceId       Int
+  user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
+  workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
+  text             String
+}
+
+model OrderWorkflowAccessCode {
+  userId           Int
+  instanceId       Int
+  user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
+  workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
+  guid             String                @default(uuid())
+  userRole         String
+
+  @@id([userId, instanceId])
 }

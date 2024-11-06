@@ -1,0 +1,44 @@
+.basic-table {
+  width: 100%;
+  text-align: left;
+}
+
+.single-step-container {
+  border-radius: 10px;
+  background-color: lightgray;
+  width: 600px;
+  padding: 10px;
+}
+
+.single-step-top-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.single-step-move-buttons-container {
+  display: flex;
+  gap: 5px;
+}
+
+.single-step-move-buttons-container button {
+  display: block;
+}
+
+.single-step-action-fields-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.event-listeners-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.save-changes-button {
+  position: fixed;
+  right: 450px;
+  bottom: 10px;
+  font-size: 1.5rem;
+}

@@ -1,0 +1,266 @@
+.main {
+  border-radius: 10px;
+  border: 1px solid gray;
+  background-color: lightgray;
+  padding: 10px;
+  min-height: 600px;
+  position: relative;
+  overflow: hidden;
+}
+
+.main * {
+  box-sizing: border-box;
+}
+
+.main table {
+  text-align: left;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.info-text {
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 30px;
+}
+
+.column-right-align {
+  text-align: right;
+}
+
+.main th {
+  position: sticky;
+  top: 0;
+  background-color: lightgray;
+}
+
+.main th,
+.main td {
+  padding: 10px;
+}
+
+.main tbody {
+  background-color: white;
+}
+
+.main tr:nth-child(even) td {
+  background-color: rgb(235, 235, 235);
+}
+
+.table-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid gray;
+  margin: 10px 0;
+}
+
+.table-scroll input {
+  width: 100px;
+}
+
+td.line-item-x-container {
+  padding: 0;
+  position: relative;
+}
+
+.main .line-item-x {
+  color: white;
+  background: red;
+  border: none;
+  cursor: pointer;
+  border-radius: 100px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -45% -50%;
+  padding: revert;
+}
+
+.deleted-line-item {
+  position: relative;
+  color: gray;
+}
+
+.deleted-line-item::before {
+  display: block;
+  height: 2px;
+  background-color: red;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  content: "";
+}
+
+.extra-details-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.extra-details-flex h3 {
+  margin: 0;
+}
+
+.shipping-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.shipping-fields input[type="text"],
+.shipping-fields select {
+  width: 250px;
+}
+
+.shipping-methods-container {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid gray;
+}
+
+.shipping-methods-container h4 {
+  margin-top: 0;
+}
+
+.shipping-method-invalid {
+  color: gray;
+}
+
+.totals {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.totals-bold {
+  font-weight: bold;
+}
+
+.totals-row {
+  position: relative;
+}
+
+.totals-asterisk {
+  position: absolute;
+  top: -1px;
+  right: -10px;
+}
+
+.info-box {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #006ac6;
+  width: 200px;
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #006ac611;
+}
+
+.main input[type="text"],
+.main input[type="number"],
+.main select {
+  display: block;
+  font-size: 1.125rem;
+  padding: 5px;
+}
+
+.submit-row {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.submit {
+  font-size: 1.25rem;
+  padding: 10px;
+  background-color: #006ac6;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #2c91e9;
+}
+
+.info-circle {
+  color: #006ac6;
+}
+
+.info-circle-warning {
+  display: block;
+  color: #e78200;
+}
+
+.update-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.main .help-button,
+.main .help-back {
+  background-color: white;
+  border: 2px solid #2c91e9;
+  color: #2c91e9;
+}
+
+.main .help-back {
+  background: none;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.help-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  gap: 10px;
+}
+
+.help-form button {
+  display: block;
+}
+
+.help-form-result {
+  width: 300px;
+  text-align: center;
+}
+
+.help-error {
+  color: rgb(202, 0, 0);
+}
+
+.edit-help-text {
+  margin-top: 10px;
+  font-size: 0.8rem;
+}
+
+@media screen and (max-width: 768px) {
+  .extra-details-flex {
+    flex-direction: column-reverse;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .shipping-fields > div,
+  .shipping-fields input,
+  .shipping-fields select {
+    width: 100%;
+  }
+}

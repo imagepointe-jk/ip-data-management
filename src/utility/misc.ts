@@ -1,3 +1,7 @@
+import { AppError } from "../error";
+import crypto from "crypto";
+import { INTERNAL_SERVER_ERROR } from "./statusCodes";
+
 export function convertDateToDefaultInputValue(date: Date) {
   return date.toISOString().substring(0, 10);
 }
@@ -137,6 +141,7 @@ export function findAllFormValues(
   return entries;
 }
 
+//first page is pageNumber = 1, NOT zero-indexed
 export function getArrayPage<T>(
   array: T[],
   pageNumber: number,
@@ -144,4 +149,83 @@ export function getArrayPage<T>(
 ) {
   const startIndex = countPerPage * (pageNumber - 1);
   return array.slice(startIndex, startIndex + countPerPage);
+}
+
+//from the article https://medium.com/@tony.infisical/guide-to-nodes-crypto-module-for-encryption-decryption-65c077176980
+export function encrypt(text: string) {
+  const key = process.env.MAIN_ENCRYPTION_KEY;
+  if (!key) throw new Error("No encryption key found!");
+
+  const iv = crypto.randomBytes(12).toString("base64");
+  const cipher = crypto.createCipheriv(
+    "aes-256-gcm",
+    Buffer.from(key, "base64"),
+    Buffer.from(iv, "base64")
+  );
+  let ciphertext = cipher.update(text, "utf8", "base64");
+  ciphertext += cipher.final("base64");
+  const tag = cipher.getAuthTag();
+
+  return { ciphertext, iv, tag };
+}
+
+//from the article https://medium.com/@tony.infisical/guide-to-nodes-crypto-module-for-encryption-decryption-65c077176980
+export function decrypt(encrypted: string, iv: string, tag: string) {
+  const key = process.env.MAIN_ENCRYPTION_KEY;
+  if (!key) throw new Error("No encryption key found!");
+
+  const decipher = crypto.createDecipheriv(
+    "aes-256-gcm",
+    Buffer.from(key, "base64"),
+    Buffer.from(iv, "base64")
+  );
+
+  decipher.setAuthTag(Buffer.from(tag, "base64"));
+
+  let plaintext = decipher.update(encrypted, "base64", "utf8");
+  plaintext += decipher.final("utf8");
+
+  return plaintext;
+}
+
+export function wrap(value: number, min: number, max: number) {
+  if (value < min) return max;
+  if (value > max) return min;
+  return value;
+}
+
+export function clamp(value: number, min: number, max: number) {
+  if (value < min) return min;
+  if (value > max) return max;
+  return value;
+}
+
+export function forceClientDownloadBlob(blob: Blob, downloadName: string) {
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = downloadName;
+  link.click();
+}
+
+export function getEnvVariable(name: string) {
+  const value = process.env[name];
+  if (!value)
+    throw new AppError({
+      type: "Environment",
+      serverMessage: `Environment variable ${name} not found!`,
+      statusCode: INTERNAL_SERVER_ERROR,
+    });
+  return value;
+}
+
+export function checkEnvVariable(value: string | undefined, isClient = false) {
+  if (!value)
+    throw new AppError({
+      type: "Environment",
+      serverMessage: isClient ? undefined : "Undefined environment variable!",
+      clientMessage: isClient ? "Undefined environment variable!" : undefined,
+      statusCode: INTERNAL_SERVER_ERROR,
+    });
 }

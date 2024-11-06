@@ -3,17 +3,6 @@ import {
   createHubSpotSync,
   updateHubSpotSyncProgress,
 } from "@/db/access/hubspot";
-import {
-  CompanyResource,
-  Contact,
-  ContactResource,
-  Customer,
-  DealResource,
-  LineItem,
-  Order,
-  Product,
-  ProductResource,
-} from "@/types/schema";
 import { WorkSheet } from "xlsx";
 import { DataError, SyncError, SyncWarning, gatherAllIssues } from "./error";
 import { handleData as handleInputData } from "./handleData";
@@ -33,6 +22,17 @@ import { sendIssuesSheet } from "@/utility/mail";
 import { filterErrors, findInAnyArray } from "@/utility/misc";
 import { RESOURCE_CONFLICT } from "@/utility/statusCodes";
 import { ProgressTracker } from "./progress";
+import {
+  CompanyResource,
+  Contact,
+  ContactResource,
+  Customer,
+  DealResource,
+  LineItem,
+  Order,
+  Product,
+  ProductResource,
+} from "@/types/schema/hubspot";
 
 const syncErrors: SyncError[] = [];
 const syncWarnings: SyncWarning[] = [];
@@ -359,6 +359,14 @@ async function syncOrdersAsDeals(
           `Order with sales number ${order["Sales Order#"]} is associated with the contact with email ${order["Buyer E-Mail"]} in the input data, but the contact record could not be found. The association was skipped.`
         )
       );
+    if (order["HubSpot Owner ID"] === undefined) {
+      syncWarnings.push(
+        new SyncWarning(
+          "Data Integrity",
+          `Order with sales number ${order["Sales Order#"]} has Deal Owner ${order["Agent Name#1"]} in the input data, but that user could not be found in HubSpot.`
+        )
+      );
+    }
 
     try {
       if (!alreadyInHubSpot) {

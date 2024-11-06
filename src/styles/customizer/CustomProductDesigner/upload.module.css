@@ -1,0 +1,25 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.main h2 {
+  margin-bottom: 0;
+}
+
+.upload-label-as-button {
+  width: 200px;
+  display: block;
+}
+
+.upload-label-as-button input[type="file"] {
+  display: none;
+}
+
+.spinner {
+  color: white;
+  width: 18px;
+  height: 18px;
+}

@@ -1,4 +1,9 @@
 import {
+  CalculatePriceParams,
+  DecorationLocation,
+  ProductCalcType,
+} from "@/types/schema/pricing";
+import {
   getGreatestSum,
   getPermutations,
   roundDownToAllowedValue,
@@ -16,11 +21,6 @@ import {
   printUpchargeRowNames,
   printUpchargeTable,
 } from "./data";
-import {
-  CalculatePriceParams,
-  DecorationLocation,
-  ProductCalcType,
-} from "@/types/schema";
 
 type QuantityPriceEstimate = {
   quantity: number;
@@ -33,10 +33,10 @@ export function calculatePrice(params: CalculatePriceParams) {
   } = params;
 
   if (type === "tshirt") {
-    return calculateTshirtPrice(params);
+    return calculateTshirtOrPoloPrice(params, "tshirt");
   } else if (type === "polo" || type === "jacket" || type === "sweats") {
     if (decorationType === "Screen Print")
-      return calculatePoloPrintPrice(params);
+      return calculateTshirtOrPoloPrice(params, "polo");
     else return calculateEmbroideryPrice(params, "polo");
   } else if (type === "beanie" || type === "hat") {
     return calculateEmbroideryPrice(params, type);
@@ -45,8 +45,9 @@ export function calculatePrice(params: CalculatePriceParams) {
   }
 }
 
-function calculateTshirtPrice(
-  params: CalculatePriceParams
+function calculateTshirtOrPoloPrice(
+  params: CalculatePriceParams,
+  type: "tshirt" | "polo"
 ): QuantityPriceEstimate[] {
   const { decorationType, productData, locations, quantities } = params;
 
@@ -57,7 +58,9 @@ function calculateTshirtPrice(
     );
     const markup = markupTable.get(
       `${quantityToUse}`,
-      markupTableRowNames.tshirts
+      type === "tshirt"
+        ? markupTableRowNames.tshirts
+        : markupTableRowNames.polosPrint
     );
     if (!markup)
       throw new Error(`Markup not found for quantity ${quantityToUse}`);
@@ -117,37 +120,6 @@ function calculateTshirtLocationPrices(
   sum -= oneColorCost;
 
   return sum;
-}
-
-function calculatePoloPrintPrice(
-  params: CalculatePriceParams
-): QuantityPriceEstimate[] {
-  const { quantities, productData } = params;
-
-  return quantities.map((quantity) => {
-    const quantityToUse = roundDownToAllowedValue(
-      quantity,
-      markupTableHeaderNumbers
-    );
-    const markup = markupTable.get(
-      `${quantityToUse}`,
-      markupTableRowNames.polosPrint
-    );
-    if (!markup)
-      throw new Error(`Markup not found for quantity ${quantityToUse}`);
-
-    const locationPrices = calculatePoloPrintLocationPrices(params);
-    const allPolyFee = productData.isAllPoly ? poloJacketSweatPolyUpcharge : 0;
-    const sweatshirtFee = productData.isSweatshirt
-      ? poloJacketSweatFleeceUpcharge
-      : 0;
-
-    return {
-      quantity,
-      result:
-        productData.net * markup + locationPrices + allPolyFee + sweatshirtFee,
-    };
-  });
 }
 
 function calculatePoloPrintLocationPrices(params: CalculatePriceParams) {

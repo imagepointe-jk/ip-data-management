@@ -9,31 +9,48 @@ export default function NavbarLinks() {
   return (
     <>
       <li>
-        <Link href="/" className={path === "/" ? "current" : ""}>
+        <Link href="/admin" className={path === "/admin" ? "current" : ""}>
           Home
         </Link>
       </li>
       <li>
-        <Link href="/users" className={path === "/users" ? "current" : ""}>
+        <Link
+          href="/admin/users"
+          className={path.startsWith("/admin/users") ? "current" : ""}
+        >
           Users
         </Link>
       </li>
       <li>
-        <Link href="/designs" className={path === "/designs" ? "current" : ""}>
+        <Link
+          href="/admin/designs"
+          className={path.startsWith("/admin/designs") ? "current" : ""}
+        >
           Designs
         </Link>
       </li>
       <li>
-        <Link href="/hubspot" className={path === "/hubspot" ? "current" : ""}>
+        <Link
+          href="/admin/hubspot"
+          className={path.startsWith("/admin/hubspot") ? "current" : ""}
+        >
           HubSpot
         </Link>
       </li>
       <li>
         <Link
-          href="/customizer"
-          className={path === "/customizer" ? "current" : ""}
+          href="/admin/customizer"
+          className={path.startsWith("/admin/customizer") ? "current" : ""}
         >
           Customizer
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/admin/order-approval"
+          className={path.startsWith("/admin/order-approval") ? "current" : ""}
+        >
+          Order Approval
         </Link>
       </li>
     </>

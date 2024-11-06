@@ -1,0 +1,21 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.main > div {
+  width: 100%;
+}
+
+.download-option-container {
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 10px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

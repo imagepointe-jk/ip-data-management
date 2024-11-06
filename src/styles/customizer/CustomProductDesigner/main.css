@@ -1,0 +1,24 @@
+:root {
+  --color-alpha: #006ac6;
+}
+
+button,
+.basic-button {
+  background-color: var(--color-alpha);
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+}
+
+button:disabled,
+.basic-button:disabled {
+  background-color: lightgray;
+  cursor: initial;
+}
+
+.button-minor {
+  background-color: rgb(165, 165, 165);
+}

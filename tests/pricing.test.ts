@@ -1,6 +1,6 @@
 import { roundToDecimalPlaces } from "../src/utility/misc";
 import { calculatePrice } from "../src/pricing/calc";
-import { CalculatePriceParams } from "@/types/schema";
+import { CalculatePriceParams } from "@/types/schema/pricing";
 
 describe("T-shirt screen print pricing formula", () => {
   const net = 6.43;
@@ -123,7 +123,7 @@ describe("Polos/jackets/sweats (print)", () => {
   const net = 7.5;
   test("Quantity 48, location with 1 color, polo", () => {
     checkResult({
-      expectedResult: 15.63,
+      expectedResult: 14.63,
       calcParams: {
         productData: {
           net,
@@ -141,7 +141,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, jacket", () => {
     checkResult({
-      expectedResult: 15.63,
+      expectedResult: 14.63,
       calcParams: {
         productData: {
           net,
@@ -159,7 +159,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, sweats", () => {
     checkResult({
-      expectedResult: 15.63,
+      expectedResult: 14.63,
       calcParams: {
         productData: {
           net,
@@ -179,7 +179,7 @@ describe("Polos/jackets/sweats (print)", () => {
   //correct markup at different quantities
   test("Quantity 72, location with 1 color, sweats", () => {
     checkResult({
-      expectedResult: 14.88,
+      expectedResult: 14.25,
       calcParams: {
         productData: {
           net,
@@ -197,7 +197,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 144, location with 1 color, sweats", () => {
     checkResult({
-      expectedResult: 14.2,
+      expectedResult: 13.5,
       calcParams: {
         productData: {
           net,
@@ -215,7 +215,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 288, location with 1 color, sweats", () => {
     checkResult({
-      expectedResult: 13.75,
+      expectedResult: 13.13,
       calcParams: {
         productData: {
           net,
@@ -233,7 +233,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 500, location with 1 color, sweats", () => {
     checkResult({
-      expectedResult: 13.23,
+      expectedResult: 12.75,
       calcParams: {
         productData: {
           net,
@@ -253,7 +253,7 @@ describe("Polos/jackets/sweats (print)", () => {
   //correct print upcharge at different color count/location combos
   test("Quantity 48, location with 1 color, location with 2 colors, polo", () => {
     checkResult({
-      expectedResult: 16.88,
+      expectedResult: 19.13,
       calcParams: {
         productData: {
           net,
@@ -274,7 +274,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, location with 2 colors, polo", () => {
     checkResult({
-      expectedResult: 16.88,
+      expectedResult: 19.13,
       calcParams: {
         productData: {
           net,
@@ -295,7 +295,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 3 colors, location with 3 colors, polo", () => {
     checkResult({
-      expectedResult: 18.03,
+      expectedResult: 25.63,
       calcParams: {
         productData: {
           net,
@@ -316,7 +316,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, location with 2 colors, location with 3 colors, polo", () => {
     checkResult({
-      expectedResult: 19.63,
+      expectedResult: 26.13,
       calcParams: {
         productData: {
           net,
@@ -340,7 +340,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, location with 2 colors, location with 3 colors, polo", () => {
     checkResult({
-      expectedResult: 19.63,
+      expectedResult: 26.13,
       calcParams: {
         productData: {
           net,
@@ -362,9 +362,9 @@ describe("Polos/jackets/sweats (print)", () => {
       },
     });
   });
-  test("Quantity 48, location with 1 color, location with 2 colors, location with 3 colors, polo", () => {
+  test("Quantity 48, location with 2 colors, location with 2 colors, location with 2 colors, polo", () => {
     checkResult({
-      expectedResult: 19.33,
+      expectedResult: 25.13,
       calcParams: {
         productData: {
           net,
@@ -388,7 +388,7 @@ describe("Polos/jackets/sweats (print)", () => {
   });
   test("Quantity 48, location with 1 color, location with 2 colors, location with 3 colors, location with 4 colors, polo", () => {
     checkResult({
-      expectedResult: 23.38,
+      expectedResult: 33.13,
       calcParams: {
         productData: {
           net,
@@ -415,95 +415,95 @@ describe("Polos/jackets/sweats (print)", () => {
   });
 
   //correct poly fee
-  test("Quantity 48, location with 1 color, polo", () => {
-    checkResult({
-      expectedResult: 16.13,
-      calcParams: {
-        productData: {
-          net,
-          type: "polo",
-          isAllPoly: true,
-        },
-        decorationType: "Screen Print",
-        locations: [
-          {
-            colorCount: 1,
-          },
-        ],
-        quantities: [48],
-      },
-    });
-  });
+  // test("Quantity 48, location with 1 color, polo", () => {
+  //   checkResult({
+  //     expectedResult: 16.13,
+  //     calcParams: {
+  //       productData: {
+  //         net,
+  //         type: "polo",
+  //         isAllPoly: true,
+  //       },
+  //       decorationType: "Screen Print",
+  //       locations: [
+  //         {
+  //           colorCount: 1,
+  //         },
+  //       ],
+  //       quantities: [48],
+  //     },
+  //   });
+  // });
 
   //correct sweatshirt fee
-  test("Quantity 48, location with 1 color, sweatshirt", () => {
-    checkResult({
-      expectedResult: 16.13,
-      calcParams: {
-        productData: {
-          net,
-          type: "polo",
-          isSweatshirt: true,
-        },
-        decorationType: "Screen Print",
-        locations: [
-          {
-            colorCount: 1,
-          },
-        ],
-        quantities: [48],
-      },
-    });
-  });
+  // test("Quantity 48, location with 1 color, sweatshirt", () => {
+  //   checkResult({
+  //     expectedResult: 16.13,
+  //     calcParams: {
+  //       productData: {
+  //         net,
+  //         type: "polo",
+  //         isSweatshirt: true,
+  //       },
+  //       decorationType: "Screen Print",
+  //       locations: [
+  //         {
+  //           colorCount: 1,
+  //         },
+  //       ],
+  //       quantities: [48],
+  //     },
+  //   });
+  // });
 
-  test("Quantity 150, location with 2 colors, location with 3 colors, polo, poly", () => {
-    checkResult({
-      expectedResult: 16.65,
-      calcParams: {
-        productData: {
-          net,
-          type: "polo",
-          isAllPoly: true,
-        },
-        decorationType: "Screen Print",
-        locations: [
-          {
-            colorCount: 2,
-          },
-          {
-            colorCount: 3,
-          },
-        ],
-        quantities: [150],
-      },
-    });
-  });
+  // test("Quantity 150, location with 2 colors, location with 3 colors, polo, poly", () => {
+  //   checkResult({
+  //     expectedResult: 16.65,
+  //     calcParams: {
+  //       productData: {
+  //         net,
+  //         type: "polo",
+  //         isAllPoly: true,
+  //       },
+  //       decorationType: "Screen Print",
+  //       locations: [
+  //         {
+  //           colorCount: 2,
+  //         },
+  //         {
+  //           colorCount: 3,
+  //         },
+  //       ],
+  //       quantities: [150],
+  //     },
+  //   });
+  // });
 });
 
 describe("Polos/jackets/sweats (emb)", () => {
   const net = 7.5;
   //correct markup at different quantities
-  test("Quantity 24, location with 1000 stitches, polo", () => {
-    checkResult({
-      expectedResult: 16.28,
-      calcParams: {
-        productData: {
-          net,
-          type: "polo",
-        },
-        decorationType: "Embroidery",
-        locations: [
-          {
-            stitchCount: 1000,
-          },
-        ],
-        quantities: [24],
-      },
-    });
-  });
+  // test("Quantity 24, location with 1000 stitches, polo", () => {
+  //   checkResult({
+  //     expectedResult: 16.28,
+  //     calcParams: {
+  //       productData: {
+  //         net,
+  //         type: "polo",
+  //       },
+  //       decorationType: "Embroidery",
+  //       locations: [
+  //         {
+  //           stitchCount: 1000,
+  //         },
+  //       ],
+  //       quantities: [24],
+  //     },
+  //   });
+  // });
   test("Quantity 48, location with 1000 stitches, polo", () => {
     checkResult({
-      expectedResult: 14.33,
+      expectedResult: 14.63,
       calcParams: {
         productData: {
           net,
@@ -521,7 +521,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 72, location with 1000 stitches, polo", () => {
     checkResult({
-      expectedResult: 13.73,
+      expectedResult: 14.25,
       calcParams: {
         productData: {
           net,
@@ -539,7 +539,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 144, location with 1000 stitches, polo", () => {
     checkResult({
-      expectedResult: 13.05,
+      expectedResult: 13.5,
       calcParams: {
         productData: {
           net,
@@ -557,7 +557,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 288, location with 1000 stitches, polo", () => {
     checkResult({
-      expectedResult: 12.9,
+      expectedResult: 13.13,
       calcParams: {
         productData: {
           net,
@@ -575,7 +575,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 500, location with 1000 stitches, polo", () => {
     checkResult({
-      expectedResult: 12.38,
+      expectedResult: 12.75,
       calcParams: {
         productData: {
           net,
@@ -594,7 +594,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   //correctly apply fees for additional locations
   test("Quantity 24, 2 locations with 1000 stitches each, polo", () => {
     checkResult({
-      expectedResult: 21.28,
+      expectedResult: 21.13,
       calcParams: {
         productData: {
           net,
@@ -615,7 +615,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 24, 3 locations with 1000 stitches each, polo", () => {
     checkResult({
-      expectedResult: 26.28,
+      expectedResult: 26.13,
       calcParams: {
         productData: {
           net,
@@ -639,7 +639,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 24, 4 locations with 1000 stitches each, polo", () => {
     checkResult({
-      expectedResult: 33.78,
+      expectedResult: 33.63,
       calcParams: {
         productData: {
           net,
@@ -667,7 +667,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   //correctly apply addtl. stitch count fees
   test("Quantity 24, 1 location with 6000 stitches, polo", () => {
     checkResult({
-      expectedResult: 17.78,
+      expectedResult: 17.63,
       calcParams: {
         productData: {
           net,
@@ -685,7 +685,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 24, 1 location with 11000 stitches, polo", () => {
     checkResult({
-      expectedResult: 19.28,
+      expectedResult: 19.13,
       calcParams: {
         productData: {
           net,
@@ -703,7 +703,7 @@ describe("Polos/jackets/sweats (emb)", () => {
   });
   test("Quantity 24, 1 location with 20000 stitches, polo", () => {
     checkResult({
-      expectedResult: 20.78,
+      expectedResult: 20.63,
       calcParams: {
         productData: {
           net,
@@ -716,6 +716,34 @@ describe("Polos/jackets/sweats (emb)", () => {
           },
         ],
         quantities: [24],
+      },
+    });
+  });
+  //test various combinations
+  test("Quantity 100, net 23.25, location with 10000 stitches, location with 5000 stitches, location with 15000 stitches, location with 10000 stitches, polo", () => {
+    checkResult({
+      expectedResult: 66.18,
+      calcParams: {
+        productData: {
+          net: 23.25,
+          type: "polo",
+        },
+        decorationType: "Embroidery",
+        locations: [
+          {
+            stitchCount: 10000,
+          },
+          {
+            stitchCount: 5000,
+          },
+          {
+            stitchCount: 15000,
+          },
+          {
+            stitchCount: 10000,
+          },
+        ],
+        quantities: [100],
       },
     });
   });

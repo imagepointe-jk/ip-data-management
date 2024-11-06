@@ -3,14 +3,22 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "../styles/PageControls.module.css";
 import Link from "next/link";
+import { Fragment } from "react";
 
+type ButtonOverrides = {
+  onClickPageNumber?: (clickedNumber: number) => void;
+  onClickPageSize?: (clickedNumber: number) => void;
+};
 type PageControlsProps = {
   totalPages: number;
   curPageNumber: number;
   curItemsPerPage: number;
-  pageSizeChoices: number[];
+  pageSizeChoices?: number[];
+  showJumpTo?: boolean;
+  buttonOverrides?: ButtonOverrides; //if function overrides are provided, the page number/page size buttons will be actual buttons using given functions, instead of <a>
   buttonClassName?: string;
   activeButtonClassName?: string;
+  mainClassName?: string;
 };
 
 export function PageControls({
@@ -18,24 +26,33 @@ export function PageControls({
   curPageNumber,
   pageSizeChoices,
   totalPages,
+  showJumpTo,
+  buttonOverrides,
   activeButtonClassName,
   buttonClassName,
+  mainClassName,
 }: PageControlsProps) {
   return (
-    <div className={styles["main"]}>
+    <div className={mainClassName || styles["main"]}>
       <PageNumberControl
         curPageNumber={curPageNumber}
         totalPages={totalPages}
         buttonClassName={buttonClassName}
         activeButtonClassName={activeButtonClassName}
+        buttonOverrides={buttonOverrides}
       />
-      <JumpToControl curPageNumber={curPageNumber} totalPages={totalPages} />
-      <PageSizeControl
-        curItemsPerPage={curItemsPerPage}
-        pageSizeChoices={pageSizeChoices}
-        buttonClassName={buttonClassName}
-        activeButtonClassName={activeButtonClassName}
-      />
+      {showJumpTo && (
+        <JumpToControl curPageNumber={curPageNumber} totalPages={totalPages} />
+      )}
+      {pageSizeChoices && (
+        <PageSizeControl
+          curItemsPerPage={curItemsPerPage}
+          pageSizeChoices={pageSizeChoices}
+          buttonOverrides={buttonOverrides}
+          buttonClassName={buttonClassName}
+          activeButtonClassName={activeButtonClassName}
+        />
+      )}
     </div>
   );
 }
@@ -43,6 +60,7 @@ export function PageControls({
 type PageNumberControlProps = {
   totalPages: number;
   curPageNumber: number;
+  buttonOverrides?: ButtonOverrides;
   buttonClassName?: string;
   activeButtonClassName?: string;
 };
@@ -50,6 +68,7 @@ type PageNumberControlProps = {
 function PageNumberControl({
   curPageNumber,
   totalPages,
+  buttonOverrides,
   activeButtonClassName,
   buttonClassName,
 }: PageNumberControlProps) {
@@ -63,29 +82,42 @@ function PageNumberControl({
     <div className={styles["controls-subsection"]}>
       <span className={styles["page-buttons-label"]}>Page</span>
       {pageControlNumbers.map((numberOrEllipsis, i) => {
-        if (numberOrEllipsis === "...") return <div key="ellipsis">...</div>;
+        if (numberOrEllipsis === "...")
+          return <div key={`ellipsis-${i}`}>...</div>;
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set("pageNumber", `${numberOrEllipsis}`);
+        const onClickPageNumber = buttonOverrides?.onClickPageNumber;
+        const className = `${buttonClassName || ""} ${
+          curPageNumber === numberOrEllipsis ? activeButtonClassName : ""
+        }`;
 
         return (
-          <Link
-            key={i}
-            // className={
-            //   curPageNumber === numberOrEllipsis
-            //     ? styles["page-active"]
-            //     : styles["page-inactive"]
-            // }
-            className={`${buttonClassName || ""} ${
-              curPageNumber === numberOrEllipsis ? activeButtonClassName : ""
-            }`}
-            style={{
-              pointerEvents:
-                curPageNumber === numberOrEllipsis ? "none" : "initial",
-            }}
-            href={`${pathName}?${newParams}`}
-          >
-            {numberOrEllipsis}
-          </Link>
+          <Fragment key={`${numberOrEllipsis}-${i}`}>
+            {!onClickPageNumber && (
+              <Link
+                className={className}
+                style={{
+                  pointerEvents:
+                    curPageNumber === numberOrEllipsis ? "none" : "initial",
+                }}
+                href={`${pathName}?${newParams}`}
+              >
+                {numberOrEllipsis}
+              </Link>
+            )}
+            {onClickPageNumber && (
+              <button
+                className={className}
+                style={{
+                  pointerEvents:
+                    curPageNumber === numberOrEllipsis ? "none" : "initial",
+                }}
+                onClick={() => onClickPageNumber(numberOrEllipsis)}
+              >
+                {numberOrEllipsis}
+              </button>
+            )}
+          </Fragment>
         );
       })}
     </div>
@@ -98,7 +130,6 @@ type JumpToControlProps = {
 };
 
 function JumpToControl({ curPageNumber, totalPages }: JumpToControlProps) {
-  // const [searchParams, setSearchParams] = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -122,7 +153,6 @@ function JumpToControl({ curPageNumber, totalPages }: JumpToControlProps) {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("pageNumber", `${+jumpToPage}`);
     router.push(`${pathName}?${newSearchParams}`);
-    // setSearchParams(newSearchParams);
   }
 
   return (
@@ -149,15 +179,16 @@ type PageSizeControlProps = {
   pageSizeChoices: number[];
   buttonClassName?: string;
   activeButtonClassName?: string;
+  buttonOverrides?: ButtonOverrides;
 };
 
 function PageSizeControl({
   curItemsPerPage,
   pageSizeChoices,
+  buttonOverrides,
   activeButtonClassName,
   buttonClassName,
 }: PageSizeControlProps) {
-  // const [searchParams] = useSearchParams();
   const searchParams = useSearchParams();
   const pathName = usePathname();
 
@@ -168,29 +199,46 @@ function PageSizeControl({
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set("perPage", `${choice}`);
         newParams.set("pageNumber", "1");
+        const onClickPageSize = buttonOverrides?.onClickPageSize;
+        const className = `${buttonClassName} ${
+          (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
+            ? activeButtonClassName
+            : ""
+        }`;
+
         return (
-          <Link
-            key={i}
-            // className={
-            //   (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
-            //     ? ""
-            //     : "button-minor"
-            // }
-            className={`${buttonClassName} ${
-              (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
-                ? activeButtonClassName
-                : ""
-            }`}
-            style={{
-              pointerEvents:
-                (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
-                  ? "none"
-                  : "initial",
-            }}
-            href={`${pathName}?${newParams}`}
-          >
-            {choice}
-          </Link>
+          <>
+            {!onClickPageSize && (
+              <Link
+                key={i}
+                className={className}
+                style={{
+                  pointerEvents:
+                    (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
+                      ? "none"
+                      : "initial",
+                }}
+                href={`${pathName}?${newParams}`}
+              >
+                {choice}
+              </Link>
+            )}
+            {onClickPageSize && (
+              <button
+                key={i}
+                className={className}
+                style={{
+                  pointerEvents:
+                    (i === 0 && !curItemsPerPage) || curItemsPerPage === choice
+                      ? "none"
+                      : "initial",
+                }}
+                onClick={() => onClickPageSize(choice)}
+              >
+                {choice}
+              </button>
+            )}
+          </>
         );
       })}
     </div>

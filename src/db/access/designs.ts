@@ -1,8 +1,8 @@
-import { DesignQuery, DesignResults } from "@/types/types";
 import { prisma } from "../../../prisma/client";
 import { defaultPerPage } from "@/constants";
 import { getArrayPage } from "@/utility/misc";
 import { filterDesigns, sortDesigns } from "./designsFilterSort";
+import { DesignQuery, DesignResults } from "@/types/schema/designs";
 
 const standardDesignIncludes = {
   designSubcategories: true,
@@ -64,4 +64,17 @@ export async function getDesignCategoryHierarchy() {
       designType: true,
     },
   });
+}
+
+export async function getDesignTags() {
+  return await prisma.designTag.findMany({
+    include: {
+      designs: true,
+      designVariations: true,
+    },
+  });
+}
+
+export async function getDesignTypes() {
+  return prisma.designType.findMany();
 }

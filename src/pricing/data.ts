@@ -19,21 +19,23 @@ export const markupTable = new SimpleTable({
     [markupTableRowNames.tshirts]: [
       4.82, 3.82, 2.45, 2.18, 2.05, 1.95, 1.9, 1.85, 1.77, 1.65,
     ],
-    [markupTableRowNames.polosPrint]: [
-      2.44, 2.23, 1.97, 1.87, 1.78, 1.72, 1.65,
-    ],
-    [markupTableRowNames.polosEmb]: [2.37, 2.17, 1.91, 1.83, 1.74, 1.72, 1.65],
+    [markupTableRowNames.polosPrint]: [2.75, 2.15, 1.95, 1.9, 1.8, 1.75, 1.7],
+    [markupTableRowNames.polosEmb]: [2.75, 2.15, 1.95, 1.9, 1.8, 1.75, 1.7],
     [markupTableRowNames.hatsBeanesOver10]: [
       1, 2.98, 2.38, 2.18, 2.09, 2.03, 1.98,
     ],
-    [markupTableRowNames.beanie250Min349Max]: [1, 7, 5.65, 5.45, 4.55, 4.4, 4.25],
+    [markupTableRowNames.beanie250Min349Max]: [
+      1, 7, 5.65, 5.45, 4.55, 4.4, 4.25,
+    ],
     [markupTableRowNames.beanie350Min499Max]: [
       1, 5.5, 4.5, 4.25, 3.65, 3.45, 3.25,
     ],
     [markupTableRowNames.beanie500Min749Max]: [
       1, 4.05, 3.3, 3.25, 2.85, 2.75, 2.6,
     ],
-    [markupTableRowNames.beanie750Min10Max]: [1, 3.35, 2.85, 2.75, 2.45, 2.4, 2.3],
+    [markupTableRowNames.beanie750Min10Max]: [
+      1, 3.35, 2.85, 2.75, 2.45, 2.4, 2.3,
+    ],
   },
 });
 

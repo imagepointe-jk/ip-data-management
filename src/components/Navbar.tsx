@@ -3,7 +3,7 @@ import AuthButton from "./AuthButton.server";
 import { usePathname } from "next/navigation";
 import NavbarLinks from "./NavbarLinks";
 
-export default function Navbar() {
+export default function AdminNavbar() {
   return (
     <nav>
       <ul className="links-row">
