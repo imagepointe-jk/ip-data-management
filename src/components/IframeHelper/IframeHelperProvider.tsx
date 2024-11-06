@@ -33,6 +33,7 @@ type IframeHelperContext = {
   parentWindow: {
     location: ParentWindowData | null;
     requestNavigation: (href: string) => void;
+    requestHeightChange: (newHeight: number) => void;
     setSearchParam: (name: string, value: string | null) => void;
   };
   loading: boolean;
@@ -77,6 +78,13 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
     setLoading(false);
   }
 
+  function requestHeightChange(newHeight: number) {
+    postMessage({
+      type: messageTypes.outgoing.heightChangeRequest,
+      height: `${newHeight}px`,
+    });
+  }
+
   function updateIframeHeight(width: number) {
     if (!iframeSizes) return;
 
@@ -90,10 +98,7 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
     }
     if (!size) return;
 
-    postMessage({
-      type: messageTypes.outgoing.heightChangeRequest,
-      height: `${size.height}px`,
-    });
+    requestHeightChange(size.height);
   }
 
   function onIframeResize(e: any) {
@@ -145,6 +150,7 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
         parentWindow: {
           location: parentWindowData,
           requestNavigation,
+          requestHeightChange,
           setSearchParam,
         },
         loading,
