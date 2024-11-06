@@ -38,6 +38,12 @@ export function PricingCalculator() {
   const allowPrint = productType === "tshirt" || productType === "polo";
   const allowEmbroidery = productType !== "tshirt";
 
+  //expanded section state
+
+  const [expandedSection, setExpandedSection] = useState(
+    null as "price breaks" | "locations" | "terms" | null
+  );
+
   //form state
 
   const [quantity, setQuantity] = useState(100);
@@ -320,7 +326,15 @@ export function PricingCalculator() {
 
       {/* Price breaks */}
 
-      <ExpandableSection label="View Price Breaks">
+      <ExpandableSection
+        label="View Price Breaks"
+        isExpanded={expandedSection === "price breaks"}
+        onClickExpand={() =>
+          setExpandedSection(
+            expandedSection === "price breaks" ? null : "price breaks"
+          )
+        }
+      >
         <div className={styles["vert-flex-group"]}>
           {quantityBreaks.map((thisQuantity, i, arr) => {
             const nextQuantity = arr[i + 1];
@@ -346,13 +360,27 @@ export function PricingCalculator() {
 
       {/* Decoration location graphic */}
 
-      <ExpandableSection label="View Decoration Locations">
+      <ExpandableSection
+        label="View Decoration Locations"
+        isExpanded={expandedSection === "locations"}
+        onClickExpand={() =>
+          setExpandedSection(
+            expandedSection === "locations" ? null : "locations"
+          )
+        }
+      >
         <DecorationLocations />
       </ExpandableSection>
 
       {/* Order terms */}
 
-      <ExpandableSection label="Show Order Terms">
+      <ExpandableSection
+        label="Show Order Terms"
+        isExpanded={expandedSection === "terms"}
+        onClickExpand={() =>
+          setExpandedSection(expandedSection === "terms" ? null : "terms")
+        }
+      >
         <p className={styles["order-terms"]}>
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
           earum tempora officia fugit numquam aspernatur, provident ipsa et

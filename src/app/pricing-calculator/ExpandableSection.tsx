@@ -4,18 +4,29 @@ import styles from "@/styles/pricingCalculator/pricingCalculator.module.css";
 type Props = {
   children: ReactNode;
   label: string;
+  isExpanded?: boolean;
+  onClickExpand?: () => void;
 };
-export function ExpandableSection({ children, label }: Props) {
+export function ExpandableSection({
+  children,
+  label,
+  isExpanded,
+  onClickExpand,
+}: Props) {
   const [expanded, setExpanded] = useState(false);
+  const expandedStateToUse = isExpanded !== undefined ? isExpanded : expanded;
+
   return (
     <div>
       <div
         className={styles["expandable-toggle"]}
-        onClick={() => setExpanded(!expanded)}
+        onClick={onClickExpand ? onClickExpand : () => setExpanded(!expanded)}
       >
-        {expanded ? "-" : "+"} {label}
+        {expandedStateToUse ? "-" : "+"} {label}
       </div>
-      <div style={{ display: expanded ? "block" : "none" }}>{children}</div>
+      <div style={{ display: expandedStateToUse ? "block" : "none" }}>
+        {children}
+      </div>
     </div>
   );
 }
