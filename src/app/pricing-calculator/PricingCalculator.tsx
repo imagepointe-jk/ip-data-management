@@ -399,10 +399,11 @@ export function PricingCalculator() {
         }
       >
         <p className={styles["order-terms"]}>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate
-          earum tempora officia fugit numquam aspernatur, provident ipsa et
-          exercitationem vel ullam dolorum obcaecati cum! Placeat repellat
-          laboriosam dolorum nobis itaque.
+          Most minimum quantities start at 48 pieces. Upcharges may apply for
+          larger sizes. Pricing is an estimate only and is subject to change.
+          For official pricing, contact our sales team or request a quote
+          online. Shipping, tax and any applicable setup charges will be added
+          to your order and can be quoted upon request.
         </p>
       </ExpandableSection>
     </div>
