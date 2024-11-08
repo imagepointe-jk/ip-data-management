@@ -27,20 +27,20 @@ export function EmbroideryFields({
 }: Props) {
   const stitchOptions = [
     {
-      value: "0k",
-      text: "Up to 4,999 stitches",
-    },
-    {
       value: "5k",
-      text: "5k-9,999 stitches",
+      text: "Up to 5,000 stitches",
     },
     {
       value: "10k",
-      text: "10k-14,999 stitches",
+      text: "5,001-10k stitches",
     },
     {
       value: "15k",
-      text: "15k-19,999 stitches",
+      text: "10,001-15k stitches",
+    },
+    {
+      value: "20k",
+      text: "15,001-20k stitches",
     },
   ];
 
