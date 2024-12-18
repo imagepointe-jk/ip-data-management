@@ -34,7 +34,10 @@ export function WCProductProvider({ children }: Props) {
       const parsed = validateIframeData(e.data);
       setProductData(parsed);
     } catch (error) {
-      console.error("Invalid parent window response");
+      console.error(
+        "Invalid parent window response in WCProductProvider",
+        e.data
+      );
     }
   }
 

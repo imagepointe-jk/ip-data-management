@@ -73,7 +73,10 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
       const parsed = validateResponseData(e.data);
       setParentWindowData(parsed);
     } catch (error) {
-      console.error("Invalid parent window response");
+      console.error(
+        "Invalid parent window response in IFrameHelperProvider",
+        e.data
+      );
     }
     setLoading(false);
   }
