@@ -69,14 +69,12 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
       )
     )
       return; //ignore messages from devtools
+    //TODO: This parsing is encountering an error when other types of responses are received from the parent window (e.g. pricing calculator data). Be more specific about what messages are expected here.
     try {
       const parsed = validateResponseData(e.data);
       setParentWindowData(parsed);
     } catch (error) {
-      console.error(
-        "Invalid parent window response in IFrameHelperProvider",
-        e.data
-      );
+      console.error("Invalid parent window response in IFrameHelperProvider");
     }
     setLoading(false);
   }
