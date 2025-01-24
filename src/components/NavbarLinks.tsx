@@ -53,6 +53,14 @@ export default function NavbarLinks() {
           Order Approval
         </Link>
       </li>
+      <li>
+        <Link
+          href="/admin/tracking"
+          className={path.startsWith("/admin/tracking") ? "current" : ""}
+        >
+          Tracking
+        </Link>
+      </li>
     </>
   );
 }
