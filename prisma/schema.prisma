@@ -289,3 +289,9 @@ model OrderWorkflowAccessCode {
 
   @@id([userId, instanceId])
 }
+
+model DignityApparelSearchString {
+  id        Int      @id @default(autoincrement())
+  search    String
+  createdAt DateTime @default(now())
+}
