@@ -1,4 +1,5 @@
 import { getDASearches } from "@/db/access/tracking";
+import { ExportForm } from "./ExportForm";
 
 export default async function Page() {
   const searches = await getDASearches();
@@ -8,6 +9,7 @@ export default async function Page() {
       <h1>Tracking</h1>
       <h2>Dignity Apparel Search Terms</h2>
       <div>{searches.length} total searches have been recorded.</div>
+      <ExportForm />
     </>
   );
 }
