@@ -23,6 +23,7 @@ export async function uploadSyncData(formData: FormData) {
   const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Woo_Import");
   const json = sheetToJson(sheet);
   const validated = validateStockImportData(json);
+  //TODO: Error out if there are any bad rows at this point
 
   const cacheData: SyncDataCache = {
     updatedAt: new Date(),
