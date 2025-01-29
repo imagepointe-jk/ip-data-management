@@ -6,7 +6,7 @@ import { SyncDataCache } from "@/types/schema/dignity-apparel";
 import { validateStockImportData } from "@/types/validations/dignity-apparel";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
-import { createClient, RedisClientType } from "redis";
+import { createClient } from "redis";
 
 export async function uploadSyncData(formData: FormData) {
   const file = formData.get("file");
