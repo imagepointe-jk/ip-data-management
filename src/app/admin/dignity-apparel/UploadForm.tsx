@@ -1,6 +1,6 @@
 "use client";
 
-import { startSync } from "@/actions/dignity-apparel/dignity-apparel";
+import { uploadSyncData } from "@/actions/dignity-apparel/dignity-apparel";
 import { FormEvent, useState } from "react";
 
 export function UploadForm() {
@@ -18,7 +18,7 @@ export function UploadForm() {
     setSuccess(false);
     setError(null);
     try {
-      await startSync(formData);
+      await uploadSyncData(formData);
       setLoading(false);
       setSuccess(true);
     } catch (error) {
