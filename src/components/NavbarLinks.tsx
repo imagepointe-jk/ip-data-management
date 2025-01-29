@@ -61,6 +61,14 @@ export default function NavbarLinks() {
           Tracking
         </Link>
       </li>
+      <li>
+        <Link
+          href="/admin/dignity-apparel"
+          className={path.startsWith("/admin/dignity-apparel") ? "current" : ""}
+        >
+          Dignity Apparel
+        </Link>
+      </li>
     </>
   );
 }
