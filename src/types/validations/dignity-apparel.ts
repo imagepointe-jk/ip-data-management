@@ -1,6 +1,7 @@
 import {
   StockImportRow,
   stockImportRowSchema,
+  syncDataCache,
 } from "../schema/dignity-apparel";
 
 export function validateStockImportData(json: any) {
@@ -21,4 +22,8 @@ export function validateStockImportData(json: any) {
     errorIndices,
     parsed,
   };
+}
+
+export function validatedCachedSyncData(json: any) {
+  return syncDataCache.parse({ ...json, updatedAt: new Date(json.updatedAt) });
 }

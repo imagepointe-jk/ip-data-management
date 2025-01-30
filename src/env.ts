@@ -7,6 +7,9 @@ export const env = {
   REDIS_URL: process.env.REDIS_URL!,
   REDIS_DA_INVENTORY_SYNC_CACHE_KEY:
     process.env.REDIS_DA_INVENTORY_SYNC_CACHE_KEY!,
+  DA_WP_APPLICATION_USERNAME: process.env.DA_WP_APPLICATION_USERNAME!,
+  DA_WP_APPLICATION_PASSWORD: process.env.DA_WP_APPLICATION_PASSWORD!,
+  DA_WOOCOMMERCE_STORE_URL: process.env.DA_WOOCOMMERCE_STORE_URL!,
 };
 
 for (const [key, value] of Object.entries(env)) {

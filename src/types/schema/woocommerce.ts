@@ -6,6 +6,22 @@ export const wooCommerceProductSchema = z.object({
   weight: z.string(),
 });
 
+export const wooCommerceDAProductVariationSchema = z.object({
+  id: z.string(),
+  databaseId: z.number(),
+  name: z.string(),
+  sku: z.string(),
+  stockQuantity: z.number(),
+});
+
+export const wooCommerceDAProductSchema = z.object({
+  id: z.string(),
+  databaseId: z.number(),
+  name: z.string(),
+  sku: z.string(),
+  variations: z.array(wooCommerceDAProductVariationSchema),
+});
+
 export const wooCommerceWebhookRequestSchema = z.object({
   headers: z.object({
     webhookSource: z.string(),
@@ -68,3 +84,4 @@ export const wooCommerceOrderDataSchema = z.object({
 
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
 export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;
+export type WooCommerceDAProduct = z.infer<typeof wooCommerceDAProductSchema>;

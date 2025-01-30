@@ -1,0 +1,51 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DA Product Inventory Sync Results</title>
+  </head>
+  <body>
+    <p>DA Product Inventory Sync Results</p>
+    <ul>
+      <li>
+        Start Time:
+        {{startedAt}}
+      </li>
+      <li>
+        End Time:
+        {{endedAt}}
+      </li>
+      <li>
+        Import spreadsheet last received at:
+        {{lastSyncUploadedAt}}
+      </li>
+      <li>
+        Total rows processed:
+        {{processedRowsCount}}
+      </li>
+      <li>
+        Rows synced successfully:
+        {{successCount}}
+      </li>
+      <li>
+        Rows failed:
+        {{failureCount}}
+      </li>
+    </ul>
+    {{#if errors}}
+      <div>Error summary:</div>
+      <table style="border-collapse:collapse;">
+        <tr>
+          <td style="border: 1px solid black; padding: 8px;">SKU</td>
+          <td style="border: 1px solid black; padding: 8px;">Error</td>
+        </tr>
+        {{#each errors}}
+          <tr>
+            <td style="border: 1px solid black; padding: 8px;">{{sku}}</td>
+            <td style="border: 1px solid black; padding: 8px;">{{error}}</td>
+          </tr>
+        {{/each}}
+      </table>
+    {{/if}}
+  </body>
+</html>
