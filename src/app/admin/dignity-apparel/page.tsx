@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <>
       <h1>Dignity Apparel</h1>
-      <h2>Inventory Sync</h2>
+      <h2>Product Sync</h2>
       <UploadForm />
     </>
   );
