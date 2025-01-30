@@ -1,3 +1,5 @@
+import { env } from "@/env";
+
 const standardCredentials = () => {
   const apiKey = process.env.WOOCOMMERCE_MAIN_API_KEY;
   const apiSecret = process.env.WOOCOMMERCE_MAIN_API_SECRET;
@@ -120,4 +122,67 @@ export async function cancelOrder(
   };
 
   return fetch(`${storeUrl}/wp-json/wc/v3/orders/${orderId}`, requestOptions);
+}
+
+export async function getDAProductsGQL() {
+  const query = `
+  query GetProducts {
+    products {
+      nodes {
+        id
+        databaseId
+        name
+        sku
+        ...on VariableProduct {
+          variations(first: 1000) {
+            nodes {
+              id
+              databaseId
+              name
+              sku
+              stockQuantity
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+  return fetch(`${env.DA_WOOCOMMERCE_STORE_URL}/graphql`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(
+        `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`
+      )}`,
+    },
+    body: JSON.stringify({
+      query,
+    }),
+  });
+}
+
+export async function updateDAProductVariationStock(
+  productId: number,
+  variationId: number,
+  stockQuantity: number,
+  price: number
+) {
+  return fetch(
+    `${env.DA_WOOCOMMERCE_STORE_URL}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        stock_quantity: stockQuantity,
+        regular_price: `${price}`,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${btoa(
+          `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`
+        )}`,
+      },
+    }
+  );
 }

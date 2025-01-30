@@ -7,6 +7,7 @@ export function UploadForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null as string | null);
   const [success, setSuccess] = useState(false);
+  const [errorIndices, setErrorIndices] = useState([] as number[]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -18,9 +19,10 @@ export function UploadForm() {
     setSuccess(false);
     setError(null);
     try {
-      await uploadSyncData(formData);
+      const result = await uploadSyncData(formData);
       setLoading(false);
       setSuccess(true);
+      setErrorIndices(result.errorIndices);
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -41,11 +43,19 @@ export function UploadForm() {
         <input type="file" name="file" id="file" />
       </label>
       <div>
-        {!loading && !error && <button type="submit">Upload</button>}
+        {!loading && !error && !success && (
+          <button type="submit">Upload</button>
+        )}
         {loading && "Uploading data..."}
         {success &&
           "Upload complete. Sync will take place during the next designated time period."}
         {error && `Upload error: ${error}`}
+        {errorIndices.length > 0 && (
+          <div style={{ fontWeight: "bold" }}>
+            Invalid data found at the following row(s):{" "}
+            {errorIndices.map((n) => n + 2).join(", ")}{" "}
+          </div>
+        )}
       </div>
     </form>
   );

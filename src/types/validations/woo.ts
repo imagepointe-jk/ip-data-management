@@ -1,4 +1,6 @@
 import {
+  wooCommerceDAProductSchema,
+  wooCommerceDAProductVariationSchema,
   wooCommerceLineItemSchema,
   wooCommerceOrderDataSchema,
   wooCommerceProductSchema,
@@ -52,4 +54,30 @@ export function parseWooCommerceOrderJson(json: any) {
 
 export function parseWooCommerceProduct(json: any) {
   return wooCommerceProductSchema.parse(json);
+}
+
+export function parseWooCommerceDAProductsResponse(json: any) {
+  const products = json.data.products.nodes;
+  if (!Array.isArray(products))
+    throw new Error("Products array not found in GQL response.");
+  return products.map((product: any) => {
+    const variations = product.variations.nodes;
+    return wooCommerceDAProductSchema.parse({
+      id: product.id,
+      databaseId: product.databaseId,
+      name: product.name || "NO NAME",
+      sku: product.sku,
+      variations: !Array.isArray(variations)
+        ? []
+        : variations.map((variation: any) =>
+            wooCommerceDAProductVariationSchema.parse({
+              id: variation.id,
+              databaseId: variation.databaseId,
+              name: variation.name || "NO NAME",
+              sku: variation.sku,
+              stockQuantity: variation.stockQuantity || 0,
+            })
+          ),
+    });
+  });
 }
