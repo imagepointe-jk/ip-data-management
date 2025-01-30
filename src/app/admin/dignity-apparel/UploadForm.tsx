@@ -52,8 +52,9 @@ export function UploadForm() {
         {error && `Upload error: ${error}`}
         {errorIndices.length > 0 && (
           <div style={{ fontWeight: "bold" }}>
-            Invalid data found at the following row(s):{" "}
-            {errorIndices.map((n) => n + 2).join(", ")}{" "}
+            Invalid data found at the following row(s). Fixing these errors is
+            recommended, as they could cause incorrect data to be synced.{" "}
+            {`[${errorIndices.map((n) => n + 2).join(", ")}]`}{" "}
           </div>
         )}
       </div>
