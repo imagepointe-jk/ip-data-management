@@ -4,6 +4,7 @@ export const daProductImportRowSchema = z.object({
   SKU: z.string(),
   ["Parent SKU"]: z.string(),
   Stock: z.number(),
+  Price: z.number(),
 });
 export const syncDataCache = z.object({
   updatedAt: z.date(),

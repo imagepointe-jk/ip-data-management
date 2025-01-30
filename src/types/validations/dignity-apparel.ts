@@ -4,7 +4,7 @@ import {
   syncDataCache,
 } from "../schema/dignity-apparel";
 
-export function validateStockImportData(json: any) {
+export function validateProductImportData(json: any) {
   if (!Array.isArray(json))
     throw new Error("The data received was not an array.");
 
@@ -12,7 +12,8 @@ export function validateStockImportData(json: any) {
   const errorIndices: number[] = [];
   for (let i = 0; i < json.length; i++) {
     const row = json[i];
-    const allCellsEmpty = !row.SKU && !row["Parent SKU"] && !row.Stock;
+    const allCellsEmpty =
+      !row.SKU && !row["Parent SKU"] && !row.Stock && !row.Price;
     if (!daProductImportRowSchema.safeParse(row).success) {
       if (!allCellsEmpty) errorIndices.push(i);
     } else parsed.push(daProductImportRowSchema.parse(row));

@@ -3,7 +3,7 @@
 import { env } from "@/env";
 import { AppError } from "@/error";
 import { SyncDataCache } from "@/types/schema/dignity-apparel";
-import { validateStockImportData } from "@/types/validations/dignity-apparel";
+import { validateProductImportData } from "@/types/validations/dignity-apparel";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
 import { createClient } from "redis";
@@ -22,7 +22,7 @@ export async function uploadSyncData(formData: FormData) {
   const arrayBuffer = await file.arrayBuffer();
   const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Woo_Import");
   const json = sheetToJson(sheet);
-  const validated = validateStockImportData(json);
+  const validated = validateProductImportData(json);
 
   const cacheData: SyncDataCache = {
     updatedAt: new Date(),

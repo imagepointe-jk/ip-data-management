@@ -102,7 +102,8 @@ async function syncRows(
       const syncResponse = await updateDAProductVariationStock(
         parentProduct.databaseId,
         variationFromDb.databaseId,
-        row.Stock
+        row.Stock,
+        row.Price
       );
       if (!syncResponse.ok)
         throw new Error(

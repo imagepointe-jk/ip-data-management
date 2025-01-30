@@ -166,7 +166,8 @@ export async function getDAProductsGQL() {
 export async function updateDAProductVariationStock(
   productId: number,
   variationId: number,
-  stockQuantity: number
+  stockQuantity: number,
+  price: number
 ) {
   return fetch(
     `${env.DA_WOOCOMMERCE_STORE_URL}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
@@ -174,6 +175,7 @@ export async function updateDAProductVariationStock(
       method: "POST",
       body: JSON.stringify({
         stock_quantity: stockQuantity,
+        regular_price: `${price}`,
       }),
       headers: {
         "Content-Type": "application/json",
