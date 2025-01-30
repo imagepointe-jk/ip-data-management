@@ -3,25 +3,19 @@ import {
   getDAProductsGQL,
   updateDAProductVariationStock,
 } from "@/fetch/woocommerce";
+import { SyncDataCache } from "@/types/schema/dignity-apparel";
+import { WooCommerceDAProduct } from "@/types/schema/woocommerce";
 import { validatedCachedSyncData } from "@/types/validations/dignity-apparel";
 import { parseWooCommerceDAProductsResponse } from "@/types/validations/woo";
 import { sendEmail } from "@/utility/mail";
-import { createClient } from "redis";
 import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
-import { SyncDataCache } from "@/types/schema/dignity-apparel";
-import { WooCommerceDAProduct } from "@/types/schema/woocommerce";
+import { createClient } from "redis";
 
-export async function POST() {
-  console.log("DA Product Inventory Sync: Process triggered.");
-  doSync();
-  return new Response();
-}
-
-async function doSync() {
+export async function doSync() {
   const startTime = new Date();
-  const emailSubject = "DA Product Inventory Sync";
+  const emailSubject = "DA Product Sync";
   const emailTo = "josh.klope@imagepointe.com";
 
   try {
@@ -35,7 +29,7 @@ async function doSync() {
     const productsJson = await productsResponse.json();
     const productsParsed = parseWooCommerceDAProductsResponse(productsJson);
     console.log(
-      "DA Product Inventory Sync: Received product hierarchy from WooCommerce."
+      "DA Product Sync: Received product hierarchy from WooCommerce."
     );
 
     //then get the cached sync data (should be updated each day)
@@ -46,16 +40,16 @@ async function doSync() {
         throw new Error(`Redis error: ${err}`);
       })
       .connect();
-    const cachedData = await client.get(env.REDIS_DA_INVENTORY_SYNC_CACHE_KEY);
+    const cachedData = await client.get(env.REDIS_DA_PRODUCT_SYNC_CACHE_KEY);
     if (!cachedData) throw new Error("No cached data found in Redis.");
     const cacheParsed = validatedCachedSyncData(JSON.parse(cachedData));
     console.log(
-      "DA Product Inventory Sync: Received cached data from the last uploaded spreadsheet."
+      "DA Product Sync: Received cached data from the last uploaded spreadsheet."
     );
 
     //try to sync each row, using the SKUs from the sync data to find the correct database IDs for parent and variation products
     const syncResults = await syncRows(cacheParsed, productsParsed);
-    console.log("DA Product Inventory Sync: Process complete.");
+    console.log("DA Product Sync: Process complete.");
 
     const endTime = new Date();
     await sendResultsEmail(
@@ -66,7 +60,7 @@ async function doSync() {
       cacheParsed.updatedAt,
       syncResults
     );
-    console.log("DA Product Inventory Sync: Results email sent.");
+    console.log("DA Product Sync: Results email sent.");
   } catch (error) {
     console.error(error);
     await sendEmail(
@@ -88,7 +82,7 @@ async function syncRows(
   let processedCount = 0;
 
   for (const row of syncData.importRows) {
-    console.log(`DA Product Inventory Sync: Syncing SKU ${row.SKU}...`);
+    console.log(`DA Product Sync: Syncing SKU ${row.SKU}...`);
     try {
       const parentProduct = productsFromDb.find(
         (product) => product.sku === row["Parent SKU"]
@@ -149,7 +143,7 @@ function sendResultsEmail(
     const templateSource = fs.readFileSync(
       path.resolve(
         process.cwd(),
-        "src/app/api/dignity-apparel/sync/inventory/syncResultsEmail.hbs"
+        "src/dignity-apparel/sync/products/syncResultsEmail.hbs"
       ),
       "utf-8"
     );

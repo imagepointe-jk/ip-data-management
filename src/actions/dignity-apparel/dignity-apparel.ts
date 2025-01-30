@@ -44,7 +44,7 @@ export async function uploadSyncData(formData: FormData) {
 
   const twoDays = 60 * 60 * 24 * 2;
   await client.setEx(
-    env.REDIS_DA_INVENTORY_SYNC_CACHE_KEY,
+    env.REDIS_DA_PRODUCT_SYNC_CACHE_KEY,
     twoDays,
     JSON.stringify(cacheData)
   );
