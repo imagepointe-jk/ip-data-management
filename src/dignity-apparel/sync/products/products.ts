@@ -120,12 +120,13 @@ async function syncRows(
   }
 
   for (const product of productsFromDb) {
-    const rowInSyncData = syncData.importRows.find(
-      (row) => row.SKU === product.sku
+    const variationsNotInSyncData = product.variations.filter(
+      (variation) =>
+        !syncData.importRows.find((row) => row.SKU === variation.sku)
     );
-    if (!rowInSyncData) {
+    for (const variation of variationsNotInSyncData) {
       syncErrors.push({
-        sku: product.sku,
+        sku: variation.sku,
         error:
           "This SKU was found in WooCommerce, but not in the sync data. It was not updated.",
       });
