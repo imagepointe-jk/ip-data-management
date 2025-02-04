@@ -9,6 +9,8 @@ export const env = {
   DA_WP_APPLICATION_USERNAME: process.env.DA_WP_APPLICATION_USERNAME!,
   DA_WP_APPLICATION_PASSWORD: process.env.DA_WP_APPLICATION_PASSWORD!,
   DA_WOOCOMMERCE_STORE_URL: process.env.DA_WOOCOMMERCE_STORE_URL!,
+  DA_PRODUCT_SYNC_NOTIFICATION_EMAIL:
+    process.env.DA_PRODUCT_SYNC_NOTIFICATION_EMAIL!,
 };
 
 for (const [key, value] of Object.entries(env)) {
