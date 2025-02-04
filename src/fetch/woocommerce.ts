@@ -127,7 +127,7 @@ export async function cancelOrder(
 export async function getDAProductsGQL() {
   const query = `
   query GetProducts {
-    products {
+    products(first: 1000) {
       nodes {
         id
         databaseId
