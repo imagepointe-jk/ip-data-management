@@ -16,7 +16,6 @@ import { createClient } from "redis";
 export async function doSync() {
   const startTime = new Date();
   const emailSubject = "DA Product Sync";
-  const emailTo = "josh.klope@imagepointe.com";
 
   try {
     //first get the full product/variations hierarchy from WC
@@ -53,7 +52,7 @@ export async function doSync() {
 
     const endTime = new Date();
     await sendResultsEmail(
-      emailTo,
+      env.DA_PRODUCT_SYNC_NOTIFICATION_EMAIL,
       emailSubject,
       startTime,
       endTime,
@@ -64,7 +63,7 @@ export async function doSync() {
   } catch (error) {
     console.error(error);
     await sendEmail(
-      emailTo,
+      env.DA_PRODUCT_SYNC_NOTIFICATION_EMAIL,
       emailSubject,
       `Sync FAILED with the following error message: ${
         error instanceof Error ? error.message : "UNKNOWN ERROR"
@@ -118,6 +117,19 @@ async function syncRows(
       });
     }
     processedCount++;
+  }
+
+  for (const product of productsFromDb) {
+    const rowInSyncData = syncData.importRows.find(
+      (row) => row.SKU === product.sku
+    );
+    if (!rowInSyncData) {
+      syncErrors.push({
+        sku: product.sku,
+        error:
+          "This SKU was found in WooCommerce, but not in the sync data. It was not updated.",
+      });
+    }
   }
 
   return {
