@@ -120,6 +120,14 @@ async function syncRows(
   }
 
   for (const product of productsFromDb) {
+    const availabilityAttribute = product.globalAttributes.find(
+      (attr) => attr.name === "pa_availability"
+    );
+    const isMTO = !!availabilityAttribute?.terms.find(
+      (term) => term.slug === "made-to-order"
+    );
+    if (isMTO) continue;
+
     const variationsNotInSyncData = product.variations.filter(
       (variation) =>
         !syncData.importRows.find((row) => row.SKU === variation.sku)

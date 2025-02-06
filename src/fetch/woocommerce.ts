@@ -133,6 +133,22 @@ export async function getDAProductsGQL() {
         databaseId
         name
         sku
+        ...on Product {
+          globalAttributes {
+            edges {
+                node {
+                    name
+                    terms {
+                        edges {
+                            node {
+                                slug
+                            }
+                        }
+                    }
+                }
+            }
+          } 
+        }
         ...on VariableProduct {
           variations(first: 1000) {
             nodes {

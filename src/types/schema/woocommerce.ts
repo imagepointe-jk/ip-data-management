@@ -19,6 +19,12 @@ export const wooCommerceDAProductSchema = z.object({
   databaseId: z.number(),
   name: z.string(),
   sku: z.string(),
+  globalAttributes: z.array(
+    z.object({
+      name: z.string(),
+      terms: z.array(z.object({ slug: z.string() })),
+    })
+  ),
   variations: z.array(wooCommerceDAProductVariationSchema),
 });
 
