@@ -60,13 +60,24 @@ export function parseWooCommerceDAProductsResponse(json: any) {
   const products = json.data.products.nodes;
   if (!Array.isArray(products))
     throw new Error("Products array not found in GQL response.");
+
   return products.map((product: any) => {
     const variations = product.variations.nodes;
+    const attributes = product.globalAttributes.edges;
+
     return wooCommerceDAProductSchema.parse({
       id: product.id,
       databaseId: product.databaseId,
       name: product.name || "NO NAME",
       sku: product.sku,
+      globalAttributes: !Array.isArray(attributes)
+        ? []
+        : attributes.map((item: any) => ({
+            name: item.node.name,
+            terms: item.node.terms.edges.map((item: any) => ({
+              slug: item.node.slug,
+            })),
+          })),
       variations: !Array.isArray(variations)
         ? []
         : variations.map((variation: any) =>
