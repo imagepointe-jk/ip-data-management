@@ -70,6 +70,7 @@ export function parseWooCommerceDAProductsResponse(json: any) {
       databaseId: product.databaseId,
       name: product.name || "NO NAME",
       sku: product.sku,
+      status: product.status,
       globalAttributes: !Array.isArray(attributes)
         ? []
         : attributes.map((item: any) => ({

@@ -134,6 +134,7 @@ export async function getDAProductsGQL() {
         name
         sku
         ...on Product {
+          status
           globalAttributes {
             edges {
                 node {

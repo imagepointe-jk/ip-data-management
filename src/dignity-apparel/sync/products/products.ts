@@ -98,15 +98,20 @@ async function syncRows(
           `Variation ${row.SKU} not found under parent ${row["Parent SKU"]} in WooCommerce.`
         );
 
+      const startTime = Date.now();
       const syncResponse = await updateDAProductVariationStock(
         parentProduct.databaseId,
         variationFromDb.databaseId,
         row.Stock,
         row.Price
       );
+      const endTime = Date.now();
+      const syncResponseMs = endTime - startTime;
       if (!syncResponse.ok)
         throw new Error(
-          `The syncing API call returned a ${syncResponse.status} status code.`
+          `The syncing API call returned a ${
+            syncResponse.status
+          } status code after ${syncResponseMs / 1000} seconds.`
         );
 
       successCount++;
@@ -126,7 +131,8 @@ async function syncRows(
     const isMTO = !!availabilityAttribute?.terms.find(
       (term) => term.slug === "made-to-order"
     );
-    if (isMTO) continue;
+    const isDraft = product.status === "draft";
+    if (isMTO || isDraft) continue;
 
     const variationsNotInSyncData = product.variations.filter(
       (variation) =>
