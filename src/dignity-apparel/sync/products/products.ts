@@ -72,7 +72,6 @@ export async function doSync() {
   }
 }
 
-//TODO: Start reporting on shortest, longest, and average row sync times
 async function syncRows(
   syncData: SyncDataCache,
   productsFromDb: WooCommerceDAProduct[]
@@ -161,9 +160,9 @@ async function syncRows(
     processedCount,
     successCount,
     syncTimes: {
-      min: minTime,
-      max: maxTime,
-      average: averageTime,
+      min: minTime / 1000,
+      max: maxTime / 1000,
+      average: averageTime / 1000,
     },
   };
 }
@@ -202,9 +201,9 @@ function sendResultsEmail(
       processedRowsCount: syncResults.processedCount,
       successCount: syncResults.successCount,
       failureCount: syncResults.syncErrors.length,
-      minTime: syncResults.syncTimes.min,
-      maxTime: syncResults.syncTimes.max,
-      averageTime: syncResults.syncTimes.average,
+      minTime: syncResults.syncTimes.min.toFixed(2),
+      maxTime: syncResults.syncTimes.max.toFixed(2),
+      averageTime: syncResults.syncTimes.average.toFixed(2),
       errors: syncResults.syncErrors,
     });
   } catch (error) {
