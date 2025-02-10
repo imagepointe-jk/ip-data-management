@@ -19,6 +19,7 @@ export const wooCommerceDAProductSchema = z.object({
   databaseId: z.number(),
   name: z.string(),
   sku: z.string(),
+  status: z.string(),
   globalAttributes: z.array(
     z.object({
       name: z.string(),
