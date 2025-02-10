@@ -72,6 +72,7 @@ export async function doSync() {
   }
 }
 
+//TODO: Start reporting on shortest, longest, and average row sync times
 async function syncRows(
   syncData: SyncDataCache,
   productsFromDb: WooCommerceDAProduct[]
@@ -79,6 +80,7 @@ async function syncRows(
   const syncErrors: { sku: string; error: string }[] = [];
   let successCount = 0;
   let processedCount = 0;
+  const syncTimes: number[] = [];
 
   for (const row of syncData.importRows) {
     console.log(`DA Product Sync: Syncing SKU ${row.SKU}...`);
@@ -107,6 +109,7 @@ async function syncRows(
       );
       const endTime = Date.now();
       const syncResponseMs = endTime - startTime;
+      syncTimes.push(syncResponseMs);
       if (!syncResponse.ok)
         throw new Error(
           `The syncing API call returned a ${
@@ -147,10 +150,21 @@ async function syncRows(
     }
   }
 
+  syncTimes.sort((a, b) => a - b);
+  const maxTime = syncTimes[syncTimes.length - 1] || 99999999;
+  const minTime = syncTimes[0] || 0;
+  const averageTime =
+    syncTimes.reduce((accum, item) => accum + item, 0) / syncTimes.length;
+
   return {
     syncErrors,
     processedCount,
     successCount,
+    syncTimes: {
+      min: minTime,
+      max: maxTime,
+      average: averageTime,
+    },
   };
 }
 
@@ -163,6 +177,11 @@ function sendResultsEmail(
   syncResults: {
     processedCount: number;
     successCount: number;
+    syncTimes: {
+      min: number;
+      max: number;
+      average: number;
+    };
     syncErrors: { sku: string; error: string }[];
   }
 ) {
@@ -183,6 +202,9 @@ function sendResultsEmail(
       processedRowsCount: syncResults.processedCount,
       successCount: syncResults.successCount,
       failureCount: syncResults.syncErrors.length,
+      minTime: syncResults.syncTimes.min,
+      maxTime: syncResults.syncTimes.max,
+      averageTime: syncResults.syncTimes.average,
       errors: syncResults.syncErrors,
     });
   } catch (error) {
