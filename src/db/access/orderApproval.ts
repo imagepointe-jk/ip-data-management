@@ -330,6 +330,8 @@ export async function createWebstore(
       allowUpsToCanada,
     },
   });
+
+  return webstore;
 }
 
 export async function getWorkflowStepByNumber(

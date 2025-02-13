@@ -71,7 +71,7 @@ export async function createWebstore(formData: FormData) {
     tag: apiSecretEncryptTag,
   } = encrypt(changeApiSecret);
 
-  await createDbWebstore(
+  return createDbWebstore(
     {
       apiKey,
       apiKeyEncryptIv,
