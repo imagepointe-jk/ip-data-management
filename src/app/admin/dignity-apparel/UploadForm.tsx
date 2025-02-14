@@ -1,6 +1,7 @@
 "use client";
 
 import { uploadSyncData } from "@/actions/dignity-apparel/dignity-apparel";
+import { useToast } from "@/components/ToastProvider";
 import { FormEvent, useState } from "react";
 
 export function UploadForm() {
@@ -8,6 +9,7 @@ export function UploadForm() {
   const [error, setError] = useState(null as string | null);
   const [success, setSuccess] = useState(false);
   const [errorIndices, setErrorIndices] = useState([] as number[]);
+  const toast = useToast();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,6 +34,14 @@ export function UploadForm() {
     }
   }
 
+  async function onClickManualStart() {
+    const response = await fetch(
+      `${window.location.origin}/api/dignity-apparel/sync/products`,
+      { method: "POST" }
+    );
+    if (response.ok) toast.toast("Sync triggered.", "success");
+  }
+
   return (
     <form
       className="content-frame vert-flex-group"
@@ -47,8 +57,15 @@ export function UploadForm() {
           <button type="submit">Upload</button>
         )}
         {loading && "Uploading data..."}
-        {success &&
-          "Upload complete. Sync will take place during the next designated time period."}
+        {success && (
+          <div>
+            Upload complete. Sync will take place during the next designated
+            time period.
+            <button type="button" onClick={onClickManualStart}>
+              Start sync now
+            </button>
+          </div>
+        )}
         {error && `Upload error: ${error}`}
         {errorIndices.length > 0 && (
           <div style={{ fontWeight: "bold" }}>
