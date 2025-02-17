@@ -6,15 +6,21 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  webstores: Webstore[];
+  webstores: {
+    data: Webstore;
+    hasWorkflow: boolean;
+  }[];
 };
 export function CreateWorkflow({ webstores }: Props) {
   const [name, setName] = useState("");
-  const [webstoreId, setWebstoreId] = useState(webstores[0]?.id);
+  const [webstoreId, setWebstoreId] = useState(webstores[0]?.data.id);
   const router = useRouter();
+  const selectedWebstoreHasWorkflow =
+    webstores.find((webstore) => webstore.data.id === webstoreId)
+      ?.hasWorkflow || false;
 
   async function create() {
-    if (!webstoreId || !name) return;
+    if (!webstoreId || !name || selectedWebstoreHasWorkflow) return;
 
     await createWorkflow(webstoreId, name);
     router.refresh();
@@ -40,14 +46,21 @@ export function CreateWorkflow({ webstores }: Props) {
             defaultValue={webstoreId}
           >
             {webstores.map((webstore) => (
-              <option key={webstore.id} value={webstore.id}>
-                {webstore.name}
+              <option key={webstore.data.id} value={webstore.data.id}>
+                {webstore.data.name}
               </option>
             ))}
           </select>
         </div>
+        {selectedWebstoreHasWorkflow && (
+          <div style={{ color: "red" }}>
+            This webstore already has a workflow.
+          </div>
+        )}
         <div>
-          <button onClick={create}>+ Create</button>
+          <button disabled={selectedWebstoreHasWorkflow} onClick={create}>
+            + Create
+          </button>
         </div>
       </div>
     </>

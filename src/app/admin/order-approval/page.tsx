@@ -14,6 +14,13 @@ export default async function OrderApproval() {
   const sortedWebstores = [...webstores];
   sortedWebstores.sort((a, b) => a.id - b.id);
 
+  const webstoresWithWorkflowBool = webstores.map((webstore) => ({
+    data: webstore,
+    hasWorkflow: !!sortedWorkflows.find(
+      (workflow) => workflow.webstoreId === webstore.id
+    ),
+  }));
+
   return (
     <>
       <h1>Workflows</h1>
@@ -26,7 +33,7 @@ export default async function OrderApproval() {
         className="content-frame"
         style={{ width: "400px", marginTop: "20px" }}
       >
-        <CreateWorkflow webstores={sortedWebstores} />
+        <CreateWorkflow webstores={webstoresWithWorkflowBool} />
       </div>
     </>
   );
