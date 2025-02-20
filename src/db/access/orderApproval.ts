@@ -51,10 +51,9 @@ export async function getShippingMethods() {
 }
 
 export async function getUser(webstoreId: number, email: string) {
-  return prisma.orderWorkflowUser.findFirst({
+  return prisma.orderWorkflowUser.findUnique({
     where: {
       email,
-      webstoreId,
     },
   });
 }
@@ -62,7 +61,11 @@ export async function getUser(webstoreId: number, email: string) {
 export async function getAllApproversFor(webstoreId: number) {
   return prisma.orderWorkflowUser.findMany({
     where: {
-      webstoreId,
+      webstore: {
+        some: {
+          id: webstoreId,
+        },
+      },
       isApprover: true,
     },
   });
@@ -77,7 +80,11 @@ export async function createUser(
     data: {
       email,
       name,
-      webstoreId,
+      webstore: {
+        connect: {
+          id: webstoreId,
+        },
+      },
     },
   });
 }

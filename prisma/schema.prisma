@@ -222,8 +222,7 @@ model OrderWorkflowUser {
   name        String
   email       String                    @unique
   isApprover  Boolean                   @default(false) //is this user an approver for their webstore?
-  webstoreId  Int
-  webstore    Webstore                  @relation(fields: [webstoreId], references: [id])
+  webstore    Webstore[]
   comments    OrderWorkflowComment[]
   accessCodes OrderWorkflowAccessCode[]
 }
