@@ -5,6 +5,7 @@ import {
 import GenericTable from "@/components/GenericTable";
 import { ResultsTable } from "./ResultsTable";
 import { CreateWorkflow } from "./CreateWorkflow";
+import { DuplicateWorkflow } from "./DuplicateWorkflow";
 
 export default async function OrderApproval() {
   const workflows = await getWorkflowsWithIncludes();
@@ -34,6 +35,18 @@ export default async function OrderApproval() {
         style={{ width: "400px", marginTop: "20px" }}
       >
         <CreateWorkflow webstores={webstoresWithWorkflowBool} />
+      </div>
+      <div
+        className="content-frame"
+        style={{ width: "400px", marginTop: "20px" }}
+      >
+        <DuplicateWorkflow
+          workflows={workflows.map((item) => ({
+            id: item.id,
+            name: item.name,
+          }))}
+          webstores={webstoresWithWorkflowBool}
+        />
       </div>
     </>
   );
