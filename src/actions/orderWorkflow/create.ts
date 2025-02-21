@@ -22,7 +22,6 @@ export async function duplicateWorkflow(
   workflowId: number,
   targetWebstoreId: number
 ) {
-  //TODO: Figure out how to handle step duplication. Some steps will have action targets associated with a user, and unless a user can have more than one webstore, the target webstore won't be able to have that user.
   const existingWorkflow = await getWorkflowWithIncludes(workflowId);
   if (!existingWorkflow) throw new Error(`Workflow ${workflowId} not found.`);
 
@@ -30,49 +29,57 @@ export async function duplicateWorkflow(
   if (!webstore) throw new Error(`Webstore ${targetWebstoreId} not found.`);
 
   //check to make sure the target webstore is in a valid state to accept the duplicated workflow
-  // for (const step of existingWorkflow.steps) {
-  //   const actionTargetIsEmail = step.actionTarget?.includes("@"); //assume only email addresses will have an @
-  //   if (actionTargetIsEmail) {
-  //     const existingUser = await prisma.orderWorkflowUser.findFirst({
-  //       where: {
-  //         AND: [
-  //           {
-  //             email: `${step.actionTarget}`,
-  //           },
-  //           {
-  //             webstoreId: webstore.id,
-  //           },
-  //         ],
-  //       },
-  //     });
-  //     if (!existingUser)
-  //       throw new Error(
-  //         `Step with ID ${step.id} of existing workflow ${existingWorkflow.id} targets ${step.actionTarget}, but no user with that email address is associated with target webstore ${webstore.id}.`
-  //       );
-  //   }
+  for (const step of existingWorkflow.steps) {
+    const actionTargetIsEmail = step.actionTarget?.includes("@"); //assume only email addresses will have an @
+    if (actionTargetIsEmail) {
+      const existingUser = await prisma.orderWorkflowUser.findFirst({
+        where: {
+          AND: [
+            {
+              email: `${step.actionTarget}`,
+            },
+            {
+              webstore: {
+                some: {
+                  id: targetWebstoreId,
+                },
+              },
+            },
+          ],
+        },
+      });
+      if (!existingUser)
+        throw new Error(
+          `Step with ID ${step.id} of existing workflow ${existingWorkflow.id} targets ${step.actionTarget}, but no user with that email address is associated with target webstore ${webstore.id}.`
+        );
+    }
 
-  //   for (const listener of step.proceedListeners) {
-  //     const fromValueIsEmail = listener.from.includes("@"); //assume only email addresses will have an @
-  //     if (fromValueIsEmail) {
-  //       const existingUser = await prisma.orderWorkflowUser.findFirst({
-  //         where: {
-  //           AND: [
-  //             {
-  //               email: listener.from,
-  //             },
-  //             {
-  //               webstoreId: webstore.id,
-  //             },
-  //           ],
-  //         },
-  //       });
-  //       if (!existingUser)
-  //         throw new Error(
-  //           `Step with ID ${step.id} of existing workflow ${existingWorkflow.id} has a proceed listener with ID ${listener.id} with a "from" value of ${listener.from}, but no user with that email address is associated with target webstore ${webstore.id}.`
-  //         );
-  //     }
-  //   }
-  // }
+    for (const listener of step.proceedListeners) {
+      const fromValueIsEmail = listener.from.includes("@"); //assume only email addresses will have an @
+      if (fromValueIsEmail) {
+        const existingUser = await prisma.orderWorkflowUser.findFirst({
+          where: {
+            AND: [
+              {
+                email: listener.from,
+              },
+              {
+                webstore: {
+                  some: {
+                    id: targetWebstoreId,
+                  },
+                },
+              },
+            ],
+          },
+        });
+        if (!existingUser)
+          throw new Error(
+            `Step with ID ${step.id} of existing workflow ${existingWorkflow.id} has a proceed listener with ID ${listener.id} with a "from" value of ${listener.from}, but no user with that email address is associated with target webstore ${webstore.id}.`
+          );
+      }
+    }
+  }
 
   //the checks have passed, so let's create the workflow using the existing data
   const newWorkflow = await prisma.orderWorkflow.create({
@@ -117,30 +124,6 @@ export async function duplicateWorkflow(
   }
 
   return newWorkflow;
-
-  // return prisma.orderWorkflow.create({
-  //   data: {
-  //     name: existingWorkflow.name,
-  //     steps: {
-  //       createMany: {
-  //         data: [
-  //           {
-  //             name: "a",
-  //             order: 0,
-  //             actionType: "a",
-
-  //           }
-  //         ]
-  //       }
-  //     },
-  //     webstore: {
-  //       connect: {
-  //         id: webstore.id
-  //       }
-  //     }
-
-  //   }
-  // })
 }
 
 export async function createEventListener(
