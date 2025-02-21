@@ -135,13 +135,20 @@ export async function updateWebstore(formData: FormData) {
   });
 }
 
-export async function setUserIsApprover(id: number, isApprover: boolean) {
-  await prisma.orderWorkflowUser.update({
+export async function setUserIsApprover(
+  userId: number,
+  webstoreId: number,
+  isApprover: boolean
+) {
+  await prisma.orderWorkflowWebstoreUserRole.update({
     where: {
-      id,
+      userId_webstoreId: {
+        userId,
+        webstoreId,
+      },
     },
     data: {
-      isApprover,
+      role: isApprover ? "approver" : "purchaser",
     },
   });
 }

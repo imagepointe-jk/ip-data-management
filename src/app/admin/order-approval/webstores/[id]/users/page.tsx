@@ -16,8 +16,8 @@ export default async function Page({ params: { id } }: Props) {
     <>
       <h1>{webstore.name} Users</h1>
       <Link href={`../${id}`}>&lt; Back to {webstore.name}</Link>
-      {webstore.users.length > 0 && <ResultsTable webstore={webstore} />}
-      {webstore.users.length === 0 && <p>No users.</p>}
+      {webstore.userRoles.length > 0 && <ResultsTable webstore={webstore} />}
+      {webstore.userRoles.length === 0 && <p>No users.</p>}
       <CreateUser webstoreId={webstore.id} />
     </>
   );

@@ -171,26 +171,26 @@ model ProductSizeOptions {
 }
 
 model Webstore {
-  id                          Int                       @id @default(autoincrement())
+  id                          Int                             @id @default(autoincrement())
   name                        String
   organizationName            String
-  url                         String                    @unique
+  url                         String                          @unique
   apiKey                      String //encrypted
   apiKeyEncryptIv             String
   apiKeyEncryptTag            String
   apiSecret                   String //encrypted
   apiSecretEncryptIv          String
   apiSecretEncryptTag         String
-  salesPersonName             String                    @default("None")
-  salesPersonEmail            String                    @default("None")
+  salesPersonName             String                          @default("None")
+  salesPersonEmail            String                          @default("None")
   otherSupportEmails          String? //when a customer submits a help form, the email will also go to all of these addresses
   orderUpdatedEmails          String?
   customOrderApprovedEmail    String?
-  useCustomOrderApprovedEmail Boolean                   @default(false)
+  useCustomOrderApprovedEmail Boolean                         @default(false)
   shippingSettings            WebstoreShippingSettings?
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]
-  users                       OrderWorkflowUser[]
+  userRoles                   OrderWorkflowWebstoreUserRole[]
 }
 
 model WebstoreShippingSettings {
@@ -218,13 +218,22 @@ model OrderWorkflow {
 }
 
 model OrderWorkflowUser {
-  id          Int                       @id @default(autoincrement())
+  id          Int                             @id @default(autoincrement())
   name        String
-  email       String                    @unique
-  isApprover  Boolean                   @default(false) //is this user an approver for their webstore?
-  webstore    Webstore[]
+  email       String                          @unique
+  roles       OrderWorkflowWebstoreUserRole[]
   comments    OrderWorkflowComment[]
   accessCodes OrderWorkflowAccessCode[]
+}
+
+model OrderWorkflowWebstoreUserRole {
+  userId     Int
+  webstoreId Int
+  user       OrderWorkflowUser @relation(fields: [userId], references: [id])
+  webstore   Webstore          @relation(fields: [webstoreId], references: [id])
+  role       String
+
+  @@id([userId, webstoreId])
 }
 
 model OrderWorkflowStep {

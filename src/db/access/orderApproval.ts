@@ -1,5 +1,6 @@
 import { prisma } from "@/../prisma/client";
-import { OrderWorkflowInstance, Webstore } from "@prisma/client";
+import { OrderWorkflowUserRole } from "@/types/schema/orderApproval";
+import { Webstore } from "@prisma/client";
 
 export async function getWebstore(url: string) {
   return prisma.webstore.findUnique({
@@ -15,7 +16,11 @@ const webstoreIncludes = {
       instances: true,
     },
   },
-  users: true,
+  userRoles: {
+    include: {
+      user: true,
+    },
+  },
   shippingSettings: true,
   shippingMethods: true,
 };
@@ -61,12 +66,20 @@ export async function getUser(webstoreId: number, email: string) {
 export async function getAllApproversFor(webstoreId: number) {
   return prisma.orderWorkflowUser.findMany({
     where: {
-      webstore: {
+      roles: {
         some: {
-          id: webstoreId,
+          AND: [
+            {
+              webstore: {
+                id: webstoreId,
+              },
+            },
+            {
+              role: "approver",
+            },
+          ],
         },
       },
-      isApprover: true,
     },
   });
 }
@@ -74,15 +87,17 @@ export async function getAllApproversFor(webstoreId: number) {
 export async function createUser(
   email: string,
   name: string,
-  webstoreId: number
+  webstoreId: number,
+  role: OrderWorkflowUserRole
 ) {
   return prisma.orderWorkflowUser.create({
     data: {
       email,
       name,
-      webstore: {
-        connect: {
-          id: webstoreId,
+      roles: {
+        create: {
+          webstoreId,
+          role,
         },
       },
     },
@@ -165,7 +180,11 @@ export async function getWorkflowWithIncludes(id: number) {
       instances: true,
       webstore: {
         include: {
-          users: true,
+          userRoles: {
+            include: {
+              user: true,
+            },
+          },
         },
       },
     },
@@ -357,20 +376,22 @@ export async function getWorkflowInstancePurchaser(instanceId: number) {
   //assume for now that a workflow instance will only have one purchaser
   return prisma.orderWorkflowUser.findFirst({
     where: {
-      accessCodes: {
-        some: {
-          AND: [
-            {
+      AND: [
+        {
+          accessCodes: {
+            some: {
               instanceId,
             },
-            {
-              user: {
-                isApprover: false,
-              },
-            },
-          ],
+          },
         },
-      },
+        {
+          roles: {
+            some: {
+              role: "purchaser",
+            },
+          },
+        },
+      ],
     },
   });
 }

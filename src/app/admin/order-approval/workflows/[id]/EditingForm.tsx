@@ -60,7 +60,10 @@ export function EditingForm({ workflow }: Props) {
           <Step
             key={step.id}
             step={step}
-            workflowUsers={workflow.webstore.users}
+            workflowUsers={workflow.webstore.userRoles.map((role) => ({
+              ...role.user,
+              role: role.role === "approver" ? "approver" : "purchaser",
+            }))}
             canBeMovedDown={step.id !== last?.id}
             canBeMovedUp={step.id !== first?.id}
           />

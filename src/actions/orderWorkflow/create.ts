@@ -5,6 +5,7 @@ import { prisma } from "../../../prisma/client";
 import { encrypt } from "@/utility/misc";
 import {
   createWebstore as createDbWebstore,
+  createUser,
   getWebstoreById,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
@@ -39,9 +40,11 @@ export async function duplicateWorkflow(
               email: `${step.actionTarget}`,
             },
             {
-              webstore: {
+              roles: {
                 some: {
-                  id: targetWebstoreId,
+                  webstore: {
+                    id: targetWebstoreId,
+                  },
                 },
               },
             },
@@ -64,9 +67,11 @@ export async function duplicateWorkflow(
                 email: listener.from,
               },
               {
-                webstore: {
+                roles: {
                   some: {
-                    id: targetWebstoreId,
+                    webstore: {
+                      id: targetWebstoreId,
+                    },
                   },
                 },
               },
@@ -216,30 +221,29 @@ export async function createOrConnectWebstoreUser(
     where: {
       email,
     },
+    include: {
+      roles: true,
+    },
   });
-  if (existingUser)
-    return prisma.orderWorkflowUser.update({
-      where: {
-        id: existingUser.id,
-      },
+  if (existingUser) {
+    const alreadyConnected = existingUser.roles.find(
+      (role) => role.webstoreId === webstoreId
+    );
+    if (alreadyConnected) return existingUser;
+
+    const newRole = await prisma.orderWorkflowWebstoreUserRole.create({
       data: {
-        webstore: {
-          connect: {
-            id: webstoreId,
-          },
-        },
+        userId: existingUser.id,
+        webstoreId: webstoreId,
+        role: "approver",
+      },
+      include: {
+        user: true,
       },
     });
-  else
-    return prisma.orderWorkflowUser.create({
-      data: {
-        name,
-        email,
-        webstore: {
-          connect: {
-            id: webstoreId,
-          },
-        },
-      },
-    });
+
+    return newRole.user;
+  } else {
+    return createUser(email, name, webstoreId, "approver");
+  }
 }

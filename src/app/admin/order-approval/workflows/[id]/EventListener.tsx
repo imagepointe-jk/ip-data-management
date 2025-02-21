@@ -1,7 +1,10 @@
 "use client";
 
 import { deleteEventListener } from "@/actions/orderWorkflow/delete";
-import { orderWorkflowEventTypes } from "@/types/schema/orderApproval";
+import {
+  orderWorkflowEventTypes,
+  OrderWorkflowUserRole,
+} from "@/types/schema/orderApproval";
 import {
   OrderWorkflowStepProceedListener,
   OrderWorkflowUser,
@@ -11,7 +14,7 @@ import { ChangeEvent, useState } from "react";
 
 type EventListenerProps = {
   listener: OrderWorkflowStepProceedListener;
-  workflowUsers: OrderWorkflowUser[];
+  workflowUsers: (OrderWorkflowUser & { role: OrderWorkflowUserRole })[];
 };
 export function EventListener({ listener, workflowUsers }: EventListenerProps) {
   const goToNextIsInitiallySelected =
@@ -65,7 +68,7 @@ export function EventListener({ listener, workflowUsers }: EventListenerProps) {
         <select name={fromField} id={fromField} defaultValue={listener.from}>
           {[
             ...workflowUsers
-              .filter((user) => user.isApprover)
+              .filter((user) => user.role === "approver")
               .map((user) => (
                 <option key={user.id} value={user.email}>
                   {user.name}

@@ -9,12 +9,15 @@ import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { createEventListener } from "@/actions/orderWorkflow/create";
 import { deleteStep } from "@/actions/orderWorkflow/delete";
 import { moveWorkflowStep } from "@/actions/orderWorkflow/misc";
-import { orderWorkflowActionTypes } from "@/types/schema/orderApproval";
+import {
+  orderWorkflowActionTypes,
+  OrderWorkflowUserRole,
+} from "@/types/schema/orderApproval";
 import { makeStringTitleCase } from "@/utility/misc";
 import { EventListener } from "./EventListener";
 
 type StepProps = {
-  workflowUsers: OrderWorkflowUser[];
+  workflowUsers: (OrderWorkflowUser & { role: OrderWorkflowUserRole })[];
   step: OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
@@ -155,7 +158,7 @@ export function Step({
                   (none)
                 </option>,
                 ...workflowUsers
-                  .filter((user) => user.isApprover)
+                  .filter((user) => user.role === "approver")
                   .map((user) => (
                     <option key={user.id} value={user.email}>
                       {user.name}
