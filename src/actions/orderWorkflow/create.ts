@@ -207,20 +207,39 @@ export async function createWebstore(formData: FormData) {
   );
 }
 
-export async function createUserForWebstore(
+export async function createOrConnectWebstoreUser(
   webstoreId: number,
   name: string,
   email: string
 ) {
-  await prisma.orderWorkflowUser.create({
-    data: {
-      name,
+  const existingUser = await prisma.orderWorkflowUser.findUnique({
+    where: {
       email,
-      webstore: {
-        connect: {
-          id: webstoreId,
-        },
-      },
     },
   });
+  if (existingUser)
+    return prisma.orderWorkflowUser.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        webstore: {
+          connect: {
+            id: webstoreId,
+          },
+        },
+      },
+    });
+  else
+    return prisma.orderWorkflowUser.create({
+      data: {
+        name,
+        email,
+        webstore: {
+          connect: {
+            id: webstoreId,
+          },
+        },
+      },
+    });
 }
