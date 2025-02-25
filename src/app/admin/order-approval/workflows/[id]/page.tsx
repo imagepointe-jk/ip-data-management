@@ -1,7 +1,8 @@
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
-import { EditingForm } from "./EditingForm";
+import { EditingForm } from "./EditingForm/EditingForm";
 import { WorkflowPreview } from "./WorkflowPreview";
 import { ShortcodeReference } from "../../ShortcodeReference";
+import { WorkflowEditingContextProvider } from "./WorkflowEditingContext";
 
 type Props = {
   params: {
@@ -15,11 +16,13 @@ export default async function Page({ params: { id } }: Props) {
   return (
     <>
       <h1>Editing Workflow</h1>
-      <div className="vert-flex-group">
-        <EditingForm workflow={workflow} />
-        <ShortcodeReference />
-      </div>
-      <WorkflowPreview steps={workflow.steps} />
+      <WorkflowEditingContextProvider workflow={workflow}>
+        <div className="vert-flex-group">
+          <EditingForm />
+          <ShortcodeReference />
+        </div>
+        <WorkflowPreview />
+      </WorkflowEditingContextProvider>
     </>
   );
 }

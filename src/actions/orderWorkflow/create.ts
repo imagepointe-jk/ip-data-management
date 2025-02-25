@@ -135,7 +135,7 @@ export async function createEventListener(
   parentStepId: number,
   fromValue: string
 ) {
-  await prisma.orderWorkflowStepProceedListener.create({
+  return prisma.orderWorkflowStepProceedListener.create({
     data: {
       stepId: parentStepId,
       name: "New Listener",
@@ -147,7 +147,7 @@ export async function createEventListener(
 }
 
 export async function createStep(parentWorkflowId: number, order?: number) {
-  await prisma.orderWorkflowStep.create({
+  return prisma.orderWorkflowStep.create({
     data: {
       workflowId: parentWorkflowId,
       name: "New Step",

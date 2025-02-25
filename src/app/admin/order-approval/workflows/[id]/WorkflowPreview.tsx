@@ -3,6 +3,7 @@ import styles from "@/styles/orderApproval/workflowPreview.module.css";
 import { faArrowDown, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useEditingContext } from "./WorkflowEditingContext";
 
 type StepPreview = {
   id: number;
@@ -11,11 +12,11 @@ type StepPreview = {
   proceedImmediatelyTo: string | null;
   proceedListeners: { id: number; from: string; type: string; goto: string }[];
 };
-type Props = {
-  steps: StepPreview[];
-};
-export function WorkflowPreview({ steps }: Props) {
+
+export function WorkflowPreview() {
   const [choices, setChoices] = useState<SimulationChoice[]>([]);
+  const { workflowState } = useEditingContext();
+  const steps = workflowState.steps;
   const sorted = [...steps];
   sorted.sort((a, b) => a.order - b.order);
 
@@ -110,7 +111,7 @@ export function WorkflowPreview({ steps }: Props) {
       </div>
       <div className={styles["info"]}>
         <FontAwesomeIcon icon={faInfoCircle} /> Preview not updating? Try
-        clicking &quot;Save Changes&quot; first.
+        clicking &quot;Save Changes&quot; and then refreshing the page.
       </div>
     </div>
   );
