@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { UnwrapPromise } from "./misc";
+import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 
 export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
 const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
@@ -54,4 +56,8 @@ export type OrderWorkflowEventType = z.infer<
 >;
 export type OrderApprovalServerData = z.infer<
   typeof orderApprovalServerDataSchema
+>;
+export type OrderWorkflowWithIncludes = Exclude<
+  UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
+  null
 >;

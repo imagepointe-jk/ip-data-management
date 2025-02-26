@@ -7,10 +7,10 @@ type Props = {
   step: OrderWorkflowStep;
 };
 export function StepActionSettings({ step }: Props) {
-  const { workflowUsers, setWorkflowState } = useEditingContext();
+  const { workflowUsers, updateWorkflowState } = useEditingContext();
 
   function onChangeActionType(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -19,7 +19,7 @@ export function StepActionSettings({ step }: Props) {
   }
 
   function onChangeActionTarget(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -27,7 +27,7 @@ export function StepActionSettings({ step }: Props) {
     });
   }
   function onChangeOtherActionTargets(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -35,7 +35,7 @@ export function StepActionSettings({ step }: Props) {
     });
   }
   function onChangeActionSubject(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -43,7 +43,7 @@ export function StepActionSettings({ step }: Props) {
     });
   }
   function onChangeActionMessage(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );

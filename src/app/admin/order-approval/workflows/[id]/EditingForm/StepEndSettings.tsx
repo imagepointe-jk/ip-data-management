@@ -13,7 +13,7 @@ type Props = {
   };
 };
 export function StepEndSettings({ step }: Props) {
-  const { workflowState, setWorkflowState, workflowUsers } =
+  const { workflowState, updateWorkflowState, workflowUsers } =
     useEditingContext();
   const waitForEvent = step.proceedImmediatelyTo === null;
   const stepOptions = workflowState.steps.filter(
@@ -22,7 +22,7 @@ export function StepEndSettings({ step }: Props) {
   stepOptions.sort((a, b) => a.order - b.order);
 
   function onChangeWaitOrGo(value: "wait" | "goto") {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -32,7 +32,7 @@ export function StepEndSettings({ step }: Props) {
   }
 
   function onChangeProceedImmediately(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
@@ -46,7 +46,7 @@ export function StepEndSettings({ step }: Props) {
       step.id,
       defaultNewFromValue
     );
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );

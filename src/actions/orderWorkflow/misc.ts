@@ -6,7 +6,10 @@ import {
   handleWorkflowEvent,
   startWorkflowInstanceFromBeginning,
 } from "@/order-approval/main";
-import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
+import {
+  getAccessCodeWithIncludes,
+  getWorkflowWithIncludes,
+} from "@/db/access/orderApproval";
 import { sendEmail } from "@/utility/mail";
 import {
   createSupportEmail,
@@ -155,4 +158,10 @@ export async function processFormattedTextAction(e: FormData) {
   const email = `${e.get("email")}`;
   const text = (e.get("text") || "").toString();
   return processFormattedText(text, id, email);
+}
+
+//getting data via server action is easy, but not intended by Next.js team.
+//keep an eye on this in case it breaks in the future.
+export async function getFullWorkflow(id: number) {
+  return getWorkflowWithIncludes(id);
 }

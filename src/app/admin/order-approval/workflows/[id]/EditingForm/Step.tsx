@@ -1,5 +1,3 @@
-import { deleteStep } from "@/actions/orderWorkflow/delete";
-import { useToast } from "@/components/ToastProvider";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import {
   OrderWorkflowStep,
@@ -18,21 +16,16 @@ type StepProps = {
   canBeMovedDown: boolean;
 };
 export function Step({ step, canBeMovedDown, canBeMovedUp }: StepProps) {
-  const { setWorkflowState } = useEditingContext();
-  const toast = useToast();
+  const { updateWorkflowState, syncedWithServer, deleteStep } =
+    useEditingContext();
 
   function onChangeName(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
       if (draftStep) draftStep.name = value;
     });
-  }
-
-  async function onClickDelete() {
-    await deleteStep(step.id);
-    toast.toast("Step deleted", "success");
   }
 
   return (
@@ -63,9 +56,20 @@ export function Step({ step, canBeMovedDown, canBeMovedUp }: StepProps) {
           <StepEndSettings step={step} />
         </div>
       </details>
-      <button className="button-danger" onClick={onClickDelete}>
-        Delete
-      </button>
+      <div>
+        <button
+          className="button-danger"
+          disabled={!syncedWithServer}
+          onClick={() => deleteStep(step.id)}
+        >
+          Delete
+        </button>
+        {!syncedWithServer && (
+          <span style={{ color: "red" }}>
+            Save your changes before deleting a step!
+          </span>
+        )}
+      </div>
     </div>
   );
 }

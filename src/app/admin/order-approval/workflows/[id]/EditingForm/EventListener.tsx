@@ -10,7 +10,7 @@ type Props = {
   listener: OrderWorkflowStepProceedListener;
 };
 export function EventListener({ stepId, listener }: Props) {
-  const { workflowUsers, workflowState, setWorkflowState } =
+  const { workflowUsers, workflowState, updateWorkflowState } =
     useEditingContext();
   const stepOptions = workflowState.steps.filter(
     (stepOption) => stepOption.id !== stepId
@@ -18,7 +18,7 @@ export function EventListener({ stepId, listener }: Props) {
   stepOptions.sort((a, b) => a.order - b.order);
 
   function onChangeName(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === stepId
       );
@@ -32,7 +32,7 @@ export function EventListener({ stepId, listener }: Props) {
   }
 
   function onChangeType(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === stepId
       );
@@ -46,7 +46,7 @@ export function EventListener({ stepId, listener }: Props) {
   }
 
   function onChangeFromValue(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === stepId
       );
@@ -60,7 +60,7 @@ export function EventListener({ stepId, listener }: Props) {
   }
 
   function onChangeGoToValue(value: string) {
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === stepId
       );
@@ -75,7 +75,7 @@ export function EventListener({ stepId, listener }: Props) {
 
   async function onClickDelete() {
     await deleteEventListener(listener.id);
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === stepId
       );

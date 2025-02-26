@@ -8,7 +8,7 @@ type Props = {
   canMoveDown: boolean;
 };
 export function StepMoveButtons({ stepId, canMoveDown, canMoveUp }: Props) {
-  const { setWorkflowState } = useEditingContext();
+  const { updateWorkflowState } = useEditingContext();
 
   async function onClickMove(direction: "earlier" | "later") {
     const { movedStep, swappedStep } = await moveWorkflowStep(
@@ -16,7 +16,7 @@ export function StepMoveButtons({ stepId, canMoveDown, canMoveUp }: Props) {
       direction
     );
 
-    setWorkflowState((draft) => {
+    updateWorkflowState((draft) => {
       const movedStepInState = draft.steps.find(
         (step) => step.id === movedStep.id
       );
