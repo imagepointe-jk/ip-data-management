@@ -20,14 +20,14 @@ type Props = {
 export function ResultsTable({ webstore }: Props) {
   const router = useRouter();
   const toast = useToast();
-  const sortedUsers = [...webstore.users];
+  const sortedUsers = [...webstore.userRoles.map((role) => role.user)];
   sortedUsers.sort((a, b) => a.id - b.id);
 
   async function onChangeUserType(
     e: ChangeEvent<HTMLSelectElement>,
     userId: number
   ) {
-    await setUserIsApprover(userId, e.target.value === "approver");
+    await setUserIsApprover(userId, webstore.id, e.target.value === "approver");
     router.refresh();
     toast.changesSaved();
   }
@@ -50,7 +50,12 @@ export function ResultsTable({ webstore }: Props) {
           headerName: "Type",
           createCell: (user) => (
             <select
-              defaultValue={user.isApprover ? "approver" : "customer"}
+              defaultValue={
+                webstore.userRoles.find((role) => role.userId === user.id)
+                  ?.role === "approver"
+                  ? "approver"
+                  : "customer"
+              }
               onChange={(e) => onChangeUserType(e, user.id)}
             >
               <option value="approver">Approver</option>

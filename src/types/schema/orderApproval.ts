@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { UnwrapPromise } from "./misc";
+import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 
 export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
 const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
@@ -26,7 +28,7 @@ export const webstoreFormDataSchema = z.object({
   shippingMethodIds: z.array(z.number()),
   allowApproverChangeMethod: z.boolean(),
   allowUpsToCanada: z.boolean(),
-  customOrderApprovedEmail: z.string(),
+  customOrderApprovedEmail: z.string().nullable(),
   useCustomOrderApprovedEmail: z.boolean(),
 });
 
@@ -54,4 +56,8 @@ export type OrderWorkflowEventType = z.infer<
 >;
 export type OrderApprovalServerData = z.infer<
   typeof orderApprovalServerDataSchema
+>;
+export type OrderWorkflowWithIncludes = Exclude<
+  UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
+  null
 >;

@@ -52,7 +52,7 @@ export function ResultsTable({ webstores }: Props) {
           headerName: "Associated Users",
           createCell: (webstore) => (
             <>
-              {webstore.users.length}{" "}
+              {webstore.userRoles.length}{" "}
               <Link href={`webstores/${webstore.id}/users`}>(View)</Link>
             </>
           ),

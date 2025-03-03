@@ -14,18 +14,12 @@ import {
   getWorkflowInstancePurchaser,
   setWorkflowInstanceDeniedReason,
   getAllApproversFor,
-  getAccessCodeWithIncludes,
   getAccessCodeWithIncludesByOrderAndEmail,
 } from "@/db/access/orderApproval";
 import { cancelOrder, getOrder } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
 import { getEnvVariable } from "@/utility/misc";
-import {
-  OrderWorkflowInstance,
-  OrderWorkflowStep,
-  OrderWorkflowUser,
-  Webstore,
-} from "@prisma/client";
+import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
 import {
   createOrderUpdatedEmail,
   createShippingEmail,
@@ -78,7 +72,12 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   //try to get a user, or immediately create one if not found.
   const purchaser =
     (await getUser(webstore.id, email)) ||
-    (await createUser(email, `${firstName} ${lastName}`, webstore.id));
+    (await createUser(
+      email,
+      `${firstName} ${lastName}`,
+      webstore.id,
+      "purchaser"
+    ));
 
   //Assume for now that a webstore will only have one approver
   const approvers = await getAllApproversFor(webstore.id);

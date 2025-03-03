@@ -33,11 +33,14 @@ export function EditingForm({
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    if (existingWebstore) await updateWebstore(formData);
-    else await createWebstore(formData);
-
-    toast.changesSaved();
-    router.refresh();
+    if (existingWebstore) {
+      await updateWebstore(formData);
+      toast.changesSaved();
+    } else {
+      const created = await createWebstore(formData);
+      toast.changesSaved();
+      router.push(`${created.id}`);
+    }
   }
 
   return (

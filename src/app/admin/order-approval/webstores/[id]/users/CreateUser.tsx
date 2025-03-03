@@ -1,6 +1,6 @@
 "use client";
 
-import { createUserForWebstore } from "@/actions/orderWorkflow/create";
+import { createOrConnectWebstoreUser } from "@/actions/orderWorkflow/create";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export function CreateUser({ webstoreId }: Props) {
   const router = useRouter();
 
   async function onClickAdd() {
-    createUserForWebstore(webstoreId, name, email);
+    await createOrConnectWebstoreUser(webstoreId, name, email);
     router.refresh();
     setName("");
     setEmail("");

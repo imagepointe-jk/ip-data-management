@@ -140,9 +140,9 @@ export async function processFormattedText(
     const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);
     if (!workflow)
       throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
-    const user = workflow.webstore.users.find(
-      (user) => user.email === userEmail
-    );
+    const user = workflow.webstore.userRoles.find(
+      (role) => role.user.email === userEmail
+    )?.user;
     if (!user) console.error(`User with email ${userEmail} not found.`);
     const accessCode = instance.accessCodes.find(
       (code) => code.user.email === userEmail

@@ -1,63 +1,57 @@
 "use server";
 
-import {
-  validateWebstoreFormData,
-  validateWorkflowFormData,
-} from "@/types/validations/orderApproval";
+import { validateWebstoreFormData } from "@/types/validations/orderApproval";
 import { prisma } from "../../../prisma/client";
 import { encrypt } from "@/utility/misc";
 import { OrderUpdateData, updateOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { handleOrderUpdated } from "@/order-approval/main";
+import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
+import { UnwrapPromise } from "@/types/schema/misc";
 
-export async function updateWorkflow(formData: FormData) {
-  const parsed = validateWorkflowFormData(formData);
-  if (!parsed.existingWorkflowId)
-    throw new Error("No existing workflow id provided. This is a bug.");
+export async function updateWorkflow(
+  data: Exclude<UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>, null>
+) {
+  const proceedListeners = data.steps
+    .map((step) => step.proceedListeners)
+    .flat();
 
-  for (const step of parsed.steps) {
-    const {
-      name,
-      actionMessage,
-      actionSubject,
-      actionTarget,
-      otherActionTargets,
-      actionType,
-      id,
-      proceedImmediatelyTo,
-    } = step;
-    await prisma.orderWorkflowStep.update({
+  await prisma.$transaction([
+    prisma.orderWorkflow.update({
       where: {
-        id,
+        id: data.id,
       },
       data: {
-        name,
-        actionType,
-        actionTarget,
-        otherActionTargets,
-        actionSubject,
-        actionMessage,
-        proceedImmediatelyTo:
-          proceedImmediatelyTo !== undefined ? proceedImmediatelyTo : null,
+        name: data.name,
       },
-    });
-
-    for (const listener of step.proceedListeners) {
-      const { from, goto, id, name, type } = listener;
-      await prisma.orderWorkflowStepProceedListener.update({
+    }),
+    ...data.steps.map((step) =>
+      prisma.orderWorkflowStep.update({
         where: {
-          id,
+          id: step.id,
         },
         data: {
-          from,
-          goto,
-          name,
-          type,
+          name: step.name,
+          order: step.order,
+          actionType: step.actionType,
+          actionTarget: step.actionTarget,
+          otherActionTargets: step.otherActionTargets,
+          actionSubject: step.actionSubject,
+          actionMessage: step.actionMessage,
+          proceedImmediatelyTo: step.proceedImmediatelyTo,
         },
-      });
-    }
-  }
+      })
+    ),
+    ...proceedListeners.map((listener) =>
+      prisma.orderWorkflowStepProceedListener.update({
+        where: {
+          id: listener.id,
+        },
+        data: listener,
+      })
+    ),
+  ]);
 }
 
 export async function updateWebstore(formData: FormData) {
@@ -135,13 +129,20 @@ export async function updateWebstore(formData: FormData) {
   });
 }
 
-export async function setUserIsApprover(id: number, isApprover: boolean) {
-  await prisma.orderWorkflowUser.update({
+export async function setUserIsApprover(
+  userId: number,
+  webstoreId: number,
+  isApprover: boolean
+) {
+  await prisma.orderWorkflowWebstoreUserRole.update({
     where: {
-      id,
+      userId_webstoreId: {
+        userId,
+        webstoreId,
+      },
     },
     data: {
-      isApprover,
+      role: isApprover ? "approver" : "purchaser",
     },
   });
 }

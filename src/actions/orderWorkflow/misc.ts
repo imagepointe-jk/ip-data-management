@@ -6,7 +6,10 @@ import {
   handleWorkflowEvent,
   startWorkflowInstanceFromBeginning,
 } from "@/order-approval/main";
-import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
+import {
+  getAccessCodeWithIncludes,
+  getWorkflowWithIncludes,
+} from "@/db/access/orderApproval";
 import { sendEmail } from "@/utility/mail";
 import {
   createSupportEmail,
@@ -42,41 +45,6 @@ export async function receiveWorkflowEvent(
   }
 }
 
-//deleting a step causes a gap in step order (e.g. deleting 3 in 1, 2, 3, 4, 5 yields the sequence 1, 2, 4, 5).
-//revalidate so that the step sequence remains sequential and zero-based.
-export async function revalidateStepOrder(workflowId: number) {
-  const allSteps = await prisma.orderWorkflowStep.findMany({
-    where: {
-      workflowId,
-    },
-    orderBy: {
-      order: "asc",
-    },
-  });
-
-  const updates: { id: number; order: number }[] = [];
-  for (let i = 0; i < allSteps.length; i++) {
-    const step = allSteps[i];
-    if (!step) throw new Error(`Invalid step ${i} in array`);
-
-    if (step.order !== i) {
-      updates.push({
-        id: step.id,
-        order: i,
-      });
-    }
-  }
-
-  await Promise.all(
-    updates.map((update) =>
-      prisma.orderWorkflowStep.update({
-        where: { id: update.id },
-        data: { order: update.order },
-      })
-    )
-  );
-}
-
 export async function restartWorkflow(id: number) {
   await startWorkflowInstanceFromBeginning(id);
 }
@@ -85,44 +53,50 @@ export async function moveWorkflowStep(
   id: number,
   direction: "earlier" | "later"
 ) {
-  const step = await prisma.orderWorkflowStep.findUnique({
+  const targetStep = await prisma.orderWorkflowStep.findUnique({
     where: {
       id,
     },
   });
-  if (!step) throw new Error(`Step ${id} not found.`);
-  const otherStep = await prisma.orderWorkflowStep.findFirst({
+  if (!targetStep) throw new Error(`Step ${id} not found.`);
+  const allWorkflowSteps = await prisma.orderWorkflowStep.findMany({
     where: {
-      order: {
-        gt: direction === "later" ? step.order : undefined,
-        lt: direction === "earlier" ? step.order : undefined,
-      },
-    },
-    orderBy: {
-      order: direction === "later" ? "asc" : "desc",
+      workflowId: targetStep.workflowId,
     },
   });
+  const otherStep = allWorkflowSteps.find((otherStep) =>
+    direction === "earlier"
+      ? otherStep.order === targetStep.order - 1
+      : otherStep.order === targetStep.order + 1
+  );
   if (!otherStep)
     throw new Error(
-      `Failed to move step ${id} ${direction} because another step was not found to swap it with.`
+      `Failed to move step ${id} ${direction} because a suitable step was not found to swap it with.`
     );
 
-  await prisma.orderWorkflowStep.update({
-    where: {
-      id: step.id,
-    },
-    data: {
-      order: otherStep.order,
-    },
-  });
-  await prisma.orderWorkflowStep.update({
-    where: {
-      id: otherStep.id,
-    },
-    data: {
-      order: step.order,
-    },
-  });
+  const result = await prisma.$transaction([
+    prisma.orderWorkflowStep.update({
+      where: {
+        id: targetStep.id,
+      },
+      data: {
+        order: otherStep.order,
+      },
+    }),
+    prisma.orderWorkflowStep.update({
+      where: {
+        id: otherStep.id,
+      },
+      data: {
+        order: targetStep.order,
+      },
+    }),
+  ]);
+
+  return {
+    movedStep: result[0],
+    swappedStep: result[1],
+  };
 }
 
 export async function receiveOrderHelpForm(formData: FormData) {
@@ -184,4 +158,10 @@ export async function processFormattedTextAction(e: FormData) {
   const email = `${e.get("email")}`;
   const text = (e.get("text") || "").toString();
   return processFormattedText(text, id, email);
+}
+
+//getting data via server action is easy, but not intended by Next.js team.
+//keep an eye on this in case it breaks in the future.
+export async function getFullWorkflow(id: number) {
+  return getWorkflowWithIncludes(id);
 }
