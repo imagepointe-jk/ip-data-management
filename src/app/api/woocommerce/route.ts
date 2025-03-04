@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     console.log("RECEIVED WEBHOOK FROM ", webhookSource);
 
     if (webhookResource === "order" && webhookEvent === "created") {
-      startOrderWorkflow({
+      await startOrderWorkflow({
         email,
         firstName: first_name,
         lastName: last_name,
