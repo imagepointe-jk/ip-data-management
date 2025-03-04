@@ -31,6 +31,8 @@ import {
   OrderWorkflowEventType,
 } from "@/types/schema/orderApproval";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
+import { AppError } from "@/error";
+import { env } from "@/env";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -40,9 +42,22 @@ type StartWorkflowParams = {
   email: string;
 };
 export async function startOrderWorkflow(params: StartWorkflowParams) {
-  const { workflowInstance } = await setupOrderWorkflow(params);
-  // handleCurrentStep(workflowInstance);
-  startWorkflowInstanceFromBeginning(workflowInstance.id);
+  try {
+    const { workflowInstance } = await setupOrderWorkflow(params);
+    // handleCurrentStep(workflowInstance);
+    startWorkflowInstanceFromBeginning(workflowInstance.id);
+  } catch (error) {
+    sendEmail(
+      env.DEVELOPER_EMAIL,
+      "Error starting workflow",
+      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId}. This was the error: ${error}`
+    );
+    console.error(
+      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId}.`
+    );
+    if (error instanceof Error) throw error;
+    else throw new Error("Unknown error while starting the workflow instance.");
+  }
 }
 
 export async function startWorkflowInstanceFromBeginning(id: number) {
