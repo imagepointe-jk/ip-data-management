@@ -43,8 +43,10 @@ type StartWorkflowParams = {
 };
 export async function startOrderWorkflow(params: StartWorkflowParams) {
   try {
+    console.log(`Setting up workflow isntance for WC order ${params.orderId}`);
     const { workflowInstance } = await setupOrderWorkflow(params);
     // handleCurrentStep(workflowInstance);
+    console.log("Starting workflow from beginning");
     startWorkflowInstanceFromBeginning(workflowInstance.id);
   } catch (error) {
     sendEmail(
@@ -80,10 +82,12 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { email, firstName, lastName, orderId, webhookSource } = params;
 
+  console.log("getting webstore");
   const webstore = await getWebstore(webhookSource);
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
+  console.log("getting or creating purchaser");
   //try to get a user, or immediately create one if not found.
   const purchaser =
     (await getUser(webstore.id, email)) ||
@@ -94,18 +98,23 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
       "purchaser"
     ));
 
+  console.log("getting approvers");
   //Assume for now that a webstore will only have one approver
   const approvers = await getAllApproversFor(webstore.id);
   if (approvers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
+  console.log("getting first workflow");
   //assume for now that a webstore will only have one workflow for all orders
   const workflow = await getFirstWorkflowForWebstore(webstore.id);
   if (!workflow)
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
+  console.log("creating workflow isntance");
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
+  console.log("creating access code for purchaser");
   await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
+  console.log("creating access codes for approvers");
   for (const approver of approvers) {
     await createAccessCode(workflowInstance.id, approver.id, "approver");
   }
