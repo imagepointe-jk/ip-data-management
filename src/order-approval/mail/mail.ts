@@ -28,11 +28,6 @@ type Replacer = {
 };
 export const replacers: Replacer[] = [
   {
-    description: "Insert <br> for HTML",
-    fn: ({ text }) => text.replace(/\r\n/g, "<br>"),
-    automatic: true,
-  },
-  {
     description: "Insert order details",
     shortcode: "{order}",
     automatic: false,
