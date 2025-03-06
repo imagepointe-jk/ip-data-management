@@ -2,6 +2,7 @@
 
 import { createWebstore } from "@/actions/orderWorkflow/create";
 import { updateWebstore } from "@/actions/orderWorkflow/update";
+import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/schema/misc";
@@ -46,6 +47,8 @@ export function EditingForm({
   return (
     <form onSubmit={onSubmit}>
       <div className="vert-flex-group">
+        {/* Main settings */}
+
         <div>
           <h2 style={{ marginBottom: 0 }}>Name</h2>
           <input
@@ -143,6 +146,9 @@ export function EditingForm({
             required={!existingWebstore}
           />
         </div>
+
+        {/* Custom email settings */}
+
         <div>
           <label
             htmlFor="use-custom-order-approved-email"
@@ -179,7 +185,34 @@ export function EditingForm({
           </>
         )}
       </div>
-      <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
+
+      {/* Checkout fields */}
+
+      {existingWebstore && (
+        <>
+          <h2>Checkout Fields</h2>
+          <GenericTable
+            dataset={existingWebstore.checkoutFields}
+            columns={[
+              {
+                headerName: "Name",
+                createCell: (data) => data.name,
+              },
+              {
+                headerName: "Label",
+                createCell: (data) => data.label,
+              },
+              {
+                headerName: "Type",
+                createCell: (data) => data.type,
+              },
+            ]}
+          />
+        </>
+      )}
+
+      {/* Shipping settings */}
+
       <h2>Shipping Options</h2>
       <div>
         <label htmlFor="allow-approver-change-method">
@@ -226,6 +259,7 @@ export function EditingForm({
           </label>
         </div>
       ))}
+      <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
       <button type="submit">
         {existingWebstore ? "Save Changes" : "Create Webstore"}
       </button>
