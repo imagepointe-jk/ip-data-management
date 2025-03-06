@@ -260,9 +260,9 @@ export function OrderEditForm({
                   />
                   You may edit quantities, shipping methods and remove products
                   if needed. Please keep in mind once a product is removed it
-                  cannot be added back on this order page. Please{" "}
-                  <a href={CONTACT_US_URL}>contact us</a> if you need help with
-                  changing an order by following the link below.
+                  cannot be added back on this order page. Please contact us if
+                  you need help with changing an order by following the link
+                  below.
                 </div>
                 <div className={styles["submit-row"]}>
                   <button className={styles["submit"]} onClick={onClickSave}>

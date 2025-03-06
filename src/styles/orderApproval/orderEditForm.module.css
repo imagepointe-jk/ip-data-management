@@ -112,6 +112,12 @@ td.line-item-x-container {
   width: 250px;
 }
 
+.shipping-methods-parent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .shipping-methods-container {
   padding: 10px;
   border-radius: 10px;
@@ -131,6 +137,7 @@ td.line-item-x-container {
   display: flex;
   flex-direction: column;
   align-items: end;
+  min-width: 180px;
 }
 
 .totals-bold {

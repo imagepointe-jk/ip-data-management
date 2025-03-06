@@ -53,11 +53,6 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
           {total.asterisk && <div className={styles["totals-asterisk"]}>*</div>}
         </div>
       ))}
-      <div className={styles["info-box"]}>
-        *Shipping costs listed are estimates only. Actual shipping charges may
-        be more or less than shown. Please allow 24-48 business hours (M-F) to
-        process the order plus estimated delivery time for your order to arrive.
-      </div>
     </div>
   );
 }
