@@ -101,6 +101,12 @@ td.line-item-x-container {
   margin: 0;
 }
 
+.main-fields-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .shipping-fields {
   display: flex;
   flex-wrap: wrap;
@@ -122,6 +128,9 @@ td.line-item-x-container {
   padding: 10px;
   border-radius: 10px;
   border: 1px solid gray;
+  min-width: 320px;
+  max-width: 370px;
+  min-height: 220px;
 }
 
 .shipping-methods-container h4 {

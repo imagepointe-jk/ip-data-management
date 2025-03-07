@@ -17,8 +17,8 @@ import {
 } from "@/types/schema/woocommerce";
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
 import { HelpForm } from "./HelpForm";
-import { CONTACT_US_URL } from "@/constants";
 import { NavButtons } from "../NavButtons";
+import { ShippingMethods } from "./ShippingMethods";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -241,13 +241,22 @@ export function OrderEditForm({
                   setValuesMaybeUnsynced={setValuesMaybeUnsynced}
                 />
                 <div className={styles["extra-details-flex"]}>
-                  <ShippingInfo
-                    order={order}
-                    ratedShippingMethods={ratedShippingMethods}
-                    setOrder={setOrder}
-                    setValuesMaybeUnsynced={setValuesMaybeUnsynced}
-                    permissions={permissions}
-                  />
+                  <div className={styles["main-fields-parent"]}>
+                    <ShippingInfo
+                      order={order}
+                      ratedShippingMethods={ratedShippingMethods}
+                      setOrder={setOrder}
+                      setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                    />
+                    {permissions?.shipping?.method === "edit" && (
+                      <ShippingMethods
+                        order={order}
+                        setOrder={setOrder}
+                        ratedShippingMethods={ratedShippingMethods}
+                        setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                      />
+                    )}
+                  </div>
                   <TotalsArea
                     order={order}
                     ratedShippingMethods={ratedShippingMethods}

@@ -33,6 +33,9 @@ export async function GET(request: NextRequest) {
           foundAccessCode.workflowInstance.parentWorkflow.webstore
             .shippingSettings?.allowUpsToCanada,
         userEmail: foundAccessCode.user.email,
+        checkoutFields:
+          foundAccessCode.workflowInstance.parentWorkflow.webstore
+            .checkoutFields,
       },
       easyCorsInit
     );

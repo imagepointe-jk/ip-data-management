@@ -48,6 +48,15 @@ export const orderApprovalServerDataSchema = z.object({
   allowApproverChangeMethod: z.boolean().optional(),
   allowUpsToCanada: z.boolean().optional(),
   userEmail: z.string(), //the email of the user associated with the provided access code
+  checkoutFields: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      label: z.string(),
+      type: z.string(),
+      options: z.string().nullable(),
+    })
+  ),
 });
 
 export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;

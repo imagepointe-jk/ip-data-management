@@ -254,6 +254,7 @@ const accessCodeIncludes = {
             include: {
               shippingMethods: true,
               shippingSettings: true,
+              checkoutFields: true,
             },
           },
         },

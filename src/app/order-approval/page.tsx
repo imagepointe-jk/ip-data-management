@@ -73,7 +73,6 @@ function Main() {
   async function getOrder() {
     const orderResponse = await getOrderApprovalOrder(accessCode);
     const orderJson = await orderResponse.json();
-    console.log(orderJson);
     return parseWooCommerceOrderJson(orderJson);
   }
 
