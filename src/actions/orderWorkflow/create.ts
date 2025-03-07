@@ -259,3 +259,14 @@ export async function createOrConnectWebstoreUser(
     return createUser(email, name, webstoreId, "approver");
   }
 }
+
+export async function createWebstoreCheckoutField(webstoreId: number) {
+  return prisma.webstoreCheckoutField.create({
+    data: {
+      name: "",
+      label: "",
+      type: "text",
+      webstoreId,
+    },
+  });
+}

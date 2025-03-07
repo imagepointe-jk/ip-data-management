@@ -86,46 +86,60 @@ export async function updateWebstore(
     tag: apiSecretEncryptTag,
   } = encrypt(changeApiSecret || "");
 
-  await prisma.webstore.update({
-    where: {
-      id,
-    },
-    data: {
-      name,
-      organizationName,
-      url,
-      salesPersonEmail,
-      salesPersonName,
-      otherSupportEmails,
-      orderUpdatedEmails,
-      customOrderApprovedEmail,
-      useCustomOrderApprovedEmail,
-      apiKey: changeApiKey ? apiKey : undefined,
-      apiKeyEncryptIv: changeApiKey ? apiKeyEncryptIv : undefined,
-      apiKeyEncryptTag: changeApiKey
-        ? apiKeyEncryptTag.toString("base64")
-        : undefined,
-      apiSecret: changeApiSecret ? apiSecret : undefined,
-      apiSecretEncryptIv: changeApiSecret ? apiSecretEncryptIv : undefined,
-      apiSecretEncryptTag: changeApiSecret
-        ? apiSecretEncryptTag.toString("base64")
-        : undefined,
-      shippingMethods: {
-        set: shippingMethods.map((method) => ({ id: method.id })),
+  await prisma.$transaction([
+    prisma.webstore.update({
+      where: {
+        id,
       },
-    },
-  });
-
-  await prisma.webstoreShippingSettings.update({
-    where: {
-      webstoreId: id,
-    },
-    data: {
-      allowApproverChangeMethod:
-        shippingSettings?.allowApproverChangeMethod || false,
-      allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
-    },
-  });
+      data: {
+        name,
+        organizationName,
+        url,
+        salesPersonEmail,
+        salesPersonName,
+        otherSupportEmails,
+        orderUpdatedEmails,
+        customOrderApprovedEmail,
+        useCustomOrderApprovedEmail,
+        apiKey: changeApiKey ? apiKey : undefined,
+        apiKeyEncryptIv: changeApiKey ? apiKeyEncryptIv : undefined,
+        apiKeyEncryptTag: changeApiKey
+          ? apiKeyEncryptTag.toString("base64")
+          : undefined,
+        apiSecret: changeApiSecret ? apiSecret : undefined,
+        apiSecretEncryptIv: changeApiSecret ? apiSecretEncryptIv : undefined,
+        apiSecretEncryptTag: changeApiSecret
+          ? apiSecretEncryptTag.toString("base64")
+          : undefined,
+        shippingMethods: {
+          set: shippingMethods.map((method) => ({ id: method.id })),
+        },
+      },
+    }),
+    prisma.webstoreShippingSettings.update({
+      where: {
+        webstoreId: id,
+      },
+      data: {
+        allowApproverChangeMethod:
+          shippingSettings?.allowApproverChangeMethod || false,
+        allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
+      },
+    }),
+    ...checkoutFields.map((field) =>
+      prisma.webstoreCheckoutField.update({
+        where: {
+          id: field.id,
+        },
+        data: {
+          name: field.name,
+          label: field.label,
+          type: field.type,
+          options: field.options,
+        },
+      })
+    ),
+  ]);
 }
 
 export async function setUserIsApprover(

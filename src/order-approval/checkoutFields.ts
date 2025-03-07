@@ -1,1 +1,10 @@
-export const checkoutFieldTypes = ["text", "select"];
+export const checkoutFieldTypes = [
+  {
+    name: "text",
+    displayName: "Text",
+  },
+  {
+    name: "select",
+    displayName: "Select",
+  },
+];
