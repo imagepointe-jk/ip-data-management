@@ -3,7 +3,7 @@ import {
   getWebstoreWithIncludes,
 } from "@/db/access/orderApproval";
 import Link from "next/link";
-import { EditingForm } from "./EditingForm";
+import { EditingForm } from "./EditingForm/EditingForm";
 import { ShortcodeReference } from "../../ShortcodeReference";
 
 type Props = {
