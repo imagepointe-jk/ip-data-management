@@ -183,6 +183,7 @@ function Main() {
                 }}
                 userEmail={serverData.userEmail}
                 showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet
+                checkoutFields={serverData.checkoutFields}
               />
             </div>
           )}

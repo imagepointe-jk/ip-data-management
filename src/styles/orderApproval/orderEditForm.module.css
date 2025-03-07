@@ -107,14 +107,14 @@ td.line-item-x-container {
   gap: 20px;
 }
 
-.shipping-fields {
+.flex-fields {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.shipping-fields input[type="text"],
-.shipping-fields select {
+.flex-fields input[type="text"],
+.flex-fields select {
   width: 250px;
 }
 
@@ -274,9 +274,9 @@ td.line-item-x-container {
 }
 
 @media screen and (max-width: 500px) {
-  .shipping-fields > div,
-  .shipping-fields input,
-  .shipping-fields select {
+  .flex-fields > div,
+  .flex-fields input,
+  .flex-fields select {
     width: 100%;
   }
 }

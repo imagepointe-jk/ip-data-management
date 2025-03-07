@@ -19,6 +19,8 @@ import { updateOrderAction } from "@/actions/orderWorkflow/update";
 import { HelpForm } from "./HelpForm";
 import { NavButtons } from "../NavButtons";
 import { ShippingMethods } from "./ShippingMethods";
+import { CheckoutFields } from "./CheckoutFields";
+import { WebstoreCheckoutField } from "@prisma/client";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -44,6 +46,7 @@ type Props = {
   shippingMethods: string[];
   userEmail?: string; //the email of the user accessing the order view
   showNavButtons: boolean;
+  checkoutFields: Omit<WebstoreCheckoutField, "webstoreId">[];
 };
 export function OrderEditForm({
   orderId,
@@ -56,6 +59,7 @@ export function OrderEditForm({
   special,
   userEmail,
   showNavButtons,
+  checkoutFields,
 }: Props) {
   const [order, setOrder] = useState(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
@@ -248,6 +252,7 @@ export function OrderEditForm({
                       setOrder={setOrder}
                       setValuesMaybeUnsynced={setValuesMaybeUnsynced}
                     />
+                    <CheckoutFields fields={checkoutFields} order={order} />
                     {permissions?.shipping?.method === "edit" && (
                       <ShippingMethods
                         order={order}

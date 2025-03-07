@@ -61,7 +61,7 @@ export function ShippingInfo({
   return (
     <div>
       <h3>Shipping</h3>
-      <div className={styles["shipping-fields"]}>
+      <div className={styles["flex-fields"]}>
         <div>
           {/* Name */}
 
