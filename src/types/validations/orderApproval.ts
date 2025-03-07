@@ -135,25 +135,3 @@ export function validateWorkflowFormData(formData: FormData) {
     steps,
   };
 }
-
-export function validateWebstoreFormData(formData: FormData) {
-  return webstoreFormDataSchema.parse({
-    id: formData.get("id"),
-    name: formData.get("name"),
-    orgName: formData.get("org-name"),
-    url: formData.get("url"),
-    salesPersonName: formData.get("sales-person-name"),
-    salesPersonEmail: formData.get("sales-person-email"),
-    otherSupportEmails: formData.get("other-support-emails"),
-    orderUpdatedEmails: formData.get("order-updated-emails"),
-    changeApiKey: formData.get("api-key"),
-    changeApiSecret: formData.get("api-secret"),
-    allowApproverChangeMethod:
-      formData.get("allow-approver-change-method") === "on",
-    allowUpsToCanada: formData.get("allow-ups-to-canada") === "on",
-    shippingMethodIds: formData.getAll("shipping-methods").map((item) => +item),
-    customOrderApprovedEmail: formData.get("custom-order-approved-email"),
-    useCustomOrderApprovedEmail:
-      formData.get("use-custom-order-approved-email") === "on",
-  });
-}

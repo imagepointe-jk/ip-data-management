@@ -4,13 +4,28 @@ import { createWebstore } from "@/actions/orderWorkflow/create";
 import { updateWebstore } from "@/actions/orderWorkflow/update";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
-import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/schema/misc";
+import { WebstoreEditorData } from "@/types/schema/orderApproval";
 import { useRouter } from "next/navigation";
 import { FormEvent, ReactNode, useState } from "react";
+import { useImmer } from "use-immer";
 
+const blankState: WebstoreEditorData = {
+  id: 0,
+  name: "",
+  customOrderApprovedEmail: "",
+  orderUpdatedEmails: "",
+  organizationName: "",
+  otherSupportEmails: "",
+  salesPersonEmail: "",
+  salesPersonName: "",
+  url: "",
+  checkoutFields: [],
+  shippingMethods: [],
+  shippingSettings: null,
+  useCustomOrderApprovedEmail: false,
+};
 type Props = {
-  existingWebstore: UnwrapPromise<ReturnType<typeof getWebstoreWithIncludes>>;
+  webstoreData: WebstoreEditorData | null;
   shippingMethods: {
     id: number;
     name: string;
@@ -19,26 +34,68 @@ type Props = {
   shortcodeReference: ReactNode;
 };
 export function EditingForm({
-  existingWebstore,
+  webstoreData,
   shippingMethods,
   shortcodeReference,
 }: Props) {
-  const [useCustomEmail, setUseCustomEmail] = useState(
-    existingWebstore ? existingWebstore.useCustomOrderApprovedEmail : false
+  const [webstoreState, setWebstoreState] = useImmer(
+    webstoreData ? webstoreData : blankState
   );
+  const [apiKey, setApiKey] = useState("");
+  const [apiSecret, setApiSecret] = useState("");
   const toast = useToast();
   const router = useRouter();
+  const creatingNew = webstoreState.id === 0;
+
+  function onChangeAllowApproverChangeMethod(val: boolean) {
+    setWebstoreState((draft) => {
+      if (!draft.shippingSettings) {
+        draft.shippingSettings = {
+          allowApproverChangeMethod: val,
+          allowUpsToCanada: false,
+        };
+      } else {
+        draft.shippingSettings.allowApproverChangeMethod = val;
+      }
+    });
+  }
+
+  function onChangeAllowUpsToCanada(val: boolean) {
+    setWebstoreState((draft) => {
+      if (!draft.shippingSettings) {
+        draft.shippingSettings = {
+          allowUpsToCanada: val,
+          allowApproverChangeMethod: false,
+        };
+      } else {
+        draft.shippingSettings.allowUpsToCanada = val;
+      }
+    });
+  }
+
+  function onClickShippingMethod(id: number) {
+    setWebstoreState((draft) => {
+      const existing = draft.shippingMethods.find((method) => method.id === id);
+      if (existing)
+        draft.shippingMethods = draft.shippingMethods.filter(
+          (method) => method.id !== id
+        );
+      else draft.shippingMethods.push({ id });
+    });
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    if (existingWebstore) {
-      await updateWebstore(formData);
+    if (!creatingNew) {
+      await updateWebstore(webstoreState);
       toast.changesSaved();
     } else {
-      const created = await createWebstore(formData);
+      const created = await createWebstore({
+        ...webstoreState,
+        apiKey,
+        apiSecret,
+      });
       toast.changesSaved();
       router.push(`${created.id}`);
     }
@@ -47,152 +104,198 @@ export function EditingForm({
   return (
     <form onSubmit={onSubmit}>
       <div className="vert-flex-group">
-        {/* Main settings */}
-
         <div>
           <h2 style={{ marginBottom: 0 }}>Name</h2>
           <input
             type="text"
             name="name"
             id="name"
-            defaultValue={existingWebstore?.name}
             required
             className="input-major"
+            value={webstoreState.name}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.name = e.target.value;
+              })
+            }
           />
         </div>
-        <div>
-          <label className="input-label">Organization Name</label>
-          <input
-            type="text"
-            name="org-name"
-            id="org-name"
-            defaultValue={existingWebstore?.organizationName}
-            required
-          />
-        </div>
-        <div>
-          <label className="input-label">URL</label>
-          <input
-            type="text"
-            name="url"
-            id="url"
-            defaultValue={existingWebstore?.url}
-            required
-          />
-        </div>
-        <div>
-          <label className="input-label">Sales Person Name</label>
-          <input
-            type="text"
-            name="sales-person-name"
-            id="sales-person-name"
-            defaultValue={existingWebstore?.salesPersonName}
-            required
-          />
-        </div>
-        <div>
-          <label className="input-label">Sales Person Email</label>
-          <input
-            type="email"
-            name="sales-person-email"
-            id="sales-person-email"
-            defaultValue={existingWebstore?.salesPersonEmail}
-            required
-          />
-        </div>
-        <div>
-          <label className="input-label">
-            Other support emails (separate with {";"})
-          </label>
-          <input
-            type="text"
-            name="other-support-emails"
-            id="other-support-emails"
-            defaultValue={existingWebstore?.otherSupportEmails || undefined}
-            style={{ width: "600px" }}
-          />
-        </div>
-        <div>
-          <label className="input-label">
-            Order updated emails (separate with {";"})
-          </label>
-          <input
-            type="text"
-            name="order-updated-emails"
-            id="order-updated-emails"
-            defaultValue={existingWebstore?.orderUpdatedEmails || undefined}
-            style={{ width: "600px" }}
-          />
-        </div>
-        <div>
-          <label className="input-label">
-            {existingWebstore ? "Change API Key " : "Set API Key "}
-          </label>
-          <input
-            type="text"
-            name="api-key"
-            id="api-key"
-            required={!existingWebstore}
-          />
-        </div>
-        <div>
-          <label className="input-label">
-            {existingWebstore ? "Change API Secret " : "Set API Secret "}
-          </label>
-          <input
-            type="text"
-            name="api-secret"
-            id="api-secret"
-            required={!existingWebstore}
-          />
-        </div>
-
-        {/* Custom email settings */}
-
-        <div>
-          <label
-            htmlFor="use-custom-order-approved-email"
-            className="input-label"
-          >
-            <input
-              type="checkbox"
-              name="use-custom-order-approved-email"
-              id="use-custom-order-approved-email"
-              checked={useCustomEmail}
-              onChange={(e) => setUseCustomEmail(e.target.checked)}
-            />
-            Use custom &quot;order approved&quot; email
-          </label>
-        </div>
-        {useCustomEmail && (
-          <>
-            <div>
-              <label
-                htmlFor="custom-order-approved-email"
-                className="input-label"
-              >
-                Custom &quot;order approved&quot; email
-              </label>
-              <textarea
-                name="custom-order-approved-email"
-                id="custom-order-approved-email"
-                cols={60}
-                rows={10}
-                defaultValue={existingWebstore?.customOrderApprovedEmail || ""}
-              ></textarea>
-            </div>
-            {shortcodeReference}
-          </>
-        )}
       </div>
+      <div>
+        <label className="input-label">Organization Name</label>
+        <input
+          type="text"
+          name="org-name"
+          id="org-name"
+          value={webstoreState.organizationName}
+          required
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.organizationName = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">URL</label>
+        <input
+          type="text"
+          name="url"
+          id="url"
+          value={webstoreState.url}
+          required
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.url = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">Sales Person Name</label>
+        <input
+          type="text"
+          name="sales-person-name"
+          id="sales-person-name"
+          value={webstoreState.salesPersonName}
+          required
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.salesPersonName = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">Sales Person Email</label>
+        <input
+          type="email"
+          name="sales-person-email"
+          id="sales-person-email"
+          value={webstoreState.salesPersonEmail}
+          required
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.salesPersonEmail = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">
+          Other support emails (separate with {";"})
+        </label>
+        <input
+          type="text"
+          name="other-support-emails"
+          id="other-support-emails"
+          value={webstoreState.otherSupportEmails || ""}
+          style={{ width: "600px" }}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.otherSupportEmails = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">
+          Order updated emails (separate with {";"})
+        </label>
+        <input
+          type="text"
+          name="order-updated-emails"
+          id="order-updated-emails"
+          value={webstoreState.orderUpdatedEmails || ""}
+          style={{ width: "600px" }}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.orderUpdatedEmails = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label className="input-label">
+          {!creatingNew ? "Change API Key " : "Set API Key "}
+        </label>
+        <input
+          type="text"
+          name="api-key"
+          id="api-key"
+          required={creatingNew}
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+        />
+      </div>
+      <div>
+        <label className="input-label">
+          {!creatingNew ? "Change API Secret " : "Set API Secret "}
+        </label>
+        <input
+          type="text"
+          name="api-secret"
+          id="api-secret"
+          required={creatingNew}
+          value={apiSecret}
+          onChange={(e) => setApiSecret(e.target.value)}
+        />
+      </div>
+
+      {/* Custom email settings */}
+
+      <div>
+        <label
+          htmlFor="use-custom-order-approved-email"
+          className="input-label"
+        >
+          <input
+            type="checkbox"
+            name="use-custom-order-approved-email"
+            id="use-custom-order-approved-email"
+            checked={webstoreState.useCustomOrderApprovedEmail}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.useCustomOrderApprovedEmail = e.target.checked;
+              })
+            }
+          />
+          Use custom &quot;order approved&quot; email
+        </label>
+      </div>
+      {webstoreState.useCustomOrderApprovedEmail && (
+        <>
+          <div>
+            <label
+              htmlFor="custom-order-approved-email"
+              className="input-label"
+            >
+              Custom &quot;order approved&quot; email
+            </label>
+            <textarea
+              name="custom-order-approved-email"
+              id="custom-order-approved-email"
+              cols={60}
+              rows={10}
+              value={webstoreState.customOrderApprovedEmail || ""}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.customOrderApprovedEmail = e.target.value;
+                })
+              }
+            ></textarea>
+          </div>
+          {shortcodeReference}
+        </>
+      )}
 
       {/* Checkout fields */}
 
-      {existingWebstore && (
+      {!creatingNew && (
         <>
           <h2>Checkout Fields</h2>
           <GenericTable
-            dataset={existingWebstore.checkoutFields}
+            dataset={webstoreState.checkoutFields}
             columns={[
               {
                 headerName: "Name",
@@ -210,7 +313,6 @@ export function EditingForm({
           />
         </>
       )}
-
       {/* Shipping settings */}
 
       <h2>Shipping Options</h2>
@@ -220,8 +322,11 @@ export function EditingForm({
             type="checkbox"
             name="allow-approver-change-method"
             id="allow-approver-change-method"
-            defaultChecked={
-              existingWebstore?.shippingSettings?.allowApproverChangeMethod
+            checked={
+              webstoreState.shippingSettings?.allowApproverChangeMethod || false
+            }
+            onChange={(e) =>
+              onChangeAllowApproverChangeMethod(e.target.checked)
             }
           />
           Allow approver to change method
@@ -233,9 +338,8 @@ export function EditingForm({
             type="checkbox"
             name="allow-ups-to-canada"
             id="allow-ups-to-canada"
-            defaultChecked={
-              existingWebstore?.shippingSettings?.allowUpsToCanada
-            }
+            checked={webstoreState.shippingSettings?.allowUpsToCanada || false}
+            onChange={(e) => onChangeAllowUpsToCanada(e.target.checked)}
           />
           Allow UPS Shipping to Canada
         </label>
@@ -249,19 +353,20 @@ export function EditingForm({
               name="shipping-methods"
               id={method.name}
               value={method.id}
-              defaultChecked={
-                !!existingWebstore?.shippingMethods.find(
+              checked={
+                !!webstoreState.shippingMethods.find(
                   (thisMethod) => thisMethod.id === method.id
                 )
               }
+              onChange={() => onClickShippingMethod(method.id)}
             />
             {method.name}
           </label>
         </div>
       ))}
-      <input type="hidden" name="id" value={existingWebstore?.id} readOnly />
+
       <button type="submit">
-        {existingWebstore ? "Save Changes" : "Create Webstore"}
+        {!creatingNew ? "Save Changes" : "Create Webstore"}
       </button>
     </form>
   );

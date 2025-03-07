@@ -1,14 +1,14 @@
 "use server";
 
-import { validateWebstoreFormData } from "@/types/validations/orderApproval";
-import { prisma } from "../../../prisma/client";
-import { encrypt } from "@/utility/misc";
+import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import { OrderUpdateData, updateOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
-import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { handleOrderUpdated } from "@/order-approval/main";
-import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/schema/misc";
+import { WebstoreEditorData } from "@/types/schema/orderApproval";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { encrypt } from "@/utility/misc";
+import { prisma } from "../../../prisma/client";
 
 export async function updateWorkflow(
   data: Exclude<UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>, null>
@@ -54,77 +54,76 @@ export async function updateWorkflow(
   ]);
 }
 
-export async function updateWebstore(formData: FormData) {
+export async function updateWebstore(
+  data: WebstoreEditorData & { changeApiKey?: string; changeApiSecret?: string }
+) {
   const {
-    changeApiKey,
-    changeApiSecret,
     id,
     name,
-    orgName,
+    organizationName,
     url,
-    allowApproverChangeMethod,
-    allowUpsToCanada,
-    shippingMethodIds,
-    orderUpdatedEmails,
-    otherSupportEmails,
     salesPersonEmail,
     salesPersonName,
+    otherSupportEmails,
+    orderUpdatedEmails,
+    checkoutFields,
+    shippingMethods,
+    shippingSettings,
+    changeApiKey,
+    changeApiSecret,
     customOrderApprovedEmail,
     useCustomOrderApprovedEmail,
-  } = validateWebstoreFormData(formData);
-  if (isNaN(+`${id}`))
-    throw new Error(`Invalid webstore id ${id}. This is a bug.`);
-  const changingApiKey = changeApiKey !== "";
-  const changingApiSecret = changeApiSecret !== "";
+  } = data;
 
   const {
     ciphertext: apiKey,
     iv: apiKeyEncryptIv,
     tag: apiKeyEncryptTag,
-  } = encrypt(changeApiKey);
+  } = encrypt(changeApiKey || "");
   const {
     ciphertext: apiSecret,
     iv: apiSecretEncryptIv,
     tag: apiSecretEncryptTag,
-  } = encrypt(changeApiSecret);
+  } = encrypt(changeApiSecret || "");
 
   await prisma.webstore.update({
     where: {
-      id: +`${id}`,
+      id,
     },
     data: {
       name,
-      organizationName: orgName,
+      organizationName,
       url,
-      apiKey: changingApiKey ? apiKey : undefined,
-      apiKeyEncryptIv: changingApiKey ? apiKeyEncryptIv : undefined,
-      apiKeyEncryptTag: changingApiKey
+      salesPersonEmail,
+      salesPersonName,
+      otherSupportEmails,
+      orderUpdatedEmails,
+      customOrderApprovedEmail,
+      useCustomOrderApprovedEmail,
+      apiKey: changeApiKey ? apiKey : undefined,
+      apiKeyEncryptIv: changeApiKey ? apiKeyEncryptIv : undefined,
+      apiKeyEncryptTag: changeApiKey
         ? apiKeyEncryptTag.toString("base64")
         : undefined,
-      apiSecret: changingApiSecret ? apiSecret : undefined,
-      apiSecretEncryptIv: changingApiSecret ? apiSecretEncryptIv : undefined,
-      apiSecretEncryptTag: changingApiSecret
+      apiSecret: changeApiSecret ? apiSecret : undefined,
+      apiSecretEncryptIv: changeApiSecret ? apiSecretEncryptIv : undefined,
+      apiSecretEncryptTag: changeApiSecret
         ? apiSecretEncryptTag.toString("base64")
         : undefined,
       shippingMethods: {
-        set: shippingMethodIds.map((id) => ({ id })),
+        set: shippingMethods.map((method) => ({ id: method.id })),
       },
-      orderUpdatedEmails,
-      otherSupportEmails,
-      salesPersonEmail,
-      salesPersonName,
-      customOrderApprovedEmail,
-      useCustomOrderApprovedEmail,
     },
   });
 
   await prisma.webstoreShippingSettings.update({
     where: {
-      webstoreId: +`${id}`,
+      webstoreId: id,
     },
     data: {
-      allowApproverChangeMethod,
-      allowUpsToCanada,
+      allowApproverChangeMethod:
+        shippingSettings?.allowApproverChangeMethod || false,
+      allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
     },
   });
 }

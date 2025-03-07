@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { UnwrapPromise } from "./misc";
-import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
+import {
+  getWebstoreWithIncludes,
+  getWorkflowWithIncludes,
+} from "@/db/access/orderApproval";
 
 export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
 const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
@@ -61,3 +64,29 @@ export type OrderWorkflowWithIncludes = Exclude<
   UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
   null
 >;
+export type WebstoreEditorData = {
+  id: number;
+  name: string;
+  organizationName: string;
+  url: string;
+  salesPersonName: string;
+  salesPersonEmail: string;
+  otherSupportEmails: string | null;
+  orderUpdatedEmails: string | null;
+  useCustomOrderApprovedEmail: boolean;
+  customOrderApprovedEmail: string | null;
+  checkoutFields: {
+    id: number;
+    name: string;
+    label: string;
+    type: string;
+    options: string | null;
+  }[];
+  shippingSettings: {
+    allowApproverChangeMethod: boolean;
+    allowUpsToCanada: boolean;
+  } | null;
+  shippingMethods: {
+    id: number;
+  }[];
+};

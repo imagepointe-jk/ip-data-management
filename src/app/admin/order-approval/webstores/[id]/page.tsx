@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
       </h1>
       {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
       <EditingForm
-        existingWebstore={existingWebstore}
+        webstoreData={existingWebstore}
         shippingMethods={shippingMethods}
         shortcodeReference={<ShortcodeReference />}
       />
