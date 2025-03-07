@@ -27,8 +27,25 @@ export function CheckoutFields({ order, fields }: Props) {
               />
             )}
 
+            {field.type === "textarea" && (
+              <textarea
+                name={field.name}
+                id={field.name}
+                cols={40}
+                rows={5}
+                value={getFieldValue(field.name, order)}
+                onChange={() => {}}
+                disabled
+              />
+            )}
+
             {field.type === "select" && (
-              <select value={getFieldValue(field.name, order)} disabled>
+              <select
+                name={field.name}
+                id={field.name}
+                value={getFieldValue(field.name, order)}
+                disabled
+              >
                 {(field.options || "").split(/\s*\|\s*/g).map((option) => (
                   <option key={option} value={option}>
                     {option}

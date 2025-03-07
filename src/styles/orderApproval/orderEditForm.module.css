@@ -175,7 +175,8 @@ td.line-item-x-container {
 
 .main input[type="text"],
 .main input[type="number"],
-.main select {
+.main select,
+.main textarea {
   display: block;
   font-size: 1.125rem;
   padding: 5px;

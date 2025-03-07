@@ -9,6 +9,10 @@ export const checkoutFieldTypes = [
     name: "select",
     displayName: "Select",
   },
+  {
+    name: "textarea",
+    displayName: "Text Area",
+  },
 ];
 
 export function getFieldValue(fieldName: string, order: WooCommerceOrder) {
