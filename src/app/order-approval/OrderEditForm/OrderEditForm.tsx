@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { LineItemTable } from "./LineItemTable";
 import { ShippingInfo } from "./ShippingInfo";
 import { TotalsArea } from "./TotalsArea";
-import { rateShippingMethod } from "@/order-approval/shipping";
 import {
   WooCommerceOrder,
   WooCommerceProduct,
@@ -22,6 +21,7 @@ import { ShippingMethods } from "./ShippingMethods";
 import { CheckoutFields } from "./CheckoutFields";
 import { WebstoreCheckoutField } from "@prisma/client";
 import { useImmer } from "use-immer";
+import { getRatedShippingMethods } from "@/order-approval/shipping";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -100,40 +100,15 @@ export function OrderEditForm({
     setLoading(true);
     try {
       //first get updated methods based on any changed shipping info
-      const updatedMethods = await getUpdatedShippingMethods(order, products);
+      const updatedMethods = await getRatedShippingMethods(
+        order,
+        products,
+        shippingMethods,
+        special
+      );
       setRatedShippingMethods(updatedMethods);
 
-      //then check if we still have a valid shipping method selected
-      //treat a method as valid even if it got an API response of 429.
-      //the below auto-switch behavior should not affect the user just because of rate limiting.
-      const selectedMethod = order.shippingLines[0]?.method_title;
-      const validMethods = updatedMethods.filter(
-        (method) =>
-          method.total !== null &&
-          (method.statusCode === 200 || method.statusCode === 429)
-      );
-      const selectedValidMethod = validMethods.find(
-        (method) => method.name === selectedMethod
-      );
-      const validMethodsSorted = [...validMethods].sort((a, b) => {
-        const aTotal = a.total ? +a.total : Number.MAX_SAFE_INTEGER;
-        const bTotal = b.total ? +b.total : Number.MAX_SAFE_INTEGER; // make sure that any methods with NULL totals get pushed to the end
-        return aTotal - bTotal;
-      });
-
-      //if not, force the first valid one to be selected instead; NEVER save a shipping method that isn't valid for the shipping address
-      //if there are no valid methods anymore, save an error string
-      const cheapestValidMethod = validMethodsSorted[0];
-      const forcedMethod = {
-        id: order.shippingLines[0]?.id || 0,
-        method_title: cheapestValidMethod
-          ? cheapestValidMethod.name
-          : "SHIPPING METHOD ERROR",
-      };
-      const newShippingLines = selectedValidMethod
-        ? order.shippingLines
-        : [forcedMethod];
-
+      const newShippingLines = choosePostUpdateShippingLines(updatedMethods);
       const updated = await updateOrderAction(
         storeUrl,
         {
@@ -160,6 +135,48 @@ export function OrderEditForm({
     setLoading(false);
   }
 
+  function choosePostUpdateShippingLines(
+    updatedMethods: RatedShippingMethod[]
+  ) {
+    if (!order || !products) return [];
+
+    //after the user changes shipping info, we need to check if the currently selected shipping method is still valid based on the new data.
+    //this is not always the case (e.g. an international method is selected and the user changes to a domestic address)
+    //if the selected method is still valid, let it be.
+
+    //treat a method as valid even if it got an API response of 429.
+    //the below auto-switch behavior should not affect the user just because of rate limiting.
+    const selectedMethod = order.shippingLines[0]?.method_title;
+    const validMethods = updatedMethods.filter(
+      (method) =>
+        method.total !== null &&
+        (method.statusCode === 200 || method.statusCode === 429)
+    );
+    const selectedValidMethod = validMethods.find(
+      (method) => method.name === selectedMethod
+    );
+    const validMethodsSorted = [...validMethods].sort((a, b) => {
+      const aTotal = a.total ? +a.total : Number.MAX_SAFE_INTEGER;
+      const bTotal = b.total ? +b.total : Number.MAX_SAFE_INTEGER; // make sure that any methods with NULL totals get pushed to the end
+      return aTotal - bTotal;
+    });
+
+    //if the currently selected method is no longer valid, choose the cheapest valid one instead; NEVER save a shipping method that isn't valid for the shipping address
+    //if there are no valid methods anymore, save an error string
+    const cheapestValidMethod = validMethodsSorted[0];
+    const forcedMethod = {
+      id: order.shippingLines[0]?.id || 0,
+      method_title: cheapestValidMethod
+        ? cheapestValidMethod.name
+        : "SHIPPING METHOD ERROR",
+    };
+    const newShippingLines = selectedValidMethod
+      ? order.shippingLines
+      : [forcedMethod];
+
+    return newShippingLines;
+  }
+
   async function loadOrder() {
     setLoading(true);
     try {
@@ -169,66 +186,14 @@ export function OrderEditForm({
       const ids = order.lineItems.map((item) => item.productId);
       const products = await getProducts(ids);
 
-      const methods = await getUpdatedShippingMethods(order, products);
+      // const methods = await getUpdatedShippingMethods(order, products);
 
-      setRatedShippingMethods(methods);
+      // setRatedShippingMethods(methods);
       setProducts(products);
     } catch (error) {
       console.error(error);
     }
     setLoading(false);
-  }
-
-  async function getUpdatedShippingMethods(
-    order: WooCommerceOrder,
-    products: WooCommerceProduct[]
-  ) {
-    if (!products) throw new Error("No products");
-
-    const totalWeight = products.reduce((accum, product) => {
-      const matchingLineItem = order.lineItems.find(
-        (item) => item.productId === product.id
-      );
-      const thisWeight = matchingLineItem
-        ? matchingLineItem.quantity * +product.weight
-        : 0;
-      return accum + thisWeight;
-    }, 0);
-
-    const permittedShippingMethods = shippingMethods.filter((method) => {
-      if (special?.allowUpsShippingToCanada) return method;
-      return order?.shipping.country !== "CA" || !method.includes("UPS");
-    });
-
-    const {
-      firstName,
-      lastName,
-      address1,
-      address2,
-      city,
-      state,
-      postcode,
-      country,
-    } = order.shipping;
-
-    const ratedMethods: RatedShippingMethod[] = await Promise.all(
-      permittedShippingMethods.map(async (method) =>
-        rateShippingMethod({
-          firstName,
-          lastName,
-          addressLine1: address1,
-          addressLine2: address2,
-          city,
-          stateCode: state,
-          postalCode: postcode,
-          countryCode: country,
-          method,
-          totalWeight,
-        })
-      )
-    );
-
-    return ratedMethods;
   }
 
   function onChangeShippingInfo(
