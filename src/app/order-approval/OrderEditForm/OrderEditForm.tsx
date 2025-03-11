@@ -186,9 +186,14 @@ export function OrderEditForm({
       const ids = order.lineItems.map((item) => item.productId);
       const products = await getProducts(ids);
 
-      // const methods = await getUpdatedShippingMethods(order, products);
+      const methods = await getRatedShippingMethods(
+        order,
+        products,
+        shippingMethods,
+        special
+      );
 
-      // setRatedShippingMethods(methods);
+      setRatedShippingMethods(methods);
       setProducts(products);
     } catch (error) {
       console.error(error);
