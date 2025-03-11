@@ -59,9 +59,7 @@ export function ShippingMethods({
                 {/* correctly render escaped characters present in the method names */}
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: `${method.name} ${
-                      isValid ? `($${method.total})` : ""
-                    }`,
+                    __html: method.name,
                   }}
                 ></span>
               </label>
