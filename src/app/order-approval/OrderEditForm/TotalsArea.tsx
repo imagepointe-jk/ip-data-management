@@ -23,7 +23,7 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
     },
     {
       name: "Total w/o Shipping",
-      amount: (+order.total + +order.totalTax).toFixed(2),
+      amount: (+order.subtotal + +order.totalTax).toFixed(2),
       bold: true,
     },
   ];
