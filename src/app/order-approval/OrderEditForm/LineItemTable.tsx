@@ -3,10 +3,11 @@ import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dispatch, SetStateAction } from "react";
+import { Updater } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
-  setOrder: Dispatch<SetStateAction<WooCommerceOrder | null>>;
+  setOrder: Updater<WooCommerceOrder | null>;
   removeLineItemIds: number[];
   setRemoveLineItemIds: Dispatch<SetStateAction<number[]>>;
   setValuesMaybeUnsynced: (b: boolean) => void;
@@ -21,15 +22,19 @@ export function LineItemTable({
   function onChangeLineItemQuantity(id: number, valueStr: string) {
     if (!order) return;
 
-    const newOrder = { ...order };
-    const item = newOrder.lineItems.find((item) => item.id === id);
-    if (!item) return;
+    try {
+      setOrder((draft) => {
+        const item = draft?.lineItems.find((item) => item.id === id);
+        if (!item) throw new Error(`Item with id ${id} not found`);
 
-    item.quantity = +valueStr;
-    item.total = (item.quantity * item.price).toFixed(2);
+        item.quantity = +valueStr;
+        item.total = (item.quantity * item.price).toFixed(2);
+      });
 
-    setValuesMaybeUnsynced(true);
-    setOrder(newOrder);
+      setValuesMaybeUnsynced(true);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   function setLineItemDelete(idToSet: number, willDelete: boolean) {
@@ -93,6 +98,7 @@ export function LineItemTable({
                     onChangeLineItemQuantity(item.id, e.target.value)
                   }
                   defaultValue={item.quantity}
+                  min={1}
                   disabled={removeLineItemIds.includes(item.id)}
                 />
               </td>

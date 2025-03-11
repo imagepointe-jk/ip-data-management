@@ -21,12 +21,24 @@ import { NavButtons } from "../NavButtons";
 import { ShippingMethods } from "./ShippingMethods";
 import { CheckoutFields } from "./CheckoutFields";
 import { WebstoreCheckoutField } from "@prisma/client";
+import { useImmer } from "use-immer";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
   name: string;
   total: string | null;
   statusCode: number | null;
+};
+export type ChangeShippingInfoParams = {
+  firstName?: string;
+  lastName?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+  method?: string;
 };
 type Props = {
   orderId: number;
@@ -61,7 +73,7 @@ export function OrderEditForm({
   showNavButtons,
   checkoutFields,
 }: Props) {
-  const [order, setOrder] = useState(null as WooCommerceOrder | null);
+  const [order, setOrder] = useImmer(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
   const [loading, setLoading] = useState(true);
   const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
@@ -70,6 +82,11 @@ export function OrderEditForm({
     [] as RatedShippingMethod[]
   );
   const [helpMode, setHelpMode] = useState(false);
+  const validShippingMethods = ratedShippingMethods.filter(
+    (method) =>
+      method.total !== null &&
+      (method.statusCode === 200 || method.statusCode === 429)
+  );
 
   async function onClickSave() {
     if (!order || !products) return;
@@ -214,6 +231,38 @@ export function OrderEditForm({
     return ratedMethods;
   }
 
+  function onChangeShippingInfo(
+    changes: ChangeShippingInfoParams,
+    mayUnsyncValues?: boolean
+  ) {
+    if (!order) return;
+    if (changes.method !== undefined) {
+      //stop any invalid shipping method changes from taking place
+      const isValid = !!validShippingMethods.find(
+        (method) => method.name === changes.method
+      );
+      if (!isValid) changes.method = undefined;
+    }
+
+    setOrder((draft) => {
+      if (!draft) return;
+      if (changes.firstName) draft.shipping.firstName = changes.firstName;
+      if (changes.lastName) draft.shipping.lastName = changes.lastName;
+      if (changes.address1) draft.shipping.address1 = changes.address1;
+      if (changes.address2) draft.shipping.address2 = changes.address2;
+      if (changes.city) draft.shipping.city = changes.city;
+      if (changes.state) draft.shipping.state = changes.state;
+      if (changes.postcode) draft.shipping.postcode = changes.postcode;
+      if (changes.country) draft.shipping.country = changes.country;
+      if (changes.method) {
+        const shippingLine = draft.shippingLines[0];
+        if (shippingLine)
+          shippingLine.method_title = changes.method || "SHIPPING METHOD ERROR";
+      }
+    });
+    if (mayUnsyncValues) setValuesMaybeUnsynced(true);
+  }
+
   useEffect(() => {
     loadOrder();
   }, []);
@@ -249,16 +298,14 @@ export function OrderEditForm({
                     <ShippingInfo
                       order={order}
                       ratedShippingMethods={ratedShippingMethods}
-                      setOrder={setOrder}
-                      setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                      onChangeShippingInfo={onChangeShippingInfo}
                     />
                     <CheckoutFields fields={checkoutFields} order={order} />
                     {permissions?.shipping?.method === "edit" && (
                       <ShippingMethods
                         order={order}
-                        setOrder={setOrder}
                         ratedShippingMethods={ratedShippingMethods}
-                        setValuesMaybeUnsynced={setValuesMaybeUnsynced}
+                        onChangeShippingInfo={onChangeShippingInfo}
                       />
                     )}
                   </div>

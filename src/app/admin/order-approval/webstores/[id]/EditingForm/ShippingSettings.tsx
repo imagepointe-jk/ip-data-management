@@ -98,7 +98,8 @@ export function ShippingSettings({
               }
               onChange={() => onClickShippingMethod(method.id)}
             />
-            {method.name}
+            {/* correctly render escaped characters present in the method names */}
+            <span dangerouslySetInnerHTML={{ __html: method.name }}></span>
           </label>
         </div>
       ))}

@@ -1,19 +1,20 @@
 import { CONTACT_US_URL } from "@/constants";
 import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
-import { RatedShippingMethod } from "./OrderEditForm";
+import { ChangeShippingInfoParams, RatedShippingMethod } from "./OrderEditForm";
 
 type Props = {
   order: WooCommerceOrder;
-  setOrder: (order: WooCommerceOrder) => void;
-  setValuesMaybeUnsynced: (val: boolean) => void;
   ratedShippingMethods: RatedShippingMethod[];
+  onChangeShippingInfo: (
+    changes: ChangeShippingInfoParams,
+    mayUnsyncValues?: boolean
+  ) => void;
 };
 export function ShippingMethods({
   order,
-  setOrder,
-  setValuesMaybeUnsynced,
   ratedShippingMethods,
+  onChangeShippingInfo,
 }: Props) {
   const validShippingMethods = ratedShippingMethods.filter(
     (method) =>
@@ -21,43 +22,6 @@ export function ShippingMethods({
       (method.statusCode === 200 || method.statusCode === 429)
   );
 
-  function onChangeShippingInfo(
-    changes: {
-      firstName?: string;
-      lastName?: string;
-      address1?: string;
-      address2?: string;
-      city?: string;
-      state?: string;
-      postcode?: string;
-      country?: string;
-      method?: string;
-    },
-    mayUnsyncValues = false
-  ) {
-    if (!order) return;
-    if (changes.method !== undefined) {
-      //stop any invalid shipping method changes from taking place
-      const isValid = !!validShippingMethods.find(
-        (method) => method.name === changes.method
-      );
-      if (!isValid) changes.method = undefined;
-    }
-
-    setOrder({
-      ...order,
-      shipping: { ...order.shipping, ...changes },
-      shippingLines: !changes.method
-        ? order.shippingLines
-        : [
-            {
-              id: order.shippingLines[0]?.id || 0,
-              method_title: changes.method || "SHIPPING METHOD ERROR",
-            },
-          ],
-    });
-    if (mayUnsyncValues) setValuesMaybeUnsynced(true);
-  }
   return (
     <div className={styles["shipping-methods-parent"]}>
       <div className={styles["shipping-methods-container"]}>
@@ -92,7 +56,14 @@ export function ShippingMethods({
                   }
                   disabled={!isValid}
                 />
-                {method.name} {isValid && <>(${method.total})</>}
+                {/* correctly render escaped characters present in the method names */}
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: `${method.name} ${
+                      isValid ? `($${method.total})` : ""
+                    }`,
+                  }}
+                ></span>
               </label>
             </div>
           );

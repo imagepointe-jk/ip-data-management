@@ -13,28 +13,28 @@ import {
 const upsShippingCodes: { exactString: string; code: string }[] = [
   //domestic
   {
-    exactString: "UPS 3-Day Select®",
+    exactString: "UPS 3-Day Select&#174;",
     code: "12",
   },
   {
-    exactString: "UPS® Ground",
+    exactString: "UPS&#174; Ground",
     code: "03",
   },
   {
-    exactString: "UPS 2nd Day Air®",
+    exactString: "UPS 2nd Day Air&#174;",
     code: "02",
   },
   {
-    exactString: "UPS Next Day Air®",
+    exactString: "UPS Next Day Air&#174;",
     code: "01",
   },
   //intl
   {
-    exactString: "UPS Worldwide Express™",
+    exactString: "UPS Worldwide Express&#8482;",
     code: "07",
   },
   {
-    exactString: "UPS Worldwide Express Plus™",
+    exactString: "UPS Worldwide Express Plus&#8482;",
     code: "54",
   },
   {
@@ -48,19 +48,19 @@ const upsShippingCodes: { exactString: string; code: string }[] = [
 ];
 const uspsShippingCodes: { exactString: string; code: string }[] = [
   {
-    exactString: "Priority Mail® (USPS)",
+    exactString: "Priority Mail&#174; (USPS)",
     code: "PRIORITY_MAIL",
   },
   {
-    exactString: "Ground Advantage™ (USPS)",
+    exactString: "Ground Advantage&#8482; (USPS)",
     code: "USPS_GROUND_ADVANTAGE",
   },
   {
-    exactString: "Priority Mail International® (USPS)",
+    exactString: "Priority Mail International&#174; (USPS)",
     code: "PRIORITY_MAIL_INTERNATIONAL",
   },
   {
-    exactString: "Priority Mail Express International™ (USPS)",
+    exactString: "Priority Mail Express International&#8482; (USPS)",
     code: "PRIORITY_MAIL_EXPRESS_INTERNATIONAL",
   },
 ];
