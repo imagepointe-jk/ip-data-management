@@ -12,7 +12,9 @@ export async function sendEmail(
   subject: string,
   message: string,
   attachments?: Attachment[],
-  useRawMessage?: boolean
+  options?: {
+    autoLineBreaks?: boolean;
+  }
 ) {
   const fromAddress = process.env.NODEMAILER_FROM_ADDRESS;
   const password = process.env.NODEMAILER_FROM_PASSWORD;
@@ -38,7 +40,7 @@ export async function sendEmail(
     from: fromAddress,
     to: recipientAddress,
     subject,
-    html: useRawMessage !== true ? modifiedMessage : message,
+    html: options?.autoLineBreaks ? modifiedMessage : message,
     attachments,
   };
   return transporter.sendMail(email);

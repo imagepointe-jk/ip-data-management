@@ -199,7 +199,9 @@ async function doEmailAction(
     await sendEmail(
       target,
       actionSubject || "Order Update",
-      prepend + processedMessage
+      prepend + processedMessage,
+      [],
+      { autoLineBreaks: true }
     );
   }
 }
@@ -232,7 +234,11 @@ async function doWorkflowApprovedAction(
   await sendEmail(
     shippingEmail,
     `Order ${workflowInstance.wooCommerceOrderId} Approved`,
-    shippingMessage
+    shippingMessage,
+    [],
+    {
+      autoLineBreaks: useCustomOrderApprovedEmail === true,
+    }
   );
 }
 
