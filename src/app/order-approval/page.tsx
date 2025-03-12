@@ -22,6 +22,7 @@ import {
   receiveWorkflowEvent,
 } from "@/actions/orderWorkflow/misc";
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
+import ApproveForm from "./ApproveForm";
 
 export default function Page() {
   return (
@@ -112,7 +113,7 @@ function Main() {
       const dataFromServer = validateOrderApprovalServerData(dataJson);
 
       setServerData(dataFromServer);
-      if (action !== "approve") setLoading(false); //if "approve", we'll be immediately sending an async approval, so we will stay in the loading state for a bit longer
+      setLoading(false);
     } catch (error) {
       setLoading(false);
     }
@@ -125,10 +126,6 @@ function Main() {
     getServerData(accessCodeInParams);
   }, [accessCodeInParams]);
 
-  useEffect(() => {
-    if (action === "approve" && accessCode !== "") doApprove();
-  }, [action, accessCode]);
-
   return (
     <>
       {(loading || iframeLoading) && (
@@ -138,19 +135,12 @@ function Main() {
       {serverData && (
         <div className={styles["main"]}>
           {action === "approve" && (
-            <>
-              {/* {loading && <>Sending approval...</>} */}
-              {!loading && !actionSuccess && (
-                <div className={styles["status-message"]}>
-                  Failed to send approval.
-                </div>
-              )}
-              {!loading && actionSuccess && (
-                <div className={styles["status-message"]}>
-                  Order approved. ✅
-                </div>
-              )}
-            </>
+            <ApproveForm
+              loading={loading}
+              error={actionAttempted && !loading && !actionSuccess}
+              success={actionSuccess}
+              doApprove={doApprove}
+            />
           )}
           {action === "deny" && (
             <DenyForm

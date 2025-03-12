@@ -327,7 +327,7 @@ export function OrderEditForm({
           />
         )}
       </div>
-      {showNavButtons && <NavButtons beforeApproveNow={onClickSave} />}
+      {showNavButtons && <NavButtons beforeApprove={onClickSave} />}
     </>
   );
 }

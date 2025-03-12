@@ -37,7 +37,8 @@
   background-color: #006ac6;
 }
 
-.nav-button-approve {
+.nav-button-approve,
+.approve-button {
   background-color: green;
 }
 
@@ -53,6 +54,15 @@
 .deny-button:disabled {
   background-color: lightgray;
   cursor: initial;
+}
+
+.approve-button {
+  margin-top: 20px;
+}
+
+.approve-button:disabled {
+  cursor: initial;
+  background-color: rgb(135, 189, 135);
 }
 
 @media screen and (max-width: 1024px) {
