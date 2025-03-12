@@ -61,6 +61,7 @@
 td.line-item-x-container {
   padding: 0;
   position: relative;
+  min-width: 30px;
 }
 
 .main .line-item-x {

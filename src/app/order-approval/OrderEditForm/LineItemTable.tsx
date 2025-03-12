@@ -57,71 +57,84 @@ export function LineItemTable({
           </tr>
         </thead>
         <tbody>
-          {order.lineItems.map((item) => (
-            <tr key={item.id}>
-              <td className={styles["line-item-x-container"]}>
-                <button
-                  className={styles["line-item-x"]}
-                  onClick={() =>
-                    setLineItemDelete(
-                      item.id,
-                      !removeLineItemIds.includes(item.id)
-                    )
+          {order.lineItems.map((item) => {
+            const oneItemLeftUndeleted =
+              order.lineItems.length - removeLineItemIds.length < 2;
+            const thisItemMarkedForDeletion = !!removeLineItemIds.find(
+              (id) => item.id === id
+            );
+            const showDeleteButton = !(
+              oneItemLeftUndeleted && !thisItemMarkedForDeletion
+            );
+
+            return (
+              <tr key={item.id}>
+                <td className={styles["line-item-x-container"]}>
+                  {showDeleteButton && (
+                    <button
+                      className={styles["line-item-x"]}
+                      onClick={() =>
+                        setLineItemDelete(
+                          item.id,
+                          !removeLineItemIds.includes(item.id)
+                        )
+                      }
+                    >
+                      {!removeLineItemIds.includes(item.id) ? (
+                        <FontAwesomeIcon icon={faXmark} />
+                      ) : (
+                        "undo"
+                      )}
+                    </button>
+                  )}
+                </td>
+                <td
+                  className={
+                    removeLineItemIds.includes(item.id)
+                      ? styles["deleted-line-item"]
+                      : undefined
                   }
                 >
-                  {!removeLineItemIds.includes(item.id) ? (
-                    <FontAwesomeIcon icon={faXmark} />
-                  ) : (
-                    "undo"
-                  )}
-                </button>
-              </td>
-              <td
-                className={
-                  removeLineItemIds.includes(item.id)
-                    ? styles["deleted-line-item"]
-                    : undefined
-                }
-              >
-                {item.name}
-              </td>
-              <td
-                className={
-                  removeLineItemIds.includes(item.id)
-                    ? styles["deleted-line-item"]
-                    : undefined
-                }
-              >
-                <input
-                  type="number"
-                  onChange={(e) =>
-                    onChangeLineItemQuantity(item.id, e.target.value)
+                  {item.name}
+                </td>
+                <td
+                  className={
+                    removeLineItemIds.includes(item.id)
+                      ? styles["deleted-line-item"]
+                      : undefined
                   }
-                  defaultValue={item.quantity}
-                  min={1}
-                  disabled={removeLineItemIds.includes(item.id)}
-                />
-              </td>
-              <td
-                className={`${
-                  removeLineItemIds.includes(item.id)
-                    ? styles["deleted-line-item"]
-                    : undefined
-                } ${styles["column-right-align"]}`}
-              >
-                ${item.price.toFixed(2)}
-              </td>
-              <td
-                className={`${
-                  removeLineItemIds.includes(item.id)
-                    ? styles["deleted-line-item"]
-                    : undefined
-                } ${styles["column-right-align"]}`}
-              >
-                ${item.total}
-              </td>
-            </tr>
-          ))}
+                >
+                  <input
+                    type="number"
+                    onChange={(e) =>
+                      onChangeLineItemQuantity(item.id, e.target.value)
+                    }
+                    defaultValue={item.quantity}
+                    min={1}
+                    disabled={removeLineItemIds.includes(item.id)}
+                  />
+                </td>
+                <td
+                  className={`${
+                    removeLineItemIds.includes(item.id)
+                      ? styles["deleted-line-item"]
+                      : undefined
+                  } ${styles["column-right-align"]}`}
+                >
+                  ${item.price.toFixed(2)}
+                </td>
+                <td
+                  className={`${
+                    removeLineItemIds.includes(item.id)
+                      ? styles["deleted-line-item"]
+                      : undefined
+                  } ${styles["column-right-align"]}`}
+                >
+                  ${item.total}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
