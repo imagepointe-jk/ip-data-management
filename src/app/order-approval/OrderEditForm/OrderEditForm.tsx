@@ -127,6 +127,7 @@ export function OrderEditForm({
       );
       setOrder(updated);
 
+      setRemoveLineItemIds([]);
       setValuesMaybeUnsynced(false);
     } catch (error) {
       setOrder(null);
