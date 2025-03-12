@@ -3,7 +3,7 @@ import {
   getWebstoreWithIncludes,
 } from "@/db/access/orderApproval";
 import Link from "next/link";
-import { EditingForm } from "./EditingForm";
+import { EditingForm } from "./EditingForm/EditingForm";
 import { ShortcodeReference } from "../../ShortcodeReference";
 
 type Props = {
@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
       </h1>
       {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
       <EditingForm
-        existingWebstore={existingWebstore}
+        webstoreData={existingWebstore}
         shippingMethods={shippingMethods}
         shortcodeReference={<ShortcodeReference />}
       />

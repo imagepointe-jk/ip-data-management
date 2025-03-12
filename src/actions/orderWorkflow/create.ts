@@ -1,14 +1,13 @@
 "use server";
 
-import { validateWebstoreFormData } from "@/types/validations/orderApproval";
-import { prisma } from "../../../prisma/client";
-import { encrypt } from "@/utility/misc";
 import {
-  createWebstore as createDbWebstore,
   createUser,
   getWebstoreById,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
+import { WebstoreEditorData } from "@/types/schema/orderApproval";
+import { encrypt } from "@/utility/misc";
+import { prisma } from "../../../prisma/client";
 
 export async function createWorkflow(webstoreId: number, name: string) {
   await prisma.orderWorkflow.create({
@@ -160,56 +159,69 @@ export async function createStep(parentWorkflowId: number, order?: number) {
   });
 }
 
-export async function createWebstore(formData: FormData) {
+export async function createWebstore(
+  data: WebstoreEditorData & { apiKey: string; apiSecret: string }
+) {
   const {
-    changeApiKey,
-    changeApiSecret,
     name,
-    orgName: organizationName,
-    url,
-    salesPersonName,
-    salesPersonEmail,
-    otherSupportEmails,
     orderUpdatedEmails,
-    allowApproverChangeMethod,
-    allowUpsToCanada,
-    shippingMethodIds,
-    customOrderApprovedEmail,
+    organizationName,
+    otherSupportEmails,
+    salesPersonEmail,
+    salesPersonName,
+    shippingMethods,
+    shippingSettings,
+    url,
     useCustomOrderApprovedEmail,
-  } = validateWebstoreFormData(formData);
+    customOrderApprovedEmail,
+    apiKey: apiKeyInput,
+    apiSecret: apiSecretInput,
+  } = data;
+
   const {
     ciphertext: apiKey,
     iv: apiKeyEncryptIv,
     tag: apiKeyEncryptTag,
-  } = encrypt(changeApiKey);
+  } = encrypt(apiKeyInput);
   const {
     ciphertext: apiSecret,
     iv: apiSecretEncryptIv,
     tag: apiSecretEncryptTag,
-  } = encrypt(changeApiSecret);
+  } = encrypt(apiSecretInput);
 
-  return createDbWebstore(
-    {
+  const webstore = await prisma.webstore.create({
+    data: {
+      name,
+      url,
+      organizationName,
+      otherSupportEmails,
+      orderUpdatedEmails,
+      salesPersonEmail,
+      salesPersonName,
       apiKey,
       apiKeyEncryptIv,
       apiKeyEncryptTag: apiKeyEncryptTag.toString("base64"),
       apiSecret,
       apiSecretEncryptIv,
       apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
-      name,
-      organizationName,
-      url,
-      salesPersonName,
-      salesPersonEmail,
-      otherSupportEmails,
-      orderUpdatedEmails,
       useCustomOrderApprovedEmail,
       customOrderApprovedEmail,
+      shippingMethods: {
+        connect: shippingMethods.map((method) => ({ id: method.id })),
+      },
     },
-    allowApproverChangeMethod,
-    allowUpsToCanada,
-    shippingMethodIds
-  );
+  });
+
+  await prisma.webstoreShippingSettings.create({
+    data: {
+      webstoreId: webstore.id,
+      allowApproverChangeMethod:
+        shippingSettings?.allowApproverChangeMethod || false,
+      allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
+    },
+  });
+
+  return webstore;
 }
 
 export async function createOrConnectWebstoreUser(
@@ -246,4 +258,15 @@ export async function createOrConnectWebstoreUser(
   } else {
     return createUser(email, name, webstoreId, "approver");
   }
+}
+
+export async function createWebstoreCheckoutField(webstoreId: number) {
+  return prisma.webstoreCheckoutField.create({
+    data: {
+      name: "",
+      label: "",
+      type: "text",
+      webstoreId,
+    },
+  });
 }

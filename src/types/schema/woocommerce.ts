@@ -71,6 +71,7 @@ export const wooCommerceOrderDataSchema = z.object({
   lineItems: z.array(wooCommerceLineItemSchema),
   feeLines: z.array(wooCommerceFeeLineSchema),
   dateCreated: z.date(),
+  customerNote: z.string(),
   shipping: z.object({
     firstName: z.string(),
     lastName: z.string(),
@@ -86,6 +87,9 @@ export const wooCommerceOrderDataSchema = z.object({
       id: z.number(),
       method_title: z.string(),
     })
+  ),
+  metaData: z.array(
+    z.object({ id: z.number(), key: z.string(), value: z.string() })
   ),
 });
 

@@ -11,7 +11,10 @@ export async function sendEmail(
   recipientAddress: string,
   subject: string,
   message: string,
-  attachments?: Attachment[]
+  attachments?: Attachment[],
+  options?: {
+    autoLineBreaks?: boolean;
+  }
 ) {
   const fromAddress = process.env.NODEMAILER_FROM_ADDRESS;
   const password = process.env.NODEMAILER_FROM_PASSWORD;
@@ -30,11 +33,14 @@ export async function sendEmail(
       pass: password,
     },
   });
+
+  const modifiedMessage = message.replace(/\r|\r\n|\n/g, "<br>");
+
   const email: Mail.Options = {
     from: fromAddress,
     to: recipientAddress,
     subject,
-    html: message,
+    html: options?.autoLineBreaks ? modifiedMessage : message,
     attachments,
   };
   return transporter.sendMail(email);

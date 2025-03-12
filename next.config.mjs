@@ -21,6 +21,10 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.resolve.alias.handlebars = "handlebars/dist/handlebars.js"; //seems to fix the error: "require.extensions is not supported by webpack. Use a loader instead."
+    return config;
+  },
 };
 
 export default nextConfig;

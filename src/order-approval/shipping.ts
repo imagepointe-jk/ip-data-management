@@ -5,6 +5,10 @@ import {
   getUspsInternationalPrice,
 } from "@/fetch/client/shipping";
 import {
+  WooCommerceOrder,
+  WooCommerceProduct,
+} from "@/types/schema/woocommerce";
+import {
   validateUpsRateResponse,
   validateUspsPriceResponse,
 } from "@/types/validations/shipping";
@@ -13,28 +17,28 @@ import {
 const upsShippingCodes: { exactString: string; code: string }[] = [
   //domestic
   {
-    exactString: "UPS 3-Day Select®",
+    exactString: "UPS 3-Day Select&#174;",
     code: "12",
   },
   {
-    exactString: "UPS® Ground",
+    exactString: "UPS&#174; Ground",
     code: "03",
   },
   {
-    exactString: "UPS 2nd Day Air®",
+    exactString: "UPS 2nd Day Air&#174;",
     code: "02",
   },
   {
-    exactString: "UPS Next Day Air®",
+    exactString: "UPS Next Day Air&#174;",
     code: "01",
   },
   //intl
   {
-    exactString: "UPS Worldwide Express™",
+    exactString: "UPS Worldwide Express&#8482;",
     code: "07",
   },
   {
-    exactString: "UPS Worldwide Express Plus™",
+    exactString: "UPS Worldwide Express Plus&#8482;",
     code: "54",
   },
   {
@@ -48,19 +52,19 @@ const upsShippingCodes: { exactString: string; code: string }[] = [
 ];
 const uspsShippingCodes: { exactString: string; code: string }[] = [
   {
-    exactString: "Priority Mail® (USPS)",
+    exactString: "Priority Mail&#174; (USPS)",
     code: "PRIORITY_MAIL",
   },
   {
-    exactString: "Ground Advantage™ (USPS)",
+    exactString: "Ground Advantage&#8482; (USPS)",
     code: "USPS_GROUND_ADVANTAGE",
   },
   {
-    exactString: "Priority Mail International® (USPS)",
+    exactString: "Priority Mail International&#174; (USPS)",
     code: "PRIORITY_MAIL_INTERNATIONAL",
   },
   {
-    exactString: "Priority Mail Express International™ (USPS)",
+    exactString: "Priority Mail Express International&#8482; (USPS)",
     code: "PRIORITY_MAIL_EXPRESS_INTERNATIONAL",
   },
 ];
@@ -77,7 +81,7 @@ type ShippingRateParams = {
   postalCode: string;
   stateCode: string;
 };
-export async function rateShippingMethod(
+async function rateShippingMethod(
   params: ShippingRateParams
 ): Promise<RatedShippingMethod> {
   if (params.method.includes("UPS")) return getParsedUpsRate(params);
@@ -184,4 +188,61 @@ async function getParsedUspsRate(params: ShippingRateParams) {
     total: parsed.totalBasePrice.toFixed(2),
     statusCode: priceResponse.status,
   };
+}
+
+export async function getRatedShippingMethods(
+  order: WooCommerceOrder,
+  products: WooCommerceProduct[],
+  shippingMethods: string[],
+  special?: {
+    //highly specific settings for edge cases
+    allowUpsShippingToCanada?: boolean;
+  }
+) {
+  if (!products) throw new Error("No products");
+
+  const totalWeight = products.reduce((accum, product) => {
+    const matchingLineItem = order.lineItems.find(
+      (item) => item.productId === product.id
+    );
+    const thisWeight = matchingLineItem
+      ? matchingLineItem.quantity * +product.weight
+      : 0;
+    return accum + thisWeight;
+  }, 0);
+
+  const permittedShippingMethods = shippingMethods.filter((method) => {
+    if (special?.allowUpsShippingToCanada) return method;
+    return order?.shipping.country !== "CA" || !method.includes("UPS");
+  });
+
+  const {
+    firstName,
+    lastName,
+    address1,
+    address2,
+    city,
+    state,
+    postcode,
+    country,
+  } = order.shipping;
+
+  const ratedMethods: RatedShippingMethod[] = await Promise.all(
+    permittedShippingMethods.map(async (method) =>
+      rateShippingMethod({
+        firstName,
+        lastName,
+        addressLine1: address1,
+        addressLine2: address2,
+        city,
+        stateCode: state,
+        postalCode: postcode,
+        countryCode: country,
+        method,
+        totalWeight,
+      })
+    )
+  );
+
+  return ratedMethods;
 }

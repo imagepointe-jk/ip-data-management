@@ -106,3 +106,11 @@ export async function deleteStep(id: number) {
     ),
   ]);
 }
+
+export async function deleteCheckoutField(id: number) {
+  await prisma.webstoreCheckoutField.delete({
+    where: {
+      id,
+    },
+  });
+}

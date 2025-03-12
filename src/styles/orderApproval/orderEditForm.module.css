@@ -61,6 +61,7 @@
 td.line-item-x-container {
   padding: 0;
   position: relative;
+  min-width: 30px;
 }
 
 .main .line-item-x {
@@ -101,21 +102,36 @@ td.line-item-x-container {
   margin: 0;
 }
 
-.shipping-fields {
+.main-fields-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flex-fields {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.shipping-fields input[type="text"],
-.shipping-fields select {
+.flex-fields input[type="text"],
+.flex-fields select {
   width: 250px;
+}
+
+.shipping-methods-parent {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .shipping-methods-container {
   padding: 10px;
   border-radius: 10px;
   border: 1px solid gray;
+  min-width: 320px;
+  max-width: 370px;
+  min-height: 220px;
 }
 
 .shipping-methods-container h4 {
@@ -131,6 +147,7 @@ td.line-item-x-container {
   display: flex;
   flex-direction: column;
   align-items: end;
+  min-width: 180px;
 }
 
 .totals-bold {
@@ -159,7 +176,8 @@ td.line-item-x-container {
 
 .main input[type="text"],
 .main input[type="number"],
-.main select {
+.main select,
+.main textarea {
   display: block;
   font-size: 1.125rem;
   padding: 5px;
@@ -258,9 +276,9 @@ td.line-item-x-container {
 }
 
 @media screen and (max-width: 500px) {
-  .shipping-fields > div,
-  .shipping-fields input,
-  .shipping-fields select {
+  .flex-fields > div,
+  .flex-fields input,
+  .flex-fields select {
     width: 100%;
   }
 }

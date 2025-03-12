@@ -23,6 +23,7 @@ const webstoreIncludes = {
   },
   shippingSettings: true,
   shippingMethods: true,
+  checkoutFields: true,
 };
 export async function getWebstoreById(id: number) {
   return prisma.webstore.findUnique({
@@ -253,6 +254,7 @@ const accessCodeIncludes = {
             include: {
               shippingMethods: true,
               shippingSettings: true,
+              checkoutFields: true,
             },
           },
         },

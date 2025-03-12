@@ -48,6 +48,8 @@ export function parseWooCommerceOrderJson(json: any) {
   json.shipping.address1 = json.shipping.address_1;
   json.shipping.address2 = json.shipping.address_2;
   json.shippingLines = json.shipping_lines;
+  json.metaData = json.meta_data;
+  json.customerNote = json.customer_note || "";
 
   return wooCommerceOrderDataSchema.parse(json);
 }

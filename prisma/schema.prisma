@@ -191,6 +191,7 @@ model Webstore {
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]
   userRoles                   OrderWorkflowWebstoreUserRole[]
+  checkoutFields              WebstoreCheckoutField[]
 }
 
 model WebstoreShippingSettings {
@@ -206,6 +207,16 @@ model WebstoreShippingMethod {
   name        String
   serviceCode Int?
   webstores   Webstore[]
+}
+
+model WebstoreCheckoutField {
+  id         Int      @id @default(autoincrement())
+  webstoreId Int
+  name       String
+  label      String
+  type       String
+  options    String?
+  webstore   Webstore @relation(fields: [webstoreId], references: [id])
 }
 
 model OrderWorkflow {

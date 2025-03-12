@@ -7,12 +7,6 @@ type Props = {
   ratedShippingMethods: RatedShippingMethod[];
 };
 export function TotalsArea({ order, ratedShippingMethods }: Props) {
-  const chosenMethod = ratedShippingMethods.find(
-    (method) => method.name === order.shippingLines[0]?.method_title
-  );
-  const chosenMethodTotal =
-    chosenMethod && chosenMethod.total ? +chosenMethod.total : 0;
-  const grandTotal = +order.total - +order.shippingTotal + chosenMethodTotal;
   const totals: {
     name: string;
     amount: string | null;
@@ -28,14 +22,8 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
       amount: order.totalTax,
     },
     {
-      name: "Shipping Total",
-      amount: chosenMethodTotal ? chosenMethodTotal.toFixed(2) : null,
-      asterisk: true,
-    },
-    {
-      name: "Grand Total",
-      amount: grandTotal.toFixed(2),
-      asterisk: true,
+      name: "Total w/o Shipping",
+      amount: (+order.subtotal + +order.totalTax).toFixed(2),
       bold: true,
     },
   ];
@@ -53,11 +41,6 @@ export function TotalsArea({ order, ratedShippingMethods }: Props) {
           {total.asterisk && <div className={styles["totals-asterisk"]}>*</div>}
         </div>
       ))}
-      <div className={styles["info-box"]}>
-        *Shipping costs listed are estimates only. Actual shipping charges may
-        be more or less than shown. Please allow 24-48 business hours (M-F) to
-        process the order plus estimated delivery time for your order to arrive.
-      </div>
     </div>
   );
 }
