@@ -67,6 +67,7 @@ export async function getOrder(
 
 export type OrderUpdateData = {
   id: number;
+  customer_note: string;
   shipping: {
     first_name?: string;
     last_name?: string;
