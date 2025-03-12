@@ -131,7 +131,12 @@ async function getParsedUpsRate(params: ShippingRateParams) {
     weight: totalWeight,
   });
   if (!ratingResponse.ok) {
-    console.error(`UPS API response ${ratingResponse.status}`);
+    try {
+      const ratingJson = await ratingResponse.json();
+      console.error(`UPS API Error: ${ratingJson.message}`);
+    } catch (error) {
+      console.error(`UPS API response ${ratingResponse.status}`);
+    }
     nullResult.statusCode = ratingResponse.status;
     return nullResult;
   }
