@@ -59,11 +59,11 @@ function Main() {
     setLoading(false);
   }
 
-  async function doDeny(reason: string) {
+  async function doDeny(reason: string, pin: string) {
     try {
       setLoading(true);
       setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "deny", reason);
+      await receiveWorkflowEvent(accessCode, "deny", reason, pin);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
