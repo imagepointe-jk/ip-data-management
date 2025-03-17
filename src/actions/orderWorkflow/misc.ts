@@ -19,7 +19,8 @@ import {
 export async function receiveWorkflowEvent(
   accessCode: string,
   type: OrderWorkflowEventType,
-  message?: string
+  message?: string,
+  pin?: string
 ) {
   try {
     const foundAccessCode = await prisma.orderWorkflowAccessCode.findFirst({
@@ -31,6 +32,10 @@ export async function receiveWorkflowEvent(
       },
     });
     if (!foundAccessCode) throw new Error("Access code not found.");
+
+    const requiresPin = type === "approve" || type === "deny";
+    if (requiresPin && foundAccessCode.simplePin !== `${pin}`)
+      throw new Error("Invalid PIN.");
 
     await handleWorkflowEvent(
       foundAccessCode.instanceId,

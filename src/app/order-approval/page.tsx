@@ -47,11 +47,11 @@ function Main() {
     : null;
   const action = search.get("action") ? `${search.get("action")}` : null;
 
-  async function doApprove() {
+  async function doApprove(pin: string) {
     try {
       setLoading(true);
       setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "approve");
+      await receiveWorkflowEvent(accessCode, "approve", "", pin);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
