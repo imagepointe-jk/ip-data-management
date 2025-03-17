@@ -2,12 +2,14 @@ import { getFieldValue } from "@/order-approval/checkoutFields";
 import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { WebstoreCheckoutField } from "@prisma/client";
+import { Updater } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
+  setOrder: Updater<WooCommerceOrder | null>;
   fields: Omit<WebstoreCheckoutField, "webstoreId">[];
 };
-export function CheckoutFields({ order, fields }: Props) {
+export function CheckoutFields({ order, setOrder, fields }: Props) {
   return (
     <div>
       <h3>Additional Information</h3>
@@ -34,8 +36,14 @@ export function CheckoutFields({ order, fields }: Props) {
                 cols={40}
                 rows={5}
                 value={getFieldValue(field.name, order)}
-                onChange={() => {}}
-                disabled
+                onChange={(e) => {
+                  if (field.name === "order_comments") {
+                    setOrder((draft) => {
+                      if (draft) draft.customerNote = e.target.value;
+                    });
+                  }
+                }}
+                disabled={field.name !== "order_comments"}
               />
             )}
 

@@ -16,7 +16,7 @@ import {
   getAllApproversFor,
   getAccessCodeWithIncludesByOrderAndEmail,
 } from "@/db/access/orderApproval";
-import { cancelOrder, getOrder } from "@/fetch/woocommerce";
+import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
 import { getEnvVariable } from "@/utility/misc";
 import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
@@ -76,6 +76,26 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
   await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
   await setWorkflowInstanceStatus(instance.id, "waiting");
   await updateWorkflowInstanceLastStartedDate(instance.id);
+
+  try {
+    const { key, secret } = decryptWebstoreData(workflow.webstore);
+    const response = await setOrderStatus(
+      instance.wooCommerceOrderId,
+      workflow.webstore.url,
+      key,
+      secret,
+      "on hold"
+    );
+    if (!response.ok)
+      throw new Error(`The API responded with a ${response.status} status.`);
+  } catch (error) {
+    sendEmail(
+      env.DEVELOPER_EMAIL,
+      `Error starting workflow instance ${id}`,
+      `Failed to set the corresponding WooCommerce order's status to "ON HOLD". This was the error: ${error}`
+    );
+  }
+
   handleCurrentStep(instance);
 }
 
@@ -240,6 +260,25 @@ async function doWorkflowApprovedAction(
       autoLineBreaks: useCustomOrderApprovedEmail === true,
     }
   );
+
+  try {
+    const { key, secret } = decryptWebstoreData(parentWorkflow.webstore);
+    const response = await setOrderStatus(
+      workflowInstance.wooCommerceOrderId,
+      parentWorkflow.webstore.url,
+      key,
+      secret,
+      "processing"
+    );
+    if (!response.ok)
+      throw new Error(`The API responded with a ${response.status} status.`);
+  } catch (error) {
+    sendEmail(
+      env.DEVELOPER_EMAIL,
+      `Error approving workflow instance ${workflowInstance.id}`,
+      `Failed to set the corresponding WooCommerce order's status to "PROCESSING". This was the error: ${error}`
+    );
+  }
 }
 
 async function doWorkflowDeniedAction(workflowInstance: OrderWorkflowInstance) {
@@ -266,11 +305,12 @@ async function doCancelOrderAction(workflowInstance: OrderWorkflowInstance) {
         "Canceling FAILED because the workflow could not be found"
       );
     const { key, secret } = decryptWebstoreData(workflow.webstore);
-    const cancelResponse = await cancelOrder(
+    const cancelResponse = await setOrderStatus(
       workflowInstance.wooCommerceOrderId,
       workflow.webstore.url,
       key,
-      secret
+      secret,
+      "cancelled"
     );
     if (!cancelResponse.ok)
       throw new Error(

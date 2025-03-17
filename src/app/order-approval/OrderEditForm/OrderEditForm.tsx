@@ -114,6 +114,7 @@ export function OrderEditForm({
         {
           ...order,
           line_items: lineItemsWithDeletions,
+          customer_note: order.customerNote,
           shipping: {
             ...order.shipping,
             first_name: order.shipping.firstName,
@@ -271,7 +272,11 @@ export function OrderEditForm({
                       ratedShippingMethods={ratedShippingMethods}
                       onChangeShippingInfo={onChangeShippingInfo}
                     />
-                    <CheckoutFields fields={checkoutFields} order={order} />
+                    <CheckoutFields
+                      fields={checkoutFields}
+                      order={order}
+                      setOrder={setOrder}
+                    />
                     {permissions?.shipping?.method === "edit" && (
                       <ShippingMethods
                         order={order}
