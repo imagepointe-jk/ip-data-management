@@ -219,9 +219,7 @@ async function doEmailAction(
     await sendEmail(
       target,
       actionSubject || "Order Update",
-      prepend + processedMessage,
-      [],
-      { autoLineBreaks: true }
+      prepend + processedMessage
     );
   }
 }
