@@ -84,7 +84,7 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
       workflow.webstore.url,
       key,
       secret,
-      "on hold"
+      "on-hold"
     );
     if (!response.ok)
       throw new Error(`The API responded with a ${response.status} status.`);

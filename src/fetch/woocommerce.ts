@@ -130,7 +130,7 @@ export async function setOrderStatus(
   storeUrl: string,
   storeKey: string,
   storeSecret: string,
-  status: "on hold" | "processing" | "cancelled"
+  status: "on-hold" | "processing" | "cancelled"
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
