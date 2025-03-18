@@ -5,7 +5,7 @@ import styles from "@/styles/orderApproval/approverArea.module.css";
 import { NavButtons } from "./NavButtons";
 
 type Props = {
-  doApprove: () => void;
+  doApprove: (pin: string) => void;
   loading: boolean;
   success: boolean;
   error: boolean;
@@ -17,6 +17,7 @@ export default function ApproveForm({
   error,
 }: Props) {
   const [acknowledged, setAcknowledged] = useState(false);
+  const [pin, setPin] = useState("");
 
   return (
     <>
@@ -40,9 +41,19 @@ export default function ApproveForm({
             I understand that by after clicking &quot;Approve&quot;, it may not
             be possible to reverse my decision.
           </label>
+          <label htmlFor="pin" className={styles["pin-container"]}>
+            Enter PIN:{" "}
+            <input
+              type="text"
+              name="pin"
+              id="pin"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+            />
+          </label>
           <div>
             <button
-              onClick={doApprove}
+              onClick={() => doApprove(pin)}
               className={styles["approve-button"]}
               disabled={!acknowledged}
             >
@@ -51,7 +62,7 @@ export default function ApproveForm({
           </div>
           {error && (
             <div style={{ color: "red" }}>
-              There was an error. Please contact us.
+              There was an error. Did you enter the correct PIN?
             </div>
           )}
           <NavButtons />

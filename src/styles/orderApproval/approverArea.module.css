@@ -51,6 +51,10 @@
   background-color: red;
 }
 
+.deny-button {
+  margin-top: 20px;
+}
+
 .deny-button:disabled {
   background-color: lightgray;
   cursor: initial;
@@ -63,6 +67,15 @@
 .approve-button:disabled {
   cursor: initial;
   background-color: rgb(135, 189, 135);
+}
+
+.pin-container {
+  margin-top: 20px;
+}
+
+.pin-container input[type="text"] {
+  font-size: 1.25rem;
+  width: 100px;
 }
 
 @media screen and (max-width: 1024px) {

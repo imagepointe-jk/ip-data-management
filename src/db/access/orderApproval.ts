@@ -1,5 +1,6 @@
 import { prisma } from "@/../prisma/client";
 import { OrderWorkflowUserRole } from "@/types/schema/orderApproval";
+import { createRandomDigitString } from "@/utility/misc";
 import { Webstore } from "@prisma/client";
 
 export async function getWebstore(url: string) {
@@ -240,6 +241,7 @@ export async function createAccessCode(
       instanceId: workflowInstanceId,
       userId,
       userRole,
+      simplePin: createRandomDigitString(6),
     },
   });
 }

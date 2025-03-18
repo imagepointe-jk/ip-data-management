@@ -20,6 +20,7 @@ type Replacer = {
     wcOrder: WooCommerceOrder;
     userName: string;
     accessCode: string;
+    pin: string;
     webstore: Webstore;
     denyReason: string | null;
   }) => string;
@@ -27,6 +28,11 @@ type Replacer = {
   shortcode?: string;
 };
 export const replacers: Replacer[] = [
+  {
+    description: "Insert <br> for HTML",
+    fn: ({ text }) => text.replace(/\r|\r\n|\n/g, "<br>"),
+    automatic: true,
+  },
   {
     description: "Insert order details",
     shortcode: "{order}",
@@ -121,6 +127,12 @@ export const replacers: Replacer[] = [
     fn: ({ text, denyReason }) =>
       text.replace(/\{deny-reason\}/, `${denyReason || "(no denial reason)"}`),
   },
+  {
+    description: "The user's PIN, unique to the current workflow instance",
+    shortcode: "{pin}",
+    automatic: false,
+    fn: ({ text, pin }) => text.replace(/\{pin\}/, pin),
+  },
 ];
 
 export async function processFormattedText(
@@ -168,6 +180,7 @@ export async function processFormattedText(
         userName: user?.name || "USER_NOT_FOUND",
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
+        pin: accessCode?.simplePin || "NO_PIN_FOUND",
       });
     }
     return processed;

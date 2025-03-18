@@ -229,3 +229,10 @@ export function checkEnvVariable(value: string | undefined, isClient = false) {
       statusCode: INTERNAL_SERVER_ERROR,
     });
 }
+
+//only use when cryptographic randomness is not needed
+export function createRandomDigitString(digits: number) {
+  return Array.from({ length: digits }, () =>
+    Math.floor(Math.random() * 10)
+  ).join("");
+}
