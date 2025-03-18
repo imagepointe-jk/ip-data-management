@@ -15,6 +15,12 @@ import {
   createSupportEmail,
   processFormattedText,
 } from "@/order-approval/mail/mail";
+import fs from "fs";
+import handlebars from "handlebars";
+import path from "path";
+import { decryptWebstoreData } from "@/order-approval/encryption";
+import { getOrder } from "@/fetch/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -169,4 +175,50 @@ export async function processFormattedTextAction(e: FormData) {
 //keep an eye on this in case it breaks in the future.
 export async function getFullWorkflow(id: number) {
   return getWorkflowWithIncludes(id);
+}
+
+export async function sendInvoiceEmail(
+  workflowInstanceId: number,
+  recipientAddress: string
+) {
+  const instance = await prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id: workflowInstanceId,
+    },
+    include: {
+      parentWorkflow: {
+        include: {
+          webstore: true,
+        },
+      },
+    },
+  });
+  if (!instance)
+    throw new Error(`Workflow instance ${workflowInstanceId} not found.`);
+
+  const { wooCommerceOrderId, parentWorkflow } = instance;
+  const { key, secret } = decryptWebstoreData(parentWorkflow.webstore);
+  const orderResponse = await getOrder(
+    wooCommerceOrderId,
+    parentWorkflow.webstore.url,
+    key,
+    secret
+  );
+  if (!orderResponse.ok)
+    throw new Error(`Failed to get WooCommerce order ${wooCommerceOrderId}`);
+  const orderJson = await orderResponse.json();
+  const parsedOrder = parseWooCommerceOrderJson(orderJson);
+
+  const templateSource = fs.readFileSync(
+    path.resolve(process.cwd(), "src/order-approval/mail/invoiceEmail.hbs"),
+    "utf-8"
+  );
+  const template = handlebars.compile(templateSource);
+  const message = template(parsedOrder);
+
+  return sendEmail(
+    recipientAddress,
+    `Invoice for Order ${wooCommerceOrderId}`,
+    message
+  );
 }

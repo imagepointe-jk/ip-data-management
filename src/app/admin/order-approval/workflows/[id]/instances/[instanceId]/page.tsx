@@ -5,6 +5,7 @@ import {
 } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
+import { InvoiceSender } from "./InvoiceSender";
 
 type Props = {
   params: {
@@ -52,6 +53,15 @@ export default async function Page({ params: { id, instanceId } }: Props) {
             </>
           )}
         </div>
+      )}
+      {instance.status === "finished" && (
+        <InvoiceSender
+          workflowInstanceId={instance.id}
+          users={instance.accessCodes.map((code) => ({
+            name: code.user.name,
+            email: code.user.email,
+          }))}
+        />
       )}
       <h2>Users</h2>
       <ResultsTable instance={instance} webstoreUrl={workflow.webstore.url} />
