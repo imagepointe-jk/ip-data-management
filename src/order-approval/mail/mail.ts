@@ -20,6 +20,7 @@ type Replacer = {
     wcOrder: WooCommerceOrder;
     userName: string;
     accessCode: string;
+    pin: string;
     webstore: Webstore;
     denyReason: string | null;
   }) => string;
@@ -126,6 +127,12 @@ export const replacers: Replacer[] = [
     fn: ({ text, denyReason }) =>
       text.replace(/\{deny-reason\}/, `${denyReason || "(no denial reason)"}`),
   },
+  {
+    description: "The user's PIN, unique to the current workflow instance",
+    shortcode: "{pin}",
+    automatic: false,
+    fn: ({ text, pin }) => text.replace(/\{pin\}/, pin),
+  },
 ];
 
 export async function processFormattedText(
@@ -173,6 +180,7 @@ export async function processFormattedText(
         userName: user?.name || "USER_NOT_FOUND",
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
+        pin: accessCode?.simplePin || "NO_PIN_FOUND",
       });
     }
     return processed;
