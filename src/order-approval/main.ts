@@ -75,6 +75,7 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
   const lowestStepOrder = lowestStep ? lowestStep.order : 0;
   await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
   await setWorkflowInstanceStatus(instance.id, "waiting");
+  await setWorkflowInstanceDeniedReason(instance.id, null);
   await updateWorkflowInstanceLastStartedDate(instance.id);
 
   try {

@@ -312,7 +312,7 @@ export async function setWorkflowInstanceStatus(
 
 export async function setWorkflowInstanceDeniedReason(
   id: number,
-  reason: string
+  reason: string | null
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
