@@ -199,6 +199,10 @@ async function doEmailAction(
   const otherTargets = step.otherActionTargets
     ? step.otherActionTargets.split(";")
     : [];
+  const processedSubject = (actionSubject || "Order Update").replace(
+    /\{order-id\}/,
+    `${workflowInstance.wooCommerceOrderId}`
+  ); //currently the order id is the only dynamic value needed for the subject; this will need to be more robust if more are needed
   const processedMessage = await processFormattedText(
     `${actionMessage}`,
     workflowInstance.id,
@@ -217,11 +221,7 @@ async function doEmailAction(
         ? ""
         : `<strong>This message's primary recipient is ${targetPrimary}, but you have have been included on the email list for this order.</strong><br /><br />`;
 
-    await sendEmail(
-      target,
-      actionSubject || "Order Update",
-      prepend + processedMessage
-    );
+    await sendEmail(target, processedSubject, prepend + processedMessage);
   }
 }
 
