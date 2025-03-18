@@ -146,7 +146,7 @@ td.line-item-x-container {
   text-align: right;
   display: flex;
   flex-direction: column;
-  align-items: end;
+  align-items: flex-end;
   min-width: 180px;
 }
 
