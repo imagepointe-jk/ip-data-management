@@ -5,7 +5,7 @@ import styles from "@/styles/orderApproval/approverArea.module.css";
 import { NavButtons } from "./NavButtons";
 
 type Props = {
-  doApprove: (pin: string) => void;
+  doApprove: (comments: string | null, pin: string) => void;
   loading: boolean;
   success: boolean;
   error: boolean;
@@ -17,6 +17,7 @@ export default function ApproveForm({
   error,
 }: Props) {
   const [acknowledged, setAcknowledged] = useState(false);
+  const [comments, setComments] = useState("");
   const [pin, setPin] = useState("");
 
   return (
@@ -30,17 +31,19 @@ export default function ApproveForm({
       {!success && !loading && (
         <>
           <h1>Approve Order</h1>
-          <label htmlFor="approve-acknowledge">
-            <input
-              type="checkbox"
-              name="approve-acknowledge"
-              id="approve-acknowledge"
-              checked={acknowledged}
-              onChange={(e) => setAcknowledged(e.target.checked)}
-            />
-            I understand that by after clicking &quot;Approve&quot;, it may not
-            be possible to reverse my decision.
-          </label>
+          <div className={styles["approval-comments-container"]}>
+            <label htmlFor="comments">Comments (optional)</label>
+            <div>
+              <textarea
+                name="comments"
+                id="comments"
+                cols={40}
+                rows={8}
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
+              ></textarea>
+            </div>
+          </div>
           <label htmlFor="pin" className={styles["pin-container"]}>
             Enter PIN:{" "}
             <input
@@ -51,9 +54,20 @@ export default function ApproveForm({
               onChange={(e) => setPin(e.target.value)}
             />
           </label>
+          <label htmlFor="approve-acknowledge">
+            <input
+              type="checkbox"
+              name="approve-acknowledge"
+              id="approve-acknowledge"
+              checked={acknowledged}
+              onChange={(e) => setAcknowledged(e.target.checked)}
+            />
+            I understand that after clicking &quot;Approve Now&quot;, it may not
+            be possible to reverse my decision.
+          </label>
           <div>
             <button
-              onClick={() => doApprove(pin)}
+              onClick={() => doApprove(comments || null, pin)}
               className={styles["approve-button"]}
               disabled={!acknowledged}
             >

@@ -25,7 +25,7 @@ import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 export async function receiveWorkflowEvent(
   accessCode: string,
   type: OrderWorkflowEventType,
-  message?: string,
+  message: string | null,
   pin?: string
 ) {
   try {
