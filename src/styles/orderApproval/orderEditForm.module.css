@@ -22,6 +22,7 @@
   text-align: center;
   max-width: 800px;
   margin-bottom: 30px;
+  background-color: yellow;
 }
 
 .column-right-align {
@@ -131,7 +132,7 @@ td.line-item-x-container {
   border: 1px solid gray;
   min-width: 320px;
   max-width: 370px;
-  min-height: 220px;
+  min-height: 170px;
 }
 
 .shipping-methods-container h4 {
@@ -139,7 +140,7 @@ td.line-item-x-container {
 }
 
 .shipping-method-invalid {
-  color: gray;
+  display: none;
 }
 
 .totals {

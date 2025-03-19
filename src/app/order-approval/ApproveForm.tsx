@@ -76,7 +76,8 @@ export default function ApproveForm({
           </div>
           {error && (
             <div style={{ color: "red" }}>
-              There was an error. Did you enter the correct PIN?
+              There was an error. Please check your PIN and try again. If the
+              problem persists, please contact us.
             </div>
           )}
           <NavButtons />
