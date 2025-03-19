@@ -21,6 +21,7 @@ type Replacer = {
     userName: string;
     deniedUser: string;
     approvedUser: string;
+    approvedComments: string;
     accessCode: string;
     pin: string;
     webstore: Webstore;
@@ -148,6 +149,13 @@ export const replacers: Replacer[] = [
     fn: ({ text, approvedUser }) =>
       text.replace(/\{approve-user\}/, approvedUser),
   },
+  {
+    description: "The comments given with the approval, if any",
+    shortcode: "{approve-msg}",
+    automatic: false,
+    fn: ({ text, approvedComments }) =>
+      text.replace(/\{approve-msg\}/, approvedComments),
+  },
 ];
 
 export async function processFormattedText(
@@ -198,6 +206,7 @@ export async function processFormattedText(
         pin: accessCode?.simplePin || "NO_PIN_FOUND",
         deniedUser: instance.deniedByUser?.name || "USER_NOT_FOUND",
         approvedUser: instance.approvedByUser?.name || "USER_NOT_FOUND",
+        approvedComments: instance.approvedComments || "(no comments)",
       });
     }
     return processed;
