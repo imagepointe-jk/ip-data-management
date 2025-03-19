@@ -41,15 +41,20 @@ export default async function Page({ params: { id, instanceId } }: Props) {
       </ul>
       {instance.status === "finished" && (
         <div className="content-frame" style={{ width: "400px" }}>
-          {instance.deniedReason && (
+          {instance.deniedByUser && (
             <>
-              This order has been <strong>DENIED</strong> for the following
-              reason: <p>{instance.deniedReason}</p>
+              This order has been <strong>DENIED</strong> by{" "}
+              {instance.deniedByUser.name} for the following reason:{" "}
+              <p>{instance.deniedReason}</p>
             </>
           )}
-          {!instance.deniedReason && (
+          {instance.approvedByUser && (
             <>
-              This order has been <strong>APPROVED</strong>.
+              This order has been <strong>APPROVED</strong> by{" "}
+              {instance.approvedByUser.name}.
+              {instance.approvedComments && (
+                <p>Comments: {instance.approvedComments}</p>
+              )}
             </>
           )}
         </div>

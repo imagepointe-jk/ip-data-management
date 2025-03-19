@@ -164,6 +164,8 @@ export async function getWorkflowInstanceWithIncludes(id: number) {
           user: true,
         },
       },
+      approvedByUser: true,
+      deniedByUser: true,
     },
   });
 }
