@@ -19,6 +19,8 @@ type Replacer = {
     text: string;
     wcOrder: WooCommerceOrder;
     userName: string;
+    deniedUser: string;
+    approvedUser: string;
     accessCode: string;
     pin: string;
     webstore: Webstore;
@@ -133,6 +135,19 @@ export const replacers: Replacer[] = [
     automatic: false,
     fn: ({ text, pin }) => text.replace(/\{pin\}/, pin),
   },
+  {
+    description: "The user that denied the order, if any",
+    shortcode: "{deny-user}",
+    automatic: false,
+    fn: ({ text, deniedUser }) => text.replace(/\{deny-user\}/, deniedUser),
+  },
+  {
+    description: "The user that most recently approved the order, if any",
+    shortcode: "{approve-user}",
+    automatic: false,
+    fn: ({ text, approvedUser }) =>
+      text.replace(/\{approve-user\}/, approvedUser),
+  },
 ];
 
 export async function processFormattedText(
@@ -181,6 +196,8 @@ export async function processFormattedText(
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
         pin: accessCode?.simplePin || "NO_PIN_FOUND",
+        deniedUser: instance.deniedByUser?.name || "USER_NOT_FOUND",
+        approvedUser: instance.approvedByUser?.name || "USER_NOT_FOUND",
       });
     }
     return processed;
