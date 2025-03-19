@@ -139,7 +139,7 @@ function Main() {
         Order {serverData?.orderId} has already been {instanceFinishedStatus} by{" "}
         {serverData?.approvedByUserName ||
           serverData?.deniedByUserName ||
-          "STATUS_NOT_FOUND"}
+          "USER_NOT_FOUND"}
         .{" "}
       </div>
     );
