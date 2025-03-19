@@ -263,6 +263,8 @@ const accessCodeIncludes = {
           },
         },
       },
+      approvedByUser: true,
+      deniedByUser: true,
     },
   },
 };

@@ -47,6 +47,8 @@ export const orderApprovalServerDataSchema = z.object({
   ),
   allowApproverChangeMethod: z.boolean().optional(),
   allowUpsToCanada: z.boolean().optional(),
+  deniedByUserName: z.string().optional(),
+  approvedByUserName: z.string().optional(),
   userEmail: z.string(), //the email of the user associated with the provided access code
   checkoutFields: z.array(
     z.object({

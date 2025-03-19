@@ -46,6 +46,13 @@ function Main() {
     ? `${search.get("code")}`
     : null;
   const action = search.get("action") ? `${search.get("action")}` : null;
+  const instanceFinished =
+    serverData?.approvedByUserName || serverData?.deniedByUserName;
+  const instanceFinishedStatus = serverData?.approvedByUserName
+    ? "approved"
+    : serverData?.deniedByUserName
+    ? "denied"
+    : "INVALID_STATUS";
 
   async function doApprove(comments: string | null, pin: string) {
     try {
@@ -125,6 +132,18 @@ function Main() {
     setAccessCode(accessCodeInParams);
     getServerData(accessCodeInParams);
   }, [accessCodeInParams]);
+
+  if (instanceFinished) {
+    return (
+      <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
+        Order {serverData?.orderId} has already been {instanceFinishedStatus} by{" "}
+        {serverData?.approvedByUserName ||
+          serverData?.deniedByUserName ||
+          "STATUS_NOT_FOUND"}
+        .{" "}
+      </div>
+    );
+  }
 
   return (
     <>
