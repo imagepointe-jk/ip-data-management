@@ -187,6 +187,7 @@ model Webstore {
   orderUpdatedEmails          String?
   customOrderApprovedEmail    String?
   useCustomOrderApprovedEmail Boolean                         @default(false)
+  shippingEmailFilename       String                          @default("NO_SHIPPING_EMAIL")
   shippingSettings            WebstoreShippingSettings?
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]

@@ -26,6 +26,7 @@ const blankState: WebstoreEditorData = {
   shippingMethods: [],
   shippingSettings: null,
   useCustomOrderApprovedEmail: false,
+  shippingEmailFilename: "NO_SHIPPING_EMAIL",
 };
 type Props = {
   webstoreData: WebstoreEditorData | null;
@@ -35,11 +36,13 @@ type Props = {
     serviceCode: number | null;
   }[];
   shortcodeReference: ReactNode;
+  shippingEmailFilenames: string[];
 };
 export function EditingForm({
   webstoreData,
   shippingMethods,
   shortcodeReference,
+  shippingEmailFilenames,
 }: Props) {
   const [webstoreState, setWebstoreState] = useImmer(
     webstoreData ? webstoreData : blankState
@@ -76,6 +79,7 @@ export function EditingForm({
         setApiKey={setApiKey}
         apiSecret={apiSecret}
         setApiSecret={setApiSecret}
+        shippingEmailFilenames={shippingEmailFilenames}
       />
       <EmailSettings
         webstoreState={webstoreState}

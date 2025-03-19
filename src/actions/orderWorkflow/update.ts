@@ -66,6 +66,7 @@ export async function updateWebstore(
     salesPersonName,
     otherSupportEmails,
     orderUpdatedEmails,
+    shippingEmailFilename,
     checkoutFields,
     shippingMethods,
     shippingSettings,
@@ -101,6 +102,7 @@ export async function updateWebstore(
         orderUpdatedEmails,
         customOrderApprovedEmail,
         useCustomOrderApprovedEmail,
+        shippingEmailFilename,
         apiKey: changeApiKey ? apiKey : undefined,
         apiKeyEncryptIv: changeApiKey ? apiKeyEncryptIv : undefined,
         apiKeyEncryptTag: changeApiKey
