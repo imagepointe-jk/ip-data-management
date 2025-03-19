@@ -255,11 +255,7 @@ async function doWorkflowApprovedAction(
   await sendEmail(
     shippingEmail,
     `Order ${workflowInstance.wooCommerceOrderId} Approved`,
-    shippingMessage,
-    [],
-    {
-      autoLineBreaks: useCustomOrderApprovedEmail === true,
-    }
+    shippingMessage
   );
 
   try {
