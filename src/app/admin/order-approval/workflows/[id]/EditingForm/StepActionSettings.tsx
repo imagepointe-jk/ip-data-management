@@ -2,6 +2,7 @@ import { orderWorkflowActionTypes } from "@/types/schema/orderApproval";
 import { makeStringTitleCase } from "@/utility/misc";
 import { OrderWorkflowStep } from "@prisma/client";
 import { useEditingContext } from "../WorkflowEditingContext";
+import { useState } from "react";
 
 type Props = {
   step: OrderWorkflowStep;
@@ -75,28 +76,38 @@ export function StepActionSettings({ step }: Props) {
           <>
             {/* Action Target */}
 
-            <div>
-              <div className="input-label">Action Target</div>
-              <select
-                value={step.actionTarget || "none"}
-                onChange={(e) => onChangeActionTarget(e.target.value)}
-              >
-                {[
-                  <option key={-1} value={"none"}>
-                    (none)
-                  </option>,
-                  ...workflowUsers
-                    .filter((user) => user.role === "approver")
-                    .map((user) => (
-                      <option key={user.id} value={user.email}>
-                        {user.name}
-                      </option>
-                    )),
-                  <option key="purchaser" value="purchaser">
-                    Purchaser
-                  </option>,
-                ]}
-              </select>
+            <div style={{ display: "flex" }}>
+              <div>
+                <div className="input-label">Action Target</div>
+                <input
+                  type="text"
+                  value={step.actionTarget || ""}
+                  onChange={(e) => onChangeActionTarget(e.target.value)}
+                />
+              </div>
+              <div>
+                <div className="input-label">Quick Select</div>
+                <select
+                  value=""
+                  onChange={(e) => onChangeActionTarget(e.target.value)}
+                >
+                  {[
+                    <option key={-1} value="">
+                      Select...
+                    </option>,
+                    ...workflowUsers
+                      .filter((user) => user.role === "approver")
+                      .map((user) => (
+                        <option key={user.id} value={user.email}>
+                          {user.name}
+                        </option>
+                      )),
+                    <option key="purchaser" value="purchaser">
+                      Purchaser
+                    </option>,
+                  ]}
+                </select>
+              </div>
             </div>
 
             {/* Other action targets */}
