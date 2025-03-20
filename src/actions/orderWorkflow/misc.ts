@@ -191,10 +191,21 @@ export async function sendInvoiceEmail(
           webstore: true,
         },
       },
+      approvedByUser: {
+        include: {
+          accessCodes: true,
+        },
+      },
     },
   });
   if (!instance)
     throw new Error(`Workflow instance ${workflowInstanceId} not found.`);
+
+  const approvedByUserName = instance.approvedByUser?.name || "USER_NOT_FOUND";
+  const approvedByPin =
+    instance.approvedByUser?.accessCodes.find(
+      (code) => code.instanceId === workflowInstanceId
+    )?.simplePin || "PIN_NOT_FOUND";
 
   const { wooCommerceOrderId, parentWorkflow } = instance;
   const { key, secret } = decryptWebstoreData(parentWorkflow.webstore);
@@ -214,7 +225,11 @@ export async function sendInvoiceEmail(
     "utf-8"
   );
   const template = handlebars.compile(templateSource);
-  const message = template(parsedOrder);
+  const message = template({
+    ...parsedOrder,
+    approvedByUserName,
+    approvedByPin,
+  });
 
   return sendEmail(
     recipientAddress,

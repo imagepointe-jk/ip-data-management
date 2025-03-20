@@ -58,7 +58,11 @@
 {{/if}}
 <div><span style="font-weight: bold">Subtotal: </span>${{subtotal}}</div>
 <div><span style="font-weight: bold">Total Tax: </span>${{totalTax}}</div>
-{{!-- <div><span style="font-weight: bold">Total Shipping:
-  </span>${{shippingTotal}}</div>
-<div><span style="font-weight: bold">Grand Total: </span>${{total}}</div>
-<br /> --}}
+<br />
+<br />
+<div>
+  This order was approved by
+  <strong>{{approvedByUserName}}</strong>
+  using the following PIN:
+  {{approvedByPin}}
+</div>
