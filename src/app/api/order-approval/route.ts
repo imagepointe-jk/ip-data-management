@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         approvedByUserName:
           foundAccessCode.workflowInstance.approvedByUser?.name,
         deniedByUserName: foundAccessCode.workflowInstance.deniedByUser?.name,
+        instanceStatus: foundAccessCode.workflowInstance.status,
       },
       easyCorsInit
     );

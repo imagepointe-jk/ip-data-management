@@ -46,8 +46,6 @@ function Main() {
     ? `${search.get("code")}`
     : null;
   const action = search.get("action") ? `${search.get("action")}` : null;
-  const instanceFinished =
-    serverData?.approvedByUserName || serverData?.deniedByUserName;
   const instanceFinishedStatus = serverData?.approvedByUserName
     ? "approved"
     : serverData?.deniedByUserName
@@ -133,7 +131,7 @@ function Main() {
     getServerData(accessCodeInParams);
   }, [accessCodeInParams]);
 
-  if (instanceFinished) {
+  if (serverData?.instanceStatus === "finished") {
     return (
       <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
         Order {serverData?.orderId} has already been {instanceFinishedStatus} by{" "}
