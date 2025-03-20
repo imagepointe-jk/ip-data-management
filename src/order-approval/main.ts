@@ -239,18 +239,8 @@ async function doWorkflowApprovedAction(
     workflowInstance.parentWorkflowId
   );
   if (!parentWorkflow) throw new Error("No parent workflow");
-  const {
-    webstore: { useCustomOrderApprovedEmail, customOrderApprovedEmail },
-  } = parentWorkflow;
   const shippingEmail = getEnvVariable("IP_SHIPPING_EMAIL");
-
-  const shippingMessage = useCustomOrderApprovedEmail
-    ? await processFormattedText(
-        customOrderApprovedEmail || "",
-        workflowInstance.id,
-        shippingEmail
-      )
-    : await createShippingEmail(workflowInstance.id);
+  const shippingMessage = await createShippingEmail(workflowInstance.id);
 
   await sendEmail(
     shippingEmail,

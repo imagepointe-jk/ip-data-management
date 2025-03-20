@@ -172,8 +172,6 @@ export async function createWebstore(
     shippingMethods,
     shippingSettings,
     url,
-    useCustomOrderApprovedEmail,
-    customOrderApprovedEmail,
     shippingEmailFilename,
     apiKey: apiKeyInput,
     apiSecret: apiSecretInput,
@@ -205,8 +203,6 @@ export async function createWebstore(
       apiSecret,
       apiSecretEncryptIv,
       apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
-      useCustomOrderApprovedEmail,
-      customOrderApprovedEmail,
       shippingEmailFilename,
       shippingMethods: {
         connect: shippingMethods.map((method) => ({ id: method.id })),

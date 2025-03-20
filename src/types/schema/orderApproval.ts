@@ -85,8 +85,6 @@ export type WebstoreEditorData = {
   salesPersonEmail: string;
   otherSupportEmails: string | null;
   orderUpdatedEmails: string | null;
-  useCustomOrderApprovedEmail: boolean;
-  customOrderApprovedEmail: string | null;
   shippingEmailFilename: string;
   checkoutFields: {
     id: number;

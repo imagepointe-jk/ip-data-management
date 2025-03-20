@@ -15,7 +15,6 @@ import { ShippingSettings } from "./ShippingSettings";
 const blankState: WebstoreEditorData = {
   id: 0,
   name: "",
-  customOrderApprovedEmail: "",
   orderUpdatedEmails: "",
   organizationName: "",
   otherSupportEmails: "",
@@ -25,7 +24,6 @@ const blankState: WebstoreEditorData = {
   checkoutFields: [],
   shippingMethods: [],
   shippingSettings: null,
-  useCustomOrderApprovedEmail: false,
   shippingEmailFilename: "NO_SHIPPING_EMAIL",
 };
 type Props = {

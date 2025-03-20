@@ -242,7 +242,10 @@ export async function createShippingEmail(instanceId: number) {
     const parsed = parseWooCommerceOrderJson(orderJson);
 
     const templateSource = fs.readFileSync(
-      path.resolve(process.cwd(), "src/order-approval/mail/shippingEmail.hbs"),
+      path.resolve(
+        process.cwd(),
+        `src/order-approval/mail/shippingEmails/${workflow.webstore.shippingEmailFilename}.hbs`
+      ),
       "utf-8"
     );
     const template = handlebars.compile(templateSource);
