@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { FormEvent, ReactNode, useState } from "react";
 import { useImmer } from "use-immer";
 import { CheckoutFields } from "./CheckoutFields";
-import { EmailSettings } from "./EmailSettings";
 import { MainSettings } from "./MainSettings";
 import { ShippingSettings } from "./ShippingSettings";
 
@@ -78,11 +77,6 @@ export function EditingForm({
         apiSecret={apiSecret}
         setApiSecret={setApiSecret}
         shippingEmailFilenames={shippingEmailFilenames}
-      />
-      <EmailSettings
-        webstoreState={webstoreState}
-        setWebstoreState={setWebstoreState}
-        shortcodeReference={shortcodeReference}
       />
       {!creatingNew && (
         <CheckoutFields
