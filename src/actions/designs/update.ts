@@ -53,6 +53,6 @@ export async function updateDesign(formData: FormData) {
     },
   });
 
-  revalidatePath("/designs");
-  redirect("/designs");
+  revalidatePath("/admin/designs");
+  redirect("/admin/designs");
 }

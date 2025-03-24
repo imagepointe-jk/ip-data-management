@@ -11,8 +11,8 @@ export async function deleteDesign(id: number) {
     },
   });
 
-  revalidatePath("/designs");
-  redirect("/designs");
+  revalidatePath("/admin/designs");
+  redirect("/admin/designs");
 }
 
 export async function deleteDesignVariation(id: number) {
