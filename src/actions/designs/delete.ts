@@ -11,8 +11,8 @@ export async function deleteDesign(id: number) {
     },
   });
 
-  revalidatePath("/designs");
-  redirect("/designs");
+  revalidatePath("/admin/designs");
+  redirect("/admin/designs");
 }
 
 export async function deleteDesignVariation(id: number) {
@@ -21,4 +21,11 @@ export async function deleteDesignVariation(id: number) {
       id,
     },
   });
+}
+
+export async function deleteAllDesignsPermanently() {
+  await prisma.$transaction([
+    prisma.designVariation.deleteMany(),
+    prisma.design.deleteMany(),
+  ]);
 }

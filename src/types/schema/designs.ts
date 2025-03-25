@@ -72,6 +72,39 @@ export const designDataInterchangeRowSchema = z.object({
   Priority: z.number().optional(),
 });
 
+//the format used in the old XLSX design library pseudo-database
+export const designDataImportRowSchema = z.object({
+  ["Design Number"]: z.string(),
+  Name: z.string().optional(),
+  Description: z.string().optional(),
+  ["Default Background Color"]: z.string().optional(),
+  Featured: z.string().optional(),
+  Priority: z.number().optional(),
+  ["Subcategory1 - Union"]: z.string().optional(),
+  ["Subcategory2 - Holiday/Event"]: z.string().optional(),
+  ["Subcategory3"]: z.string().optional(),
+  ["Subcategory4"]: z.string().optional(),
+  ["Subcategory5"]: z.string().optional(),
+  ["Tag1"]: z.string().optional(),
+  ["Tag2"]: z.string().optional(),
+  ["Tag3"]: z.string().optional(),
+  ["Tag4"]: z.string().optional(),
+  ["Tag5"]: z.string().optional(),
+  ["Tag6"]: z.string().optional(),
+  ["Tag7"]: z.string().optional(),
+  ["Tag8"]: z.string().optional(),
+  ["Tag9"]: z.string().optional(),
+  ["Tag10"]: z.string().optional(),
+  ["Tag11"]: z.string().optional(),
+  ["Tag12"]: z.string().optional(),
+  ["Tag13"]: z.string().optional(),
+  ["Tag14"]: z.string().optional(),
+  ["Tag15"]: z.string().optional(),
+  Date: z.string().optional(),
+  ["Status"]: z.string().optional(),
+  ["Image URL"]: z.string().optional(),
+});
+
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
 export const sortingTypeSchema = z.enum(sortingTypes);
 
@@ -122,3 +155,5 @@ export type DesignCategoryWithIncludes = DesignCategory & {
 export type DesignDataInterchangeRow = z.infer<
   typeof designDataInterchangeRowSchema
 >;
+
+export type DesignDataImportRow = z.infer<typeof designDataImportRowSchema>;

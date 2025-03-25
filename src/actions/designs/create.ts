@@ -1,35 +1,26 @@
 "use server";
 
-import { validateDesignFormData } from "@/types/validations/designs";
 import { prisma } from "../../../prisma/client";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { IMAGE_NOT_FOUND_URL } from "@/constants";
 
-export async function createDesign(formData: FormData) {
-  const parsed = validateDesignFormData(formData);
+export async function createDesign(params?: { localDate?: Date }) {
+  const defaultBgColor = await prisma.color.findFirst();
+  if (!defaultBgColor)
+    throw new Error("No color to associate with the new design");
 
-  await prisma.design.create({
+  const defaultDesignType = await prisma.designType.findFirst();
+  if (!defaultDesignType)
+    throw new Error("No design typ eto associate with the new design");
+
+  return prisma.design.create({
     data: {
-      designNumber: parsed.designNumber,
-      description: parsed.description,
-      featured: parsed.featured,
-      date: parsed.date || new Date(),
-      status: parsed.status,
-      designSubcategories: {
-        connect: parsed.subcategoryIds.map((id) => ({ id: +id })),
-      },
-      designTags: {
-        connect: parsed.tagIds.map((id) => ({ id: +id })),
-      },
-      designTypeId: +parsed.designTypeId,
-      defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
-      imageUrl: parsed.imageUrl,
-      priority: parsed.priority,
+      designNumber: "New Design",
+      defaultBackgroundColorId: defaultBgColor.id,
+      designTypeId: defaultDesignType.id,
+      date: params?.localDate,
+      imageUrl: IMAGE_NOT_FOUND_URL,
     },
   });
-
-  revalidatePath("/designs");
-  redirect("/designs");
 }
 
 export async function createDesignVariation(parentDesignId: number) {
@@ -48,7 +39,7 @@ export async function createDesignVariation(parentDesignId: number) {
     throw new Error(`Parent design with id ${parentDesignId} not found.`);
   }
 
-  await prisma.designVariation.create({
+  return prisma.designVariation.create({
     data: {
       colorId: parentDesign.defaultBackgroundColor.id,
       parentDesignId,
@@ -57,6 +48,11 @@ export async function createDesignVariation(parentDesignId: number) {
         connect: parentDesign.designSubcategories,
       },
       designTags: { connect: parentDesign.designTags },
+    },
+    include: {
+      color: true,
+      designSubcategories: true,
+      designTags: true,
     },
   });
 }

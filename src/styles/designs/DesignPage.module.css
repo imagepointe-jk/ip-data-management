@@ -94,6 +94,7 @@ button.variations-add {
   width: 610px;
   height: 380px;
   position: relative;
+  overflow: hidden;
 }
 
 .variations-container input[type="text"],
@@ -103,6 +104,14 @@ button.variations-add {
   width: 100%;
 }
 
+.variations-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  transition: 0.2s;
+}
+
 .variation-card,
 .add-variation-container {
   display: flex;
@@ -110,10 +119,7 @@ button.variations-add {
 }
 
 .variation-card {
-  padding: 10px;
-  position: absolute;
-  left: 0;
-  top: 0;
+  height: 380px;
 }
 
 .variation-scroll-boxes {

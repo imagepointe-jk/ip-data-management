@@ -45,7 +45,7 @@ export function Import() {
       <form onSubmit={onSubmit} className="vert-flex-group">
         <input type="file" name="sheet" />
         <div>
-          <ButtonWithLoading loading={false} normalText="Import" />
+          <ButtonWithLoading loading={loading} normalText="Import" />
         </div>
         {error && (
           <div style={{ color: "red" }}>
