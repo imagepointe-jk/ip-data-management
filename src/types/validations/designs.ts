@@ -1,6 +1,6 @@
 import { findAllFormValues } from "@/utility/misc";
 import {
-  designDataInterchangeRowSchema,
+  designDataImportRowSchema,
   designFormDataSchema,
   quoteRequestSchema,
 } from "../schema/designs";
@@ -94,7 +94,12 @@ export function validateDesignFormData(formData: FormData) {
 export function validateQuoteRequest(json: any) {
   return quoteRequestSchema.parse(json);
 }
+export function validateDesignDataImportSheet(data: any) {
+  if (!Array.isArray(data)) throw new Error("Input was not an array");
+  const prevalidated = data.map((row) => ({
+    ...row,
+    "Design Number": `${row["Design Number"]}`,
+  }));
 
-export function validateDesignDataInput(data: any) {
-  return z.array(designDataInterchangeRowSchema).parse(data);
+  return z.array(designDataImportRowSchema).parse(prevalidated);
 }
