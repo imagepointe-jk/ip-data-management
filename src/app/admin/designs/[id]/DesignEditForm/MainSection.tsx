@@ -1,6 +1,7 @@
 import styles from "@/styles/designs/DesignPage.module.css";
 import { DesignWithIncludes } from "@/types/schema/designs";
 import { Color } from "@prisma/client";
+import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
 
 type Props = {
@@ -9,7 +10,15 @@ type Props = {
   colors: Color[];
 };
 export function MainSection({ design, setDesign, colors }: Props) {
-  // const bgColor = colors.find(color => design.)
+  function onChangeBackgroundColor(e: ChangeEvent<HTMLSelectElement>) {
+    setDesign((draft) => {
+      const colorMatch = colors.find((color) => color.id === +e.target.value);
+      if (!colorMatch) return;
+
+      draft.defaultBackgroundColorId = colorMatch.id;
+      draft.defaultBackgroundColor = colorMatch;
+    });
+  }
 
   return (
     <div className={styles["main-section"]}>
@@ -72,17 +81,7 @@ export function MainSection({ design, setDesign, colors }: Props) {
           name="bg-color"
           id="bg-color"
           value={design.defaultBackgroundColor.id}
-          onChange={(e) =>
-            setDesign((draft) => {
-              const colorMatch = colors.find(
-                (color) => color.id === +e.target.value
-              );
-              if (!colorMatch) return;
-
-              draft.defaultBackgroundColorId = colorMatch.id;
-              draft.defaultBackgroundColor = colorMatch;
-            })
-          }
+          onChange={onChangeBackgroundColor}
         >
           {colors.map((color) => (
             <option key={color.id} value={color.id}>

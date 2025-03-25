@@ -4,8 +4,9 @@ import {
   DesignWithIncludes,
 } from "@/types/schema/designs";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
-import { DesignTag, DesignType } from "@prisma/client";
+import { Color, DesignTag, DesignType } from "@prisma/client";
 import { Updater } from "use-immer";
+import { DesignVariations } from "./DesignVariations";
 
 type Props = {
   design: DesignWithIncludes;
@@ -13,6 +14,7 @@ type Props = {
   designTypes: DesignType[];
   categories: DesignCategoryWithIncludes[];
   tags: DesignTag[];
+  colors: Color[];
 };
 export function SecondarySection({
   design,
@@ -20,6 +22,7 @@ export function SecondarySection({
   designTypes,
   categories,
   tags,
+  colors,
 }: Props) {
   const selectedSubcategoryIds = design.designSubcategories.map(
     (cat) => cat.id
@@ -207,6 +210,18 @@ export function SecondarySection({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Variations section */}
+
+      <div>
+        <DesignVariations
+          design={design}
+          setDesign={setDesign}
+          categories={categories}
+          colors={colors}
+          tags={tags}
+        />
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
 "use client";
 
+import { updateDesign } from "@/actions/designs/update";
+import { useToast } from "@/components/ToastProvider";
+import styles from "@/styles/designs/DesignPage.module.css";
 import {
   DesignCategoryWithIncludes,
   DesignWithIncludes,
 } from "@/types/schema/designs";
 import { Color, DesignTag, DesignType } from "@prisma/client";
-import styles from "@/styles/designs/DesignPage.module.css";
 import { useImmer } from "use-immer";
 import { MainSection } from "./MainSection";
 import { SecondarySection } from "./SecondarySection";
@@ -25,9 +27,11 @@ export function DesignEditForm({
   tags,
 }: DesignDataFormProps) {
   const [design, setDesign] = useImmer(existingDesign);
+  const toast = useToast();
 
   async function onClickSave() {
-    console.log("save");
+    await updateDesign(design);
+    toast.changesSaved();
   }
 
   return (
@@ -40,6 +44,7 @@ export function DesignEditForm({
           designTypes={designTypes}
           categories={categories}
           tags={tags}
+          colors={colors}
         />
       </div>
       <button onClick={onClickSave}>Save Changes</button>

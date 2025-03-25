@@ -48,7 +48,7 @@ export async function createDesignVariation(parentDesignId: number) {
     throw new Error(`Parent design with id ${parentDesignId} not found.`);
   }
 
-  await prisma.designVariation.create({
+  return prisma.designVariation.create({
     data: {
       colorId: parentDesign.defaultBackgroundColor.id,
       parentDesignId,
@@ -57,6 +57,11 @@ export async function createDesignVariation(parentDesignId: number) {
         connect: parentDesign.designSubcategories,
       },
       designTags: { connect: parentDesign.designTags },
+    },
+    include: {
+      color: true,
+      designSubcategories: true,
+      designTags: true,
     },
   });
 }
