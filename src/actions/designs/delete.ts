@@ -22,3 +22,10 @@ export async function deleteDesignVariation(id: number) {
     },
   });
 }
+
+export async function deleteAllDesignsPermanently() {
+  await prisma.$transaction([
+    prisma.designVariation.deleteMany(),
+    prisma.design.deleteMany(),
+  ]);
+}

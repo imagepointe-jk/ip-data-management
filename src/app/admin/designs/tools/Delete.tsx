@@ -1,6 +1,8 @@
 "use client";
 
+import { deleteAllDesignsPermanently } from "@/actions/designs/delete";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { useToast } from "@/components/ToastProvider";
 import { useState } from "react";
 
 const safetyString = "delete all designs";
@@ -8,9 +10,13 @@ const safetyString = "delete all designs";
 export function Delete() {
   const [text, setText] = useState("");
   const safetyStringMatch = text === safetyString;
+  const toast = useToast();
 
   async function onClickDelete() {
     if (!safetyStringMatch) return;
+
+    await deleteAllDesignsPermanently();
+    toast.toast("All designs deleted.", "success");
   }
 
   return (
