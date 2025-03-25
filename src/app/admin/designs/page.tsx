@@ -7,6 +7,7 @@ import ResultsTable from "./ResultsTable";
 import Filter from "./Filter";
 import { DesignQuery, SortingType } from "@/types/schema/designs";
 import { SortingDirection } from "@/types/schema/misc";
+import { CreateDesignButton } from "./CreateDesignButton";
 
 type Props = {
   searchParams?: any;
@@ -40,9 +41,7 @@ export default async function Designs({ searchParams }: Props) {
 
   return (
     <>
-      <Link href="designs/0" className="link-as-button">
-        + Create Design
-      </Link>
+      <CreateDesignButton />
       <Link
         href={`designs/?designType=${encodeURIComponent("Screen Print")}`}
         className={`link-as-button ${
@@ -130,6 +129,9 @@ function parseSearchParams(searchParams: any): Omit<
           type: sortBy,
           direction: sortDirection,
         }
-      : undefined,
+      : {
+          type: "Date",
+          direction: "Descending",
+        },
   };
 }
