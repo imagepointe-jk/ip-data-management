@@ -13,6 +13,9 @@ type Props = {
 };
 export default async function Design({ params }: Props) {
   const id = +params.id;
+
+  if (!id) notFound();
+
   const existingDesign = await getSingleDesign(id);
 
   if (!existingDesign) notFound();
