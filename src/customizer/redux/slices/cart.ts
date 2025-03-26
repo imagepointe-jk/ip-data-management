@@ -258,32 +258,31 @@ export const cartSlice = createSlice({
     },
     editText: (state, action: PayloadAction<EditTextPayload>) => {
       const { guid, style: incomingStyle, text: incomingText } = action.payload;
-      console.log("edit text");
-      // const text = findTextInCart(state, guid);
-      // if (!text) throw new Error("Text not found");
+      const text = findTextInCart(state, guid);
+      if (!text) throw new Error("Text not found");
 
-      // const { textData } = text;
-      // if (incomingText !== undefined) textData.text = incomingText;
+      const { textData } = text;
+      if (incomingText !== undefined) textData.text = incomingText;
 
-      // if (!incomingStyle) return;
+      if (!incomingStyle) return;
 
-      // const newStyle: EditorTextStyle = {};
-      // text.textData.style = text.textData.style || newStyle;
+      const newStyle: EditorTextStyle = {};
+      text.textData.style = text.textData.style || newStyle;
 
-      // if (incomingStyle.align) text.textData.style.align = incomingStyle.align;
-      // if (incomingStyle.fontSize)
-      //   text.textData.style.fontSize = incomingStyle.fontSize;
-      // if (incomingStyle.fontStyle !== undefined)
-      //   text.textData.style.fontStyle = incomingStyle.fontStyle || undefined;
-      // if (incomingStyle.hexCode !== undefined)
-      //   text.textData.style.hexCode = incomingStyle.hexCode || undefined;
-      // if (incomingStyle.strokeHexCode !== undefined)
-      //   text.textData.style.strokeHexCode =
-      //     incomingStyle.strokeHexCode || undefined;
-      // if (incomingStyle.strokeWidth !== undefined)
-      //   text.textData.style.strokeWidth = incomingStyle.strokeWidth;
-      // if (incomingStyle.textDecoration !== undefined)
-      //   text.textData.style.textDecoration = incomingStyle.textDecoration;
+      if (incomingStyle.align) text.textData.style.align = incomingStyle.align;
+      if (incomingStyle.fontSize)
+        text.textData.style.fontSize = incomingStyle.fontSize;
+      if (incomingStyle.fontStyle !== undefined)
+        text.textData.style.fontStyle = incomingStyle.fontStyle || undefined;
+      if (incomingStyle.hexCode !== undefined)
+        text.textData.style.hexCode = incomingStyle.hexCode || undefined;
+      if (incomingStyle.strokeHexCode !== undefined)
+        text.textData.style.strokeHexCode =
+          incomingStyle.strokeHexCode || undefined;
+      if (incomingStyle.strokeWidth !== undefined)
+        text.textData.style.strokeWidth = incomingStyle.strokeWidth;
+      if (incomingStyle.textDecoration !== undefined)
+        text.textData.style.textDecoration = incomingStyle.textDecoration;
     },
     addProductVariation: (
       state,

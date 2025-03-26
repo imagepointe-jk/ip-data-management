@@ -4,7 +4,7 @@ import {
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
 import { StoreType } from "@/customizer/redux/store";
-// import { findTextInCart } from "@/customizer/utils";
+import { findTextInCart } from "@/customizer/utils";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -31,23 +31,23 @@ export function TextEditor() {
   //   (store: StoreType) => store.editorState.selectedLocationId
   // );
   const store = useSelector((store: StoreType) => store);
-  // const selectedText = selectedEditorGuid
-  //   ? findTextInCart(store.cart.present, selectedEditorGuid)
-  //   : undefined;
-  // const onChangeColor = useCallback(
-  //   debounce((hexCode: string) => {
-  //     if (!selectedEditorGuid || !selectedText) return;
-  //     dispatch(
-  //       editText({
-  //         guid: selectedEditorGuid,
-  //         style: {
-  //           hexCode,
-  //         },
-  //       })
-  //     );
-  //   }, 500),
-  //   [selectedEditorGuid, selectedText]
-  // );
+  const selectedText = selectedEditorGuid
+    ? findTextInCart(store.cart.present, selectedEditorGuid)
+    : undefined;
+  const onChangeColor = useCallback(
+    debounce((hexCode: string) => {
+      if (!selectedEditorGuid || !selectedText) return;
+      dispatch(
+        editText({
+          guid: selectedEditorGuid,
+          style: {
+            hexCode,
+          },
+        })
+      );
+    }, 500),
+    [selectedEditorGuid, selectedText]
+  );
 
   function onClickAdd() {
     const newGuid = uuidv4();
@@ -68,68 +68,67 @@ export function TextEditor() {
     dispatch(editText({ guid: selectedEditorGuid, text: e.target.value }));
   }
 
+  //decoration and style are treated as separate even though they're displayed together in the editor
   function onClickStyle(clickedStyle: "bold" | "italic") {
-    console.log("click style");
-    // if (!selectedEditorGuid || !selectedText) return;
+    if (!selectedEditorGuid || !selectedText) return;
 
-    // const {
-    //   textData: { style },
-    // } = selectedText;
-    // const curStyle = style?.fontStyle || "";
-    // let bold = curStyle.includes("bold");
-    // let italic = curStyle.includes("italic");
-    // if (clickedStyle === "bold") bold = !bold;
-    // if (clickedStyle === "italic") italic = !italic;
+    const {
+      textData: { style },
+    } = selectedText;
+    const curStyle = style?.fontStyle || "";
+    let bold = curStyle.includes("bold");
+    let italic = curStyle.includes("italic");
+    if (clickedStyle === "bold") bold = !bold;
+    if (clickedStyle === "italic") italic = !italic;
 
-    // dispatch(
-    //   editText({
-    //     guid: selectedEditorGuid,
-    //     style: {
-    //       fontStyle:
-    //         bold && !italic
-    //           ? "bold"
-    //           : !bold && italic
-    //           ? "italic"
-    //           : bold && italic
-    //           ? "italic bold"
-    //           : null,
-    //     },
-    //   })
-    // );
+    dispatch(
+      editText({
+        guid: selectedEditorGuid,
+        style: {
+          fontStyle:
+            bold && !italic
+              ? "bold"
+              : !bold && italic
+              ? "italic"
+              : bold && italic
+              ? "italic bold"
+              : null,
+        },
+      })
+    );
   }
 
+  //decoration and style are treated as separate even though they're displayed together in the editor
   function onClickDecoration(clickedDecoration: "underline" | "line-through") {
-    console.log("click decoration");
-    // if (!selectedEditorGuid || !selectedText) return;
+    if (!selectedEditorGuid || !selectedText) return;
 
-    // const {
-    //   textData: { style },
-    // } = selectedText;
-    // let decoration = style?.textDecoration || null;
+    const {
+      textData: { style },
+    } = selectedText;
+    let decoration = style?.textDecoration || null;
 
-    // dispatch(
-    //   editText({
-    //     guid: selectedEditorGuid,
-    //     style: {
-    //       textDecoration:
-    //         clickedDecoration === decoration ? null : clickedDecoration,
-    //     },
-    //   })
-    // );
+    dispatch(
+      editText({
+        guid: selectedEditorGuid,
+        style: {
+          textDecoration:
+            clickedDecoration === decoration ? null : clickedDecoration,
+        },
+      })
+    );
   }
 
   function onClickAlign(clickedAlign: "left" | "center" | "right") {
-    console.log("click align");
-    // if (!selectedEditorGuid || !selectedText) return;
+    if (!selectedEditorGuid || !selectedText) return;
 
-    // dispatch(
-    //   editText({
-    //     guid: selectedEditorGuid,
-    //     style: {
-    //       align: clickedAlign,
-    //     },
-    //   })
-    // );
+    dispatch(
+      editText({
+        guid: selectedEditorGuid,
+        style: {
+          align: clickedAlign,
+        },
+      })
+    );
   }
 
   return (
@@ -139,12 +138,12 @@ export function TextEditor() {
         <textarea
           cols={30}
           rows={3}
-          // value={selectedText?.textData.text || ""}
+          value={selectedText?.textData.text || ""}
           onChange={onChangeText}
-          // disabled={!selectedText}
+          disabled={!selectedText}
         ></textarea>
       </div>
-      {/* {selectedText && (
+      {selectedText && (
         <div className={styles["styles-container"]}>
           <div>
             Style
@@ -240,7 +239,7 @@ export function TextEditor() {
             </div>
           </div>
         </div>
-      )} */}
+      )}
       <button className={stylesMain["basic-button"]} onClick={onClickAdd}>
         Add Text
       </button>
