@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
 import { RenderedLocation } from "./productView/RenderedLocation";
 import { getConfinedRectDimensions } from "@/utility/misc";
+import { EditorObject } from "./productView/EditorObject";
 
 export function ProductView() {
   const { selectedView, selectedProductData } = useEditorSelectors();
@@ -38,7 +39,7 @@ export function ProductView() {
     );
   const centeredImageX = (productEditorSize - imageWidthConfined) / 2;
   const centeredImageY = (productEditorSize - imageHeightConfined) / 2;
-  const [showLocationFrames, setShowLocationFrames] = useState(false);
+  // const [showLocationFrames, setShowLocationFrames] = useState(false);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
@@ -64,25 +65,59 @@ export function ProductView() {
           y={centeredImageY}
           width={imageWidthConfined}
           height={imageHeightConfined}
-          onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
+          // onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
         />
 
         {/* Central area: location frames visible when mouse is over this rect */}
 
-        <Rect
+        {/* <Rect
           x={50}
           y={50}
           width={550}
           height={550}
           onMouseEnter={() => setShowLocationFrames(true)}
           onClick={() => dispatch(setSelectedEditorGuid(null))}
-        />
+        /> */}
 
         {/* Location frames */}
 
-        {showLocationFrames && (
+        {/* {showLocationFrames && (
           <LocationFrames locations={viewInProductData.locations} />
-        )}
+        )} */}
+      </Layer>
+
+      {/* Artworks */}
+      <Layer>
+        {selectedView.artworks.map((art) => {
+          const {
+            objectData: {
+              positionNormalized,
+              sizeNormalized,
+              editorGuid,
+              rotationDegrees,
+            },
+            imageUrl,
+          } = art;
+          const { position, size } = convertDesignerObjectData(
+            productEditorSize,
+            productEditorSize,
+            {
+              positionNormalized,
+              sizeNormalized,
+            }
+          );
+          return (
+            <EditorObject
+              editorGuid={editorGuid}
+              rotationDeg={rotationDegrees}
+              width={size.x}
+              height={size.y}
+              x={position.x}
+              y={position.y}
+              imageData={{ src: imageUrl }}
+            />
+          );
+        })}
       </Layer>
 
       {/* Locations with artwork */}

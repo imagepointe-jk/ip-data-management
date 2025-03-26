@@ -16,6 +16,7 @@ import {
   // findLocationInCart,
   // findLocationWithArtworkInCart,
   findVariationInCart,
+  findViewInCart,
   // findTextInCart,
   // findLocationWithTextInCart,
 } from "@/customizer/utils";
@@ -33,6 +34,7 @@ type AddArtworkPayload = {
   addUploadPayload?: {
     uploadedUrl: string;
   };
+  targetViewId: number;
   // targetLocationId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
@@ -75,8 +77,8 @@ function createNewObjectData(
       //if a rectangular one is used, the aspect ratio will be forced into 1:1
       // x: smallestSize,
       // y: smallestSize,
-      x: 0,
-      y: 0,
+      x: 0.2,
+      y: 0.2,
     },
     rotationDegrees: 0,
     editorGuid: newGuid,
@@ -140,32 +142,49 @@ export const cartSlice = createSlice({
       const {
         addDesignPayload,
         addUploadPayload,
+        targetViewId,
         // targetLocationId,
         targetProductData,
         newGuid,
       } = action.payload;
-      console.log("add design");
-      // let imageUrl = null as string | null;
+      let imageUrl = null as string | null;
 
-      // if (addDesignPayload) {
-      //   const { designData, designId, variationId } = addDesignPayload;
-      //   const design = designData.find((design) => design.id === designId);
-      //   const variation = design?.variations.find(
-      //     (variation) => variation.id === variationId
-      //   );
+      if (addDesignPayload) {
+        const { designData, designId, variationId } = addDesignPayload;
+        const design = designData.find((design) => design.id === designId);
+        const variation = design?.variations.find(
+          (variation) => variation.id === variationId
+        );
 
-      //   if (!design) throw new Error(`Design ${designId} not found.`);
-      //   if (!variation && variationId !== undefined)
-      //     throw new Error(
-      //       `Variation ${variationId} of design ${designId} not found.`
-      //     );
+        if (!design) throw new Error(`Design ${designId} not found.`);
+        if (!variation && variationId !== undefined)
+          throw new Error(
+            `Variation ${variationId} of design ${designId} not found.`
+          );
 
-      //   imageUrl = variation?.imageUrl || design.imageUrl;
-      // } else if (addUploadPayload) {
-      //   imageUrl = addUploadPayload.uploadedUrl;
-      // } else {
-      //   throw new Error("Invalid payload.");
-      // }
+        imageUrl = variation?.imageUrl || design.imageUrl;
+      } else if (addUploadPayload) {
+        imageUrl = addUploadPayload.uploadedUrl;
+      } else {
+        throw new Error("Invalid payload.");
+      }
+
+      const viewInState = findViewInCart(state, targetViewId);
+      if (!viewInState)
+        throw new Error(`View ${targetViewId} not found in state`);
+
+      viewInState.artworks.push({
+        imageUrl,
+        identifiers: {
+          designIdentifiers: addDesignPayload
+            ? {
+                designId: addDesignPayload.designId,
+                variationId: addDesignPayload.variationId,
+              }
+            : undefined,
+        },
+        objectData: createNewObjectData(targetProductData, newGuid),
+      });
 
       // const locationInState = findLocationInCart(state, targetLocationId);
       // if (!locationInState)

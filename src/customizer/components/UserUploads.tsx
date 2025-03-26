@@ -19,6 +19,9 @@ export function UserUploads() {
   const inputRef = useRef(null as HTMLInputElement | null);
   const dispatch = useDispatch();
   const { selectedProductData } = useEditorSelectors();
+  const selectedViewId = useSelector(
+    (store: StoreType) => store.editorState.selectedViewId
+  );
   // const selectedLocationId = useSelector(
   //   (store: StoreType) => store.editorState.selectedLocationId
   // );
@@ -45,6 +48,7 @@ export function UserUploads() {
       dispatch(
         addDesign({
           // targetLocationId: selectedLocationId,
+          targetViewId: selectedViewId,
           newGuid,
           addUploadPayload: {
             uploadedUrl,
