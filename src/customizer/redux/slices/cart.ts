@@ -11,13 +11,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
 import {
   convertTransformArgs,
-  findArtworkInCart,
+  // findArtworkInCart,
   findLocationInProductData,
-  findLocationInCart,
-  findLocationWithArtworkInCart,
+  // findLocationInCart,
+  // findLocationWithArtworkInCart,
   findVariationInCart,
-  findTextInCart,
-  findLocationWithTextInCart,
+  // findTextInCart,
+  // findLocationWithTextInCart,
 } from "@/customizer/utils";
 import { productEditorSize } from "@/constants";
 
@@ -33,12 +33,12 @@ type AddArtworkPayload = {
   addUploadPayload?: {
     uploadedUrl: string;
   };
-  targetLocationId: number;
+  // targetLocationId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
 type AddTextPayload = {
-  targetLocationId: number;
+  // targetLocationId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
@@ -49,30 +49,34 @@ type EditTextPayload = Omit<EditorTextData, "text"> & {
 
 function createNewObjectData(
   targetProductData: PopulatedProductSettingsSerializable,
-  targetLocationId: number,
+  // targetLocationId: number,
   newGuid: string
 ) {
-  const locationData = findLocationInProductData(
-    targetProductData,
-    targetLocationId
-  );
-  if (!locationData)
-    throw new Error(`Location data for location ${targetLocationId} not found`);
+  // const locationData = findLocationInProductData(
+  //   targetProductData,
+  //   targetLocationId
+  // );
+  // if (!locationData)
+  //   throw new Error(`Location data for location ${targetLocationId} not found`);
 
-  const smallestSize = [locationData.width, locationData.height].sort(
-    (a, b) => a - b
-  )[0]!;
+  // const smallestSize = [locationData.width, locationData.height].sort(
+  //   (a, b) => a - b
+  // )[0]!;
 
   const newObject: PlacedObject = {
     positionNormalized: {
-      x: locationData.positionX,
-      y: locationData.positionY,
+      // x: locationData.positionX,
+      // y: locationData.positionY,
+      x: 0,
+      y: 0,
     },
     sizeNormalized: {
       //currently only supports square objects
       //if a rectangular one is used, the aspect ratio will be forced into 1:1
-      x: smallestSize,
-      y: smallestSize,
+      // x: smallestSize,
+      // y: smallestSize,
+      x: 0,
+      y: 0,
     },
     rotationDegrees: 0,
     editorGuid: newGuid,
@@ -93,20 +97,22 @@ export const cartSlice = createSlice({
       action: PayloadAction<{ guid: string }>
     ) => {
       const { guid } = action.payload;
-      const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
-      if (!locationWithArtwork)
-        throw new Error("Could not find artwork to delete");
-      locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
-        (artwork) => artwork.objectData.editorGuid !== guid
-      );
+      console.log(`Deleting artwork with guid ${guid}`);
+      // const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
+      // if (!locationWithArtwork)
+      //   throw new Error("Could not find artwork to delete");
+      // locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
+      //   (artwork) => artwork.objectData.editorGuid !== guid
+      // );
     },
     deleteTextFromState: (state, action: PayloadAction<{ guid: string }>) => {
       const { guid } = action.payload;
-      const locationWithText = findLocationWithTextInCart(state, guid);
-      if (!locationWithText) throw new Error("Could not find text to delete");
-      locationWithText.texts = locationWithText.texts.filter(
-        (text) => text.objectData.editorGuid !== guid
-      );
+      console.log(`Deleting text with guid ${guid}`);
+      // const locationWithText = findLocationWithTextInCart(state, guid);
+      // if (!locationWithText) throw new Error("Could not find text to delete");
+      // locationWithText.texts = locationWithText.texts.filter(
+      //   (text) => text.objectData.editorGuid !== guid
+      // );
     },
     setObjectTransform: (
       state,
@@ -114,122 +120,126 @@ export const cartSlice = createSlice({
     ) => {
       //expects absolute px amounts for position and size.
       //will convert to 0-1 range for storing in state.
-      const { guid, transform } = action.payload;
-      const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
-        convertTransformArgs(productEditorSize, productEditorSize, transform);
-      const object =
-        findArtworkInCart(state, guid) || findTextInCart(state, guid);
-      if (!object) throw new Error("No object found to transform");
+      console.log("set object transform");
+      // const { guid, transform } = action.payload;
+      // const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
+      //   convertTransformArgs(productEditorSize, productEditorSize, transform);
+      // const object =
+      //   findArtworkInCart(state, guid) || findTextInCart(state, guid);
+      // if (!object) throw new Error("No object found to transform");
 
-      if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
-      if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
-      if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
-      if (heightNormalized)
-        object.objectData.sizeNormalized.y = heightNormalized;
-      if (transform.rotationDegrees)
-        object.objectData.rotationDegrees = transform.rotationDegrees;
+      // if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
+      // if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
+      // if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
+      // if (heightNormalized)
+      //   object.objectData.sizeNormalized.y = heightNormalized;
+      // if (transform.rotationDegrees)
+      //   object.objectData.rotationDegrees = transform.rotationDegrees;
     },
     addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
       const {
         addDesignPayload,
         addUploadPayload,
-        targetLocationId,
+        // targetLocationId,
         targetProductData,
         newGuid,
       } = action.payload;
-      let imageUrl = null as string | null;
+      console.log("add design");
+      // let imageUrl = null as string | null;
 
-      if (addDesignPayload) {
-        const { designData, designId, variationId } = addDesignPayload;
-        const design = designData.find((design) => design.id === designId);
-        const variation = design?.variations.find(
-          (variation) => variation.id === variationId
-        );
+      // if (addDesignPayload) {
+      //   const { designData, designId, variationId } = addDesignPayload;
+      //   const design = designData.find((design) => design.id === designId);
+      //   const variation = design?.variations.find(
+      //     (variation) => variation.id === variationId
+      //   );
 
-        if (!design) throw new Error(`Design ${designId} not found.`);
-        if (!variation && variationId !== undefined)
-          throw new Error(
-            `Variation ${variationId} of design ${designId} not found.`
-          );
+      //   if (!design) throw new Error(`Design ${designId} not found.`);
+      //   if (!variation && variationId !== undefined)
+      //     throw new Error(
+      //       `Variation ${variationId} of design ${designId} not found.`
+      //     );
 
-        imageUrl = variation?.imageUrl || design.imageUrl;
-      } else if (addUploadPayload) {
-        imageUrl = addUploadPayload.uploadedUrl;
-      } else {
-        throw new Error("Invalid payload.");
-      }
+      //   imageUrl = variation?.imageUrl || design.imageUrl;
+      // } else if (addUploadPayload) {
+      //   imageUrl = addUploadPayload.uploadedUrl;
+      // } else {
+      //   throw new Error("Invalid payload.");
+      // }
 
-      const locationInState = findLocationInCart(state, targetLocationId);
-      if (!locationInState)
-        throw new Error(`Location ${targetLocationId} not found in state`);
+      // const locationInState = findLocationInCart(state, targetLocationId);
+      // if (!locationInState)
+      //   throw new Error(`Location ${targetLocationId} not found in state`);
 
-      locationInState.artworks.push({
-        imageUrl,
-        identifiers: {
-          designIdentifiers: addDesignPayload
-            ? {
-                designId: addDesignPayload.designId,
-                variationId: addDesignPayload.variationId,
-              }
-            : undefined,
-        },
-        objectData: createNewObjectData(
-          targetProductData,
-          targetLocationId,
-          newGuid
-        ),
-      });
+      // locationInState.artworks.push({
+      //   imageUrl,
+      //   identifiers: {
+      //     designIdentifiers: addDesignPayload
+      //       ? {
+      //           designId: addDesignPayload.designId,
+      //           variationId: addDesignPayload.variationId,
+      //         }
+      //       : undefined,
+      //   },
+      //   objectData: createNewObjectData(
+      //     targetProductData,
+      //     targetLocationId,
+      //     newGuid
+      //   ),
+      // });
     },
     addText: (state, action: PayloadAction<AddTextPayload>) => {
-      const { newGuid, targetLocationId, targetProductData } = action.payload;
+      console.log("add text");
+      // const { newGuid, targetLocationId, targetProductData } = action.payload;
 
-      const locationInState = findLocationInCart(state, targetLocationId);
-      if (!locationInState)
-        throw new Error(`Location ${targetLocationId} not found in state`);
+      // const locationInState = findLocationInCart(state, targetLocationId);
+      // if (!locationInState)
+      //   throw new Error(`Location ${targetLocationId} not found in state`);
 
-      locationInState.texts.push({
-        textData: {
-          text: "New Text",
-          style: {
-            fontSize: 20,
-            hexCode: "#000000",
-            align: "left",
-          },
-        },
-        objectData: createNewObjectData(
-          targetProductData,
-          targetLocationId,
-          newGuid
-        ),
-      });
+      // locationInState.texts.push({
+      //   textData: {
+      //     text: "New Text",
+      //     style: {
+      //       fontSize: 20,
+      //       hexCode: "#000000",
+      //       align: "left",
+      //     },
+      //   },
+      //   objectData: createNewObjectData(
+      //     targetProductData,
+      //     targetLocationId,
+      //     newGuid
+      //   ),
+      // });
     },
     editText: (state, action: PayloadAction<EditTextPayload>) => {
       const { guid, style: incomingStyle, text: incomingText } = action.payload;
-      const text = findTextInCart(state, guid);
-      if (!text) throw new Error("Text not found");
+      console.log("edit text");
+      // const text = findTextInCart(state, guid);
+      // if (!text) throw new Error("Text not found");
 
-      const { textData } = text;
-      if (incomingText !== undefined) textData.text = incomingText;
+      // const { textData } = text;
+      // if (incomingText !== undefined) textData.text = incomingText;
 
-      if (!incomingStyle) return;
+      // if (!incomingStyle) return;
 
-      const newStyle: EditorTextStyle = {};
-      text.textData.style = text.textData.style || newStyle;
+      // const newStyle: EditorTextStyle = {};
+      // text.textData.style = text.textData.style || newStyle;
 
-      if (incomingStyle.align) text.textData.style.align = incomingStyle.align;
-      if (incomingStyle.fontSize)
-        text.textData.style.fontSize = incomingStyle.fontSize;
-      if (incomingStyle.fontStyle !== undefined)
-        text.textData.style.fontStyle = incomingStyle.fontStyle || undefined;
-      if (incomingStyle.hexCode !== undefined)
-        text.textData.style.hexCode = incomingStyle.hexCode || undefined;
-      if (incomingStyle.strokeHexCode !== undefined)
-        text.textData.style.strokeHexCode =
-          incomingStyle.strokeHexCode || undefined;
-      if (incomingStyle.strokeWidth !== undefined)
-        text.textData.style.strokeWidth = incomingStyle.strokeWidth;
-      if (incomingStyle.textDecoration !== undefined)
-        text.textData.style.textDecoration = incomingStyle.textDecoration;
+      // if (incomingStyle.align) text.textData.style.align = incomingStyle.align;
+      // if (incomingStyle.fontSize)
+      //   text.textData.style.fontSize = incomingStyle.fontSize;
+      // if (incomingStyle.fontStyle !== undefined)
+      //   text.textData.style.fontStyle = incomingStyle.fontStyle || undefined;
+      // if (incomingStyle.hexCode !== undefined)
+      //   text.textData.style.hexCode = incomingStyle.hexCode || undefined;
+      // if (incomingStyle.strokeHexCode !== undefined)
+      //   text.textData.style.strokeHexCode =
+      //     incomingStyle.strokeHexCode || undefined;
+      // if (incomingStyle.strokeWidth !== undefined)
+      //   text.textData.style.strokeWidth = incomingStyle.strokeWidth;
+      // if (incomingStyle.textDecoration !== undefined)
+      //   text.textData.style.textDecoration = incomingStyle.textDecoration;
     },
     addProductVariation: (
       state,
@@ -259,11 +269,13 @@ export const cartSlice = createSlice({
         id: variationData.id,
         views: variationData.views.map((view) => ({
           id: view.id,
-          locations: view.locations.map((location) => ({
-            id: location.id,
-            artworks: [],
-            texts: [],
-          })),
+          artworks: [],
+          texts: [],
+          // locations: view.locations.map((location) => ({
+          //   id: location.id,
+          //   artworks: [],
+          //   texts: [],
+          // })),
         })),
         quantities: {
           "2xl": 0,

@@ -77,7 +77,7 @@ export function ProductView() {
 
       {/* Locations with artwork */}
 
-      {selectedView.locations.map((location) => {
+      {/* {selectedView.locations.map((location) => {
         const locationInProductData = selectedProductData
           ? findLocationInProductData(selectedProductData, location.id)
           : undefined;
@@ -108,7 +108,7 @@ export function ProductView() {
             />
           </Layer>
         );
-      })}
+      })} */}
     </Stage>
   );
 }

@@ -2,13 +2,13 @@ import { isAction, Middleware } from "@reduxjs/toolkit";
 import { StoreType } from "./store";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
+  // setSelectedLocationId,
   setSelectedProductId,
   setSelectedVariationId,
   setSelectedViewId,
 } from "./slices/editor";
 import {
-  findLocationInCart,
+  // findLocationInCart,
   findVariationInCart,
   findViewInCart,
 } from "../utils";
@@ -35,7 +35,7 @@ export const recoveryMiddleware: Middleware =
         selectedProductId,
         selectedVariationId,
         selectedViewId,
-        selectedLocationId,
+        // selectedLocationId,
       } = state.editorState;
       const cart = state.cart.present;
 
@@ -67,14 +67,14 @@ export const recoveryMiddleware: Middleware =
         selectedView = firstView;
       }
 
-      let selectedLocation = findLocationInCart(cart, selectedLocationId);
-      if (!selectedLocation) {
-        let firstLocation = selectedView.locations[0];
-        if (!firstLocation)
-          throw new Error(`View ${selectedView.id} has no locations!`);
-        dispatch(setSelectedLocationId(firstLocation.id));
-        selectedLocation = firstLocation;
-      }
+      // let selectedLocation = findLocationInCart(cart, selectedLocationId);
+      // if (!selectedLocation) {
+      //   let firstLocation = selectedView.locations[0];
+      //   if (!firstLocation)
+      //     throw new Error(`View ${selectedView.id} has no locations!`);
+      //   dispatch(setSelectedLocationId(firstLocation.id));
+      //   selectedLocation = firstLocation;
+      // }
 
       return result;
     }

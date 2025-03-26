@@ -136,7 +136,9 @@ export function createInitialState(
   };
   const initialView: CartStateProductView = {
     id: firstView.id,
-    locations: [initialLocation],
+    artworks: [],
+    texts: [],
+    // locations: [initialLocation],
   };
   const initialVariationState: CartStateProductVariation = {
     id: initialVariation.id,
@@ -163,11 +165,13 @@ export function createInitialState(
             id: initialVariation.id,
             views: initialVariation.views.map((view) => ({
               id: view.id,
-              locations: view.locations.map((location) => ({
-                id: location.id,
-                artworks: [],
-                texts: [],
-              })),
+              artworks: [],
+              texts: [],
+              // locations: view.locations.map((location) => ({
+              //   id: location.id,
+              //   artworks: [],
+              //   texts: [],
+              // })),
             })),
             quantities: {
               "2xl": 0,
@@ -203,16 +207,20 @@ function allViewsInCart(cart: CartState) {
   return allVariationsInCart(cart).flatMap((variation) => variation.views);
 }
 
-function allLocationsInCart(cart: CartState) {
-  return allViewsInCart(cart).flatMap((view) => view.locations);
-}
+// function allLocationsInCart(cart: CartState) {
+//   return allViewsInCart(cart).flatMap((view) => view.locations);
+// }
 
 function allArtworksInCart(cart: CartState) {
-  return allLocationsInCart(cart).flatMap((location) => location.artworks);
+  // return allLocationsInCart(cart).flatMap((location) => location.artworks);
+  console.log("all artworks in cart");
+  return [];
 }
 
 function allTextsInCart(cart: CartState) {
-  return allLocationsInCart(cart).flatMap((location) => location.texts);
+  // return allLocationsInCart(cart).flatMap((location) => location.texts);
+  console.log("all texts in cart");
+  return [];
 }
 
 export function findVariationInCart(cart: CartState, id: number) {
@@ -223,40 +231,40 @@ export function findViewInCart(cart: CartState, id: number) {
   return allViewsInCart(cart).find((location) => location.id === id);
 }
 
-export function findLocationWithArtworkInCart(
-  cart: CartState,
-  artworkGuid: string
-) {
-  return allLocationsInCart(cart).find(
-    (location) =>
-      !!location.artworks.find(
-        (artwork) => artwork.objectData.editorGuid === artworkGuid
-      )
-  );
-}
+// export function findLocationWithArtworkInCart(
+//   cart: CartState,
+//   artworkGuid: string
+// ) {
+//   return allLocationsInCart(cart).find(
+//     (location) =>
+//       !!location.artworks.find(
+//         (artwork) => artwork.objectData.editorGuid === artworkGuid
+//       )
+//   );
+// }
 
-export function findLocationWithTextInCart(cart: CartState, textGuid: string) {
-  return allLocationsInCart(cart).find(
-    (location) =>
-      !!location.texts.find((text) => text.objectData.editorGuid === textGuid)
-  );
-}
+// export function findLocationWithTextInCart(cart: CartState, textGuid: string) {
+//   return allLocationsInCart(cart).find(
+//     (location) =>
+//       !!location.texts.find((text) => text.objectData.editorGuid === textGuid)
+//   );
+// }
 
-export function findArtworkInCart(cart: CartState, guid: string) {
-  return allArtworksInCart(cart).find(
-    (artwork) => artwork.objectData.editorGuid === guid
-  );
-}
+// export function findArtworkInCart(cart: CartState, guid: string) {
+//   return allArtworksInCart(cart).find(
+//     (artwork) => artwork.objectData.editorGuid === guid
+//   );
+// }
 
-export function findTextInCart(cart: CartState, guid: string) {
-  return allTextsInCart(cart).find(
-    (text) => text.objectData.editorGuid === guid
-  );
-}
+// export function findTextInCart(cart: CartState, guid: string) {
+//   return allTextsInCart(cart).find(
+//     (text) => text.objectData.editorGuid === guid
+//   );
+// }
 
-export function findLocationInCart(cart: CartState, id: number) {
-  return allLocationsInCart(cart).find((location) => location.id === id);
-}
+// export function findLocationInCart(cart: CartState, id: number) {
+//   return allLocationsInCart(cart).find((location) => location.id === id);
+// }
 
 //each variation is treated as a separate cart item, so count the total variations of all products combined
 export function countCartItems(cart: CartState) {

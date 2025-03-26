@@ -3,7 +3,7 @@
 import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
+  // setSelectedLocationId,
   setSelectedVariationId,
   setSelectedViewId,
   useEditorSelectors,
@@ -58,7 +58,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
 
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
-    dispatch(setSelectedLocationId(firstLocation.id));
+    // dispatch(setSelectedLocationId(firstLocation.id));
     dispatch(setSelectedEditorGuid(null));
   }
 
@@ -80,7 +80,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
 
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
-    dispatch(setSelectedLocationId(firstLocation.id));
+    // dispatch(setSelectedLocationId(firstLocation.id));
     dispatch(setSelectedEditorGuid(null));
   }
 
@@ -98,8 +98,8 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     const viewToSelect = variationToSelect.views[0];
     if (!viewToSelect) throw new Error("No view to select");
 
-    const locationToSelect = viewToSelect.locations[0];
-    if (!locationToSelect) throw new Error("No location to select");
+    // const locationToSelect = viewToSelect.locations[0];
+    // if (!locationToSelect) throw new Error("No location to select");
 
     dispatch(
       removeProductVariation({
@@ -109,7 +109,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     );
     dispatch(setSelectedVariationId(variationToSelect.id));
     dispatch(setSelectedViewId(viewToSelect.id));
-    dispatch(setSelectedLocationId(locationToSelect.id));
+    // dispatch(setSelectedLocationId(locationToSelect.id));
     dispatch(setSelectedEditorGuid(null));
   }
 

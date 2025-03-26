@@ -3,7 +3,7 @@ import { Rect } from "react-konva";
 import { useDispatch } from "react-redux";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
+  // setSelectedLocationId,
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
 import { productEditorSize } from "@/constants";
@@ -19,7 +19,7 @@ type Props = {
 };
 export function LocationFrames({ locations }: Props) {
   const dispatch = useDispatch();
-  const { selectedLocation } = useEditorSelectors();
+  // const { selectedLocation } = useEditorSelectors();
 
   return (
     <>
@@ -48,10 +48,10 @@ export function LocationFrames({ locations }: Props) {
             height={size.y}
             stroke={"gray"}
             strokeWidth={4}
-            opacity={selectedLocation.id === location.id ? 1 : 0.3}
+            // opacity={selectedLocation.id === location.id ? 1 : 0.3}
             onClick={() => {
-              dispatch(setSelectedLocationId(location.id));
-              dispatch(setSelectedEditorGuid(null));
+              // dispatch(setSelectedLocationId(location.id));
+              // dispatch(setSelectedEditorGuid(null));
             }}
           />
         );

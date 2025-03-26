@@ -30,9 +30,9 @@ export function DesignCard({ design }: Props) {
   const dispatch = useDispatch();
   const designData = useDesignDataSelector();
   const { selectedProductData } = useEditorSelectors();
-  const selectedLocationId = useSelector(
-    (store: StoreType) => store.editorState.selectedLocationId
-  );
+  // const selectedLocationId = useSelector(
+  //   (store: StoreType) => store.editorState.selectedLocationId
+  // );
   const imageUrl =
     viewIndex === 0
       ? design.imageUrl
@@ -53,7 +53,7 @@ export function DesignCard({ design }: Props) {
           variationId,
           designData: designData.designs,
         },
-        targetLocationId: selectedLocationId,
+        // targetLocationId: selectedLocationId,
         targetProductData: selectedProductData,
         newGuid,
       })

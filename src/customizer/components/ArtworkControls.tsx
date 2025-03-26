@@ -15,25 +15,26 @@ export function ArtworkControls() {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
-  const { selectedLocation } = useEditorSelectors();
+  // const { selectedLocation } = useEditorSelectors();
   const dispatch = useDispatch();
 
   function onClickDelete() {
     if (!selectedEditorGuid) return;
+    console.log("clicked delete");
 
-    const selectedArtwork = selectedLocation.artworks.find(
-      (art) => art.objectData.editorGuid === selectedEditorGuid
-    );
-    const selectedText = selectedLocation.texts.find(
-      (text) => text.objectData.editorGuid === selectedEditorGuid
-    );
+    // const selectedArtwork = selectedLocation.artworks.find(
+    //   (art) => art.objectData.editorGuid === selectedEditorGuid
+    // );
+    // const selectedText = selectedLocation.texts.find(
+    //   (text) => text.objectData.editorGuid === selectedEditorGuid
+    // );
 
-    if (selectedArtwork)
-      dispatch(deleteArtworkFromState({ guid: selectedEditorGuid }));
-    if (selectedText)
-      dispatch(deleteTextFromState({ guid: selectedEditorGuid }));
+    // if (selectedArtwork)
+    //   dispatch(deleteArtworkFromState({ guid: selectedEditorGuid }));
+    // if (selectedText)
+    //   dispatch(deleteTextFromState({ guid: selectedEditorGuid }));
 
-    dispatch(setSelectedEditorGuid(null));
+    // dispatch(setSelectedEditorGuid(null));
   }
 
   if (!selectedEditorGuid) return <></>;

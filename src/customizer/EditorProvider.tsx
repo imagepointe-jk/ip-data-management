@@ -13,7 +13,7 @@ import { setCartProducts } from "./redux/slices/cart";
 import { useSelector } from "react-redux";
 import { StoreType } from "./redux/store";
 import {
-  setSelectedLocationId,
+  // setSelectedLocationId,
   setSelectedProductId,
   setSelectedVariationId,
   setSelectedViewId,
@@ -58,7 +58,7 @@ export function EditorProvider({
     dispatch(setSelectedProductId(initialProduct.id));
     dispatch(setSelectedVariationId(initialVariation.id));
     dispatch(setSelectedViewId(initialView.id));
-    dispatch(setSelectedLocationId(initialLocation.id));
+    // dispatch(setSelectedLocationId(initialLocation.id));
 
     //don't remember the above actions as undoable history
     dispatch(ActionCreators.clearHistory());

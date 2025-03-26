@@ -19,9 +19,9 @@ export function UserUploads() {
   const inputRef = useRef(null as HTMLInputElement | null);
   const dispatch = useDispatch();
   const { selectedProductData } = useEditorSelectors();
-  const selectedLocationId = useSelector(
-    (store: StoreType) => store.editorState.selectedLocationId
-  );
+  // const selectedLocationId = useSelector(
+  //   (store: StoreType) => store.editorState.selectedLocationId
+  // );
 
   async function onChoose(e: ChangeEvent<HTMLInputElement>) {
     if (status === "loading") return;
@@ -44,7 +44,7 @@ export function UserUploads() {
       const newGuid = uuidv4();
       dispatch(
         addDesign({
-          targetLocationId: selectedLocationId,
+          // targetLocationId: selectedLocationId,
           newGuid,
           addUploadPayload: {
             uploadedUrl,
