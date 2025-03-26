@@ -70,12 +70,19 @@
 }
 
 .pin-container {
-  margin-top: 20px;
+  margin: 20px 0;
 }
 
 .pin-container input[type="text"] {
   font-size: 1.25rem;
   width: 100px;
+}
+
+.approval-comments-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media screen and (max-width: 1024px) {

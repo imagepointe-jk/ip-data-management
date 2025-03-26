@@ -25,7 +25,7 @@ export function ShippingMethods({
   return (
     <div className={styles["shipping-methods-parent"]}>
       <div className={styles["shipping-methods-container"]}>
-        <h4>Shipping Method</h4>
+        <h4>Available Shipping Methods</h4>
         {validShippingMethods.length === 0 && (
           <div style={{ marginBottom: "10px" }}>
             No valid shipping methods found. Please check your shipping

@@ -12,9 +12,10 @@ import {
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
   getWorkflowInstancePurchaser,
-  setWorkflowInstanceDeniedReason,
   getAllApproversFor,
   getAccessCodeWithIncludesByOrderAndEmail,
+  setWorkflowInstanceDeniedData,
+  setWorkflowInstanceApprovedData,
 } from "@/db/access/orderApproval";
 import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
@@ -75,6 +76,8 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
   const lowestStepOrder = lowestStep ? lowestStep.order : 0;
   await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
   await setWorkflowInstanceStatus(instance.id, "waiting");
+  await setWorkflowInstanceDeniedData(instance.id, null, null);
+  await setWorkflowInstanceApprovedData(instance.id, null, null);
   await updateWorkflowInstanceLastStartedDate(instance.id);
 
   try {
@@ -198,6 +201,10 @@ async function doEmailAction(
   const otherTargets = step.otherActionTargets
     ? step.otherActionTargets.split(";")
     : [];
+  const processedSubject = (actionSubject || "Order Update").replace(
+    /\{order-id\}/,
+    `${workflowInstance.wooCommerceOrderId}`
+  ); //currently the order id is the only dynamic value needed for the subject; this will need to be more robust if more are needed
   const processedMessage = await processFormattedText(
     `${actionMessage}`,
     workflowInstance.id,
@@ -216,11 +223,7 @@ async function doEmailAction(
         ? ""
         : `<strong>This message's primary recipient is ${targetPrimary}, but you have have been included on the email list for this order.</strong><br /><br />`;
 
-    await sendEmail(
-      target,
-      actionSubject || "Order Update",
-      prepend + processedMessage
-    );
+    await sendEmail(target, processedSubject, prepend + processedMessage);
   }
 }
 
@@ -236,27 +239,13 @@ async function doWorkflowApprovedAction(
     workflowInstance.parentWorkflowId
   );
   if (!parentWorkflow) throw new Error("No parent workflow");
-  const {
-    webstore: { useCustomOrderApprovedEmail, customOrderApprovedEmail },
-  } = parentWorkflow;
   const shippingEmail = getEnvVariable("IP_SHIPPING_EMAIL");
-
-  const shippingMessage = useCustomOrderApprovedEmail
-    ? await processFormattedText(
-        customOrderApprovedEmail || "",
-        workflowInstance.id,
-        shippingEmail
-      )
-    : await createShippingEmail(workflowInstance.id);
+  const shippingMessage = await createShippingEmail(workflowInstance.id);
 
   await sendEmail(
     shippingEmail,
     `Order ${workflowInstance.wooCommerceOrderId} Approved`,
-    shippingMessage,
-    [],
-    {
-      autoLineBreaks: useCustomOrderApprovedEmail === true,
-    }
+    shippingMessage
   );
 
   try {
@@ -283,10 +272,6 @@ async function doWorkflowDeniedAction(workflowInstance: OrderWorkflowInstance) {
   console.log(
     `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
   );
-  //the denied reason is only in-scope when the "Deny" event is received,
-  //so that data is recorded during handleWorkflowEvent.
-  //Currently the only thing distinguishing a "finished approved" instance from a "finished denied" instance
-  //is this reason, but that may change in future.
   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
 }
 
@@ -323,7 +308,7 @@ export async function handleWorkflowEvent(
   workflowInstanceId: number,
   type: OrderWorkflowEventType,
   source: string,
-  message?: string
+  message: string | null
 ) {
   const workflowInstance = await getWorkflowInstance(workflowInstanceId);
   if (!workflowInstance)
@@ -340,18 +325,40 @@ export async function handleWorkflowEvent(
     (listener) => listener.type === type && listener.from === source
   );
   if (matchingListener) {
-    if (matchingListener.type === "deny") {
-      //the reason is only in-scope when the "deny" event is received.
-      //handle all other step behavior (e.g. marking as "finished") in doStepAction.
-      await setWorkflowInstanceDeniedReason(
-        workflowInstanceId,
-        message || "(NO REASON GIVEN. This is a bug.)"
-      );
-    }
+    await handleWorkflowEventDataBeforeProceeding(
+      workflowInstanceId,
+      type,
+      source,
+      message
+    );
     handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
   } else {
     throw new Error(
       `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`
+    );
+  }
+}
+
+//some data from the received event will go out of scope once we move to the next step.
+//do whatever is needed with it before proceeding.
+async function handleWorkflowEventDataBeforeProceeding(
+  workflowInstanceId: number,
+  type: string,
+  source: string,
+  message: string | null
+) {
+  if (type === "deny") {
+    await setWorkflowInstanceDeniedData(
+      workflowInstanceId,
+      message || "(NO REASON GIVEN. This is a bug.)",
+      source
+    );
+  }
+  if (type === "approve") {
+    await setWorkflowInstanceApprovedData(
+      workflowInstanceId,
+      message || null,
+      source
     );
   }
 }
