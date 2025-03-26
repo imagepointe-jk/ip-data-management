@@ -17,6 +17,7 @@ import {
   // findLocationWithArtworkInCart,
   findVariationInCart,
   findViewInCart,
+  findViewWithArtworkInCart,
   // findTextInCart,
   // findLocationWithTextInCart,
 } from "@/customizer/utils";
@@ -100,9 +101,13 @@ export const cartSlice = createSlice({
     ) => {
       const { guid } = action.payload;
       console.log(`Deleting artwork with guid ${guid}`);
+      const viewWithArtwork = findViewWithArtworkInCart(state, guid);
+
       // const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
-      // if (!locationWithArtwork)
-      //   throw new Error("Could not find artwork to delete");
+      if (!viewWithArtwork) throw new Error("Could not find artwork to delete");
+      viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
+        (artwork) => artwork.objectData.editorGuid !== guid
+      );
       // locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
       //   (artwork) => artwork.objectData.editorGuid !== guid
       // );

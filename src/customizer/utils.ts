@@ -231,6 +231,16 @@ export function findViewInCart(cart: CartState, id: number) {
   return allViewsInCart(cart).find((location) => location.id === id);
 }
 
+export function findViewWithArtworkInCart(
+  cart: CartState,
+  artworkGuid: string
+) {
+  return allViewsInCart(cart).find(
+    (view) =>
+      !!view.artworks.find((art) => art.objectData.editorGuid === artworkGuid)
+  );
+}
+
 // export function findLocationWithArtworkInCart(
 //   cart: CartState,
 //   artworkGuid: string
