@@ -236,3 +236,28 @@ export function createRandomDigitString(digits: number) {
     Math.floor(Math.random() * 10)
   ).join("");
 }
+
+//if the given rect is bigger than the given boundaries, scales the rect down so that it "fits" within the boundaries, without affecting aspect ratio.
+//treats the rect as if it is centered within the bounds.
+export function getConfinedRectDimensions(
+  rect: { width: number; height: number },
+  bounds: { width: number; height: number }
+) {
+  if (rect.width <= bounds.width && rect.height <= bounds.height) return rect; //the rect already fits, so don't bother
+
+  const widthDiff = Math.abs(rect.width - bounds.width);
+  const heightDiff = Math.abs(rect.height - bounds.height);
+  const aspectRatio = rect.width / rect.height;
+
+  if (widthDiff > heightDiff) {
+    return {
+      width: bounds.width,
+      height: bounds.width / aspectRatio,
+    };
+  } else {
+    return {
+      width: bounds.height * aspectRatio,
+      height: bounds.height,
+    };
+  }
+}

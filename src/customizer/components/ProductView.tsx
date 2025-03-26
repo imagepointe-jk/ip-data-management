@@ -18,6 +18,7 @@ import {
 import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
 import { RenderedLocation } from "./productView/RenderedLocation";
+import { getConfinedRectDimensions } from "@/utility/misc";
 
 export function ProductView() {
   const { selectedView, selectedProductData } = useEditorSelectors();
@@ -30,6 +31,13 @@ export function ProductView() {
   if (!viewInProductData) throw new Error(`View ${selectedView.id} not found`);
   const [image] = useImage(viewInProductData?.imageUrl || IMAGE_NOT_FOUND_URL);
   const productImgRef = useRef<Konva.Image>(null);
+  const { width: imageWidthConfined, height: imageHeightConfined } =
+    getConfinedRectDimensions(
+      { width: image?.width || 0, height: image?.height || 0 },
+      { width: productEditorSize, height: productEditorSize }
+    );
+  const centeredImageX = (productEditorSize - imageWidthConfined) / 2;
+  const centeredImageY = (productEditorSize - imageHeightConfined) / 2;
   const [showLocationFrames, setShowLocationFrames] = useState(false);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
@@ -52,8 +60,10 @@ export function ProductView() {
         <Image
           ref={productImgRef}
           image={image}
-          width={productEditorSize}
-          height={productEditorSize}
+          x={centeredImageX}
+          y={centeredImageY}
+          width={imageWidthConfined}
+          height={imageHeightConfined}
           onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
         />
 
