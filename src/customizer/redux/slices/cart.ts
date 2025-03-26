@@ -11,14 +11,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
 import {
   convertTransformArgs,
-  // findArtworkInCart,
+  findArtworkInCart,
   findLocationInProductData,
   // findLocationInCart,
   // findLocationWithArtworkInCart,
   findVariationInCart,
   findViewInCart,
   findViewWithArtworkInCart,
-  // findTextInCart,
+  findTextInCart,
   // findLocationWithTextInCart,
 } from "@/customizer/utils";
 import { productEditorSize } from "@/constants";
@@ -127,21 +127,20 @@ export const cartSlice = createSlice({
     ) => {
       //expects absolute px amounts for position and size.
       //will convert to 0-1 range for storing in state.
-      console.log("set object transform");
-      // const { guid, transform } = action.payload;
-      // const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
-      //   convertTransformArgs(productEditorSize, productEditorSize, transform);
-      // const object =
-      //   findArtworkInCart(state, guid) || findTextInCart(state, guid);
-      // if (!object) throw new Error("No object found to transform");
+      const { guid, transform } = action.payload;
+      const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
+        convertTransformArgs(productEditorSize, productEditorSize, transform);
+      const object =
+        findArtworkInCart(state, guid) || findTextInCart(state, guid);
+      if (!object) throw new Error("No object found to transform");
 
-      // if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
-      // if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
-      // if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
-      // if (heightNormalized)
-      //   object.objectData.sizeNormalized.y = heightNormalized;
-      // if (transform.rotationDegrees)
-      //   object.objectData.rotationDegrees = transform.rotationDegrees;
+      if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
+      if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
+      if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
+      if (heightNormalized)
+        object.objectData.sizeNormalized.y = heightNormalized;
+      if (transform.rotationDegrees)
+        object.objectData.rotationDegrees = transform.rotationDegrees;
     },
     addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
       const {

@@ -212,15 +212,13 @@ function allViewsInCart(cart: CartState) {
 // }
 
 function allArtworksInCart(cart: CartState) {
+  return allViewsInCart(cart).flatMap((view) => view.artworks);
   // return allLocationsInCart(cart).flatMap((location) => location.artworks);
-  console.log("all artworks in cart");
-  return [];
 }
 
 function allTextsInCart(cart: CartState) {
+  return allViewsInCart(cart).flatMap((view) => view.texts);
   // return allLocationsInCart(cart).flatMap((location) => location.texts);
-  console.log("all texts in cart");
-  return [];
 }
 
 export function findVariationInCart(cart: CartState, id: number) {
@@ -260,17 +258,17 @@ export function findViewWithArtworkInCart(
 //   );
 // }
 
-// export function findArtworkInCart(cart: CartState, guid: string) {
-//   return allArtworksInCart(cart).find(
-//     (artwork) => artwork.objectData.editorGuid === guid
-//   );
-// }
+export function findArtworkInCart(cart: CartState, guid: string) {
+  return allArtworksInCart(cart).find(
+    (artwork) => artwork.objectData.editorGuid === guid
+  );
+}
 
-// export function findTextInCart(cart: CartState, guid: string) {
-//   return allTextsInCart(cart).find(
-//     (text) => text.objectData.editorGuid === guid
-//   );
-// }
+export function findTextInCart(cart: CartState, guid: string) {
+  return allTextsInCart(cart).find(
+    (text) => text.objectData.editorGuid === guid
+  );
+}
 
 // export function findLocationInCart(cart: CartState, id: number) {
 //   return allLocationsInCart(cart).find((location) => location.id === id);
