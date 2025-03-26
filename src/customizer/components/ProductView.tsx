@@ -119,6 +119,37 @@ export function ProductView() {
             />
           );
         })}
+        {selectedView.texts.map((text) => {
+          const {
+            objectData: {
+              positionNormalized,
+              sizeNormalized,
+              editorGuid,
+              rotationDegrees,
+            },
+            textData,
+          } = text;
+          const { position, size } = convertDesignerObjectData(
+            productEditorSize,
+            productEditorSize,
+            {
+              positionNormalized,
+              sizeNormalized,
+            }
+          );
+          return (
+            <EditorObject
+              key={editorGuid}
+              editorGuid={editorGuid}
+              rotationDeg={rotationDegrees}
+              width={size.x}
+              height={size.y}
+              x={position.x}
+              y={position.y}
+              textData={textData}
+            />
+          );
+        })}
       </Layer>
 
       {/* Locations with artwork */}

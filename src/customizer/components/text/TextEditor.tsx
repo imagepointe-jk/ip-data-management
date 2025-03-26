@@ -56,6 +56,7 @@ export function TextEditor() {
         newGuid,
         // targetLocationId: selectedLocationId,
         targetProductData: selectedProductData,
+        targetViewId: selectedView.id,
       })
     );
     dispatch(setSelectedEditorGuid(newGuid));

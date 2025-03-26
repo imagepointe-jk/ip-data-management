@@ -42,6 +42,7 @@ type AddArtworkPayload = {
 };
 type AddTextPayload = {
   // targetLocationId: number;
+  targetViewId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
@@ -213,12 +214,26 @@ export const cartSlice = createSlice({
     },
     addText: (state, action: PayloadAction<AddTextPayload>) => {
       console.log("add text");
-      // const { newGuid, targetLocationId, targetProductData } = action.payload;
+      const { newGuid, targetViewId, targetProductData } = action.payload;
 
+      const viewInState = findViewInCart(state, targetViewId);
+      if (!viewInState)
+        throw new Error(`View ${targetViewId} not found in state`);
       // const locationInState = findLocationInCart(state, targetLocationId);
       // if (!locationInState)
       //   throw new Error(`Location ${targetLocationId} not found in state`);
 
+      viewInState.texts.push({
+        textData: {
+          text: "New Text",
+          style: {
+            fontSize: 20,
+            hexCode: "#000000",
+            align: "left",
+          },
+        },
+        objectData: createNewObjectData(targetProductData, newGuid),
+      });
       // locationInState.texts.push({
       //   textData: {
       //     text: "New Text",
