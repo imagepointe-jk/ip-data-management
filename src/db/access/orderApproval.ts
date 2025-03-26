@@ -164,6 +164,8 @@ export async function getWorkflowInstanceWithIncludes(id: number) {
           user: true,
         },
       },
+      approvedByUser: true,
+      deniedByUser: true,
     },
   });
 }
@@ -261,6 +263,8 @@ const accessCodeIncludes = {
           },
         },
       },
+      approvedByUser: true,
+      deniedByUser: true,
     },
   },
 };
@@ -310,9 +314,10 @@ export async function setWorkflowInstanceStatus(
   });
 }
 
-export async function setWorkflowInstanceDeniedReason(
+export async function setWorkflowInstanceDeniedData(
   id: number,
-  reason: string
+  reason: string | null,
+  deniedByUserEmail: string | null
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
@@ -320,6 +325,23 @@ export async function setWorkflowInstanceDeniedReason(
     },
     data: {
       deniedReason: reason,
+      deniedByUserEmail,
+    },
+  });
+}
+
+export async function setWorkflowInstanceApprovedData(
+  id: number,
+  comments: string | null,
+  approvedByUserEmail: string | null
+) {
+  return prisma.orderWorkflowInstance.update({
+    where: {
+      id,
+    },
+    data: {
+      approvedComments: comments,
+      approvedByUserEmail,
     },
   });
 }

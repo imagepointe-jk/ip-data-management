@@ -41,6 +41,10 @@ export function ResultsTable({ instance, webstoreUrl }: Props) {
           ),
         },
         {
+          headerName: "PIN (this instance only)",
+          createCell: (code) => code.simplePin,
+        },
+        {
           headerName: "Role",
           createCell: (code) => code.userRole,
         },

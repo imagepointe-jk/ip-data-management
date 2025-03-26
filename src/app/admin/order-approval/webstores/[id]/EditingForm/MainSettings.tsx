@@ -8,6 +8,7 @@ type Props = {
   setApiKey: (val: string) => void;
   apiSecret: string;
   setApiSecret: (val: string) => void;
+  shippingEmailFilenames: string[];
 };
 export function MainSettings({
   webstoreState,
@@ -16,6 +17,7 @@ export function MainSettings({
   setApiKey,
   apiSecret,
   setApiSecret,
+  shippingEmailFilenames,
 }: Props) {
   const creatingNew = webstoreState.id === 0;
 
@@ -156,6 +158,23 @@ export function MainSettings({
           value={apiSecret}
           onChange={(e) => setApiSecret(e.target.value)}
         />
+      </div>
+      <div>
+        <label className="input-label">Shipping Email Filename</label>
+        <select
+          value={webstoreState.shippingEmailFilename}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.shippingEmailFilename = e.target.value;
+            })
+          }
+        >
+          {["NO_SHIPPING_EMAIL"].concat(shippingEmailFilenames).map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
       </div>
     </>
   );

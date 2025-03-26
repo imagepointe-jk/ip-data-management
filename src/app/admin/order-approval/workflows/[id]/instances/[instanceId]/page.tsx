@@ -5,6 +5,7 @@ import {
 } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
+import { InvoiceSender } from "./InvoiceSender";
 
 type Props = {
   params: {
@@ -40,18 +41,32 @@ export default async function Page({ params: { id, instanceId } }: Props) {
       </ul>
       {instance.status === "finished" && (
         <div className="content-frame" style={{ width: "400px" }}>
-          {instance.deniedReason && (
+          {instance.deniedByUser && (
             <>
-              This order has been <strong>DENIED</strong> for the following
-              reason: <p>{instance.deniedReason}</p>
+              This order has been <strong>DENIED</strong> by{" "}
+              {instance.deniedByUser.name} for the following reason:{" "}
+              <p>{instance.deniedReason}</p>
             </>
           )}
-          {!instance.deniedReason && (
+          {instance.approvedByUser && (
             <>
-              This order has been <strong>APPROVED</strong>.
+              This order has been <strong>APPROVED</strong> by{" "}
+              {instance.approvedByUser.name}.
+              {instance.approvedComments && (
+                <p>Comments: {instance.approvedComments}</p>
+              )}
             </>
           )}
         </div>
+      )}
+      {instance.status === "finished" && (
+        <InvoiceSender
+          workflowInstanceId={instance.id}
+          users={instance.accessCodes.map((code) => ({
+            name: code.user.name,
+            email: code.user.email,
+          }))}
+        />
       )}
       <h2>Users</h2>
       <ResultsTable instance={instance} webstoreUrl={workflow.webstore.url} />
