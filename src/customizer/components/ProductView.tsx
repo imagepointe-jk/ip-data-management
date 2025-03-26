@@ -108,6 +108,7 @@ export function ProductView() {
           );
           return (
             <EditorObject
+              key={editorGuid}
               editorGuid={editorGuid}
               rotationDeg={rotationDegrees}
               width={size.x}
