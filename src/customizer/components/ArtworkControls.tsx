@@ -25,14 +25,14 @@ export function ArtworkControls() {
     const selectedArtwork = selectedView.artworks.find(
       (art) => art.objectData.editorGuid === selectedEditorGuid
     );
-    // const selectedText = selectedLocation.texts.find(
-    //   (text) => text.objectData.editorGuid === selectedEditorGuid
-    // );
+    const selectedText = selectedView.texts.find(
+      (text) => text.objectData.editorGuid === selectedEditorGuid
+    );
 
     if (selectedArtwork)
       dispatch(deleteArtworkFromState({ guid: selectedEditorGuid }));
-    // if (selectedText)
-    //   dispatch(deleteTextFromState({ guid: selectedEditorGuid }));
+    if (selectedText)
+      dispatch(deleteTextFromState({ guid: selectedEditorGuid }));
 
     dispatch(setSelectedEditorGuid(null));
   }

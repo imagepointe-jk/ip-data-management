@@ -251,6 +251,12 @@ export function findViewWithArtworkInCart(
 //   );
 // }
 
+export function findViewWithTextInCart(cart: CartState, textGuid: string) {
+  return allViewsInCart(cart).find(
+    (view) =>
+      !!view.texts.find((text) => text.objectData.editorGuid === textGuid)
+  );
+}
 // export function findLocationWithTextInCart(cart: CartState, textGuid: string) {
 //   return allLocationsInCart(cart).find(
 //     (location) =>

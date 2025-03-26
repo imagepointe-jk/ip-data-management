@@ -19,6 +19,7 @@ import {
   findViewInCart,
   findViewWithArtworkInCart,
   findTextInCart,
+  findViewWithTextInCart,
   // findLocationWithTextInCart,
 } from "@/customizer/utils";
 import { productEditorSize } from "@/constants";
@@ -115,7 +116,12 @@ export const cartSlice = createSlice({
     },
     deleteTextFromState: (state, action: PayloadAction<{ guid: string }>) => {
       const { guid } = action.payload;
-      console.log(`Deleting text with guid ${guid}`);
+
+      const viewWithText = findViewWithTextInCart(state, guid);
+      if (!viewWithText) throw new Error("Could not find text to delete");
+      viewWithText.texts = viewWithText.texts.filter(
+        (text) => text.objectData.editorGuid !== guid
+      );
       // const locationWithText = findLocationWithTextInCart(state, guid);
       // if (!locationWithText) throw new Error("Could not find text to delete");
       // locationWithText.texts = locationWithText.texts.filter(
