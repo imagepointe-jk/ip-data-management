@@ -12,6 +12,7 @@ import {
   findViewInProductData,
 } from "../utils";
 import {
+  setDialogOpen,
   setSelectedEditorGuid,
   useEditorSelectors,
 } from "../redux/slices/editor";
@@ -44,7 +45,10 @@ export function ProductView() {
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
       e.target === e.target.getStage() || e.target === productImgRef.current;
-    if (clickedOnEmpty) dispatch(setSelectedEditorGuid(null));
+    if (clickedOnEmpty) {
+      dispatch(setSelectedEditorGuid(null));
+      dispatch(setDialogOpen(null));
+    }
   }
 
   return (
