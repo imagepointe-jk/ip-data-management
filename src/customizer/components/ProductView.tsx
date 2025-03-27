@@ -61,6 +61,16 @@ export function ProductView() {
       onMouseDown={onClickStage}
     >
       <Layer>
+        {/* White background to keep PNG renders from having black pixels */}
+
+        <Rect
+          x={0}
+          y={0}
+          width={productEditorSize}
+          height={productEditorSize}
+          fill={"#ffffff"}
+        />
+
         {/* Product image */}
 
         <Image
