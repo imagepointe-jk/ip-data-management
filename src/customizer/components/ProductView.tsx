@@ -32,6 +32,7 @@ export function ProductView() {
   );
   if (!viewInProductData) throw new Error(`View ${selectedView.id} not found`);
   const [image] = useImage(viewInProductData?.imageUrl || IMAGE_NOT_FOUND_URL);
+  if (image) image.crossOrigin = "Anonymous"; //without this, CORS will cause a "tainted canvas" error when trying to export the canvas
   const productImgRef = useRef<Konva.Image>(null);
   const { width: imageWidthConfined, height: imageHeightConfined } =
     getConfinedRectDimensions(

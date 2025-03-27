@@ -40,6 +40,7 @@ export function EditorObject({
   );
   const dispatch = useDispatch();
   const [image] = useImage(imageData?.src || IMAGE_NOT_FOUND_URL);
+  if (image) image.crossOrigin = "Anonymous"; //without this, CORS will cause a "tainted canvas" error when trying to export the canvas
 
   if (!textData && !imageData)
     throw new Error("EditorObject has no image data or text data!");

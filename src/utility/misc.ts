@@ -200,8 +200,12 @@ export function clamp(value: number, min: number, max: number) {
   return value;
 }
 
-export function forceClientDownloadBlob(blob: Blob, downloadName: string) {
-  const url = URL.createObjectURL(blob);
+export function forceClientDownload(
+  urlOrBlob: Blob | string,
+  downloadName: string
+) {
+  const url =
+    urlOrBlob instanceof Blob ? URL.createObjectURL(urlOrBlob) : urlOrBlob;
 
   const link = document.createElement("a");
   link.href = url;

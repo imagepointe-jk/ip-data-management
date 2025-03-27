@@ -2,10 +2,15 @@ import {
   getRenderedSingleView,
   getRenderedVariationViews,
 } from "@/fetch/client/customizer";
-import { useEditorSelectors } from "../redux/slices/editor";
-import { forceClientDownloadBlob } from "@/utility/misc";
+import {
+  setSelectedEditorGuid,
+  useEditorSelectors,
+} from "../redux/slices/editor";
 import styles from "@/styles/customizer/CustomProductDesigner/download.module.css";
 import { findViewInProductData } from "../utils";
+import Konva from "konva";
+import { forceClientDownload } from "@/utility/misc";
+import { useDispatch } from "react-redux";
 
 export function DownloadDesign() {
   const { selectedVariation, selectedView, selectedProductData } =
@@ -15,46 +20,37 @@ export function DownloadDesign() {
     selectedProductData.variations.find(
       (variation) => variation.id === selectedVariation.id
     )?.color.name || "UNKNOWN COLOR";
+  const dispatch = useDispatch();
 
   async function downloadVariationViews() {
-    try {
-      const response = await getRenderedVariationViews(selectedVariation);
-      if (!response.ok) {
-        const json = await response.json();
-        throw new Error(json.message);
-      }
-      const blob = await response.blob();
-      forceClientDownloadBlob(blob, "my-design");
-    } catch (error) {
-      console.error(error);
-    }
+    console.log("download all views");
+    // try {
+    //   const response = await getRenderedVariationViews(selectedVariation);
+    //   if (!response.ok) {
+    //     const json = await response.json();
+    //     throw new Error(json.message);
+    //   }
+    //   const blob = await response.blob();
+    //   forceClientDownloadBlob(blob, "my-design");
+    // } catch (error) {
+    //   console.error(error);
+    // }
   }
 
   async function downloadSingleView() {
-    try {
-      const viewData = findViewInProductData(
-        selectedProductData,
-        selectedView.id
-      );
-      const response = await getRenderedSingleView(
-        selectedView,
-        viewData?.imageUrl || ""
-      );
-      if (!response.ok) {
-        const json = await response.json();
-        throw new Error(json.message);
-      }
-      const blob = await response.blob();
-      forceClientDownloadBlob(blob, `my-design-${viewData?.name}`);
-    } catch (error) {
-      console.error(error);
-    }
+    const stage = Konva.stages[0];
+    if (!stage) throw new Error("No Konva stage!");
+
+    dispatch(setSelectedEditorGuid(null));
+    const dataURL = stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
+    forceClientDownload(dataURL, "my-image");
   }
 
   return (
     <div className={styles["main"]}>
       <h2>Download</h2>
       <div>What do you want to download?</div>
+      {/* //TODO: Discuss how to handle downloading multiple views. Is the average user comfortable with ZIP? Is it better to auto-download many individual files?
       <div className={styles["download-option-container"]}>
         <div>
           Entire design for {productName} ({colorName})
@@ -62,7 +58,7 @@ export function DownloadDesign() {
         <div>
           <button onClick={downloadVariationViews}>Download Now</button>
         </div>
-      </div>
+      </div> */}
       <div className={styles["download-option-container"]}>
         <div>Just this view</div>
         <div>
