@@ -13,12 +13,23 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
+import { useEditor } from "../EditorProvider";
 
 export function ViewControls() {
   const { selectedView, selectedProductData } = useEditorSelectors();
   const cart = useSelector((store: StoreType) => store.cart.present);
   const viewData = findViewInProductData(selectedProductData, selectedView.id);
   const dispatch = useDispatch();
+  const { updateViewRender } = useEditor();
+
+  function onClick(direction: "left" | "right") {
+    updateViewRender(selectedView.id);
+    if (direction === "left") {
+      dispatch(selectPreviousView({ cart }));
+    } else {
+      dispatch(selectNextView({ cart }));
+    }
+  }
 
   return (
     <div
@@ -27,11 +38,11 @@ export function ViewControls() {
       {!viewData && <>Invalid view</>}
       {viewData && (
         <>
-          <button onClick={() => dispatch(selectPreviousView({ cart }))}>
+          <button onClick={() => onClick("left")}>
             <FontAwesomeIcon icon={faChevronLeft} size={"2x"} />
           </button>
           <div>{viewData.name} View</div>
-          <button onClick={() => dispatch(selectNextView({ cart }))}>
+          <button onClick={() => onClick("right")}>
             <FontAwesomeIcon icon={faChevronRight} size={"2x"} />
           </button>
         </>

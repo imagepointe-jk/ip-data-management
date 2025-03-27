@@ -69,6 +69,7 @@ export const cartStateProductViewSchema = z.object({
   id: z.number(),
   artworks: z.array(cartStateArtworkSchema),
   texts: z.array(cartStateTextSchema),
+  currentRenderUrl: z.string(),
   // locations: z.array(cartStateProductLocationSchema),
 });
 

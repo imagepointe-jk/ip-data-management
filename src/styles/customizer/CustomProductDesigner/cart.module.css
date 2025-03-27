@@ -7,8 +7,9 @@
   padding: 25px;
   background-color: white;
   cursor: initial;
-  width: 550px;
-  height: 550px;
+  width: 650px;
+  height: 400px;
+  /* height: 580px; */
 }
 
 .modal h2 {

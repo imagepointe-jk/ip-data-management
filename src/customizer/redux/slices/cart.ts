@@ -314,6 +314,7 @@ export const cartSlice = createSlice({
           id: view.id,
           artworks: [],
           texts: [],
+          currentRenderUrl: view.imageUrl,
           // locations: view.locations.map((location) => ({
           //   id: location.id,
           //   artworks: [],
@@ -384,6 +385,16 @@ export const cartSlice = createSlice({
       if (newQuantities["5xl"]) quantities["5xl"] = newQuantities["5xl"];
       if (newQuantities["6xl"]) quantities["6xl"] = newQuantities["6xl"];
     },
+    setViewRenderURL: (
+      state,
+      action: PayloadAction<{ viewId: number; url: string }>
+    ) => {
+      const { url, viewId } = action.payload;
+      const view = findViewInCart(state, viewId);
+      if (!view) throw new Error(`View id ${viewId} not found`);
+
+      view.currentRenderUrl = url;
+    },
   },
 });
 
@@ -398,4 +409,5 @@ export const {
   changeProductVariationQuantities,
   setObjectTransform,
   editText,
+  setViewRenderURL,
 } = cartSlice.actions;

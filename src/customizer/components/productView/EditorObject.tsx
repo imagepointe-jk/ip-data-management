@@ -54,7 +54,7 @@ export function EditorObject({
     <Transformable selected={editorGuid === selectedEditorGuid} limits={limits}>
       {textData && (
         <Text
-          onClick={() => onClick(true)}
+          onMouseDown={() => onClick(true)}
           key={editorGuid}
           text={textData.text}
           x={x}
@@ -72,7 +72,7 @@ export function EditorObject({
       )}
       {imageData && (
         <Image
-          onClick={() => onClick()}
+          onMouseDown={() => onClick()}
           image={image}
           width={width}
           height={height}

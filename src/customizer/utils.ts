@@ -17,6 +17,8 @@ import {
   DesignResultsSerializable,
   DesignWithIncludesSerializable,
 } from "./redux/slices/designData";
+import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import Konva from "konva";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -138,6 +140,7 @@ export function createInitialState(
     id: firstView.id,
     artworks: [],
     texts: [],
+    currentRenderUrl: IMAGE_NOT_FOUND_URL,
     // locations: [initialLocation],
   };
   const initialVariationState: CartStateProductVariation = {
@@ -167,6 +170,7 @@ export function createInitialState(
               id: view.id,
               artworks: [],
               texts: [],
+              currentRenderUrl: view.imageUrl,
               // locations: view.locations.map((location) => ({
               //   id: location.id,
               //   artworks: [],
@@ -331,4 +335,10 @@ export function makeDesignResultsSerializable(
     }),
   };
   return newData;
+}
+
+export function getCurrentViewDataURL() {
+  const stage = Konva.stages[0];
+  if (!stage) throw new Error("No Konva stage");
+  return stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
 }
