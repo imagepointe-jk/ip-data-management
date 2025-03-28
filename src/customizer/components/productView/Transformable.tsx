@@ -1,42 +1,22 @@
 import Konva from "konva";
 import { ReactNode, useEffect, useRef } from "react";
 import { Group, Transformer } from "react-konva";
-import { clamp } from "@/utility/misc";
-import { calculateObjectPositionLimits } from "@/customizer/utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
 import { setObjectTransform } from "@/customizer/redux/slices/cart";
+import { TransformArgsPx } from "@/types/schema/customizer";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
 
-export type TransformLimits = {
-  size?: {
-    min?: {
-      width?: number;
-      height?: number;
-    };
-    max?: {
-      width?: number;
-      height?: number;
-    };
-  };
-  boundingRect?: {
-    topLeft: {
-      x: number;
-      y: number;
-    };
-    bottomRight: {
-      x: number;
-      y: number;
-    };
-  };
-};
 type Props = {
   children: ReactNode;
   selected?: boolean;
-  limits?: TransformLimits;
+  constrainTransform?: (params: TransformArgsPx) => {
+    constrainedPosition: { x: number; y: number };
+    constrainedSize: { width: number; height: number };
+  };
   onDragStart?: () => void;
   onDragEnd?: () => void;
   onTransformStart?: () => void;
@@ -45,11 +25,11 @@ type Props = {
 export function Transformable({
   children,
   selected,
-  limits,
   onTransformStart,
   onTransformEnd: onTransformEndExtra,
   onDragStart,
   onDragEnd: onDragEndExtra,
+  constrainTransform,
 }: Props) {
   const mainRef = useRef<Konva.Group>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
@@ -66,40 +46,41 @@ export function Transformable({
 
     const scaleX = node.scaleX();
     const scaleY = node.scaleY();
+    const newWidth = node.width() * scaleX;
+    const newHeight = node.height() * scaleY;
     node.scaleX(1);
     node.scaleY(1);
 
-    const minWidth = limits?.size?.min?.width || 0;
-    const maxWidth = limits?.size?.max?.width || Infinity;
-    const minHeight = limits?.size?.min?.height || 0;
-    const maxHeight = limits?.size?.max?.height || Infinity;
+    const { constrainedPosition, constrainedSize } = constrainTransform
+      ? constrainTransform({
+          xPx: node.x(),
+          yPx: node.y(),
+          widthPx: newWidth,
+          heightPx: newHeight,
+          rotationDegrees: node.rotation(),
+        })
+      : {
+          constrainedPosition: {
+            x: node.x(),
+            y: node.y(),
+          },
+          constrainedSize: {
+            width: newWidth,
+            height: newHeight,
+          },
+        };
 
-    const newWidth = clamp(node.width() * scaleX, minWidth, maxWidth);
-    const newHeight = clamp(node.height() * scaleY, minHeight, maxHeight);
-
-    const { min: minPosition, max: maxPosition } =
-      calculateObjectPositionLimits({
-        object: {
-          width: newWidth,
-          height: newHeight,
-        },
-        boundingRect: limits?.boundingRect,
-      });
-
-    const clampedX = clamp(node.x(), minPosition.x, maxPosition.x);
-    const clampedY = clamp(node.y(), minPosition.y, maxPosition.y);
-
-    node.x(clampedX);
-    node.y(clampedY);
+    node.x(constrainedPosition.x);
+    node.y(constrainedPosition.y);
 
     dispatch(
       setObjectTransform({
         guid: selectedEditorGuid,
         transform: {
-          xPx: clampedX,
-          yPx: clampedY,
-          widthPx: newWidth,
-          heightPx: newHeight,
+          xPx: constrainedPosition.x,
+          yPx: constrainedPosition.y,
+          widthPx: constrainedSize.width,
+          heightPx: constrainedSize.height,
           rotationDegrees: node.rotation(),
         },
       })
@@ -112,26 +93,37 @@ export function Transformable({
     const node = mainRef.current?.children[0];
     if (!node || !selectedEditorGuid) return;
 
-    const { min, max } = calculateObjectPositionLimits({
-      object: {
-        width: node.width(),
-        height: node.height(),
-      },
-      boundingRect: limits?.boundingRect,
-    });
+    const { constrainedPosition, constrainedSize } = constrainTransform
+      ? constrainTransform({
+          xPx: node.x(),
+          yPx: node.y(),
+          widthPx: node.width(),
+          heightPx: node.height(),
+          rotationDegrees: node.rotation(),
+        })
+      : {
+          constrainedPosition: {
+            x: node.x(),
+            y: node.y(),
+          },
+          constrainedSize: {
+            width: node.width(),
+            height: node.height(),
+          },
+        };
 
-    const clampedX = clamp(node.x(), min.x, max.x);
-    const clampedY = clamp(node.y(), min.y, max.y);
-
-    node.x(clampedX);
-    node.y(clampedY);
+    node.x(constrainedPosition.x);
+    node.y(constrainedPosition.y);
 
     dispatch(
       setObjectTransform({
         guid: selectedEditorGuid,
         transform: {
-          xPx: clampedX,
-          yPx: clampedY,
+          xPx: constrainedPosition.x,
+          yPx: constrainedPosition.y,
+          widthPx: constrainedSize.width,
+          heightPx: constrainedSize.height,
+          rotationDegrees: node.rotation(),
         },
       })
     );

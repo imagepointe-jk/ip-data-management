@@ -1,6 +1,6 @@
-import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { IMAGE_NOT_FOUND_URL, productEditorSize } from "@/constants";
 import useImage from "use-image";
-import { Transformable, TransformLimits } from "./Transformable";
+import { Transformable } from "./Transformable";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
@@ -9,7 +9,9 @@ import {
   setSelectedEditorGuid,
 } from "@/customizer/redux/slices/editor";
 import { Image, Text } from "react-konva";
-import { EditorTextData } from "@/types/schema/customizer";
+import { EditorTextData, TransformArgsPx } from "@/types/schema/customizer";
+import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
+import { constrainEditorObjectTransform } from "@/customizer/utils";
 
 type Props = {
   editorGuid: string;
@@ -22,7 +24,7 @@ type Props = {
   imageData?: {
     src: string;
   };
-  limits?: TransformLimits;
+  locations: CustomProductDecorationLocationNumeric[];
   setShowLocationFrames: (b: boolean) => void;
 };
 export function EditorObject({
@@ -34,7 +36,7 @@ export function EditorObject({
   rotationDeg,
   textData,
   imageData,
-  limits,
+  locations,
   setShowLocationFrames,
 }: Props) {
   const selectedEditorGuid = useSelector(
@@ -52,14 +54,22 @@ export function EditorObject({
     if (isText) dispatch(setDialogOpen("text"));
   }
 
+  function constrainTransform(params: TransformArgsPx) {
+    return constrainEditorObjectTransform({
+      objectTransform: params,
+      locations,
+      productEditorSize,
+    });
+  }
+
   return (
     <Transformable
       selected={editorGuid === selectedEditorGuid}
-      limits={limits}
       onDragStart={() => setShowLocationFrames(true)}
       onDragEnd={() => setShowLocationFrames(false)}
       onTransformStart={() => setShowLocationFrames(true)}
       onTransformEnd={() => setShowLocationFrames(false)}
+      constrainTransform={constrainTransform}
     >
       {textData && (
         <Text

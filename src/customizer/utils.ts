@@ -19,6 +19,7 @@ import {
 } from "./redux/slices/designData";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import Konva from "konva";
+import { clamp } from "@/utility/misc";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -341,4 +342,151 @@ export function getCurrentViewDataURL() {
   const stage = Konva.stages[0];
   if (!stage) throw new Error("No Konva stage");
   return stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
+}
+
+export function calculateRectCenter(params: TransformArgsPx) {
+  const { xPx, yPx, widthPx, heightPx, rotationDegrees } = params;
+
+  const topLeftX = xPx || 0;
+  const topLeftY = yPx || 0;
+  const width = widthPx || 0;
+  const height = heightPx || 0;
+
+  const radians = ((rotationDegrees || 0) * Math.PI) / 180;
+  return {
+    x:
+      topLeftX +
+      (width / 2) * Math.cos(radians) -
+      (height / 2) * Math.sin(radians),
+    y:
+      topLeftY +
+      (width / 2) * Math.sin(radians) +
+      (height / 2) * Math.cos(radians),
+  };
+}
+
+export type ConstrainObjectEditorParams = {
+  productEditorSize: number;
+  objectTransform: TransformArgsPx;
+  locations: CustomProductDecorationLocationNumeric[];
+};
+//tries to constrain the position and size of the given object inside the nearest decoration location
+//TODO: This currently doesn't take rotation into account, and also sometimes causes snapping to undesired locations.
+//TODO: Consider ranking the locations based on how much they overlap with the object (if at all). Overlap detection could be easily done by sampling a grid of points and seeing which are inside both A and B.
+export function constrainEditorObjectTransform(
+  params: ConstrainObjectEditorParams
+) {
+  const { locations, objectTransform, productEditorSize } = params;
+
+  //rank the locations by how close each one is to the given rect
+  const sortedByDistToRect = [...locations];
+  sortedByDistToRect.sort((locationA, locationB) => {
+    const { position: locationAPositionPx, size: locationASizePx } =
+      convertDesignerObjectData(productEditorSize, productEditorSize, {
+        positionNormalized: {
+          x: locationA.positionX,
+          y: locationA.positionY,
+        },
+        sizeNormalized: {
+          x: locationA.width,
+          y: locationA.height,
+        },
+      });
+    const { position: locationBPositionPx, size: locationBSizePx } =
+      convertDesignerObjectData(productEditorSize, productEditorSize, {
+        positionNormalized: {
+          x: locationB.positionX,
+          y: locationB.positionY,
+        },
+        sizeNormalized: {
+          x: locationB.width,
+          y: locationB.height,
+        },
+      });
+    const locationACenter = {
+      x: locationAPositionPx.x + locationASizePx.x / 2,
+      y: locationAPositionPx.y + locationASizePx.y / 2,
+    };
+    const locationBCenter = {
+      x: locationBPositionPx.x + locationBSizePx.x / 2,
+      y: locationBPositionPx.y + locationBSizePx.y / 2,
+    };
+    const rectCenter = calculateRectCenter(objectTransform);
+
+    const x1 = rectCenter.x;
+    const y1 = rectCenter.y;
+    const x2 = locationACenter.x;
+    const y2 = locationACenter.y;
+    const x3 = locationBCenter.x;
+    const y3 = locationBCenter.y;
+
+    const rectDistanceToLocationA = Math.sqrt(
+      Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)
+    );
+    const rectDistanceToLocationB = Math.sqrt(
+      Math.pow(x1 - x3, 2) + Math.pow(y1 - y3, 2)
+    );
+
+    return rectDistanceToLocationA - rectDistanceToLocationB;
+  });
+
+  const closestLocation = sortedByDistToRect[0];
+  if (!closestLocation) throw new Error("No location to snap to");
+
+  const { position: closestLocationPositionPx, size: closestLocationSizePx } =
+    convertDesignerObjectData(productEditorSize, productEditorSize, {
+      positionNormalized: {
+        x: closestLocation.positionX,
+        y: closestLocation.positionY,
+      },
+      sizeNormalized: {
+        x: closestLocation.width,
+        y: closestLocation.height,
+      },
+    });
+  const closestLocationBottomRightCorner = {
+    x: closestLocationPositionPx.x + closestLocationSizePx.x,
+    y: closestLocationPositionPx.y + closestLocationSizePx.y,
+  };
+
+  //now that we have the closest location, figure out the bounds it gives us
+  const topLeftBounds = {
+    x: closestLocationPositionPx.x,
+    y: closestLocationPositionPx.y,
+  };
+  const bottomRightBounds = {
+    x: clamp(
+      closestLocationBottomRightCorner.x - (objectTransform.widthPx || 0),
+      topLeftBounds.x,
+      Infinity
+    ),
+    y: clamp(
+      closestLocationBottomRightCorner.y - (objectTransform.heightPx || 0),
+      topLeftBounds.y,
+      Infinity
+    ),
+  };
+
+  //then clamp the object within those bounds
+  const clampedX = clamp(
+    objectTransform.xPx || 0,
+    topLeftBounds.x,
+    bottomRightBounds.x
+  );
+  const clampedY = clamp(
+    objectTransform.yPx || 0,
+    topLeftBounds.y,
+    bottomRightBounds.y
+  );
+
+  return {
+    constrainedPosition: {
+      x: clampedX,
+      y: clampedY,
+    },
+    constrainedSize: {
+      width: objectTransform.widthPx || 0,
+      height: objectTransform.heightPx || 0,
+    },
+  };
 }

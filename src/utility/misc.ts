@@ -195,6 +195,10 @@ export function wrap(value: number, min: number, max: number) {
 }
 
 export function clamp(value: number, min: number, max: number) {
+  if (max < min)
+    console.error(
+      `WARNING: clamp called with invalid values (min ${min}, max ${max})`
+    );
   if (value < min) return min;
   if (value > max) return max;
   return value;

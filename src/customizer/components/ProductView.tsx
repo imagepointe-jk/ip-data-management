@@ -130,6 +130,7 @@ export function ProductView() {
               x={position.x}
               y={position.y}
               imageData={{ src: imageUrl }}
+              locations={viewInProductData.locations}
               setShowLocationFrames={setShowLocationFrames}
             />
           );
@@ -162,6 +163,7 @@ export function ProductView() {
               x={position.x}
               y={position.y}
               textData={textData}
+              locations={viewInProductData.locations}
               setShowLocationFrames={setShowLocationFrames}
             />
           );
