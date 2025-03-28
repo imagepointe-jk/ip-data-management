@@ -478,6 +478,16 @@ export function constrainEditorObjectTransform(
     topLeftBounds.y,
     bottomRightBounds.y
   );
+  const clampedWidth = clamp(
+    objectTransform.widthPx || 0,
+    30,
+    closestLocationSizePx.x
+  );
+  const clampedHeight = clamp(
+    objectTransform.heightPx || 0,
+    30,
+    closestLocationSizePx.y
+  );
 
   return {
     constrainedPosition: {
@@ -485,8 +495,8 @@ export function constrainEditorObjectTransform(
       y: clampedY,
     },
     constrainedSize: {
-      width: objectTransform.widthPx || 0,
-      height: objectTransform.heightPx || 0,
+      width: clampedWidth,
+      height: clampedHeight,
     },
   };
 }
