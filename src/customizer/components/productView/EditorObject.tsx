@@ -23,6 +23,7 @@ type Props = {
     src: string;
   };
   limits?: TransformLimits;
+  setShowLocationFrames: (b: boolean) => void;
 };
 export function EditorObject({
   editorGuid,
@@ -34,6 +35,7 @@ export function EditorObject({
   textData,
   imageData,
   limits,
+  setShowLocationFrames,
 }: Props) {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
@@ -51,7 +53,14 @@ export function EditorObject({
   }
 
   return (
-    <Transformable selected={editorGuid === selectedEditorGuid} limits={limits}>
+    <Transformable
+      selected={editorGuid === selectedEditorGuid}
+      limits={limits}
+      onDragStart={() => setShowLocationFrames(true)}
+      onDragEnd={() => setShowLocationFrames(false)}
+      onTransformStart={() => setShowLocationFrames(true)}
+      onTransformEnd={() => setShowLocationFrames(false)}
+    >
       {textData && (
         <Text
           onMouseDown={() => onClick(true)}

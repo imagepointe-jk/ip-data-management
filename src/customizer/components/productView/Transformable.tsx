@@ -37,8 +37,20 @@ type Props = {
   children: ReactNode;
   selected?: boolean;
   limits?: TransformLimits;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+  onTransformStart?: () => void;
+  onTransformEnd?: () => void;
 };
-export function Transformable({ children, selected, limits }: Props) {
+export function Transformable({
+  children,
+  selected,
+  limits,
+  onTransformStart,
+  onTransformEnd: onTransformEndExtra,
+  onDragStart,
+  onDragEnd: onDragEndExtra,
+}: Props) {
   const mainRef = useRef<Konva.Group>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
   const selectedEditorGuid = useSelector(
@@ -92,6 +104,8 @@ export function Transformable({ children, selected, limits }: Props) {
         },
       })
     );
+
+    if (onTransformEndExtra) onTransformEndExtra();
   }
 
   function onDragEnd() {
@@ -121,6 +135,8 @@ export function Transformable({ children, selected, limits }: Props) {
         },
       })
     );
+
+    if (onDragEndExtra) onDragEndExtra();
   }
 
   useEffect(() => {
@@ -134,10 +150,14 @@ export function Transformable({ children, selected, limits }: Props) {
     transformer.nodes([node]);
     transformer.getLayer()?.batchDraw();
 
+    node.on("dragstart", () => {
+      if (onDragStart) onDragStart();
+    });
     node.on("dragend", onDragEnd);
     node.draggable(true);
 
     return () => {
+      node.off("dragstart", onDragStart);
       node.off("dragend", onDragEnd);
     };
   }, [selected]);
@@ -146,7 +166,11 @@ export function Transformable({ children, selected, limits }: Props) {
     <>
       <Group ref={mainRef}>{children}</Group>
       {selected && (
-        <Transformer ref={transformerRef} onTransformEnd={onTransformEnd} />
+        <Transformer
+          ref={transformerRef}
+          onTransformStart={onTransformStart}
+          onTransformEnd={onTransformEnd}
+        />
       )}
     </>
   );

@@ -18,7 +18,6 @@ import {
 } from "../redux/slices/editor";
 import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
-import { RenderedLocation } from "./productView/RenderedLocation";
 import { getConfinedRectDimensions } from "@/utility/misc";
 import { EditorObject } from "./productView/EditorObject";
 
@@ -41,7 +40,7 @@ export function ProductView() {
     );
   const centeredImageX = (productEditorSize - imageWidthConfined) / 2;
   const centeredImageY = (productEditorSize - imageHeightConfined) / 2;
-  // const [showLocationFrames, setShowLocationFrames] = useState(false);
+  const [showLocationFrames, setShowLocationFrames] = useState(false);
 
   function onClickStage(e: KonvaEventObject<MouseEvent>) {
     const clickedOnEmpty =
@@ -96,9 +95,9 @@ export function ProductView() {
 
         {/* Location frames */}
 
-        {/* {showLocationFrames && (
+        {showLocationFrames && (
           <LocationFrames locations={viewInProductData.locations} />
-        )} */}
+        )}
       </Layer>
 
       {/* Artworks */}
@@ -131,6 +130,7 @@ export function ProductView() {
               x={position.x}
               y={position.y}
               imageData={{ src: imageUrl }}
+              setShowLocationFrames={setShowLocationFrames}
             />
           );
         })}
@@ -162,6 +162,7 @@ export function ProductView() {
               x={position.x}
               y={position.y}
               textData={textData}
+              setShowLocationFrames={setShowLocationFrames}
             />
           );
         })}
