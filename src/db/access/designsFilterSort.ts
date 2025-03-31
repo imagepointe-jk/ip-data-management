@@ -37,7 +37,8 @@ function ageCondition(params: ConditionParams) {
 }
 
 function statusCondition(params: ConditionParams) {
-  if (params.query.status === undefined) return true;
+  if (params.query.status === undefined)
+    return params.query.status === "Published"; //assume we want to hide drafts unless otherwise specified
   return params.design.status === params.query.status;
 }
 
