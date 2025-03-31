@@ -3,8 +3,9 @@ import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 
 type Props = {
   showError: boolean;
+  onClickBack: () => void;
 };
-export function CartQuoteStep({ showError }: Props) {
+export function CartQuoteStep({ showError, onClickBack }: Props) {
   return (
     <>
       <div>
@@ -46,6 +47,12 @@ export function CartQuoteStep({ showError }: Props) {
             <a href={CONTACT_US_URL}>contact us</a> for assistance.
           </div>
         )}
+      </div>
+      <div className={styles["step-buttons-container"]}>
+        <button className="button-minor" onClick={onClickBack}>
+          Back
+        </button>
+        <button type="submit">Submit</button>
       </div>
     </>
   );

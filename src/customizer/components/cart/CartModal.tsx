@@ -2,14 +2,13 @@ import { Modal } from "@/components/Modal";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../../redux/store";
-import { CartStateProduct } from "@/types/schema/customizer";
-import { setModalOpen, useEditorSelectors } from "../../redux/slices/editor";
+import { setModalOpen } from "../../redux/slices/editor";
 import { useDispatch } from "react-redux";
-import { CartProductVariation } from "./CartProductVariation";
 import { FormEvent, useState } from "react";
 import { CartQuoteStep } from "./CartQuoteStep";
 import { submitQuoteRequest } from "@/fetch/client/customizer";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { CartReviewStep } from "./CartReviewStep";
 
 export function CartModal() {
   const [step, setStep] = useState("review" as "review" | "quote");
@@ -35,6 +34,7 @@ export function CartModal() {
     setSubmitting(true);
     setError(false);
     try {
+      //TODO: Currently the base64 view renders are stored nested within the cart, which is causing them to be stored in the db. Storing base64 images in a db should be avoided.
       const response = await submitQuoteRequest({
         firstName,
         lastName,
@@ -62,10 +62,17 @@ export function CartModal() {
     >
       <form className={styles["modal-form"]} onSubmit={onClickSubmit}>
         <div>
-          {step === "review" && <CartReviewStep />}
-          {step === "quote" && <CartQuoteStep showError={error} />}
+          {step === "review" && (
+            <CartReviewStep onClickContinue={() => setStep("quote")} />
+          )}
+          {step === "quote" && (
+            <CartQuoteStep
+              showError={error}
+              onClickBack={() => setStep("review")}
+            />
+          )}
         </div>
-        <div className={styles["step-buttons-container"]}>
+        {/* <div className={styles["step-buttons-container"]}>
           {step === "review" && (
             <>
               <button type="button" onClick={() => setStep("quote")}>
@@ -90,47 +97,8 @@ export function CartModal() {
               </button>
             </>
           )}
-        </div>
+        </div> */}
       </form>
     </Modal>
-  );
-}
-
-function CartReviewStep() {
-  const cart = useSelector((store: StoreType) => store.cart);
-
-  return (
-    <>
-      <h2>My Cart</h2>
-      <div className={styles["cart-items-container"]}>
-        {cart.present.products.map((item) => (
-          <CartProductGroup key={item.id} productInState={item} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-type CartProductProps = {
-  productInState: CartStateProduct;
-};
-function CartProductGroup({ productInState }: CartProductProps) {
-  const { allProductData } = useEditorSelectors();
-  const product = allProductData.find(
-    (product) => product.id === productInState.id
-  );
-
-  return (
-    <div>
-      {!product && <>Invalid product.</>}
-      {product &&
-        productInState.variations.map((variation) => (
-          <CartProductVariation
-            key={variation.id}
-            productData={product}
-            variationInState={variation}
-          />
-        ))}
-    </div>
   );
 }
