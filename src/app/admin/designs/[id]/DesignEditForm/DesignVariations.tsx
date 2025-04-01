@@ -96,7 +96,10 @@ export function DesignVariations({
           + Add New
         </button>
       </div>
-      <div className={styles["variations-container"]}>
+      <div
+        className={styles["variations-container"]}
+        style={{ width: `${VARIATION_CARD_WIDTH}px` }}
+      >
         <div
           className={styles["variations-strip"]}
           style={{

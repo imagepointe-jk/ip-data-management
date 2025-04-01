@@ -9,7 +9,7 @@ import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
 import { Categories } from "./Categories";
 
-export const VARIATION_CARD_WIDTH = 610;
+export const VARIATION_CARD_WIDTH = 770;
 type Props = {
   designTypeId: number;
   variation: DesignVariationWithIncludes;
@@ -133,6 +133,7 @@ export function DesignVariationCard({
           <h4>Image URL</h4>
           <input
             type="text"
+            className={styles["variation-image-url"]}
             name={`image-url-variation-${variation.id}`}
             id={`image-url-variation-${variation.id}`}
             onChange={onChangeImageUrl}
