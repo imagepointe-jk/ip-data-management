@@ -24,6 +24,7 @@ export function Tags({
       !showOnlySelected || selectedTagIds.includes(tag.id);
     return searchCondition && selectedCondition;
   });
+  tagsToShow.sort((a, b) => (a.name > b.name ? 1 : -1));
 
   return (
     <div className={styles["tags-container"]}>
