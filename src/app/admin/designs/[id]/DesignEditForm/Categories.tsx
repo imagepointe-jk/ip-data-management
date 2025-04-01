@@ -24,7 +24,7 @@ export function Categories({
       <h4>Categories</h4>
       <div>
         <input
-          type="text"
+          type="search"
           className={styles["search-input"]}
           placeholder="Search..."
           value={search}

@@ -31,7 +31,7 @@ export function Tags({
 
       <div>
         <input
-          type="text"
+          type="search"
           className={styles["search-input"]}
           placeholder="Search..."
           value={search}
