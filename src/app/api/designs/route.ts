@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
   const perPage = params.get("perPage");
   const after = params.get("after");
   const before = params.get("before");
+  const status = params.get("status");
 
   const designs = await getDesigns({
     pageNumber: pageNumber ? +pageNumber : 1,
@@ -48,6 +49,12 @@ export async function GET(request: NextRequest) {
     subcategory: subcategory || undefined,
     after: after && !isNaN(+after) ? +after : undefined,
     before: before && !isNaN(+before) ? +before : undefined,
+    status:
+      status === "published"
+        ? "Published"
+        : status === "draft"
+        ? "Draft"
+        : undefined,
     // getRelated: getRelatedToId
   });
 
