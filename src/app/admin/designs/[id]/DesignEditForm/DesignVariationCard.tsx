@@ -7,9 +7,11 @@ import {
 import { Color, DesignTag } from "@prisma/client";
 import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
+import { Categories } from "./Categories";
 
 export const VARIATION_CARD_WIDTH = 610;
 type Props = {
+  designTypeId: number;
   variation: DesignVariationWithIncludes;
   setDesign: Updater<DesignWithIncludes>;
   colors: Color[];
@@ -18,6 +20,7 @@ type Props = {
   onClickDelete: (id: number) => void;
 };
 export function DesignVariationCard({
+  designTypeId,
   variation,
   setDesign,
   onClickDelete,
@@ -152,31 +155,13 @@ export function DesignVariationCard({
       </div>
       <div>
         <div className={styles["variation-scroll-boxes"]}>
-          <div>
-            <h4>Categories</h4>
-            <div className={styles["variation-scroll-box"]}>
-              {categories.map((cat) => (
-                <div key={cat.id}>
-                  <h5>{cat.name}</h5>
-                  {cat.designSubcategories.map((sub) => (
-                    <div key={sub.id}>
-                      <input
-                        type="checkbox"
-                        id={`subcategory-${sub.id}-variation-${variation.id}`}
-                        checked={selectedSubcategoryIds.includes(sub.id)}
-                        onChange={() => onClickSubcategory(sub.id)}
-                      />
-                      <label
-                        htmlFor={`subcategory-${sub.id}-variation-${variation.id}`}
-                      >
-                        {sub.name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
+          <Categories
+            designTypeId={designTypeId}
+            categories={categories}
+            onClickSubcategory={onClickSubcategory}
+            selectedSubcategoryIds={selectedSubcategoryIds}
+            scrollBoxClassName={styles["variation-scroll-box"]}
+          />
           <div>
             <div>
               <h4>Tags</h4>

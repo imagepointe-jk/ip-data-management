@@ -7,6 +7,7 @@ import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
 import { Updater } from "use-immer";
 import { DesignVariations } from "./DesignVariations";
+import { Categories } from "./Categories";
 
 type Props = {
   design: DesignWithIncludes;
@@ -171,27 +172,12 @@ export function SecondarySection({
 
       {/* Categories section */}
 
-      <div>
-        <h4>Categories</h4>
-        <div className={styles["scroll-box"]}>
-          {categories.map((cat) => (
-            <div key={cat.id}>
-              <h5>{cat.name}</h5>
-              {cat.designSubcategories.map((sub) => (
-                <div key={sub.id}>
-                  <input
-                    type="checkbox"
-                    id={`subcategory-${sub.id}`}
-                    checked={selectedSubcategoryIds.includes(sub.id)}
-                    onChange={() => onClickSubcategory(sub.id)}
-                  />
-                  <label htmlFor={`subcategory-${sub.id}`}>{sub.name}</label>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Categories
+        designTypeId={design.designTypeId}
+        selectedSubcategoryIds={selectedSubcategoryIds}
+        categories={categories}
+        onClickSubcategory={onClickSubcategory}
+      />
 
       {/* Tags section */}
 

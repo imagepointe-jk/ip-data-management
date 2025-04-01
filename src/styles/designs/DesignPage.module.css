@@ -127,10 +127,11 @@ button.variations-add {
   gap: 5px;
 }
 
-.variation-scroll-box {
+.variation-card .variation-scroll-box {
   border: 1px solid black;
   overflow-y: auto;
   font-size: 0.8rem;
+  width: 170px;
   height: 300px;
 }
 

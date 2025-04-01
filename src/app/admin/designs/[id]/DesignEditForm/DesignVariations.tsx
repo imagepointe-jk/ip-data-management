@@ -106,6 +106,7 @@ export function DesignVariations({
           {sorted.map((variation, i) => (
             <DesignVariationCard
               key={variation.id}
+              designTypeId={design.designTypeId}
               variation={variation}
               setDesign={setDesign}
               colors={colors}
