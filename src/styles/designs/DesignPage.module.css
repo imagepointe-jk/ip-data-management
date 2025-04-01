@@ -91,7 +91,7 @@ button.variations-add {
 
 .variations-container {
   border: 1px solid black;
-  height: 380px;
+  height: 400px;
   position: relative;
   overflow: hidden;
 }
@@ -139,7 +139,8 @@ button.variation-delete {
   font-size: 0.8rem;
 }
 
-.categories-container .search-input {
+.categories-container .search-input,
+.tags-container .search-input {
   padding: 2px;
   font-size: 0.825rem;
   width: 100px;

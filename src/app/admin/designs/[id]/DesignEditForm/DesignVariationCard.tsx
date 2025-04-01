@@ -8,6 +8,7 @@ import { Color, DesignTag } from "@prisma/client";
 import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
 import { Categories } from "./Categories";
+import { Tags } from "./Tags";
 
 export const VARIATION_CARD_WIDTH = 770;
 type Props = {
@@ -163,27 +164,12 @@ export function DesignVariationCard({
             selectedSubcategoryIds={selectedSubcategoryIds}
             scrollBoxClassName={styles["variation-scroll-box"]}
           />
-          <div>
-            <div>
-              <h4>Tags</h4>
-              <div className={styles["variation-scroll-box"]}>
-                {tags.map((tag) => (
-                  <div key={tag.id}>
-                    <input
-                      type="checkbox"
-                      name={`tags-variation-${variation.id}`}
-                      id={`tag-${tag.id}-variation-${variation.id}`}
-                      checked={selectedTagIds.includes(tag.id)}
-                      onChange={() => onClickTag(tag.id)}
-                    />
-                    <label htmlFor={`tag-${tag.id}-variation-${variation.id}`}>
-                      {tag.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <Tags
+            tags={tags}
+            selectedTagIds={selectedTagIds}
+            onClickTag={onClickTag}
+            scrollBoxClassName={styles["variation-scroll-box"]}
+          />
         </div>
         <button
           type="button"

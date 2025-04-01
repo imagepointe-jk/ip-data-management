@@ -8,6 +8,7 @@ import { Color, DesignTag, DesignType } from "@prisma/client";
 import { Updater } from "use-immer";
 import { DesignVariations } from "./DesignVariations";
 import { Categories } from "./Categories";
+import { Tags } from "./Tags";
 
 type Props = {
   design: DesignWithIncludes;
@@ -181,22 +182,11 @@ export function SecondarySection({
 
       {/* Tags section */}
 
-      <div>
-        <h4>Tags</h4>
-        <div className={styles["scroll-box"]}>
-          {tags.map((tag) => (
-            <div key={tag.id}>
-              <input
-                type="checkbox"
-                id={`tag-${tag.id}`}
-                checked={selectedTagIds.includes(tag.id)}
-                onChange={() => onClickTag(tag.id)}
-              />
-              <label htmlFor={`tag-${tag.id}`}>{tag.name}</label>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Tags
+        selectedTagIds={selectedTagIds}
+        onClickTag={onClickTag}
+        tags={tags}
+      />
 
       {/* Variations section */}
 
