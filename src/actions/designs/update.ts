@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "../../../prisma/client";
 import { DesignWithIncludes } from "@/types/schema/designs";
 
@@ -73,4 +74,6 @@ export async function updateDesign(
     }),
     ...variationUpdates,
   ]);
+
+  revalidatePath("/admin/designs");
 }
