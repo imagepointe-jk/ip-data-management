@@ -75,6 +75,7 @@ export const wooCommerceOrderDataSchema = z.object({
   shipping: z.object({
     firstName: z.string(),
     lastName: z.string(),
+    company: z.string(),
     address1: z.string(),
     address2: z.string(),
     city: z.string(),

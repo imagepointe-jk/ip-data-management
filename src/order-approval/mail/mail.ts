@@ -253,6 +253,8 @@ export async function createShippingEmail(instanceId: number) {
       ...parsed,
       storeUrl: workflow.webstore.url,
       storeName: workflow.webstore.name,
+      approveMsg: instance.approvedComments,
+      shippingMethod: parsed.shippingLines[0]?.method_title,
     });
     return message;
   } catch (error) {
