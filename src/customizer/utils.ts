@@ -19,7 +19,7 @@ import {
 } from "./redux/slices/designData";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import Konva from "konva";
-import { clamp } from "@/utility/misc";
+import { clamp, wrap } from "@/utility/misc";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -306,6 +306,36 @@ export function findViewInProductData(
   return data.variations
     .flatMap((variation) => variation.views)
     .find((view) => view.id === id);
+}
+
+export function getAdjacentViewId(
+  productData: PopulatedProductSettingsSerializable,
+  selectedVariationId: number,
+  selectedViewId: number,
+  direction: "previous" | "next"
+) {
+  const variation = productData.variations.find(
+    (variation) => variation.id === selectedVariationId
+  );
+  if (!variation)
+    throw new Error(`Invalid variation id ${selectedVariationId} selected.`);
+
+  const curIndex = variation.views.findIndex(
+    (view) => view.id === selectedViewId
+  );
+  if (curIndex === -1)
+    throw new Error(`Invalid view id ${selectedViewId} selected.`);
+
+  const newIndex = wrap(
+    direction === "previous" ? curIndex - 1 : curIndex + 1,
+    0,
+    variation.views.length - 1
+  );
+  const newView = variation.views[newIndex]!;
+
+  return {
+    viewId: newView.id,
+  };
 }
 
 export function makeProductDataSerializable(

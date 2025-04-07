@@ -5,13 +5,14 @@ import {
   // findLocationInCart,
   findVariationInCart,
   findViewInCart,
+  getAdjacentViewId,
 } from "@/customizer/utils";
 import {
   CartState,
   EditorDialog,
   EditorModal,
+  PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
-import { wrap } from "@/utility/misc";
 
 type EditorState = {
   dialogOpen: EditorDialog;
@@ -57,11 +58,16 @@ export const editorSlice = createSlice({
     // setSelectedLocationId: (state, action: PayloadAction<number>) => {
     //   state.selectedLocationId = action.payload;
     // },
-    selectNextView: (state, action: PayloadAction<{ cart: CartState }>) => {
-      const { cart } = action.payload;
+    selectNextView: (
+      state,
+      action: PayloadAction<{
+        productData: PopulatedProductSettingsSerializable;
+      }>
+    ) => {
+      const { productData } = action.payload;
       const { selectedVariationId, selectedViewId } = state;
       const { viewId /*firstLocationId*/ } = getAdjacentViewId(
-        cart,
+        productData,
         selectedVariationId,
         selectedViewId,
         "next"
@@ -71,11 +77,16 @@ export const editorSlice = createSlice({
       state.selectedEditorGuid = null;
       // state.selectedLocationId = firstLocationId;
     },
-    selectPreviousView: (state, action: PayloadAction<{ cart: CartState }>) => {
-      const { cart } = action.payload;
+    selectPreviousView: (
+      state,
+      action: PayloadAction<{
+        productData: PopulatedProductSettingsSerializable;
+      }>
+    ) => {
+      const { productData } = action.payload;
       const { selectedVariationId, selectedViewId } = state;
       const { viewId /*firstLocationId*/ } = getAdjacentViewId(
-        cart,
+        productData,
         selectedVariationId,
         selectedViewId,
         "previous"
@@ -89,36 +100,6 @@ export const editorSlice = createSlice({
 });
 
 //shared logic for getting the id of the previous or next view
-function getAdjacentViewId(
-  cart: CartState,
-  selectedVariationId: number,
-  selectedViewId: number,
-  direction: "previous" | "next"
-) {
-  const variation = findVariationInCart(cart, selectedVariationId);
-  if (!variation)
-    throw new Error(`Invalid variation id ${selectedVariationId} selected.`);
-
-  const curIndex = variation.views.findIndex(
-    (view) => view.id === selectedViewId
-  );
-  if (curIndex === -1)
-    throw new Error(`Invalid view id ${selectedViewId} selected.`);
-
-  const newIndex = wrap(
-    direction === "previous" ? curIndex - 1 : curIndex + 1,
-    0,
-    variation.views.length - 1
-  );
-  const newView = variation.views[newIndex]!;
-  // const firstLocation = newView.locations[0];
-  // if (!firstLocation) throw new Error("No locations");
-
-  return {
-    viewId: newView.id,
-    // firstLocationId: firstLocation.id,
-  };
-}
 
 export function useEditorSelectors() {
   const {
