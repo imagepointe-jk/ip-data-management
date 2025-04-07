@@ -47,7 +47,7 @@ input.design-number {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  width: 700px;
+  width: 800px;
   align-content: start;
 }
 
@@ -58,7 +58,7 @@ input.design-number {
 
 .scroll-box {
   border: 1px solid black;
-  width: 300px;
+  width: 380px;
   height: 300px;
   overflow-y: auto;
 }
@@ -91,13 +91,12 @@ button.variations-add {
 
 .variations-container {
   border: 1px solid black;
-  width: 610px;
-  height: 380px;
+  height: 400px;
   position: relative;
   overflow: hidden;
 }
 
-.variations-container input[type="text"],
+.variation-image-url,
 .variations-container select {
   display: block;
   box-sizing: border-box;
@@ -127,14 +126,22 @@ button.variations-add {
   gap: 5px;
 }
 
-.variation-scroll-box {
+.variation-card .variation-scroll-box {
   border: 1px solid black;
   overflow-y: auto;
   font-size: 0.8rem;
+  width: 250px;
   height: 300px;
 }
 
 button.variation-delete {
   margin-top: 5px;
   font-size: 0.8rem;
+}
+
+.categories-container .search-input,
+.tags-container .search-input {
+  padding: 2px;
+  font-size: 0.825rem;
+  width: 100px;
 }

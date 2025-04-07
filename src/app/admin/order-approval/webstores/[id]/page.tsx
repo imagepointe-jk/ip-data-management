@@ -5,6 +5,8 @@ import {
 import Link from "next/link";
 import { EditingForm } from "./EditingForm/EditingForm";
 import { ShortcodeReference } from "../../ShortcodeReference";
+import fs from "fs";
+import path from "path";
 
 type Props = {
   params: {
@@ -21,6 +23,11 @@ export default async function Page({ params }: Props) {
     return <h1>Webstore shipping settings not found.</h1>;
 
   const shippingMethods = await getShippingMethods();
+  const filenames = fs
+    .readdirSync(
+      path.resolve(process.cwd(), "src/order-approval/mail/shippingEmails")
+    )
+    .map((name) => name.replace(".hbs", ""));
 
   return (
     <>
@@ -32,6 +39,7 @@ export default async function Page({ params }: Props) {
         webstoreData={existingWebstore}
         shippingMethods={shippingMethods}
         shortcodeReference={<ShortcodeReference />}
+        shippingEmailFilenames={filenames}
       />
     </>
   );

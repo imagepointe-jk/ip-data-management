@@ -36,6 +36,10 @@ export async function GET(request: NextRequest) {
         checkoutFields:
           foundAccessCode.workflowInstance.parentWorkflow.webstore
             .checkoutFields,
+        approvedByUserName:
+          foundAccessCode.workflowInstance.approvedByUser?.name,
+        deniedByUserName: foundAccessCode.workflowInstance.deniedByUser?.name,
+        instanceStatus: foundAccessCode.workflowInstance.status,
       },
       easyCorsInit
     );

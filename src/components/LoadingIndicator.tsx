@@ -8,7 +8,9 @@ export function LoadingIndicator({ className }: Props) {
     <img
       src="/spinner1.png"
       alt="spinner"
-      className={`${styles["spinner-anim"]} ${className || styles["spinner"]}`}
+      className={`${styles["spinner-anim"]} ${styles["spinner"]} ${
+        className || ""
+      }`}
     />
   );
 }

@@ -7,6 +7,8 @@ import { convertDateToDefaultInputValue } from "@/utility/misc";
 import { Color, DesignTag, DesignType } from "@prisma/client";
 import { Updater } from "use-immer";
 import { DesignVariations } from "./DesignVariations";
+import { Categories } from "./Categories";
+import { Tags } from "./Tags";
 
 type Props = {
   design: DesignWithIncludes;
@@ -171,46 +173,20 @@ export function SecondarySection({
 
       {/* Categories section */}
 
-      <div>
-        <h4>Categories</h4>
-        <div className={styles["scroll-box"]}>
-          {categories.map((cat) => (
-            <div key={cat.id}>
-              <h5>{cat.name}</h5>
-              {cat.designSubcategories.map((sub) => (
-                <div key={sub.id}>
-                  <input
-                    type="checkbox"
-                    id={`subcategory-${sub.id}`}
-                    checked={selectedSubcategoryIds.includes(sub.id)}
-                    onChange={() => onClickSubcategory(sub.id)}
-                  />
-                  <label htmlFor={`subcategory-${sub.id}`}>{sub.name}</label>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+      <Categories
+        designTypeId={design.designTypeId}
+        selectedSubcategoryIds={selectedSubcategoryIds}
+        categories={categories}
+        onClickSubcategory={onClickSubcategory}
+      />
 
       {/* Tags section */}
 
-      <div>
-        <h4>Tags</h4>
-        <div className={styles["scroll-box"]}>
-          {tags.map((tag) => (
-            <div key={tag.id}>
-              <input
-                type="checkbox"
-                id={`tag-${tag.id}`}
-                checked={selectedTagIds.includes(tag.id)}
-                onChange={() => onClickTag(tag.id)}
-              />
-              <label htmlFor={`tag-${tag.id}`}>{tag.name}</label>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Tags
+        selectedTagIds={selectedTagIds}
+        onClickTag={onClickTag}
+        tags={tags}
+      />
 
       {/* Variations section */}
 

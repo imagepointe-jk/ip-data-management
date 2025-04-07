@@ -66,13 +66,12 @@ export async function updateWebstore(
     salesPersonName,
     otherSupportEmails,
     orderUpdatedEmails,
+    shippingEmailFilename,
     checkoutFields,
     shippingMethods,
     shippingSettings,
     changeApiKey,
     changeApiSecret,
-    customOrderApprovedEmail,
-    useCustomOrderApprovedEmail,
   } = data;
 
   const {
@@ -99,8 +98,7 @@ export async function updateWebstore(
         salesPersonName,
         otherSupportEmails,
         orderUpdatedEmails,
-        customOrderApprovedEmail,
-        useCustomOrderApprovedEmail,
+        shippingEmailFilename,
         apiKey: changeApiKey ? apiKey : undefined,
         apiKeyEncryptIv: changeApiKey ? apiKeyEncryptIv : undefined,
         apiKeyEncryptTag: changeApiKey
