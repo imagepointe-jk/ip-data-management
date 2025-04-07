@@ -189,6 +189,7 @@ export async function getWorkflowWithIncludes(id: number) {
               user: true,
             },
           },
+          checkoutFields: true,
         },
       },
     },

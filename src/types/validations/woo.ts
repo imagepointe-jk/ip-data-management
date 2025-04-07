@@ -34,6 +34,9 @@ export function parseWooCommerceOrderJson(json: any) {
   const lineItemsParsed = lineItemsUnparsed.map((item) =>
     parseWooCommerceLineItem(item)
   );
+  const metaDataWithStringValues = (json.meta_data as any[]).filter(
+    (meta) => typeof meta.value === "string"
+  ); //values can be strings, objects, or arrays; just focus on strings for now
 
   json.lineItems = lineItemsParsed;
   json.totalTax = json.total_tax;
@@ -48,7 +51,7 @@ export function parseWooCommerceOrderJson(json: any) {
   json.shipping.address1 = json.shipping.address_1;
   json.shipping.address2 = json.shipping.address_2;
   json.shippingLines = json.shipping_lines;
-  json.metaData = json.meta_data;
+  json.metaData = metaDataWithStringValues;
   json.customerNote = json.customer_note || "";
 
   return wooCommerceOrderDataSchema.parse(json);
