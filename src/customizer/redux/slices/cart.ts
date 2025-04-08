@@ -395,6 +395,23 @@ export const cartSlice = createSlice({
 
       view.currentRenderUrl = url;
     },
+    pruneCart: (
+      state,
+      action: PayloadAction<{ variationIdToPreserve?: number }>
+    ) => {
+      const { variationIdToPreserve } = action.payload;
+
+      //get rid of variations present in cart that have no designs, text, etc.
+      //currently only prune variations within each product, because we currently only support one product in the cart at a time
+      for (const product of state.products) {
+        product.variations = product.variations.filter((variation) => {
+          const hasAnyDesign = !!variation.views.find(
+            (view) => view.artworks.length > 0 || view.texts.length > 0
+          );
+          return variation.id === variationIdToPreserve || hasAnyDesign;
+        });
+      }
+    },
   },
 });
 
@@ -410,4 +427,5 @@ export const {
   setObjectTransform,
   editText,
   setViewRenderURL,
+  pruneCart,
 } = cartSlice.actions;
