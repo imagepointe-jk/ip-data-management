@@ -56,6 +56,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
         })
       );
 
+    updateViewRender(selectedView.id);
     //the variation we're switching from might not have any designs, so prune the cart to prevent the user accumulating untouched variations
     dispatch(pruneCart({ variationIdToPreserve: variationData.id }));
     const firstView = variationData.views[0];
@@ -64,7 +65,6 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     const firstLocation = firstView.locations[0];
     if (!firstLocation) throw new Error("No locations");
 
-    updateViewRender(selectedView.id);
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
     dispatch(setSelectedEditorGuid(null));
