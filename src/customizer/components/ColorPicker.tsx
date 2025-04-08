@@ -13,6 +13,7 @@ import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { addProductVariation, pruneCart } from "../redux/slices/cart";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { useEditor } from "../EditorProvider";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();
@@ -35,9 +36,10 @@ type VariationChoiceProps = {
   variationId: number;
 };
 function VariationChoice({ variationId }: VariationChoiceProps) {
-  const { selectedProductData } = useEditorSelectors();
+  const { selectedProductData, selectedView } = useEditorSelectors();
   const cart = useSelector((state: StoreType) => state.cart);
   const dispatch = useDispatch();
+  const { updateViewRender } = useEditor();
 
   const variationData = selectedProductData.variations.find(
     (variation) => variation.id === variationId
@@ -62,6 +64,7 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
     const firstLocation = firstView.locations[0];
     if (!firstLocation) throw new Error("No locations");
 
+    updateViewRender(selectedView.id);
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
     dispatch(setSelectedEditorGuid(null));
