@@ -1,9 +1,12 @@
-import { PRODUCT_CUSTOMIZER_RML_FOLDER_ID } from "@/constants";
+import { PRODUCT_CUSTOMIZER_RENDER_RML_FOLDER_ID } from "@/constants";
 import { AppError } from "@/error";
 import { uploadMedia } from "@/fetch/wordpress";
 
-export async function uploadImage(file: File) {
-  const response = await uploadMedia(file, PRODUCT_CUSTOMIZER_RML_FOLDER_ID);
+export async function uploadQuoteRequestRender(file: File) {
+  const response = await uploadMedia(
+    file,
+    PRODUCT_CUSTOMIZER_RENDER_RML_FOLDER_ID
+  );
 
   if (!response.ok) {
     const wpError = await response
@@ -12,8 +15,8 @@ export async function uploadImage(file: File) {
       .catch(() => "(no WP error found)");
     throw new AppError({
       type: "Unknown",
-      clientMessage: `Failed to upload image`,
-      serverMessage: `Failed to upload image; WP error: ${wpError}`,
+      clientMessage: `Failed to upload render`,
+      serverMessage: `Failed to upload render; WP error: ${wpError}`,
       statusCode: response.status,
     });
   }

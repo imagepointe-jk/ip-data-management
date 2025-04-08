@@ -2,7 +2,7 @@ import { createQuoteRequest } from "@/actions/customizer/create";
 import { updateQuoteRequest } from "@/actions/customizer/update";
 import { handleRequestError } from "@/app/api/handleError";
 import { easyCorsInit } from "@/constants";
-import { uploadImage } from "@/customizer/utils/server";
+import { uploadQuoteRequestRender } from "@/customizer/utils/server";
 import { validateQuoteRequest } from "@/types/validations/customizer";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
           const file = new File([blob], `${generatedName}.jpg`, {
             type: "image/jpeg",
           });
-          const { uploadedUrl } = await uploadImage(file);
+          const { uploadedUrl } = await uploadQuoteRequestRender(file);
           view.currentRenderUrl = uploadedUrl;
         }
       }
