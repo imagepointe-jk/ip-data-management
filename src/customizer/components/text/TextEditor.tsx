@@ -4,7 +4,7 @@ import {
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
 import { StoreType } from "@/customizer/redux/store";
-import { findTextInCart } from "@/customizer/utils";
+import { findTextInCart } from "@/customizer/utils/utils";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";

@@ -16,7 +16,7 @@ import { DesignResults } from "@/types/schema/designs";
 import {
   DesignResultsSerializable,
   DesignWithIncludesSerializable,
-} from "./redux/slices/designData";
+} from "../redux/slices/designData";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import Konva from "konva";
 import { clamp, wrap } from "@/utility/misc";

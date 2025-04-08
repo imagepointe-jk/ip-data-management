@@ -10,7 +10,7 @@ import {
   convertDesignerObjectData,
   findLocationInProductData,
   findViewInProductData,
-} from "../utils";
+} from "../utils/utils";
 import {
   setDialogOpen,
   setSelectedEditorGuid,

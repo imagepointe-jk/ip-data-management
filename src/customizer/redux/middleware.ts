@@ -11,7 +11,7 @@ import {
   // findLocationInCart,
   findVariationInCart,
   findViewInCart,
-} from "../utils";
+} from "../utils/utils";
 
 //did not find a good way with redux-undo to resolve some post-undo/post-redo states.
 //for example, after adding a design and selecting it, undoing the add would leave the (now non-existent) design still selected by reference.

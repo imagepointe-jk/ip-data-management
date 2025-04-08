@@ -1,4 +1,4 @@
-import { convertDesignerObjectData } from "@/customizer/utils";
+import { convertDesignerObjectData } from "@/customizer/utils/utils";
 import { Rect } from "react-konva";
 import { productEditorSize } from "@/constants";
 

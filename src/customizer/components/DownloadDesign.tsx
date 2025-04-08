@@ -7,7 +7,7 @@ import {
   useEditorSelectors,
 } from "../redux/slices/editor";
 import styles from "@/styles/customizer/CustomProductDesigner/download.module.css";
-import { findViewInProductData } from "../utils";
+import { findViewInProductData } from "../utils/utils";
 import Konva from "konva";
 import { forceClientDownload } from "@/utility/misc";
 import { useDispatch } from "react-redux";

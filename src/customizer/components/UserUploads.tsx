@@ -13,6 +13,7 @@ import {
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { v4 as uuidv4 } from "uuid";
+import { PRODUCT_CUSTOMIZER_RML_FOLDER_ID } from "@/constants";
 
 export function UserUploads() {
   const [status, setStatus] = useState("idle" as "idle" | "loading" | "error");
@@ -42,7 +43,10 @@ export function UserUploads() {
 
     setStatus("loading");
     try {
-      const uploadedUrl = await uploadMediaAction(formData, 8);
+      const uploadedUrl = await uploadMediaAction(
+        formData,
+        PRODUCT_CUSTOMIZER_RML_FOLDER_ID
+      );
       setStatus("idle");
       const newGuid = uuidv4();
       dispatch(

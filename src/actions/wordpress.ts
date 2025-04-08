@@ -3,6 +3,7 @@
 import { AppError } from "@/error";
 import { uploadMedia } from "@/fetch/wordpress";
 
+//TODO: should probably consolidate this logic using the uploadImage function in customizer/utils/server
 export async function uploadMediaAction(
   formData: FormData,
   realMediaLibraryFolderId?: number

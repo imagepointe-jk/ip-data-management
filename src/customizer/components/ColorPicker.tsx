@@ -8,7 +8,7 @@ import {
   setSelectedViewId,
   useEditorSelectors,
 } from "../redux/slices/editor";
-import { findVariationInCart } from "../utils";
+import { findVariationInCart } from "../utils/utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";

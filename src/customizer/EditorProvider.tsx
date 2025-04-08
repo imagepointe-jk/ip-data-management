@@ -7,7 +7,7 @@ import {
   getCurrentViewDataURL,
   makeDesignResultsSerializable,
   makeProductDataSerializable,
-} from "./utils";
+} from "./utils/utils";
 import { useDispatch } from "react-redux";
 import { setProductData } from "./redux/slices/productData";
 import { setCartProducts, setViewRenderURL } from "./redux/slices/cart";

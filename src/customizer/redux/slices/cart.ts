@@ -21,7 +21,7 @@ import {
   findTextInCart,
   findViewWithTextInCart,
   // findLocationWithTextInCart,
-} from "@/customizer/utils";
+} from "@/customizer/utils/utils";
 import { productEditorSize } from "@/constants";
 
 const initialState: CartState = {

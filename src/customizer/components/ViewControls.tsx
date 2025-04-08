@@ -4,7 +4,7 @@ import {
   useEditorSelectors,
 } from "../redux/slices/editor";
 import styles from "@/styles/customizer/CustomProductDesigner/main.module.css";
-import { findViewInProductData, getAdjacentViewId } from "../utils";
+import { findViewInProductData, getAdjacentViewId } from "../utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,

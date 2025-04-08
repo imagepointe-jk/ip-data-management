@@ -6,7 +6,7 @@ import {
   findVariationInCart,
   findViewInCart,
   getAdjacentViewId,
-} from "@/customizer/utils";
+} from "@/customizer/utils/utils";
 import {
   CartState,
   EditorDialog,

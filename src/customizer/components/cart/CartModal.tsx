@@ -34,7 +34,6 @@ export function CartModal() {
     setSubmitting(true);
     setError(false);
     try {
-      //TODO: Currently the base64 view renders are stored nested within the cart, which is causing them to be stored in the db. Storing base64 images in a db should be avoided.
       const response = await submitQuoteRequest({
         firstName,
         lastName,
@@ -44,8 +43,8 @@ export function CartModal() {
         comments,
         cart,
       });
-      const json = await response.json();
-      console.log(json);
+      await response.json();
+      console.log("success");
     } catch (error) {
       console.error(error);
       setError(true);
