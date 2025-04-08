@@ -9,9 +9,10 @@ import { CartQuoteStep } from "./CartQuoteStep";
 import { submitQuoteRequest } from "@/fetch/client/customizer";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { CartReviewStep } from "./CartReviewStep";
+import { CartSuccessStep } from "./CartSuccessStep";
 
 export function CartModal() {
-  const [step, setStep] = useState("review" as "review" | "quote");
+  const [step, setStep] = useState("review" as "review" | "quote" | "success");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ export function CartModal() {
         cart,
       });
       await response.json();
-      console.log("success");
+      setStep("success");
     } catch (error) {
       console.error(error);
       setError(true);
@@ -67,9 +68,11 @@ export function CartModal() {
           {step === "quote" && (
             <CartQuoteStep
               showError={error}
+              submitting={submitting}
               onClickBack={() => setStep("review")}
             />
           )}
+          {step === "success" && <CartSuccessStep />}
         </div>
         {/* <div className={styles["step-buttons-container"]}>
           {step === "review" && (

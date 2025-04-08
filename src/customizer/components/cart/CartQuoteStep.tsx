@@ -1,11 +1,13 @@
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { CONTACT_US_URL } from "@/constants";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 
 type Props = {
   showError: boolean;
   onClickBack: () => void;
+  submitting: boolean;
 };
-export function CartQuoteStep({ showError, onClickBack }: Props) {
+export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
   return (
     <>
       <div>
@@ -52,7 +54,14 @@ export function CartQuoteStep({ showError, onClickBack }: Props) {
         <button className="button-minor" onClick={onClickBack}>
           Back
         </button>
-        <button type="submit">Submit</button>
+        <ButtonWithLoading
+          type="submit"
+          normalText="Submit"
+          loading={submitting}
+          className={styles["submit-button"]}
+          spinnerClassName={styles["submit-spinner"]}
+        />
+        {/* <button type="submit">Submit</button> */}
       </div>
     </>
   );
