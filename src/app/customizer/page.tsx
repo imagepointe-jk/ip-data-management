@@ -1,5 +1,4 @@
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
-// import { EditorHelper } from "../../customizer/EditorHelper";
 import dynamic from "next/dynamic";
 const EditorHelper = dynamic(() => import("@/customizer/EditorHelper"), {
   ssr: false,

@@ -7,13 +7,13 @@ import {
   setSelectedViewId,
   useEditorSelectors,
 } from "../redux/slices/editor";
-import { findVariationInCart } from "../utils/utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { addProductVariation, pruneCart } from "../redux/slices/cart";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { useEditor } from "../EditorProvider";
+import { findVariationInCart } from "../utils/find";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();

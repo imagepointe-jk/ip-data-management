@@ -61,7 +61,6 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           className={styles["submit-button"]}
           spinnerClassName={styles["submit-spinner"]}
         />
-        {/* <button type="submit">Submit</button> */}
       </div>
     </>
   );

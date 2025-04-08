@@ -2,12 +2,7 @@
 
 import { DesignResults } from "@/types/schema/designs";
 import { createContext, ReactNode, useContext, useEffect } from "react";
-import {
-  createInitialState,
-  getCurrentViewDataURL,
-  makeDesignResultsSerializable,
-  makeProductDataSerializable,
-} from "./utils/utils";
+import { createInitialState, getCurrentViewDataURL } from "./utils/misc";
 import { useDispatch } from "react-redux";
 import { setProductData } from "./redux/slices/productData";
 import { setCartProducts, setViewRenderURL } from "./redux/slices/cart";
@@ -15,7 +10,6 @@ import { useSelector } from "react-redux";
 import { StoreType } from "./redux/store";
 import {
   setSelectedEditorGuid,
-  // setSelectedLocationId,
   setSelectedProductId,
   setSelectedVariationId,
   setSelectedViewId,
@@ -23,6 +17,10 @@ import {
 import { setDesignData } from "./redux/slices/designData";
 import { ActionCreators } from "redux-undo";
 import { PopulatedProductSettings } from "@/types/schema/customizer";
+import {
+  makeDesignResultsSerializable,
+  makeProductDataSerializable,
+} from "./utils/convert";
 
 type EditorContextType = {
   updateViewRender: (viewId: number) => void;
@@ -64,7 +62,6 @@ export function EditorProvider({
   useEffect(() => {
     //set initial state
     const {
-      initialLocation,
       initialVariation,
       initialView,
       initialProduct,
@@ -79,7 +76,6 @@ export function EditorProvider({
     dispatch(setSelectedProductId(initialProduct.id));
     dispatch(setSelectedVariationId(initialVariation.id));
     dispatch(setSelectedViewId(initialView.id));
-    // dispatch(setSelectedLocationId(initialLocation.id));
 
     //don't remember the above actions as undoable history
     dispatch(ActionCreators.clearHistory());

@@ -15,7 +15,6 @@ export function ArtworkControls() {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
-  // const { selectedLocation } = useEditorSelectors();
   const { selectedView } = useEditorSelectors();
   const dispatch = useDispatch();
 

@@ -11,7 +11,7 @@ import {
 import { Image, Text } from "react-konva";
 import { EditorTextData, TransformArgsPx } from "@/types/schema/customizer";
 import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
-import { constrainEditorObjectTransform } from "@/customizer/utils/utils";
+import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
 
 type Props = {
   editorGuid: string;

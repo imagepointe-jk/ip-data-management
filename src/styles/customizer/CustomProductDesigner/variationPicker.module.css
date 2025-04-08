@@ -41,7 +41,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #4b4b4b;
+  background-color: var(--color-beta);
   color: white;
   padding: 5px;
   text-align: center;

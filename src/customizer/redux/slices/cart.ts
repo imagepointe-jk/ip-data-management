@@ -9,20 +9,16 @@ import {
 } from "@/types/schema/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
+import { productEditorSize } from "@/constants";
 import {
-  convertTransformArgs,
   findArtworkInCart,
-  findLocationInProductData,
-  // findLocationInCart,
-  // findLocationWithArtworkInCart,
+  findTextInCart,
   findVariationInCart,
   findViewInCart,
   findViewWithArtworkInCart,
-  findTextInCart,
   findViewWithTextInCart,
-  // findLocationWithTextInCart,
-} from "@/customizer/utils/utils";
-import { productEditorSize } from "@/constants";
+} from "@/customizer/utils/find";
+import { convertTransformArgs } from "@/customizer/utils/convert";
 
 const initialState: CartState = {
   products: [],
@@ -37,12 +33,10 @@ type AddArtworkPayload = {
     uploadedUrl: string;
   };
   targetViewId: number;
-  // targetLocationId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
 type AddTextPayload = {
-  // targetLocationId: number;
   targetViewId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
@@ -52,34 +46,13 @@ type EditTextPayload = Omit<EditorTextData, "text"> & {
   guid: string;
 };
 
-function createNewObjectData(
-  targetProductData: PopulatedProductSettingsSerializable,
-  // targetLocationId: number,
-  newGuid: string
-) {
-  // const locationData = findLocationInProductData(
-  //   targetProductData,
-  //   targetLocationId
-  // );
-  // if (!locationData)
-  //   throw new Error(`Location data for location ${targetLocationId} not found`);
-
-  // const smallestSize = [locationData.width, locationData.height].sort(
-  //   (a, b) => a - b
-  // )[0]!;
-
+function createNewObjectData(newGuid: string) {
   const newObject: PlacedObject = {
     positionNormalized: {
-      // x: locationData.positionX,
-      // y: locationData.positionY,
       x: 0,
       y: 0,
     },
     sizeNormalized: {
-      //currently only supports square objects
-      //if a rectangular one is used, the aspect ratio will be forced into 1:1
-      // x: smallestSize,
-      // y: smallestSize,
       x: 0.2,
       y: 0.2,
     },
@@ -102,17 +75,12 @@ export const cartSlice = createSlice({
       action: PayloadAction<{ guid: string }>
     ) => {
       const { guid } = action.payload;
-      console.log(`Deleting artwork with guid ${guid}`);
       const viewWithArtwork = findViewWithArtworkInCart(state, guid);
 
-      // const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
       if (!viewWithArtwork) throw new Error("Could not find artwork to delete");
       viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
         (artwork) => artwork.objectData.editorGuid !== guid
       );
-      // locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
-      //   (artwork) => artwork.objectData.editorGuid !== guid
-      // );
     },
     deleteTextFromState: (state, action: PayloadAction<{ guid: string }>) => {
       const { guid } = action.payload;
@@ -122,11 +90,6 @@ export const cartSlice = createSlice({
       viewWithText.texts = viewWithText.texts.filter(
         (text) => text.objectData.editorGuid !== guid
       );
-      // const locationWithText = findLocationWithTextInCart(state, guid);
-      // if (!locationWithText) throw new Error("Could not find text to delete");
-      // locationWithText.texts = locationWithText.texts.filter(
-      //   (text) => text.objectData.editorGuid !== guid
-      // );
     },
     setObjectTransform: (
       state,
@@ -150,14 +113,8 @@ export const cartSlice = createSlice({
         object.objectData.rotationDegrees = transform.rotationDegrees;
     },
     addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
-      const {
-        addDesignPayload,
-        addUploadPayload,
-        targetViewId,
-        // targetLocationId,
-        targetProductData,
-        newGuid,
-      } = action.payload;
+      const { addDesignPayload, addUploadPayload, targetViewId, newGuid } =
+        action.payload;
       let imageUrl = null as string | null;
 
       if (addDesignPayload) {
@@ -194,40 +151,15 @@ export const cartSlice = createSlice({
               }
             : undefined,
         },
-        objectData: createNewObjectData(targetProductData, newGuid),
+        objectData: createNewObjectData(newGuid),
       });
-
-      // const locationInState = findLocationInCart(state, targetLocationId);
-      // if (!locationInState)
-      //   throw new Error(`Location ${targetLocationId} not found in state`);
-
-      // locationInState.artworks.push({
-      //   imageUrl,
-      //   identifiers: {
-      //     designIdentifiers: addDesignPayload
-      //       ? {
-      //           designId: addDesignPayload.designId,
-      //           variationId: addDesignPayload.variationId,
-      //         }
-      //       : undefined,
-      //   },
-      //   objectData: createNewObjectData(
-      //     targetProductData,
-      //     targetLocationId,
-      //     newGuid
-      //   ),
-      // });
     },
     addText: (state, action: PayloadAction<AddTextPayload>) => {
-      console.log("add text");
       const { newGuid, targetViewId, targetProductData } = action.payload;
 
       const viewInState = findViewInCart(state, targetViewId);
       if (!viewInState)
         throw new Error(`View ${targetViewId} not found in state`);
-      // const locationInState = findLocationInCart(state, targetLocationId);
-      // if (!locationInState)
-      //   throw new Error(`Location ${targetLocationId} not found in state`);
 
       viewInState.texts.push({
         textData: {
@@ -238,23 +170,8 @@ export const cartSlice = createSlice({
             align: "left",
           },
         },
-        objectData: createNewObjectData(targetProductData, newGuid),
+        objectData: createNewObjectData(newGuid),
       });
-      // locationInState.texts.push({
-      //   textData: {
-      //     text: "New Text",
-      //     style: {
-      //       fontSize: 20,
-      //       hexCode: "#000000",
-      //       align: "left",
-      //     },
-      //   },
-      //   objectData: createNewObjectData(
-      //     targetProductData,
-      //     targetLocationId,
-      //     newGuid
-      //   ),
-      // });
     },
     editText: (state, action: PayloadAction<EditTextPayload>) => {
       const { guid, style: incomingStyle, text: incomingText } = action.payload;
@@ -315,11 +232,6 @@ export const cartSlice = createSlice({
           artworks: [],
           texts: [],
           currentRenderUrl: view.imageUrl,
-          // locations: view.locations.map((location) => ({
-          //   id: location.id,
-          //   artworks: [],
-          //   texts: [],
-          // })),
         })),
         quantities: {
           "2xl": 0,
@@ -402,7 +314,7 @@ export const cartSlice = createSlice({
       const { variationIdToPreserve } = action.payload;
 
       //get rid of variations present in cart that have no designs, text, etc.
-      //currently only prune variations within each product, because we currently only support one product in the cart at a time
+      //currently only prune variations within each product, rather than also pruning products, because we currently only support one product in the cart at a time
       for (const product of state.products) {
         product.variations = product.variations.filter((variation) => {
           const hasAnyDesign = !!variation.views.find(

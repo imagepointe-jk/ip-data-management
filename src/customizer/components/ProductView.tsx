@@ -7,11 +7,6 @@ import { useRef, useState } from "react";
 import { Image, Layer, Rect, Stage } from "react-konva";
 import useImage from "use-image";
 import {
-  convertDesignerObjectData,
-  findLocationInProductData,
-  findViewInProductData,
-} from "../utils/utils";
-import {
   setDialogOpen,
   setSelectedEditorGuid,
   useEditorSelectors,
@@ -20,6 +15,8 @@ import { useDispatch } from "react-redux";
 import { LocationFrames } from "./productView/LocationFrames";
 import { getConfinedRectDimensions } from "@/utility/misc";
 import { EditorObject } from "./productView/EditorObject";
+import { findViewInProductData } from "../utils/find";
+import { convertDesignerObjectData } from "../utils/convert";
 
 export function ProductView() {
   const { selectedView, selectedProductData } = useEditorSelectors();
@@ -79,19 +76,7 @@ export function ProductView() {
           y={centeredImageY}
           width={imageWidthConfined}
           height={imageHeightConfined}
-          // onMouseEnter={() => setShowLocationFrames(false)} //if mouse is detected by the image, it must be outside the central area
         />
-
-        {/* Central area: location frames visible when mouse is over this rect */}
-
-        {/* <Rect
-          x={50}
-          y={50}
-          width={550}
-          height={550}
-          onMouseEnter={() => setShowLocationFrames(true)}
-          onClick={() => dispatch(setSelectedEditorGuid(null))}
-        /> */}
 
         {/* Location frames */}
 
@@ -101,6 +86,7 @@ export function ProductView() {
       </Layer>
 
       {/* Artworks */}
+
       <Layer>
         {selectedView.artworks.map((art) => {
           const {
@@ -135,6 +121,9 @@ export function ProductView() {
             />
           );
         })}
+
+        {/* Texts */}
+
         {selectedView.texts.map((text) => {
           const {
             objectData: {
@@ -169,41 +158,6 @@ export function ProductView() {
           );
         })}
       </Layer>
-
-      {/* Locations with artwork */}
-
-      {/* {selectedView.locations.map((location) => {
-        const locationInProductData = selectedProductData
-          ? findLocationInProductData(selectedProductData, location.id)
-          : undefined;
-        const { position: locationPosition, size: locationSize } =
-          convertDesignerObjectData(productEditorSize, productEditorSize, {
-            positionNormalized: {
-              x: locationInProductData?.positionX || 0,
-              y: locationInProductData?.positionY || 0,
-            },
-            sizeNormalized: {
-              x: locationInProductData?.width || 0,
-              y: locationInProductData?.height || 0,
-            },
-          });
-
-        return (
-          <Layer
-            key={location.id}
-            clipX={locationPosition.x}
-            clipY={locationPosition.y}
-            clipWidth={locationSize.x}
-            clipHeight={locationSize.y}
-          >
-            <RenderedLocation
-              locationInState={location}
-              locationPosition={locationPosition}
-              locationSize={locationSize}
-            />
-          </Layer>
-        );
-      })} */}
     </Stage>
   );
 }

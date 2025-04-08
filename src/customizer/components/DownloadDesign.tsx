@@ -1,13 +1,8 @@
 import {
-  getRenderedSingleView,
-  getRenderedVariationViews,
-} from "@/fetch/client/customizer";
-import {
   setSelectedEditorGuid,
   useEditorSelectors,
 } from "../redux/slices/editor";
 import styles from "@/styles/customizer/CustomProductDesigner/download.module.css";
-import { findViewInProductData } from "../utils/utils";
 import Konva from "konva";
 import { forceClientDownload } from "@/utility/misc";
 import { useDispatch } from "react-redux";
@@ -24,17 +19,6 @@ export function DownloadDesign() {
 
   async function downloadVariationViews() {
     console.log("download all views");
-    // try {
-    //   const response = await getRenderedVariationViews(selectedVariation);
-    //   if (!response.ok) {
-    //     const json = await response.json();
-    //     throw new Error(json.message);
-    //   }
-    //   const blob = await response.blob();
-    //   forceClientDownloadBlob(blob, "my-design");
-    // } catch (error) {
-    //   console.error(error);
-    // }
   }
 
   async function downloadSingleView() {

@@ -74,32 +74,6 @@ export function CartModal() {
           )}
           {step === "success" && <CartSuccessStep />}
         </div>
-        {/* <div className={styles["step-buttons-container"]}>
-          {step === "review" && (
-            <>
-              <button type="button" onClick={() => setStep("quote")}>
-                Continue
-              </button>
-            </>
-          )}
-          {step === "quote" && (
-            <>
-              <button
-                type="button"
-                className="button-minor"
-                onClick={() => setStep("review")}
-              >
-                Back
-              </button>
-              <button className={styles["submit-button"]}>
-                {!submitting && "Submit"}
-                {submitting && (
-                  <LoadingIndicator className={styles["submit-spinner"]} />
-                )}
-              </button>
-            </>
-          )}
-        </div> */}
       </form>
     </Modal>
   );

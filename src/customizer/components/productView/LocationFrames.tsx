@@ -1,6 +1,6 @@
-import { convertDesignerObjectData } from "@/customizer/utils/utils";
 import { Rect } from "react-konva";
 import { productEditorSize } from "@/constants";
+import { convertDesignerObjectData } from "@/customizer/utils/convert";
 
 type Props = {
   locations: {

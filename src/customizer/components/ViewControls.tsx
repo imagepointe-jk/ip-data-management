@@ -4,7 +4,6 @@ import {
   useEditorSelectors,
 } from "../redux/slices/editor";
 import styles from "@/styles/customizer/CustomProductDesigner/main.module.css";
-import { findViewInProductData, getAdjacentViewId } from "../utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -12,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { useEditor } from "../EditorProvider";
+import { findViewInProductData, getAdjacentViewId } from "../utils/find";
 
 export function ViewControls() {
   const { selectedView, selectedVariation, selectedProductData } =

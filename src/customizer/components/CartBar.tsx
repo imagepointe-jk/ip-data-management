@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
-import { countCartItems } from "../utils/utils";
+import { countCartItems } from "../utils/misc";
 import { useEditor } from "../EditorProvider";
 
 export function CartBar() {

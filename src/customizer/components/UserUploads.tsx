@@ -1,7 +1,6 @@
 import { uploadMediaAction } from "@/actions/wordpress";
 import { ChangeEvent, useRef, useState } from "react";
 import styles from "@/styles/customizer/CustomProductDesigner/upload.module.css";
-import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { useDispatch } from "react-redux";
 import { addDesign } from "../redux/slices/cart";
@@ -23,9 +22,6 @@ export function UserUploads() {
   const selectedViewId = useSelector(
     (store: StoreType) => store.editorState.selectedViewId
   );
-  // const selectedLocationId = useSelector(
-  //   (store: StoreType) => store.editorState.selectedLocationId
-  // );
 
   async function onChoose(e: ChangeEvent<HTMLInputElement>) {
     if (status === "loading") return;
@@ -55,7 +51,6 @@ export function UserUploads() {
       const newGuid = uuidv4();
       dispatch(
         addDesign({
-          // targetLocationId: selectedLocationId,
           targetViewId: selectedViewId,
           newGuid,
           addUploadPayload: {
@@ -68,7 +63,7 @@ export function UserUploads() {
       dispatch(setSelectedEditorGuid(newGuid));
 
       if (inputRef.current !== null) {
-        //@ts-ignore
+        //@ts-expect-error: null not assignable to string
         inputRef.current.value = null;
       }
     } catch (error) {

@@ -4,8 +4,7 @@ import {
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
 import { StoreType } from "@/customizer/redux/store";
-import { findTextInCart } from "@/customizer/utils/utils";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
@@ -22,14 +21,12 @@ import {
   faUnderline,
 } from "@fortawesome/free-solid-svg-icons";
 import debounce from "lodash.debounce";
+import { findTextInCart } from "@/customizer/utils/find";
 
 export function TextEditor() {
   const dispatch = useDispatch();
   const { selectedProductData, selectedEditorGuid, selectedView } =
     useEditorSelectors();
-  // const selectedLocationId = useSelector(
-  //   (store: StoreType) => store.editorState.selectedLocationId
-  // );
   const store = useSelector((store: StoreType) => store);
   const selectedText = selectedEditorGuid
     ? findTextInCart(store.cart.present, selectedEditorGuid)
@@ -54,7 +51,6 @@ export function TextEditor() {
     dispatch(
       addText({
         newGuid,
-        // targetLocationId: selectedLocationId,
         targetProductData: selectedProductData,
         targetViewId: selectedView.id,
       })
