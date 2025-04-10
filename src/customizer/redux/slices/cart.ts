@@ -5,7 +5,7 @@ import {
   EditorTextStyle,
   PlacedObject,
   PopulatedProductSettingsSerializable,
-  TransformArgsPx,
+  TransformArgsPxOptional,
 } from "@/types/schema/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
@@ -15,10 +15,12 @@ import {
   findTextInCart,
   findVariationInCart,
   findViewInCart,
+  findViewInProductData,
   findViewWithArtworkInCart,
   findViewWithTextInCart,
 } from "@/customizer/utils/find";
-import { convertTransformArgs } from "@/customizer/utils/convert";
+import { pixelTransformToNormalized } from "@/customizer/utils/convert";
+import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
 
 const initialState: CartState = {
   products: [],
@@ -93,28 +95,48 @@ export const cartSlice = createSlice({
     },
     setObjectTransform: (
       state,
-      action: PayloadAction<{ guid: string; transform: TransformArgsPx }>
+      action: PayloadAction<{
+        guid: string;
+        transform: TransformArgsPxOptional;
+      }>
     ) => {
       //expects absolute px amounts for position and size.
       //will convert to 0-1 range for storing in state.
       const { guid, transform } = action.payload;
-      const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
-        convertTransformArgs(productEditorSize, productEditorSize, transform);
+      const { positionNormalized, sizeNormalized } = pixelTransformToNormalized(
+        productEditorSize,
+        productEditorSize,
+        {
+          xPx: transform.xPx || 0,
+          yPx: transform.yPx || 0,
+          widthPx: transform.widthPx || 0,
+          heightPx: transform.heightPx || 0,
+          rotationDegrees: transform.rotationDegrees || 0,
+        }
+      );
       const object =
         findArtworkInCart(state, guid) || findTextInCart(state, guid);
       if (!object) throw new Error("No object found to transform");
 
-      if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
-      if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
-      if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
-      if (heightNormalized)
-        object.objectData.sizeNormalized.y = heightNormalized;
+      if (positionNormalized.x)
+        object.objectData.positionNormalized.x = positionNormalized.x;
+      if (positionNormalized.y)
+        object.objectData.positionNormalized.y = positionNormalized.y;
+      if (sizeNormalized.x)
+        object.objectData.sizeNormalized.x = sizeNormalized.x;
+      if (sizeNormalized.y)
+        object.objectData.sizeNormalized.y = sizeNormalized.y;
       if (transform.rotationDegrees)
         object.objectData.rotationDegrees = transform.rotationDegrees;
     },
     addDesign: (state, action: PayloadAction<AddArtworkPayload>) => {
-      const { addDesignPayload, addUploadPayload, targetViewId, newGuid } =
-        action.payload;
+      const {
+        addDesignPayload,
+        addUploadPayload,
+        targetViewId,
+        newGuid,
+        targetProductData,
+      } = action.payload;
       let imageUrl = null as string | null;
 
       if (addDesignPayload) {
@@ -141,6 +163,19 @@ export const cartSlice = createSlice({
       if (!viewInState)
         throw new Error(`View ${targetViewId} not found in state`);
 
+      const objectData = createNewObjectData(newGuid);
+      const viewInProductData = findViewInProductData(
+        targetProductData,
+        targetViewId
+      );
+      if (!viewInProductData)
+        throw new Error(`View ${targetViewId} not found in product data`);
+      const { constrainedPosition, constrainedSize } =
+        constrainEditorObjectTransform({
+          locations: viewInProductData.locations,
+          objectTransform: objectData,
+        });
+
       viewInState.artworks.push({
         imageUrl,
         identifiers: {
@@ -151,7 +186,17 @@ export const cartSlice = createSlice({
               }
             : undefined,
         },
-        objectData: createNewObjectData(newGuid),
+        objectData: {
+          ...objectData,
+          positionNormalized: {
+            x: constrainedPosition.x,
+            y: constrainedPosition.y,
+          },
+          sizeNormalized: {
+            x: constrainedSize.x,
+            y: constrainedSize.y,
+          },
+        },
       });
     },
     addText: (state, action: PayloadAction<AddTextPayload>) => {

@@ -1,6 +1,6 @@
 import { Rect } from "react-konva";
 import { productEditorSize } from "@/constants";
-import { convertDesignerObjectData } from "@/customizer/utils/convert";
+import { normalizedTransformToPixels } from "@/customizer/utils/convert";
 
 type Props = {
   locations: {
@@ -15,7 +15,7 @@ export function LocationFrames({ locations }: Props) {
   return (
     <>
       {locations.map((location) => {
-        const { position, size } = convertDesignerObjectData(
+        const { position, size } = normalizedTransformToPixels(
           productEditorSize,
           productEditorSize,
           {

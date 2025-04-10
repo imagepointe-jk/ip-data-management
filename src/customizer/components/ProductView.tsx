@@ -16,7 +16,7 @@ import { LocationFrames } from "./productView/LocationFrames";
 import { getConfinedRectDimensions } from "@/utility/misc";
 import { EditorObject } from "./productView/EditorObject";
 import { findViewInProductData } from "../utils/find";
-import { convertDesignerObjectData } from "../utils/convert";
+import { normalizedTransformToPixels } from "../utils/convert";
 
 export function ProductView() {
   const { selectedView, selectedProductData } = useEditorSelectors();
@@ -98,7 +98,7 @@ export function ProductView() {
             },
             imageUrl,
           } = art;
-          const { position, size } = convertDesignerObjectData(
+          const { position, size } = normalizedTransformToPixels(
             productEditorSize,
             productEditorSize,
             {
@@ -134,7 +134,7 @@ export function ProductView() {
             },
             textData,
           } = text;
-          const { position, size } = convertDesignerObjectData(
+          const { position, size } = normalizedTransformToPixels(
             productEditorSize,
             productEditorSize,
             {

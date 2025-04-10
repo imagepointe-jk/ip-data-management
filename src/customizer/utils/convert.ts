@@ -2,6 +2,7 @@ import {
   PopulatedProductSettings,
   PopulatedProductSettingsSerializable,
   TransformArgsPx,
+  TransformArgsPxOptional,
 } from "@/types/schema/customizer";
 import { DesignResults } from "@/types/schema/designs";
 import {
@@ -40,7 +41,7 @@ export function makeDesignResultsSerializable(
 }
 //PlacedObject data includes position and size values in the range 0-1.
 //Convert these to display them correctly in the front end relative to the editing area.
-export function convertDesignerObjectData(
+export function normalizedTransformToPixels(
   viewWidth: number,
   viewHeight: number,
   objectData: {
@@ -63,16 +64,20 @@ export function convertDesignerObjectData(
 
 //TransformArgs coming from Konva transform/drag events have absolute px values.
 //convert to 0-1 range for storage in PlacedObject state.
-export function convertTransformArgs(
+export function pixelTransformToNormalized(
   viewWidth: number,
   viewHeight: number,
   transform: TransformArgsPx
 ) {
   const { xPx, yPx, widthPx, heightPx } = transform;
   return {
-    xNormalized: xPx ? xPx / viewWidth : undefined,
-    yNormalized: yPx ? yPx / viewHeight : undefined,
-    widthNormalized: widthPx ? widthPx / viewWidth : undefined,
-    heightNormalized: heightPx ? heightPx / viewHeight : undefined,
+    positionNormalized: {
+      x: xPx / viewWidth,
+      y: yPx / viewHeight,
+    },
+    sizeNormalized: {
+      x: widthPx / viewWidth,
+      y: heightPx / viewHeight,
+    },
   };
 }

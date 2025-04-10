@@ -5,7 +5,10 @@ import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
 import { setObjectTransform } from "@/customizer/redux/slices/cart";
-import { TransformArgsPx } from "@/types/schema/customizer";
+import {
+  TransformArgsPx,
+  TransformArgsPxOptional,
+} from "@/types/schema/customizer";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -15,7 +18,7 @@ type Props = {
   selected?: boolean;
   constrainTransform?: (params: TransformArgsPx) => {
     constrainedPosition: { x: number; y: number };
-    constrainedSize: { width: number; height: number };
+    constrainedSize: { x: number; y: number };
   };
   onDragStart?: () => void;
   onDragEnd?: () => void;
@@ -79,8 +82,8 @@ export function Transformable({
         transform: {
           xPx: constrainedPosition.x,
           yPx: constrainedPosition.y,
-          widthPx: constrainedSize.width,
-          heightPx: constrainedSize.height,
+          widthPx: constrainedSize.x,
+          heightPx: constrainedSize.y,
           rotationDegrees: node.rotation(),
         },
       })
@@ -121,8 +124,8 @@ export function Transformable({
         transform: {
           xPx: constrainedPosition.x,
           yPx: constrainedPosition.y,
-          widthPx: constrainedSize.width,
-          heightPx: constrainedSize.height,
+          widthPx: constrainedSize.x,
+          heightPx: constrainedSize.y,
           rotationDegrees: node.rotation(),
         },
       })

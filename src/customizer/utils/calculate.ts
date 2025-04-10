@@ -1,74 +1,45 @@
 import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
-import { TransformArgsPx } from "@/types/schema/customizer";
-import { convertDesignerObjectData } from "./convert";
+import { TransformNormalized } from "@/types/schema/customizer";
 import { clamp } from "@/utility/misc";
 
-export function calculateRectCenter(params: TransformArgsPx) {
-  const { xPx, yPx, widthPx, heightPx, rotationDegrees } = params;
-
-  const topLeftX = xPx || 0;
-  const topLeftY = yPx || 0;
-  const width = widthPx || 0;
-  const height = heightPx || 0;
+export function calculateRectCenter(params: TransformNormalized) {
+  const { positionNormalized, sizeNormalized, rotationDegrees } = params;
 
   const radians = ((rotationDegrees || 0) * Math.PI) / 180;
   return {
     x:
-      topLeftX +
-      (width / 2) * Math.cos(radians) -
-      (height / 2) * Math.sin(radians),
+      positionNormalized.x +
+      (sizeNormalized.x / 2) * Math.cos(radians) -
+      (sizeNormalized.y / 2) * Math.sin(radians),
     y:
-      topLeftY +
-      (width / 2) * Math.sin(radians) +
-      (height / 2) * Math.cos(radians),
+      positionNormalized.y +
+      (sizeNormalized.x / 2) * Math.sin(radians) +
+      (sizeNormalized.y / 2) * Math.cos(radians),
   };
 }
 
-export type ConstrainObjectEditorParams = {
-  productEditorSize: number;
-  objectTransform: TransformArgsPx;
+export type ConstrainEditorObjectParams = {
+  objectTransform: TransformNormalized;
   locations: CustomProductDecorationLocationNumeric[];
 };
 //tries to constrain the position and size of the given object inside the nearest decoration location
 //TODO: This currently doesn't take rotation into account, and also sometimes causes snapping to undesired locations.
 //TODO: Consider ranking the locations based on how much they overlap with the object (if at all). Overlap detection could be easily done by sampling a grid of points and seeing which are inside both A and B.
 export function constrainEditorObjectTransform(
-  params: ConstrainObjectEditorParams
+  params: ConstrainEditorObjectParams
 ) {
-  const { locations, objectTransform, productEditorSize } = params;
+  const { locations, objectTransform } = params;
 
   //rank the locations by how close each one is to the given rect
   const sortedByDistToRect = [...locations];
   sortedByDistToRect.sort((locationA, locationB) => {
-    const { position: locationAPositionPx, size: locationASizePx } =
-      convertDesignerObjectData(productEditorSize, productEditorSize, {
-        positionNormalized: {
-          x: locationA.positionX,
-          y: locationA.positionY,
-        },
-        sizeNormalized: {
-          x: locationA.width,
-          y: locationA.height,
-        },
-      });
-    const { position: locationBPositionPx, size: locationBSizePx } =
-      convertDesignerObjectData(productEditorSize, productEditorSize, {
-        positionNormalized: {
-          x: locationB.positionX,
-          y: locationB.positionY,
-        },
-        sizeNormalized: {
-          x: locationB.width,
-          y: locationB.height,
-        },
-      });
     const locationACenter = {
-      x: locationAPositionPx.x + locationASizePx.x / 2,
-      y: locationAPositionPx.y + locationASizePx.y / 2,
+      x: locationA.positionX + locationA.width / 2,
+      y: locationA.positionY + locationA.height / 2,
     };
     const locationBCenter = {
-      x: locationBPositionPx.x + locationBSizePx.x / 2,
-      y: locationBPositionPx.y + locationBSizePx.y / 2,
+      x: locationB.positionX + locationB.width / 2,
+      y: locationB.positionY + locationB.height / 2,
     };
     const rectCenter = calculateRectCenter(objectTransform);
 
@@ -92,35 +63,24 @@ export function constrainEditorObjectTransform(
   const closestLocation = sortedByDistToRect[0];
   if (!closestLocation) throw new Error("No location to snap to");
 
-  const { position: closestLocationPositionPx, size: closestLocationSizePx } =
-    convertDesignerObjectData(productEditorSize, productEditorSize, {
-      positionNormalized: {
-        x: closestLocation.positionX,
-        y: closestLocation.positionY,
-      },
-      sizeNormalized: {
-        x: closestLocation.width,
-        y: closestLocation.height,
-      },
-    });
   const closestLocationBottomRightCorner = {
-    x: closestLocationPositionPx.x + closestLocationSizePx.x,
-    y: closestLocationPositionPx.y + closestLocationSizePx.y,
+    x: closestLocation.positionX + closestLocation.width,
+    y: closestLocation.positionY + closestLocation.height,
   };
 
   //now that we have the closest location, figure out the bounds it gives us
   const topLeftBounds = {
-    x: closestLocationPositionPx.x,
-    y: closestLocationPositionPx.y,
+    x: closestLocation.positionX,
+    y: closestLocation.positionY,
   };
   const bottomRightBounds = {
     x: clamp(
-      closestLocationBottomRightCorner.x - (objectTransform.widthPx || 0),
+      closestLocationBottomRightCorner.x - objectTransform.sizeNormalized.x,
       topLeftBounds.x,
       Infinity
     ),
     y: clamp(
-      closestLocationBottomRightCorner.y - (objectTransform.heightPx || 0),
+      closestLocationBottomRightCorner.y - objectTransform.sizeNormalized.y,
       topLeftBounds.y,
       Infinity
     ),
@@ -128,24 +88,24 @@ export function constrainEditorObjectTransform(
 
   //then clamp the object within those bounds
   const clampedX = clamp(
-    objectTransform.xPx || 0,
+    objectTransform.positionNormalized.x,
     topLeftBounds.x,
     bottomRightBounds.x
   );
   const clampedY = clamp(
-    objectTransform.yPx || 0,
+    objectTransform.positionNormalized.y,
     topLeftBounds.y,
     bottomRightBounds.y
   );
   const clampedWidth = clamp(
-    objectTransform.widthPx || 0,
-    30,
-    closestLocationSizePx.x
+    objectTransform.sizeNormalized.x,
+    0.05,
+    closestLocation.width
   );
   const clampedHeight = clamp(
-    objectTransform.heightPx || 0,
-    30,
-    closestLocationSizePx.y
+    objectTransform.sizeNormalized.y,
+    0.05,
+    closestLocation.height
   );
 
   return {
@@ -154,8 +114,8 @@ export function constrainEditorObjectTransform(
       y: clampedY,
     },
     constrainedSize: {
-      width: clampedWidth,
-      height: clampedHeight,
+      x: clampedWidth,
+      y: clampedHeight,
     },
   };
 }
