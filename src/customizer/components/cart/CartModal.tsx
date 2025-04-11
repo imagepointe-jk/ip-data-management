@@ -61,19 +61,17 @@ export function CartModal() {
       onClickClose={() => dispatch(setModalOpen(null))}
     >
       <form className={styles["modal-form"]} onSubmit={onClickSubmit}>
-        <div>
-          {step === "review" && (
-            <CartReviewStep onClickContinue={() => setStep("quote")} />
-          )}
-          {step === "quote" && (
-            <CartQuoteStep
-              showError={error}
-              submitting={submitting}
-              onClickBack={() => setStep("review")}
-            />
-          )}
-          {step === "success" && <CartSuccessStep />}
-        </div>
+        {step === "review" && (
+          <CartReviewStep onClickContinue={() => setStep("quote")} />
+        )}
+        {step === "quote" && (
+          <CartQuoteStep
+            showError={error}
+            submitting={submitting}
+            onClickBack={() => setStep("review")}
+          />
+        )}
+        {step === "success" && <CartSuccessStep />}
       </form>
     </Modal>
   );

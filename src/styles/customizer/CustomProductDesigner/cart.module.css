@@ -35,6 +35,9 @@
 .cart-items-container {
   max-height: 425px;
   overflow: auto;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 20px 0;
 }
 
 .step-buttons-container {
@@ -49,18 +52,30 @@
   font-size: 1rem;
 }
 
+.cart-item-variations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
 .cart-item-flex {
   display: flex;
+}
+
+.cart-item-name {
+  font-weight: bold;
 }
 
 .cart-item-form {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 20px;
 }
 
-.cart-item-form label {
+.input-label {
   display: block;
+  font-size: 0.825rem;
 }
 
 .cart-item-form input {
@@ -95,11 +110,6 @@
 
 .quote-step-main h2 {
   margin: 0;
-}
-
-.quote-step-main label {
-  display: block;
-  font-size: 0.825rem;
 }
 
 .quote-step-main input {
@@ -147,6 +157,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  height: 80%;
 }
 
 .success-check {

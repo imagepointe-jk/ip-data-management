@@ -13,27 +13,39 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
       <h2>Contact Information</h2>
       <div className={styles["primary-fields"]}>
         <div>
-          <label htmlFor="first-name">First Name</label>
+          <label htmlFor="first-name" className={styles["input-label"]}>
+            First Name
+          </label>
           <input type="text" name="first-name" id="first-name" required />
         </div>
         <div>
-          <label htmlFor="last-name">Last Name</label>
+          <label htmlFor="last-name" className={styles["input-label"]}>
+            Last Name
+          </label>
           <input type="text" name="last-name" id="last-name" required />
         </div>
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email" className={styles["input-label"]}>
+            Email
+          </label>
           <input type="email" name="email" id="email" required />
         </div>
         <div>
-          <label htmlFor="company">Union/Organization</label>
+          <label htmlFor="company" className={styles["input-label"]}>
+            Union/Organization
+          </label>
           <input type="text" name="company" id="company" required />
         </div>
         <div>
-          <label htmlFor="local">Union Local</label>
+          <label htmlFor="local" className={styles["input-label"]}>
+            Union Local
+          </label>
           <input type="text" name="local" id="local" />
         </div>
         <div className={styles["comments-container"]}>
-          <label htmlFor="comments">Comments/Questions</label>
+          <label htmlFor="comments" className={styles["input-label"]}>
+            Comments/Questions
+          </label>
           <textarea name="comments" id="comments" rows={6}></textarea>
         </div>
       </div>
