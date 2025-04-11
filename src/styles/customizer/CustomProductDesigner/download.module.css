@@ -1,21 +1,53 @@
-.main {
+.select-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
+  gap: 5px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
-.main > div {
-  width: 100%;
-}
-
-.download-option-container {
+.scroll-container {
+  height: 400px;
+  width: 300px;
+  overflow-y: auto;
   padding: 10px;
-  border: 1px solid gray;
-  border-radius: 10px;
-  max-width: 300px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
+
+.variations-flex {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.variation-heading {
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+.variation-view-option {
+  position: relative;
+  display: flex;
+  gap: 5px;
   align-items: center;
+  margin-left: 10px;
+}
+
+.variation-view-option.invalid {
+  color: gray;
+}
+
+.invalid-message {
+  font-style: italic;
+  font-size: 0.825rem;
+}
+
+.download-button {
+  margin-top: 20px;
+  font-size: 1.25rem;
+}
+
+.variation-view-option-spinner {
+  width: 15px;
+  height: 15px;
 }

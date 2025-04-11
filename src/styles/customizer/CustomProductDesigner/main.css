@@ -23,3 +23,7 @@ button:disabled,
 .button-minor {
   background-color: rgb(165, 165, 165);
 }
+
+.button-small {
+  padding: 6px;
+}
