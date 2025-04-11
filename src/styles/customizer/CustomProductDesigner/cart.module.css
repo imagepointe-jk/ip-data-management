@@ -84,26 +84,52 @@
   height: 100%;
 }
 
-.contact-form {
+.quote-step-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+  margin: auto;
+  gap: 45px;
+}
+
+.quote-step-main h2 {
+  margin: 0;
+}
+
+.quote-step-main label {
+  display: block;
+  font-size: 0.825rem;
+}
+
+.quote-step-main input {
+  font-size: 1.25rem;
+  padding: 8px;
+  width: 215px;
+}
+
+.comments-container,
+.comments-container textarea {
+  width: 100%;
+}
+
+.primary-fields {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-.contact-form label {
-  display: block;
+.primary-field-single-container {
+  width: 49%;
 }
 
-.contact-form input {
-  font-size: 1rem;
-  padding: 5px;
+.quote-buttons-container {
+  display: flex;
+  gap: 20px;
 }
 
-.request-error {
-  border: 1px solid red;
-  background-color: rgba(255, 0, 0, 0.151);
-  padding: 10px;
-  border-radius: 10px;
+.quote-buttons-container button {
+  font-size: 1.25rem;
 }
 
 .submit-button {
