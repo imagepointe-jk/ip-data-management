@@ -83,7 +83,10 @@ function pullLocalProductValues(
 
     if (!quantity || !price) break;
 
-    if (quantity && price) priceBreaks.push({ quantity, price });
+    const formattedPrice = !isNaN(+price) ? `$${(+price).toFixed(2)}` : price;
+
+    if (quantity && price)
+      priceBreaks.push({ quantity, price: formattedPrice });
   }
 
   return { sku, vendorName, vendorSku, description, priceBreaks };

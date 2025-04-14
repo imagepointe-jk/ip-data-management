@@ -1,11 +1,12 @@
 "use client";
 
-import { uploadSyncData } from "@/actions/products/products";
+import { startSync } from "@/actions/products/products";
 import { useToast } from "@/components/ToastProvider";
 import { FormEvent, useState } from "react";
 
 export function UploadForm() {
   const [loading, setLoading] = useState(false);
+  const [complete, setComplete] = useState(false);
   const toast = useToast();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -16,8 +17,9 @@ export function UploadForm() {
 
     setLoading(true);
     try {
-      await uploadSyncData(formData);
-      toast.toast("Test message");
+      await startSync(formData);
+      toast.toast("Upload successful", "success");
+      setComplete(true);
     } catch (error) {
       console.error(error);
     }
@@ -35,8 +37,9 @@ export function UploadForm() {
         <input type="file" name="file" id="file" />
       </label>
       <div>
-        {!loading && <button type="submit">Upload</button>}
+        {!loading && !complete && <button type="submit">Upload</button>}
         {loading && "Uploading data..."}
+        {complete && "Sync process started."}
       </div>
     </form>
   );

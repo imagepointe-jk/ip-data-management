@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { WooCommerceASIProductUpdateData } from "@/types/schema/woocommerce";
 
 const standardCredentials = () => {
   const apiKey = process.env.WOOCOMMERCE_MAIN_API_KEY;
@@ -222,6 +223,68 @@ export async function updateDAProductVariationStock(
         "Content-Type": "application/json",
         Authorization: `Basic ${btoa(
           `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`
+        )}`,
+      },
+    }
+  );
+}
+
+export async function updateIPProduct(
+  id: number,
+  data: WooCommerceASIProductUpdateData
+) {
+  const { priceBreaks } = data;
+  const meta_data: { key: string; value: string }[] = [];
+
+  if (priceBreaks) {
+    const { break1, break2, break3, break4, break5 } = priceBreaks;
+    if (break1) {
+      meta_data.push({ key: "promo_quantity_1", value: break1.quantity });
+      meta_data.push({ key: "promo_price_1", value: break1.price });
+    }
+
+    if (break2) {
+      meta_data.push({ key: "promo_quantity_2", value: break2.quantity });
+      meta_data.push({ key: "promo_price_2", value: break2.price });
+    }
+    if (break3) {
+      meta_data.push({ key: "promo_quantity_3", value: break3.quantity });
+      meta_data.push({ key: "promo_price_3", value: break3.price });
+    }
+    if (break4) {
+      meta_data.push({ key: "promo_quantity_4", value: break4.quantity });
+      meta_data.push({ key: "promo_price_4", value: break4.price });
+    }
+    if (break5) {
+      meta_data.push({ key: "promo_quantity_5", value: break5.quantity });
+      meta_data.push({ key: "promo_price_5", value: break5.price });
+    }
+  }
+
+  const body = {
+    meta_data,
+  };
+
+  return fetch(`${env.IP_WOOCOMMERCE_STORE_URL}/wp-json/wc/v3/products/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(
+        `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`
+      )}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export async function searchIPProducts(search: string) {
+  return fetch(
+    `${env.IP_WOOCOMMERCE_STORE_URL}/wp-json/wc/v3/products?search=${search}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${btoa(
+          `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`
         )}`,
       },
     }
