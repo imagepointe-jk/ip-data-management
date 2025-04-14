@@ -46,12 +46,17 @@ function Main() {
     ? `${search.get("code")}`
     : null;
   const action = search.get("action") ? `${search.get("action")}` : null;
+  const instanceFinishedStatus = serverData?.approvedByUserName
+    ? "approved"
+    : serverData?.deniedByUserName
+    ? "denied"
+    : "INVALID_STATUS";
 
-  async function doApprove() {
+  async function doApprove(comments: string | null, pin: string) {
     try {
       setLoading(true);
       setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "approve");
+      await receiveWorkflowEvent(accessCode, "approve", comments, pin);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
@@ -59,11 +64,11 @@ function Main() {
     setLoading(false);
   }
 
-  async function doDeny(reason: string) {
+  async function doDeny(reason: string, pin: string) {
     try {
       setLoading(true);
       setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "deny", reason);
+      await receiveWorkflowEvent(accessCode, "deny", reason, pin);
       setActionSuccess(true);
     } catch (error) {
       console.error(error);
@@ -125,6 +130,18 @@ function Main() {
     setAccessCode(accessCodeInParams);
     getServerData(accessCodeInParams);
   }, [accessCodeInParams]);
+
+  if (serverData?.instanceStatus === "finished") {
+    return (
+      <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
+        Order {serverData?.orderId} has already been {instanceFinishedStatus} by{" "}
+        {serverData?.approvedByUserName ||
+          serverData?.deniedByUserName ||
+          "USER_NOT_FOUND"}
+        .{" "}
+      </div>
+    );
+  }
 
   return (
     <>

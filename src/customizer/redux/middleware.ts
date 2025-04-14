@@ -2,16 +2,11 @@ import { isAction, Middleware } from "@reduxjs/toolkit";
 import { StoreType } from "./store";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
   setSelectedProductId,
   setSelectedVariationId,
   setSelectedViewId,
 } from "./slices/editor";
-import {
-  findLocationInCart,
-  findVariationInCart,
-  findViewInCart,
-} from "../utils";
+import { findVariationInCart, findViewInCart } from "../utils/find";
 
 //did not find a good way with redux-undo to resolve some post-undo/post-redo states.
 //for example, after adding a design and selecting it, undoing the add would leave the (now non-existent) design still selected by reference.
@@ -31,12 +26,8 @@ export const recoveryMiddleware: Middleware =
       storeAPI.dispatch(setSelectedEditorGuid(null));
 
       //tries to select fallback products/variations/views/locations in case any of these are invalid
-      const {
-        selectedProductId,
-        selectedVariationId,
-        selectedViewId,
-        selectedLocationId,
-      } = state.editorState;
+      const { selectedProductId, selectedVariationId, selectedViewId } =
+        state.editorState;
       const cart = state.cart.present;
 
       let selectedProduct = cart.products.find(
@@ -65,15 +56,6 @@ export const recoveryMiddleware: Middleware =
           throw new Error(`Variation ${selectedVariation.id} has no views!`);
         dispatch(setSelectedViewId(firstView.id));
         selectedView = firstView;
-      }
-
-      let selectedLocation = findLocationInCart(cart, selectedLocationId);
-      if (!selectedLocation) {
-        let firstLocation = selectedView.locations[0];
-        if (!firstLocation)
-          throw new Error(`View ${selectedView.id} has no locations!`);
-        dispatch(setSelectedLocationId(firstLocation.id));
-        selectedLocation = firstLocation;
       }
 
       return result;

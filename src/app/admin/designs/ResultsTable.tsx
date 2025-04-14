@@ -6,6 +6,8 @@ import styles from "@/styles/designs/designs.module.css";
 import SortIcon from "@/components/SortIcon";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DesignWithIncludes } from "@/types/schema/designs";
+import { AsyncCheckbox } from "@/components/AsyncCheckbox";
+import { updateDesign } from "@/actions/designs/update";
 
 type Props = {
   designs: DesignWithIncludes[];
@@ -122,22 +124,29 @@ export default function ResultsTable({ designs }: Props) {
           ),
         },
         {
-          headerName: "Status",
+          headerName: "Published",
           createCell: (design) => (
-            <span
-              className={
-                design.status === "Published"
-                  ? styles["published"]
-                  : styles["draft"]
+            <AsyncCheckbox
+              initialChecked={design.status === "Published"}
+              onChange={(checked) =>
+                updateDesign({
+                  id: design.id,
+                  status: checked ? "Published" : "Draft",
+                })
               }
-            >
-              {design.status}
-            </span>
+            />
           ),
         },
         {
           headerName: "Featured",
-          createCell: (design) => (design.featured ? "✅" : "❌"),
+          createCell: (design) => (
+            <AsyncCheckbox
+              initialChecked={design.featured}
+              onChange={(checked) =>
+                updateDesign({ id: design.id, featured: checked })
+              }
+            />
+          ),
         },
         {
           headerName: "Design Date",

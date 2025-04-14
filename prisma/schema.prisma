@@ -187,6 +187,7 @@ model Webstore {
   orderUpdatedEmails          String?
   customOrderApprovedEmail    String?
   useCustomOrderApprovedEmail Boolean                         @default(false)
+  shippingEmailFilename       String                          @default("NO_SHIPPING_EMAIL")
   shippingSettings            WebstoreShippingSettings?
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]
@@ -229,12 +230,14 @@ model OrderWorkflow {
 }
 
 model OrderWorkflowUser {
-  id          Int                             @id @default(autoincrement())
-  name        String
-  email       String                          @unique
-  roles       OrderWorkflowWebstoreUserRole[]
-  comments    OrderWorkflowComment[]
-  accessCodes OrderWorkflowAccessCode[]
+  id                Int                             @id @default(autoincrement())
+  name              String
+  email             String                          @unique
+  roles             OrderWorkflowWebstoreUserRole[]
+  comments          OrderWorkflowComment[]
+  accessCodes       OrderWorkflowAccessCode[]
+  approvedInstances OrderWorkflowInstance[]         @relation("approvedByUser")
+  deniedInstances   OrderWorkflowInstance[]         @relation("deniedByUser")
 }
 
 model OrderWorkflowWebstoreUserRole {
@@ -276,17 +279,22 @@ model OrderWorkflowStepProceedListener {
 }
 
 model OrderWorkflowInstance {
-  id                 Int                       @id @default(autoincrement())
-  status             String
-  wooCommerceOrderId Int                       @unique
-  currentStep        Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
-  deniedReason       String?
-  accessCodes        OrderWorkflowAccessCode[]
-  comments           OrderWorkflowComment[]
-  parentWorkflowId   Int
-  parentWorkflow     OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
-  createdAt          DateTime                  @default(now())
-  lastStartedAt      DateTime                  @default(now())
+  id                  Int                       @id @default(autoincrement())
+  status              String
+  wooCommerceOrderId  Int                       @unique
+  currentStep         Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
+  deniedReason        String?
+  approvedComments    String?
+  accessCodes         OrderWorkflowAccessCode[]
+  comments            OrderWorkflowComment[]
+  parentWorkflowId    Int
+  parentWorkflow      OrderWorkflow             @relation(fields: [parentWorkflowId], references: [id])
+  approvedByUser      OrderWorkflowUser?        @relation(fields: [approvedByUserEmail], references: [email], name: "approvedByUser") //whatever user most recently approved this instance
+  approvedByUserEmail String?
+  deniedByUser        OrderWorkflowUser?        @relation(fields: [deniedByUserEmail], references: [email], name: "deniedByUser")
+  deniedByUserEmail   String?
+  createdAt           DateTime                  @default(now())
+  lastStartedAt       DateTime                  @default(now())
 }
 
 model OrderWorkflowComment {
@@ -304,6 +312,7 @@ model OrderWorkflowAccessCode {
   user             OrderWorkflowUser     @relation(fields: [userId], references: [id])
   workflowInstance OrderWorkflowInstance @relation(fields: [instanceId], references: [id])
   guid             String                @default(uuid())
+  simplePin        String                @default("000000") //a random 6-digit pin the user needs to enter to approve/deny. a very simple verification layer that does not need encryption, cryptographic randomness, etc.
   userRole         String
 
   @@id([userId, instanceId])

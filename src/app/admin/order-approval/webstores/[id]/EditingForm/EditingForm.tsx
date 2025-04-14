@@ -8,14 +8,12 @@ import { useRouter } from "next/navigation";
 import { FormEvent, ReactNode, useState } from "react";
 import { useImmer } from "use-immer";
 import { CheckoutFields } from "./CheckoutFields";
-import { EmailSettings } from "./EmailSettings";
 import { MainSettings } from "./MainSettings";
 import { ShippingSettings } from "./ShippingSettings";
 
 const blankState: WebstoreEditorData = {
   id: 0,
   name: "",
-  customOrderApprovedEmail: "",
   orderUpdatedEmails: "",
   organizationName: "",
   otherSupportEmails: "",
@@ -25,7 +23,7 @@ const blankState: WebstoreEditorData = {
   checkoutFields: [],
   shippingMethods: [],
   shippingSettings: null,
-  useCustomOrderApprovedEmail: false,
+  shippingEmailFilename: "NO_SHIPPING_EMAIL",
 };
 type Props = {
   webstoreData: WebstoreEditorData | null;
@@ -35,11 +33,13 @@ type Props = {
     serviceCode: number | null;
   }[];
   shortcodeReference: ReactNode;
+  shippingEmailFilenames: string[];
 };
 export function EditingForm({
   webstoreData,
   shippingMethods,
   shortcodeReference,
+  shippingEmailFilenames,
 }: Props) {
   const [webstoreState, setWebstoreState] = useImmer(
     webstoreData ? webstoreData : blankState
@@ -76,11 +76,7 @@ export function EditingForm({
         setApiKey={setApiKey}
         apiSecret={apiSecret}
         setApiSecret={setApiSecret}
-      />
-      <EmailSettings
-        webstoreState={webstoreState}
-        setWebstoreState={setWebstoreState}
-        shortcodeReference={shortcodeReference}
+        shippingEmailFilenames={shippingEmailFilenames}
       />
       {!creatingNew && (
         <CheckoutFields

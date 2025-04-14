@@ -95,3 +95,8 @@
   background: none;
   color: black;
 }
+
+.view-controls-main button:disabled {
+  background: none;
+  opacity: 15%;
+}

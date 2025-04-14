@@ -195,13 +195,21 @@ export function wrap(value: number, min: number, max: number) {
 }
 
 export function clamp(value: number, min: number, max: number) {
+  if (max < min)
+    console.error(
+      `WARNING: clamp called with invalid values (min ${min}, max ${max})`
+    );
   if (value < min) return min;
   if (value > max) return max;
   return value;
 }
 
-export function forceClientDownloadBlob(blob: Blob, downloadName: string) {
-  const url = URL.createObjectURL(blob);
+export function forceClientDownload(
+  urlOrBlob: Blob | string,
+  downloadName: string
+) {
+  const url =
+    urlOrBlob instanceof Blob ? URL.createObjectURL(urlOrBlob) : urlOrBlob;
 
   const link = document.createElement("a");
   link.href = url;
@@ -228,4 +236,36 @@ export function checkEnvVariable(value: string | undefined, isClient = false) {
       clientMessage: isClient ? "Undefined environment variable!" : undefined,
       statusCode: INTERNAL_SERVER_ERROR,
     });
+}
+
+//only use when cryptographic randomness is not needed
+export function createRandomDigitString(digits: number) {
+  return Array.from({ length: digits }, () =>
+    Math.floor(Math.random() * 10)
+  ).join("");
+}
+
+//if the given rect is bigger than the given boundaries, scales the rect down so that it "fits" within the boundaries, without affecting aspect ratio.
+//treats the rect as if it is centered within the bounds.
+export function getConfinedRectDimensions(
+  rect: { width: number; height: number },
+  bounds: { width: number; height: number }
+) {
+  if (rect.width <= bounds.width && rect.height <= bounds.height) return rect; //the rect already fits, so don't bother
+
+  const widthDiff = Math.abs(rect.width - bounds.width);
+  const heightDiff = Math.abs(rect.height - bounds.height);
+  const aspectRatio = rect.width / rect.height;
+
+  if (widthDiff > heightDiff) {
+    return {
+      width: bounds.width,
+      height: bounds.width / aspectRatio,
+    };
+  } else {
+    return {
+      width: bounds.height * aspectRatio,
+      height: bounds.height,
+    };
+  }
 }

@@ -19,7 +19,11 @@ type Replacer = {
     text: string;
     wcOrder: WooCommerceOrder;
     userName: string;
+    deniedUser: string;
+    approvedUser: string;
+    approvedComments: string;
     accessCode: string;
+    pin: string;
     webstore: Webstore;
     denyReason: string | null;
   }) => string;
@@ -27,6 +31,11 @@ type Replacer = {
   shortcode?: string;
 };
 export const replacers: Replacer[] = [
+  {
+    description: "Insert <br> for HTML",
+    fn: ({ text }) => text.replace(/\r|\r\n|\n/g, "<br>"),
+    automatic: true,
+  },
   {
     description: "Insert order details",
     shortcode: "{order}",
@@ -121,6 +130,32 @@ export const replacers: Replacer[] = [
     fn: ({ text, denyReason }) =>
       text.replace(/\{deny-reason\}/, `${denyReason || "(no denial reason)"}`),
   },
+  {
+    description: "The user's PIN, unique to the current workflow instance",
+    shortcode: "{pin}",
+    automatic: false,
+    fn: ({ text, pin }) => text.replace(/\{pin\}/, pin),
+  },
+  {
+    description: "The user that denied the order, if any",
+    shortcode: "{deny-user}",
+    automatic: false,
+    fn: ({ text, deniedUser }) => text.replace(/\{deny-user\}/, deniedUser),
+  },
+  {
+    description: "The user that most recently approved the order, if any",
+    shortcode: "{approve-user}",
+    automatic: false,
+    fn: ({ text, approvedUser }) =>
+      text.replace(/\{approve-user\}/, approvedUser),
+  },
+  {
+    description: "The comments given with the approval, if any",
+    shortcode: "{approve-msg}",
+    automatic: false,
+    fn: ({ text, approvedComments }) =>
+      text.replace(/\{approve-msg\}/, approvedComments),
+  },
 ];
 
 export async function processFormattedText(
@@ -168,6 +203,10 @@ export async function processFormattedText(
         userName: user?.name || "USER_NOT_FOUND",
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
+        pin: accessCode?.simplePin || "NO_PIN_FOUND",
+        deniedUser: instance.deniedByUser?.name || "USER_NOT_FOUND",
+        approvedUser: instance.approvedByUser?.name || "USER_NOT_FOUND",
+        approvedComments: instance.approvedComments || "(no comments)",
       });
     }
     return processed;
@@ -203,7 +242,10 @@ export async function createShippingEmail(instanceId: number) {
     const parsed = parseWooCommerceOrderJson(orderJson);
 
     const templateSource = fs.readFileSync(
-      path.resolve(process.cwd(), "src/order-approval/mail/shippingEmail.hbs"),
+      path.resolve(
+        process.cwd(),
+        `src/order-approval/mail/shippingEmails/${workflow.webstore.shippingEmailFilename}.hbs`
+      ),
       "utf-8"
     );
     const template = handlebars.compile(templateSource);

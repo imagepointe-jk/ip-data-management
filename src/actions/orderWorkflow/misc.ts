@@ -15,11 +15,18 @@ import {
   createSupportEmail,
   processFormattedText,
 } from "@/order-approval/mail/mail";
+import fs from "fs";
+import handlebars from "handlebars";
+import path from "path";
+import { decryptWebstoreData } from "@/order-approval/encryption";
+import { getOrder } from "@/fetch/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
   type: OrderWorkflowEventType,
-  message?: string
+  message: string | null,
+  pin?: string
 ) {
   try {
     const foundAccessCode = await prisma.orderWorkflowAccessCode.findFirst({
@@ -31,6 +38,10 @@ export async function receiveWorkflowEvent(
       },
     });
     if (!foundAccessCode) throw new Error("Access code not found.");
+
+    const requiresPin = type === "approve" || type === "deny";
+    if (requiresPin && foundAccessCode.simplePin !== `${pin}`)
+      throw new Error("Invalid PIN.");
 
     await handleWorkflowEvent(
       foundAccessCode.instanceId,
@@ -164,4 +175,65 @@ export async function processFormattedTextAction(e: FormData) {
 //keep an eye on this in case it breaks in the future.
 export async function getFullWorkflow(id: number) {
   return getWorkflowWithIncludes(id);
+}
+
+export async function sendInvoiceEmail(
+  workflowInstanceId: number,
+  recipientAddress: string
+) {
+  const instance = await prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id: workflowInstanceId,
+    },
+    include: {
+      parentWorkflow: {
+        include: {
+          webstore: true,
+        },
+      },
+      approvedByUser: {
+        include: {
+          accessCodes: true,
+        },
+      },
+    },
+  });
+  if (!instance)
+    throw new Error(`Workflow instance ${workflowInstanceId} not found.`);
+
+  const approvedByUserName = instance.approvedByUser?.name || "USER_NOT_FOUND";
+  const approvedByPin =
+    instance.approvedByUser?.accessCodes.find(
+      (code) => code.instanceId === workflowInstanceId
+    )?.simplePin || "PIN_NOT_FOUND";
+
+  const { wooCommerceOrderId, parentWorkflow } = instance;
+  const { key, secret } = decryptWebstoreData(parentWorkflow.webstore);
+  const orderResponse = await getOrder(
+    wooCommerceOrderId,
+    parentWorkflow.webstore.url,
+    key,
+    secret
+  );
+  if (!orderResponse.ok)
+    throw new Error(`Failed to get WooCommerce order ${wooCommerceOrderId}`);
+  const orderJson = await orderResponse.json();
+  const parsedOrder = parseWooCommerceOrderJson(orderJson);
+
+  const templateSource = fs.readFileSync(
+    path.resolve(process.cwd(), "src/order-approval/mail/invoiceEmail.hbs"),
+    "utf-8"
+  );
+  const template = handlebars.compile(templateSource);
+  const message = template({
+    ...parsedOrder,
+    approvedByUserName,
+    approvedByPin,
+  });
+
+  return sendEmail(
+    recipientAddress,
+    `Invoice for Order ${wooCommerceOrderId}`,
+    message
+  );
 }

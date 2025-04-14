@@ -1,0 +1,11 @@
+.main {
+  position: relative;
+}
+
+.main .spinner {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: -2px;
+  top: -3px;
+}

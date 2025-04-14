@@ -1,58 +1,79 @@
 "use server";
 
-import { validateDesignFormData } from "@/types/validations/designs";
-import { prisma } from "../../../prisma/client";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { prisma } from "../../../prisma/client";
+import { DesignWithIncludes } from "@/types/schema/designs";
 
-export async function updateDesign(formData: FormData) {
-  const parsed = validateDesignFormData(formData);
-  if (!parsed.existingDesignId)
-    throw new Error("No existing design id provided. This is a bug.");
+export async function updateDesign(
+  design: Partial<DesignWithIncludes> & { id: number }
+) {
+  const {
+    date,
+    defaultBackgroundColorId,
+    description,
+    designNumber,
+    designSubcategories,
+    designTags,
+    designTypeId,
+    featured,
+    id,
+    imageUrl,
+    name,
+    priority,
+    status,
+    variations,
+  } = design;
 
-  await Promise.all(
-    parsed.variationData.map((variationData) =>
-      prisma.designVariation.update({
-        where: {
-          id: variationData.id,
-        },
-        data: {
-          colorId: variationData.colorId,
-          imageUrl: variationData.imageUrl,
-          designSubcategories: {
-            set: variationData.subcategoryIds.map((id) => ({ id })),
+  const variationUpdates = variations
+    ? variations.map((variation) =>
+        prisma.designVariation.update({
+          where: {
+            id: variation.id,
           },
-          designTags: {
-            set: variationData.tagIds.map((id) => ({ id })),
+          data: {
+            imageUrl: variation.imageUrl,
+            colorId: variation.colorId,
+            designSubcategories: {
+              set: variation.designSubcategories.map((sub) => ({ id: sub.id })),
+            },
+            designTags: {
+              set: variation.designTags.map((tag) => ({ id: tag.id })),
+            },
           },
-        },
-      })
-    )
-  );
+        })
+      )
+    : [];
 
-  await prisma.design.update({
-    where: {
-      id: parsed.existingDesignId,
-    },
-    data: {
-      designNumber: parsed.designNumber,
-      description: parsed.description,
-      featured: parsed.featured,
-      date: parsed.date,
-      status: parsed.status,
-      designSubcategories: {
-        set: parsed.subcategoryIds.map((id) => ({ id: +id })),
+  await prisma.$transaction([
+    prisma.design.update({
+      where: {
+        id,
       },
-      designTags: {
-        set: parsed.tagIds.map((id) => ({ id: +id })),
+      data: {
+        designNumber,
+        date,
+        defaultBackgroundColorId,
+        description,
+        designTypeId,
+        featured,
+        imageUrl,
+        name,
+        priority,
+        status,
+        designSubcategories: designSubcategories
+          ? {
+              set: designSubcategories.map((sub) => ({ id: sub.id })),
+            }
+          : undefined,
+        designTags: designTags
+          ? {
+              set: designTags.map((tag) => ({ id: tag.id })),
+            }
+          : undefined,
       },
-      designTypeId: +parsed.designTypeId,
-      defaultBackgroundColorId: +parsed.defaultBackgroundColorId,
-      imageUrl: parsed.imageUrl,
-      priority: parsed.priority,
-    },
-  });
+    }),
+    ...variationUpdates,
+  ]);
 
-  revalidatePath("/designs");
-  redirect("/designs");
+  revalidatePath("/admin/designs");
 }

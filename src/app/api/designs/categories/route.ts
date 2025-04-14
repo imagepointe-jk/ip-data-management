@@ -9,5 +9,10 @@ export async function GET() {
     },
   });
 
-  return Response.json(categories, easyCorsInit);
+  return Response.json(categories, {
+    ...easyCorsInit,
+    headers: {
+      "Cache-Control": `public, max-age=${60 * 5}`,
+    },
+  });
 }

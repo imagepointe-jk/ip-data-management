@@ -1,7 +1,6 @@
 import { uploadMediaAction } from "@/actions/wordpress";
 import { ChangeEvent, useRef, useState } from "react";
 import styles from "@/styles/customizer/CustomProductDesigner/upload.module.css";
-import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { useDispatch } from "react-redux";
 import { addDesign } from "../redux/slices/cart";
@@ -13,14 +12,15 @@ import {
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { v4 as uuidv4 } from "uuid";
+import { PRODUCT_CUSTOMIZER_USER_UPLOADS_RML_FOLDER_ID } from "@/constants";
 
 export function UserUploads() {
   const [status, setStatus] = useState("idle" as "idle" | "loading" | "error");
   const inputRef = useRef(null as HTMLInputElement | null);
   const dispatch = useDispatch();
   const { selectedProductData } = useEditorSelectors();
-  const selectedLocationId = useSelector(
-    (store: StoreType) => store.editorState.selectedLocationId
+  const selectedViewId = useSelector(
+    (store: StoreType) => store.editorState.selectedViewId
   );
 
   async function onChoose(e: ChangeEvent<HTMLInputElement>) {
@@ -30,21 +30,28 @@ export function UserUploads() {
     const file = files[0];
     if (!file) return;
 
-    const withNewFilename = new File([file], "customizer-upload.png", {
-      type: file.type,
-      lastModified: file.lastModified,
-    });
+    const withNewFilename = new File(
+      [file],
+      `user-uploaded-design-timestamp-${Date.now()}`,
+      {
+        type: file.type,
+        lastModified: file.lastModified,
+      }
+    );
     const formData = new FormData();
     formData.append("file", withNewFilename);
 
     setStatus("loading");
     try {
-      const uploadedUrl = await uploadMediaAction(formData, 8);
+      const uploadedUrl = await uploadMediaAction(
+        formData,
+        PRODUCT_CUSTOMIZER_USER_UPLOADS_RML_FOLDER_ID
+      );
       setStatus("idle");
       const newGuid = uuidv4();
       dispatch(
         addDesign({
-          targetLocationId: selectedLocationId,
+          targetViewId: selectedViewId,
           newGuid,
           addUploadPayload: {
             uploadedUrl,
@@ -56,7 +63,7 @@ export function UserUploads() {
       dispatch(setSelectedEditorGuid(newGuid));
 
       if (inputRef.current !== null) {
-        //@ts-ignore
+        //@ts-expect-error: null not assignable to string
         inputRef.current.value = null;
       }
     } catch (error) {
