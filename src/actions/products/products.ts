@@ -2,6 +2,7 @@
 
 import { AppError } from "@/error";
 import { searchIPProducts, updateIPProduct } from "@/fetch/woocommerce";
+import { ASIProductImportData } from "@/types/schema/products";
 import { validateASIProducts } from "@/types/validations/products";
 import { getSheetFromBuffer } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
@@ -20,11 +21,17 @@ export async function startSync(formData: FormData) {
   const arrayBuffer = await file.arrayBuffer();
   const asiSheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "ASI");
   const parsed = validateASIProducts(asiSheet);
+  console.log("WooCommerce product sync initiated.");
+  runSync(parsed);
+}
 
-  for (let i = 0; i < parsed.length; i++) {
-    const data = parsed[i]!;
+async function runSync(productData: ASIProductImportData[]) {
+  for (let i = 0; i < productData.length; i++) {
+    const data = productData[i]!;
     try {
-      console.log(`Syncing SKU ${data.sku} (${i + 1} of ${parsed.length})...`);
+      console.log(
+        `Syncing SKU ${data.sku} (${i + 1} of ${productData.length})...`
+      );
       const searchResponse = await searchIPProducts(data.sku);
       if (!searchResponse.ok)
         throw new Error(
