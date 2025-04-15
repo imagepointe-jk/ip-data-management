@@ -67,7 +67,10 @@ const cartStateProductLocationSchema = z.object({
 
 export const cartStateProductViewSchema = z.object({
   id: z.number(),
-  locations: z.array(cartStateProductLocationSchema),
+  artworks: z.array(cartStateArtworkSchema),
+  texts: z.array(cartStateTextSchema),
+  currentRenderUrl: z.string(),
+  // locations: z.array(cartStateProductLocationSchema),
 });
 
 export const cartStateProductVariationSchema = z.object({
@@ -110,12 +113,30 @@ export type EditorTextData = z.infer<typeof textDataSchema>;
 export type EditorTextStyle = z.infer<typeof textStyleSchema>;
 
 //absolute pixel values
-export type TransformArgsPx = {
+export type TransformArgsPxOptional = {
   xPx?: number;
   yPx?: number;
   widthPx?: number;
   heightPx?: number;
   rotationDegrees?: number;
+};
+export type TransformArgsPx = {
+  xPx: number;
+  yPx: number;
+  widthPx: number;
+  heightPx: number;
+  rotationDegrees: number;
+};
+export type TransformNormalized = {
+  positionNormalized: {
+    x: number;
+    y: number;
+  };
+  sizeNormalized: {
+    x: number;
+    y: number;
+  };
+  rotationDegrees: number;
 };
 
 export type CartStateArtwork = z.infer<typeof cartStateArtworkSchema>;
@@ -170,7 +191,10 @@ export type EditorContext = {
   setDialogOpen: (dialog: EditorDialog) => void;
   selectedProductData: PopulatedProductSettings;
   deleteArtworkFromState: (guid: string) => void;
-  setArtworkTransform: (guid: string, transform: TransformArgsPx) => void;
+  setArtworkTransform: (
+    guid: string,
+    transform: TransformArgsPxOptional
+  ) => void;
   addDesign: (designId: number, variationId?: number) => PlacedObject;
   addVariation: (variationId: number) => void;
   removeVariation: (variationId: number) => void;

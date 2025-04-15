@@ -1,10 +1,9 @@
-import { getRenderedSingleView } from "@/fetch/client/customizer";
 import { CartStateProductView } from "@/types/schema/customizer";
-import { CSSProperties, useCallback, useEffect, useState } from "react";
+import { CSSProperties } from "react";
 import styles from "@/styles/customizer/RenderedProductView.module.css";
-import { LoadingIndicator } from "@/components/LoadingIndicator";
-import debounce from "lodash.debounce";
 
+//this component is a holdover from when rendering a product view was more complicated.
+//could probably be removed.
 type Props = {
   view: CartStateProductView;
   bgImgUrl: string;
@@ -20,41 +19,12 @@ export function RenderedProductView({
   containerStyle,
   containerClassName,
 }: Props) {
-  const [imgSrc, setImgSrc] = useState(null as string | null);
-  const [loading, setLoading] = useState(true);
-  const getImageDebounced = useCallback(
-    debounce(async () => {
-      try {
-        const imgResponse = await getRenderedSingleView(
-          view,
-          bgImgUrl,
-          renderScale
-        );
-        if (!imgResponse.ok) {
-          throw new Error(`Response status ${imgResponse.status}`);
-        }
-        const blob = await imgResponse.blob();
-        const url = URL.createObjectURL(blob);
-        setImgSrc(url);
-      } catch (error) {
-        console.error(error);
-      }
-      setLoading(false);
-    }, 100),
-    []
-  );
-
-  useEffect(() => {
-    getImageDebounced();
-  }, []);
-
   return (
     <div
       className={`${styles["main"]} ${containerClassName || ""}`}
       style={containerStyle}
     >
-      {loading && <LoadingIndicator className={styles["img-loading"]} />}
-      {imgSrc && <img src={imgSrc} />}
+      <img src={view.currentRenderUrl} />
     </div>
   );
 }

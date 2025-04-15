@@ -12,6 +12,7 @@ export const env = {
   DA_PRODUCT_SYNC_NOTIFICATION_EMAIL:
     process.env.DA_PRODUCT_SYNC_NOTIFICATION_EMAIL!,
   DEVELOPER_EMAIL: process.env.DEVELOPER_EMAIL!,
+  IP_WOOCOMMERCE_STORE_URL: process.env.IP_WOOCOMMERCE_STORE_URL!,
 };
 
 for (const [key, value] of Object.entries(env)) {

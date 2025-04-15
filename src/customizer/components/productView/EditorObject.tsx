@@ -1,6 +1,6 @@
-import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { IMAGE_NOT_FOUND_URL, productEditorSize } from "@/constants";
 import useImage from "use-image";
-import { Transformable, TransformLimits } from "./Transformable";
+import { Transformable } from "./Transformable";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
@@ -9,7 +9,13 @@ import {
   setSelectedEditorGuid,
 } from "@/customizer/redux/slices/editor";
 import { Image, Text } from "react-konva";
-import { EditorTextData } from "@/types/schema/customizer";
+import { EditorTextData, TransformArgsPx } from "@/types/schema/customizer";
+import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
+import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
+import {
+  normalizedTransformToPixels,
+  pixelTransformToNormalized,
+} from "@/customizer/utils/convert";
 
 type Props = {
   editorGuid: string;
@@ -22,7 +28,8 @@ type Props = {
   imageData?: {
     src: string;
   };
-  limits?: TransformLimits;
+  locations: CustomProductDecorationLocationNumeric[];
+  setShowLocationFrames: (b: boolean) => void;
 };
 export function EditorObject({
   editorGuid,
@@ -33,13 +40,15 @@ export function EditorObject({
   rotationDeg,
   textData,
   imageData,
-  limits,
+  locations,
+  setShowLocationFrames,
 }: Props) {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
   const dispatch = useDispatch();
   const [image] = useImage(imageData?.src || IMAGE_NOT_FOUND_URL);
+  if (image) image.crossOrigin = "Anonymous"; //without this, CORS will cause a "tainted canvas" error when trying to export the canvas
 
   if (!textData && !imageData)
     throw new Error("EditorObject has no image data or text data!");
@@ -49,11 +58,50 @@ export function EditorObject({
     if (isText) dispatch(setDialogOpen("text"));
   }
 
+  function constrainTransform(params: TransformArgsPx) {
+    //convert to normalized for constraint calculation
+    const { positionNormalized, sizeNormalized } = pixelTransformToNormalized(
+      productEditorSize,
+      productEditorSize,
+      params
+    );
+    //do the constraint calculation
+    const { constrainedPosition, constrainedSize } =
+      constrainEditorObjectTransform({
+        objectTransform: {
+          positionNormalized,
+          sizeNormalized,
+          rotationDegrees: 0,
+        },
+        locations,
+      });
+    //convert back to px to get values suitable for setting transform
+    const { position: positionPx, size: sizePx } = normalizedTransformToPixels(
+      productEditorSize,
+      productEditorSize,
+      {
+        positionNormalized: constrainedPosition,
+        sizeNormalized: constrainedSize,
+      }
+    );
+    return {
+      constrainedPosition: positionPx,
+      constrainedSize: sizePx,
+    };
+  }
+
   return (
-    <Transformable selected={editorGuid === selectedEditorGuid} limits={limits}>
+    <Transformable
+      selected={editorGuid === selectedEditorGuid}
+      onDragStart={() => setShowLocationFrames(true)}
+      onDragEnd={() => setShowLocationFrames(false)}
+      onTransformStart={() => setShowLocationFrames(true)}
+      onTransformEnd={() => setShowLocationFrames(false)}
+      constrainTransform={constrainTransform}
+    >
       {textData && (
         <Text
-          onClick={() => onClick(true)}
+          onMouseDown={() => onClick(true)}
           key={editorGuid}
           text={textData.text}
           x={x}
@@ -71,7 +119,7 @@ export function EditorObject({
       )}
       {imageData && (
         <Image
-          onClick={() => onClick()}
+          onMouseDown={() => onClick()}
           image={image}
           width={width}
           height={height}

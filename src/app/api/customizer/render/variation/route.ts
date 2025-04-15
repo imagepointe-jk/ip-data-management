@@ -1,5 +1,5 @@
 import { easyCorsInit } from "@/constants";
-import { renderCartProductView } from "@/customizer/render";
+// import { renderCartProductView } from "@/customizer/render";
 import { validateCartStateProductVariation } from "@/types/validations/customizer";
 import archiver from "archiver";
 import { NextRequest, NextResponse } from "next/server";
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       });
       if (!viewData) throw new Error(`Invalid view data id ${view.id}`);
 
-      const rendered = await renderCartProductView(view, viewData.imageUrl);
-      archive.append(Buffer.from(rendered), { name: `${viewData.name}.jpg` });
+      // const rendered = await renderCartProductView(view, viewData.imageUrl);
+      // archive.append(Buffer.from(rendered), { name: `${viewData.name}.jpg` });
     }
 
     await archive.finalize();

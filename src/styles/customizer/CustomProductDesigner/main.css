@@ -1,5 +1,6 @@
 :root {
   --color-alpha: #006ac6;
+  --color-beta: #4b4b4b;
 }
 
 button,
@@ -21,4 +22,8 @@ button:disabled,
 
 .button-minor {
   background-color: rgb(165, 165, 165);
+}
+
+.button-small {
+  padding: 6px;
 }

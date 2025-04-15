@@ -96,3 +96,27 @@ export const wooCommerceOrderDataSchema = z.object({
 export type WooCommerceProduct = z.infer<typeof wooCommerceProductSchema>;
 export type WooCommerceOrder = z.infer<typeof wooCommerceOrderDataSchema>;
 export type WooCommerceDAProduct = z.infer<typeof wooCommerceDAProductSchema>;
+export type WooCommerceASIProductUpdateData = {
+  priceBreaks?: {
+    break1?: {
+      quantity: string;
+      price: string;
+    };
+    break2?: {
+      quantity: string;
+      price: string;
+    };
+    break3?: {
+      quantity: string;
+      price: string;
+    };
+    break4?: {
+      quantity: string;
+      price: string;
+    };
+    break5?: {
+      quantity: string;
+      price: string;
+    };
+  };
+};

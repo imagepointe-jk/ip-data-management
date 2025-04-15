@@ -5,21 +5,22 @@ import {
   EditorTextStyle,
   PlacedObject,
   PopulatedProductSettingsSerializable,
-  TransformArgsPx,
+  TransformArgsPxOptional,
 } from "@/types/schema/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "./designData";
-import {
-  convertTransformArgs,
-  findArtworkInCart,
-  findLocationInProductData,
-  findLocationInCart,
-  findLocationWithArtworkInCart,
-  findVariationInCart,
-  findTextInCart,
-  findLocationWithTextInCart,
-} from "@/customizer/utils";
 import { productEditorSize } from "@/constants";
+import {
+  findArtworkInCart,
+  findTextInCart,
+  findVariationInCart,
+  findViewInCart,
+  findViewInProductData,
+  findViewWithArtworkInCart,
+  findViewWithTextInCart,
+} from "@/customizer/utils/find";
+import { pixelTransformToNormalized } from "@/customizer/utils/convert";
+import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
 
 const initialState: CartState = {
   products: [],
@@ -33,12 +34,12 @@ type AddArtworkPayload = {
   addUploadPayload?: {
     uploadedUrl: string;
   };
-  targetLocationId: number;
+  targetViewId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
 type AddTextPayload = {
-  targetLocationId: number;
+  targetViewId: number;
   targetProductData: PopulatedProductSettingsSerializable;
   newGuid: string;
 };
@@ -47,32 +48,15 @@ type EditTextPayload = Omit<EditorTextData, "text"> & {
   guid: string;
 };
 
-function createNewObjectData(
-  targetProductData: PopulatedProductSettingsSerializable,
-  targetLocationId: number,
-  newGuid: string
-) {
-  const locationData = findLocationInProductData(
-    targetProductData,
-    targetLocationId
-  );
-  if (!locationData)
-    throw new Error(`Location data for location ${targetLocationId} not found`);
-
-  const smallestSize = [locationData.width, locationData.height].sort(
-    (a, b) => a - b
-  )[0]!;
-
+function createNewObjectData(newGuid: string) {
   const newObject: PlacedObject = {
     positionNormalized: {
-      x: locationData.positionX,
-      y: locationData.positionY,
+      x: 0,
+      y: 0,
     },
     sizeNormalized: {
-      //currently only supports square objects
-      //if a rectangular one is used, the aspect ratio will be forced into 1:1
-      x: smallestSize,
-      y: smallestSize,
+      x: 0.2,
+      y: 0.2,
     },
     rotationDegrees: 0,
     editorGuid: newGuid,
@@ -93,39 +77,55 @@ export const cartSlice = createSlice({
       action: PayloadAction<{ guid: string }>
     ) => {
       const { guid } = action.payload;
-      const locationWithArtwork = findLocationWithArtworkInCart(state, guid);
-      if (!locationWithArtwork)
-        throw new Error("Could not find artwork to delete");
-      locationWithArtwork.artworks = locationWithArtwork.artworks.filter(
+      const viewWithArtwork = findViewWithArtworkInCart(state, guid);
+
+      if (!viewWithArtwork) throw new Error("Could not find artwork to delete");
+      viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
         (artwork) => artwork.objectData.editorGuid !== guid
       );
     },
     deleteTextFromState: (state, action: PayloadAction<{ guid: string }>) => {
       const { guid } = action.payload;
-      const locationWithText = findLocationWithTextInCart(state, guid);
-      if (!locationWithText) throw new Error("Could not find text to delete");
-      locationWithText.texts = locationWithText.texts.filter(
+
+      const viewWithText = findViewWithTextInCart(state, guid);
+      if (!viewWithText) throw new Error("Could not find text to delete");
+      viewWithText.texts = viewWithText.texts.filter(
         (text) => text.objectData.editorGuid !== guid
       );
     },
     setObjectTransform: (
       state,
-      action: PayloadAction<{ guid: string; transform: TransformArgsPx }>
+      action: PayloadAction<{
+        guid: string;
+        transform: TransformArgsPxOptional;
+      }>
     ) => {
       //expects absolute px amounts for position and size.
       //will convert to 0-1 range for storing in state.
       const { guid, transform } = action.payload;
-      const { xNormalized, yNormalized, widthNormalized, heightNormalized } =
-        convertTransformArgs(productEditorSize, productEditorSize, transform);
+      const { positionNormalized, sizeNormalized } = pixelTransformToNormalized(
+        productEditorSize,
+        productEditorSize,
+        {
+          xPx: transform.xPx || 0,
+          yPx: transform.yPx || 0,
+          widthPx: transform.widthPx || 0,
+          heightPx: transform.heightPx || 0,
+          rotationDegrees: transform.rotationDegrees || 0,
+        }
+      );
       const object =
         findArtworkInCart(state, guid) || findTextInCart(state, guid);
       if (!object) throw new Error("No object found to transform");
 
-      if (xNormalized) object.objectData.positionNormalized.x = xNormalized;
-      if (yNormalized) object.objectData.positionNormalized.y = yNormalized;
-      if (widthNormalized) object.objectData.sizeNormalized.x = widthNormalized;
-      if (heightNormalized)
-        object.objectData.sizeNormalized.y = heightNormalized;
+      if (positionNormalized.x)
+        object.objectData.positionNormalized.x = positionNormalized.x;
+      if (positionNormalized.y)
+        object.objectData.positionNormalized.y = positionNormalized.y;
+      if (sizeNormalized.x)
+        object.objectData.sizeNormalized.x = sizeNormalized.x;
+      if (sizeNormalized.y)
+        object.objectData.sizeNormalized.y = sizeNormalized.y;
       if (transform.rotationDegrees)
         object.objectData.rotationDegrees = transform.rotationDegrees;
     },
@@ -133,9 +133,9 @@ export const cartSlice = createSlice({
       const {
         addDesignPayload,
         addUploadPayload,
-        targetLocationId,
-        targetProductData,
+        targetViewId,
         newGuid,
+        targetProductData,
       } = action.payload;
       let imageUrl = null as string | null;
 
@@ -159,11 +159,24 @@ export const cartSlice = createSlice({
         throw new Error("Invalid payload.");
       }
 
-      const locationInState = findLocationInCart(state, targetLocationId);
-      if (!locationInState)
-        throw new Error(`Location ${targetLocationId} not found in state`);
+      const viewInState = findViewInCart(state, targetViewId);
+      if (!viewInState)
+        throw new Error(`View ${targetViewId} not found in state`);
 
-      locationInState.artworks.push({
+      const objectData = createNewObjectData(newGuid);
+      const viewInProductData = findViewInProductData(
+        targetProductData,
+        targetViewId
+      );
+      if (!viewInProductData)
+        throw new Error(`View ${targetViewId} not found in product data`);
+      const { constrainedPosition, constrainedSize } =
+        constrainEditorObjectTransform({
+          locations: viewInProductData.locations,
+          objectTransform: objectData,
+        });
+
+      viewInState.artworks.push({
         imageUrl,
         identifiers: {
           designIdentifiers: addDesignPayload
@@ -173,21 +186,27 @@ export const cartSlice = createSlice({
               }
             : undefined,
         },
-        objectData: createNewObjectData(
-          targetProductData,
-          targetLocationId,
-          newGuid
-        ),
+        objectData: {
+          ...objectData,
+          positionNormalized: {
+            x: constrainedPosition.x,
+            y: constrainedPosition.y,
+          },
+          sizeNormalized: {
+            x: constrainedSize.x,
+            y: constrainedSize.y,
+          },
+        },
       });
     },
     addText: (state, action: PayloadAction<AddTextPayload>) => {
-      const { newGuid, targetLocationId, targetProductData } = action.payload;
+      const { newGuid, targetViewId, targetProductData } = action.payload;
 
-      const locationInState = findLocationInCart(state, targetLocationId);
-      if (!locationInState)
-        throw new Error(`Location ${targetLocationId} not found in state`);
+      const viewInState = findViewInCart(state, targetViewId);
+      if (!viewInState)
+        throw new Error(`View ${targetViewId} not found in state`);
 
-      locationInState.texts.push({
+      viewInState.texts.push({
         textData: {
           text: "New Text",
           style: {
@@ -196,11 +215,7 @@ export const cartSlice = createSlice({
             align: "left",
           },
         },
-        objectData: createNewObjectData(
-          targetProductData,
-          targetLocationId,
-          newGuid
-        ),
+        objectData: createNewObjectData(newGuid),
       });
     },
     editText: (state, action: PayloadAction<EditTextPayload>) => {
@@ -259,11 +274,9 @@ export const cartSlice = createSlice({
         id: variationData.id,
         views: variationData.views.map((view) => ({
           id: view.id,
-          locations: view.locations.map((location) => ({
-            id: location.id,
-            artworks: [],
-            texts: [],
-          })),
+          artworks: [],
+          texts: [],
+          currentRenderUrl: view.imageUrl,
         })),
         quantities: {
           "2xl": 0,
@@ -329,6 +342,33 @@ export const cartSlice = createSlice({
       if (newQuantities["5xl"]) quantities["5xl"] = newQuantities["5xl"];
       if (newQuantities["6xl"]) quantities["6xl"] = newQuantities["6xl"];
     },
+    setViewRenderURL: (
+      state,
+      action: PayloadAction<{ viewId: number; url: string }>
+    ) => {
+      const { url, viewId } = action.payload;
+      const view = findViewInCart(state, viewId);
+      if (!view) throw new Error(`View id ${viewId} not found`);
+
+      view.currentRenderUrl = url;
+    },
+    pruneCart: (
+      state,
+      action: PayloadAction<{ variationIdToPreserve?: number }>
+    ) => {
+      const { variationIdToPreserve } = action.payload;
+
+      //get rid of variations present in cart that have no designs, text, etc.
+      //currently only prune variations within each product, rather than also pruning products, because we currently only support one product in the cart at a time
+      for (const product of state.products) {
+        product.variations = product.variations.filter((variation) => {
+          const hasAnyDesign = !!variation.views.find(
+            (view) => view.artworks.length > 0 || view.texts.length > 0
+          );
+          return variation.id === variationIdToPreserve || hasAnyDesign;
+        });
+      }
+    },
   },
 });
 
@@ -343,4 +383,6 @@ export const {
   changeProductVariationQuantities,
   setObjectTransform,
   editText,
+  setViewRenderURL,
+  pruneCart,
 } = cartSlice.actions;

@@ -7,8 +7,8 @@
   padding: 25px;
   background-color: white;
   cursor: initial;
-  width: 550px;
-  height: 550px;
+  width: 650px;
+  height: 580px;
 }
 
 .modal h2 {
@@ -35,6 +35,9 @@
 .cart-items-container {
   max-height: 425px;
   overflow: auto;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 20px 0;
 }
 
 .step-buttons-container {
@@ -49,18 +52,30 @@
   font-size: 1rem;
 }
 
+.cart-item-variations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
 .cart-item-flex {
   display: flex;
+}
+
+.cart-item-name {
+  font-weight: bold;
 }
 
 .cart-item-form {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 20px;
 }
 
-.cart-item-form label {
+.input-label {
   display: block;
+  font-size: 0.825rem;
 }
 
 .cart-item-form input {
@@ -84,26 +99,47 @@
   height: 100%;
 }
 
-.contact-form {
+.quote-step-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px;
+  margin: auto;
+  gap: 45px;
+}
+
+.quote-step-main h2 {
+  margin: 0;
+}
+
+.quote-step-main input {
+  font-size: 1.25rem;
+  padding: 8px;
+  width: 215px;
+}
+
+.comments-container,
+.comments-container textarea {
+  width: 100%;
+}
+
+.primary-fields {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-.contact-form label {
-  display: block;
+.primary-field-single-container {
+  width: 49%;
 }
 
-.contact-form input {
-  font-size: 1rem;
-  padding: 5px;
+.quote-buttons-container {
+  display: flex;
+  gap: 20px;
 }
 
-.request-error {
-  border: 1px solid red;
-  background-color: rgba(255, 0, 0, 0.151);
-  padding: 10px;
-  border-radius: 10px;
+.quote-buttons-container button {
+  font-size: 1.25rem;
 }
 
 .submit-button {
@@ -111,7 +147,19 @@
 }
 
 .submit-spinner {
-  filter: sepia(100) brightness(0.4) saturate(15) hue-rotate(158deg);
+  filter: none;
   width: 15px;
   height: 15px;
+}
+
+.success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: 80%;
+}
+
+.success-check {
+  color: #54cd54;
 }
