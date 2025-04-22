@@ -191,7 +191,8 @@ model Webstore {
   shippingSettings            WebstoreShippingSettings?
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]
-  userRoles                   OrderWorkflowWebstoreUserRole[]
+  userRoles                   OrderWorkflowWebstoreUserRole[] //old model
+  roles                       WebstoreUserRole[]
   checkoutFields              WebstoreCheckoutField[]
 }
 
@@ -233,7 +234,8 @@ model OrderWorkflowUser {
   id                Int                             @id @default(autoincrement())
   name              String
   email             String                          @unique
-  roles             OrderWorkflowWebstoreUserRole[]
+  userRoles         WebstoreUserRole[]
+  roles             OrderWorkflowWebstoreUserRole[] //old model
   comments          OrderWorkflowComment[]
   accessCodes       OrderWorkflowAccessCode[]
   approvedInstances OrderWorkflowInstance[]         @relation("approvedByUser")
@@ -248,6 +250,14 @@ model OrderWorkflowWebstoreUserRole {
   role       String
 
   @@id([userId, webstoreId])
+}
+
+model WebstoreUserRole {
+  id         Int                 @id @default(autoincrement())
+  name       String              @default("New Role")
+  webstoreId Int
+  users      OrderWorkflowUser[]
+  webstore   Webstore            @relation(fields: [webstoreId], references: [id])
 }
 
 model OrderWorkflowStep {

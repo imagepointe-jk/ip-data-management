@@ -114,3 +114,11 @@ export async function deleteCheckoutField(id: number) {
     },
   });
 }
+
+export async function deleteRole(id: number) {
+  return prisma.webstoreUserRole.delete({
+    where: {
+      id,
+    },
+  });
+}

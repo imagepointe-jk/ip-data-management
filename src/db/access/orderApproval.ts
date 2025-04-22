@@ -22,6 +22,11 @@ const webstoreIncludes = {
       user: true,
     },
   },
+  roles: {
+    include: {
+      users: true,
+    },
+  },
   shippingSettings: true,
   shippingMethods: true,
   checkoutFields: true,
