@@ -17,11 +17,6 @@ const webstoreIncludes = {
       instances: true,
     },
   },
-  userRoles: {
-    include: {
-      user: true,
-    },
-  },
   roles: {
     include: {
       users: true,
@@ -43,6 +38,15 @@ export async function getWebstoreWithIncludes(id: number) {
   return prisma.webstore.findUnique({
     where: {
       id,
+    },
+    include: webstoreIncludes,
+  });
+}
+
+export async function getWebstoreWithIncludesByUrl(url: string) {
+  return prisma.webstore.findUnique({
+    where: {
+      url,
     },
     include: webstoreIncludes,
   });
@@ -70,26 +74,26 @@ export async function getUser(webstoreId: number, email: string) {
   });
 }
 
-export async function getAllApproversFor(webstoreId: number) {
-  return prisma.orderWorkflowUser.findMany({
-    where: {
-      roles: {
-        some: {
-          AND: [
-            {
-              webstore: {
-                id: webstoreId,
-              },
-            },
-            {
-              role: "approver",
-            },
-          ],
-        },
-      },
-    },
-  });
-}
+// export async function getAllApproversFor(webstoreId: number) {
+//   return prisma.orderWorkflowUser.findMany({
+//     where: {
+//       roles: {
+//         some: {
+//           AND: [
+//             {
+//               webstore: {
+//                 id: webstoreId,
+//               },
+//             },
+//             {
+//               role: "approver",
+//             },
+//           ],
+//         },
+//       },
+//     },
+//   });
+// }
 
 // export async function createUser(
 //   email: string,
@@ -189,11 +193,6 @@ export async function getWorkflowWithIncludes(id: number) {
       instances: true,
       webstore: {
         include: {
-          userRoles: {
-            include: {
-              user: true,
-            },
-          },
           roles: {
             include: {
               users: true,

@@ -3,7 +3,7 @@ export const rootUrl = () => {
   return process.env.BASE_URL;
 };
 
-export function createApproverFrontEndUrl(
+export function createApprovalFrontEndUrl(
   webstoreUrl: string,
   accessCode: string,
   action?: "approve" | "deny"

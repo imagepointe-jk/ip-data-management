@@ -12,14 +12,15 @@ import {
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
   // getWorkflowInstancePurchaser,
-  getAllApproversFor,
+  // getAllApproversFor,
   getAccessCodeWithIncludesByOrderAndEmail,
   setWorkflowInstanceDeniedData,
   setWorkflowInstanceApprovedData,
+  getWebstoreWithIncludesByUrl,
 } from "@/db/access/orderApproval";
 import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
-import { getEnvVariable } from "@/utility/misc";
+import { deduplicateArray, getEnvVariable } from "@/utility/misc";
 import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
 import {
   createOrderUpdatedEmail,
@@ -102,7 +103,7 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { orderId, webhookSource } = params;
 
-  const webstore = await getWebstore(webhookSource);
+  const webstore = await getWebstoreWithIncludesByUrl(webhookSource);
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
@@ -116,8 +117,12 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   //    "purchaser"
   //  ));
 
-  const approvers = await getAllApproversFor(webstore.id);
-  if (approvers.length === 0)
+  const deduplicatedUsers = deduplicateArray(
+    webstore.roles.flatMap((role) => role.users),
+    (user) => user.id
+  );
+  // const approvers = await getAllApproversFor(webstore.id);
+  if (deduplicatedUsers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
   //assume for now that a webstore will only have one workflow for all orders
@@ -128,8 +133,8 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
   //console.log("creating access code for purchaser");
   //await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
-  for (const approver of approvers) {
-    await createAccessCode(workflowInstance.id, approver.id, "approver");
+  for (const user of deduplicatedUsers) {
+    await createAccessCode(workflowInstance.id, user.id, "approver");
   }
 
   return {

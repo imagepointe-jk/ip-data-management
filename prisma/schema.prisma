@@ -171,27 +171,26 @@ model ProductSizeOptions {
 }
 
 model Webstore {
-  id                          Int                             @id @default(autoincrement())
+  id                          Int                       @id @default(autoincrement())
   name                        String
   organizationName            String
-  url                         String                          @unique
+  url                         String                    @unique
   apiKey                      String //encrypted
   apiKeyEncryptIv             String
   apiKeyEncryptTag            String
   apiSecret                   String //encrypted
   apiSecretEncryptIv          String
   apiSecretEncryptTag         String
-  salesPersonName             String                          @default("None")
-  salesPersonEmail            String                          @default("None")
+  salesPersonName             String                    @default("None")
+  salesPersonEmail            String                    @default("None")
   otherSupportEmails          String? //when a customer submits a help form, the email will also go to all of these addresses
   orderUpdatedEmails          String?
   customOrderApprovedEmail    String?
-  useCustomOrderApprovedEmail Boolean                         @default(false)
-  shippingEmailFilename       String                          @default("NO_SHIPPING_EMAIL")
+  useCustomOrderApprovedEmail Boolean                   @default(false)
+  shippingEmailFilename       String                    @default("NO_SHIPPING_EMAIL")
   shippingSettings            WebstoreShippingSettings?
   shippingMethods             WebstoreShippingMethod[]
   workflows                   OrderWorkflow[]
-  userRoles                   OrderWorkflowWebstoreUserRole[] //old model
   roles                       WebstoreUserRole[]
   checkoutFields              WebstoreCheckoutField[]
 }
@@ -231,25 +230,14 @@ model OrderWorkflow {
 }
 
 model OrderWorkflowUser {
-  id                Int                             @id @default(autoincrement())
+  id                Int                       @id @default(autoincrement())
   name              String
-  email             String                          @unique
+  email             String                    @unique
   userRoles         WebstoreUserRole[]
-  roles             OrderWorkflowWebstoreUserRole[] //old model
   comments          OrderWorkflowComment[]
   accessCodes       OrderWorkflowAccessCode[]
-  approvedInstances OrderWorkflowInstance[]         @relation("approvedByUser")
-  deniedInstances   OrderWorkflowInstance[]         @relation("deniedByUser")
-}
-
-model OrderWorkflowWebstoreUserRole {
-  userId     Int
-  webstoreId Int
-  user       OrderWorkflowUser @relation(fields: [userId], references: [id])
-  webstore   Webstore          @relation(fields: [webstoreId], references: [id])
-  role       String
-
-  @@id([userId, webstoreId])
+  approvedInstances OrderWorkflowInstance[]   @relation("approvedByUser")
+  deniedInstances   OrderWorkflowInstance[]   @relation("deniedByUser")
 }
 
 model WebstoreUserRole {

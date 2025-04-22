@@ -5,7 +5,7 @@ import {
 } from "@/db/access/orderApproval";
 import { getOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "../encryption";
-import { createApproverFrontEndUrl, rootUrl } from "@/utility/url";
+import { createApprovalFrontEndUrl, rootUrl } from "@/utility/url";
 import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
@@ -77,7 +77,7 @@ export const replacers: Replacer[] = [
     fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{approve\}/gi,
-        `<a href="${createApproverFrontEndUrl(
+        `<a href="${createApprovalFrontEndUrl(
           webstore.url,
           accessCode,
           "approve"
@@ -91,7 +91,7 @@ export const replacers: Replacer[] = [
     fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{deny\}/gi,
-        `<a href="${createApproverFrontEndUrl(
+        `<a href="${createApprovalFrontEndUrl(
           webstore.url,
           accessCode,
           "deny"
@@ -105,7 +105,7 @@ export const replacers: Replacer[] = [
     fn: ({ text, accessCode, webstore }) =>
       text.replace(
         /\{edit\}/gi,
-        `<a href="${createApproverFrontEndUrl(
+        `<a href="${createApprovalFrontEndUrl(
           webstore.url,
           accessCode
         )}">Review Order</a>`
@@ -180,10 +180,20 @@ export async function processFormattedText(
     const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);
     if (!workflow)
       throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
-    const user = workflow.webstore.userRoles.find(
-      (role) => role.user.email === userEmail
-    )?.user;
-    if (!user) console.error(`User with email ${userEmail} not found.`);
+    const firstRoleWithGivenEmail = workflow.webstore.roles.find(
+      (role) => !!role.users.find((user) => user.email === userEmail)
+    );
+    const userWithEmail = firstRoleWithGivenEmail?.users.find(
+      (user) => user.email === userEmail
+    );
+    const userName =
+      userEmail === instance.purchaserEmail
+        ? instance.purchaserName
+        : userWithEmail?.name || "USER_NOT_FOUND";
+    // const user = workflow.webstore.userRoles.find(
+    //   (role) => role.user.email === userEmail
+    // )?.user;
+    // if (!user) console.error(`User with email ${userEmail} not found.`);
     const accessCode = instance.accessCodes.find(
       (code) => code.user.email === userEmail
     );
@@ -210,7 +220,7 @@ export async function processFormattedText(
         text: processed,
         wcOrder: parsedOrder,
         accessCode: accessCode?.guid || "ACCESS_CODE_NOT_FOUND",
-        userName: user?.name || "USER_NOT_FOUND",
+        userName,
         webstore: workflow.webstore,
         denyReason: instance.deniedReason,
         pin: accessCode?.simplePin || "NO_PIN_FOUND",
