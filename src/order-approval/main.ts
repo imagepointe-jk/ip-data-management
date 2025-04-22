@@ -122,7 +122,6 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     ));
 
   console.log("getting approvers");
-  //Assume for now that a webstore will only have one approver
   const approvers = await getAllApproversFor(webstore.id);
   if (approvers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
@@ -135,6 +134,7 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 
   console.log("creating workflow isntance");
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
+  //TODO: We don't currently need access codes for purchasers, and a number of things would be easier if we stopped doing this
   console.log("creating access code for purchaser");
   await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
   console.log("creating access codes for approvers");

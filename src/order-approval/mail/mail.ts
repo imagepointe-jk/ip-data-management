@@ -10,8 +10,9 @@ import fs from "fs";
 import handlebars from "handlebars";
 import path from "path";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { Webstore } from "@prisma/client";
+import { Webstore, WebstoreCheckoutField } from "@prisma/client";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
+import { getFieldValue } from "../checkoutFields";
 
 type Replacer = {
   description: string;
@@ -26,6 +27,7 @@ type Replacer = {
     pin: string;
     webstore: Webstore;
     denyReason: string | null;
+    webstoreCheckoutFields: WebstoreCheckoutField[];
   }) => string;
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
@@ -40,7 +42,7 @@ export const replacers: Replacer[] = [
     description: "Insert order details",
     shortcode: "{order}",
     automatic: false,
-    fn: ({ text, wcOrder }) =>
+    fn: ({ text, wcOrder, webstoreCheckoutFields }) =>
       text.replace(/\{order\}/gi, () => {
         const templateSource = fs.readFileSync(
           path.resolve(
@@ -49,8 +51,16 @@ export const replacers: Replacer[] = [
           ),
           "utf-8"
         );
+        const checkoutValues = webstoreCheckoutFields.map((field) => ({
+          label: field.label,
+          value: getFieldValue(field.name, wcOrder) || "N/A",
+        }));
         const template = handlebars.compile(templateSource);
-        const message = template(wcOrder);
+        const message = template({
+          ...wcOrder,
+          checkoutValues,
+          shippingMethod: wcOrder.shippingLines[0]?.method_title,
+        });
         return message;
       }),
   },
@@ -207,6 +217,7 @@ export async function processFormattedText(
         deniedUser: instance.deniedByUser?.name || "USER_NOT_FOUND",
         approvedUser: instance.approvedByUser?.name || "USER_NOT_FOUND",
         approvedComments: instance.approvedComments || "(no comments)",
+        webstoreCheckoutFields: workflow.webstore.checkoutFields,
       });
     }
     return processed;
@@ -253,6 +264,8 @@ export async function createShippingEmail(instanceId: number) {
       ...parsed,
       storeUrl: workflow.webstore.url,
       storeName: workflow.webstore.name,
+      approveMsg: instance.approvedComments,
+      shippingMethod: parsed.shippingLines[0]?.method_title,
     });
     return message;
   } catch (error) {

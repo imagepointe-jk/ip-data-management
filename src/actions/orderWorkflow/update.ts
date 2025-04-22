@@ -193,3 +193,40 @@ export async function updateOrderAction(
 
   return parsed;
 }
+
+export async function updateRole(id: number, name: string) {
+  return prisma.webstoreUserRole.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+    },
+  });
+}
+
+export async function removeRoleFromUser(userId: number, roleId: number) {
+  return prisma.webstoreUserRole.update({
+    where: {
+      id: roleId,
+    },
+    data: {
+      users: {
+        disconnect: [{ id: userId }],
+      },
+    },
+  });
+}
+
+export async function addRoleToUser(userId: number, roleId: number) {
+  return prisma.webstoreUserRole.update({
+    where: {
+      id: roleId,
+    },
+    data: {
+      users: {
+        connect: [{ id: userId }],
+      },
+    },
+  });
+}

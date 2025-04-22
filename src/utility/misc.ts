@@ -269,3 +269,17 @@ export function getConfinedRectDimensions(
     };
   }
 }
+
+//provided an array of items and a way to get a unique ID per item, returns a new array without any objects that have the same ID.
+export function deduplicateArray<T>(arr: T[], getObjectId: (obj: T) => number) {
+  const deduplicated: T[] = [];
+  const seenIds: number[] = [];
+  for (const obj of arr) {
+    const id = getObjectId(obj);
+    if (seenIds.includes(id)) continue;
+
+    deduplicated.push(obj);
+    seenIds.push(id);
+  }
+  return deduplicated;
+}

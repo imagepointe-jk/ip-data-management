@@ -1,6 +1,6 @@
 <br />
 <br />
-<div style="font-weight: bold;">Cart</div>
+<div style="font-weight: bold;">Order #{{id}}</div>
 <table style="border-collapse: collapse;">
   <thead>
     <tr>
@@ -58,6 +58,58 @@
 {{/if}}
 <div><span style="font-weight: bold">Subtotal: </span>${{subtotal}}</div>
 <div><span style="font-weight: bold">Total Tax: </span>${{totalTax}}</div>
+<div><strong>Customer Note:</strong>
+  {{#if customerNote}}{{customerNote}}{{else}}N/A{{/if}}</div>
+<br />
+<div>
+  <div><strong>Shipping Information</strong></div>
+  <ul>
+    {{#with shipping}}
+      <li>
+        <span style="font-weight:bold;">First Name: </span>{{firstName}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">Last Name: </span>{{lastName}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">Company: </span>{{company}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">Address Line 1: </span>{{address1}}
+      </li>
+      {{#if address2}}
+        <li>
+          <span style="font-weight:bold;">Address Line 2:
+          </span>{{address2}}
+        </li>
+      {{/if}}
+      <li>
+        <span style="font-weight:bold;">City: </span>{{city}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">State: </span>{{state}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">Postal Code: </span>{{postcode}}
+      </li>
+      <li>
+        <span style="font-weight:bold;">Country: </span>{{country}}
+      </li>
+    {{/with}}
+    <li>
+      <span style="font-weight:bold;">Shipping Method:
+      </span>{{shippingMethod}}
+    </li>
+  </ul>
+</div>
+{{#if checkoutValues.length}}
+  <div style="font-weight: bold;">Other Checkout Fields</div>
+  <ul>
+    {{#each checkoutValues}}
+      <li><span style="font-weight: bold;">{{label}}:</span> {{value}}</li>
+    {{/each}}
+  </ul>
+{{/if}}
 {{!-- <div><span style="font-weight: bold">Total Shipping:
   </span>${{shippingTotal}}</div>
 <div><span style="font-weight: bold">Grand Total: </span>${{total}}</div>

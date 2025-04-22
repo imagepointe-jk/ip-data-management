@@ -232,30 +232,103 @@ export async function createOrConnectWebstoreUser(
       email,
     },
     include: {
-      roles: true,
+      userRoles: true,
     },
   });
+  //use the webstore's first existing role; if none, create a default one to use
+  //this will be needed whether we're creating a new user or connecting an existing one
+  let firstRole = await prisma.webstoreUserRole.findFirst({
+    where: {
+      webstoreId,
+    },
+  });
+  if (!firstRole) {
+    firstRole = await prisma.webstoreUserRole.create({
+      data: {
+        webstoreId,
+      },
+    });
+  }
+
   if (existingUser) {
-    const alreadyConnected = existingUser.roles.find(
+    const alreadyConnected = existingUser.userRoles.find(
       (role) => role.webstoreId === webstoreId
     );
     if (alreadyConnected) return existingUser;
 
-    const newRole = await prisma.orderWorkflowWebstoreUserRole.create({
+    const updatedRole = await prisma.webstoreUserRole.update({
+      where: {
+        id: firstRole.id,
+      },
       data: {
-        userId: existingUser.id,
-        webstoreId: webstoreId,
-        role: "approver",
+        users: {
+          connect: [{ id: existingUser.id }],
+        },
       },
       include: {
-        user: true,
+        users: {
+          where: {
+            id: existingUser.id,
+          },
+        },
       },
     });
 
-    return newRole.user;
+    const connectedUser = updatedRole.users[0];
+    if (!connectedUser)
+      throw new Error(
+        `Something went wrong with connecting ${existingUser.id} to webstore ${webstoreId}.`
+      );
+
+    return connectedUser;
   } else {
-    return createUser(email, name, webstoreId, "approver");
+    const newUser = await prisma.orderWorkflowUser.create({
+      data: {
+        email,
+        name,
+      },
+    });
+    await prisma.webstoreUserRole.update({
+      where: {
+        id: firstRole.id,
+      },
+      data: {
+        users: {
+          connect: [{ id: newUser.id }],
+        },
+      },
+    });
+    return newUser;
   }
+  // const existingUser = await prisma.orderWorkflowUser.findUnique({
+  //   where: {
+  //     email,
+  //   },
+  //   include: {
+  //     roles: true,
+  //   },
+  // });
+  // if (existingUser) {
+  //   const alreadyConnected = existingUser.roles.find(
+  //     (role) => role.webstoreId === webstoreId
+  //   );
+  //   if (alreadyConnected) return existingUser;
+
+  //   const newRole = await prisma.orderWorkflowWebstoreUserRole.create({
+  //     data: {
+  //       userId: existingUser.id,
+  //       webstoreId: webstoreId,
+  //       role: "approver",
+  //     },
+  //     include: {
+  //       user: true,
+  //     },
+  //   });
+
+  //   return newRole.user;
+  // } else {
+  //   return createUser(email, name, webstoreId, "approver");
+  // }
 }
 
 export async function createWebstoreCheckoutField(webstoreId: number) {
@@ -264,6 +337,14 @@ export async function createWebstoreCheckoutField(webstoreId: number) {
       name: "",
       label: "",
       type: "text",
+      webstoreId,
+    },
+  });
+}
+
+export async function createRole(webstoreId: number) {
+  return prisma.webstoreUserRole.create({
+    data: {
       webstoreId,
     },
   });

@@ -22,6 +22,11 @@ const webstoreIncludes = {
       user: true,
     },
   },
+  roles: {
+    include: {
+      users: true,
+    },
+  },
   shippingSettings: true,
   shippingMethods: true,
   checkoutFields: true,
@@ -189,6 +194,7 @@ export async function getWorkflowWithIncludes(id: number) {
               user: true,
             },
           },
+          checkoutFields: true,
         },
       },
     },
