@@ -5,8 +5,8 @@ import {
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
 
-export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
-const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
+// export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
+// const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
 export const orderWorkflowActionTypes = [
   "email",
   "mark workflow approved",
@@ -62,7 +62,7 @@ export const orderApprovalServerDataSchema = z.object({
   ),
 });
 
-export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
+// export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
 export type OrderWorkflowActionType = z.infer<
   typeof orderWorkflowActionTypeSchema
 >;

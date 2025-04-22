@@ -54,7 +54,7 @@ export function ShippingSettings({
   return (
     <>
       <h2>Shipping Options</h2>
-      <div>
+      {/* <div>
         <label htmlFor="allow-approver-change-method">
           <input
             type="checkbox"
@@ -69,7 +69,7 @@ export function ShippingSettings({
           />
           Allow approver to change method
         </label>
-      </div>
+      </div> */}
       <div>
         <label htmlFor="allow-ups-to-canada">
           <input

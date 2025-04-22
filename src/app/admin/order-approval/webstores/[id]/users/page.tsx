@@ -5,7 +5,6 @@ import Link from "next/link";
 import { RoleResultsTable } from "./RoleResultsTable";
 import { Roles } from "./Roles";
 import { SingleRole } from "./SingleRole";
-import { Users } from "./Users";
 
 type Props = {
   params: {
@@ -22,10 +21,8 @@ export default async function Page({ params: { id } }: Props) {
       <Link href={`../${id}`}>&lt; Back to {webstore.name}</Link>
       <div>
         {/* {webstore.roles.length > 0 && <Users webstore={webstore} />} */}
-        {webstore.userRoles.length > 0 && (
-          <UserResultsTable webstore={webstore} />
-        )}
-        {webstore.userRoles.length === 0 && <p>No users.</p>}
+        {webstore.roles.length > 0 && <UserResultsTable webstore={webstore} />}
+        {webstore.roles.length === 0 && <p>No users.</p>}
         <CreateUser webstoreId={webstore.id} />
       </div>
       <div>

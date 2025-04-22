@@ -1,7 +1,7 @@
 "use server";
 
 import {
-  createUser,
+  // createUser,
   getWebstoreById,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
@@ -39,7 +39,14 @@ export async function duplicateWorkflow(
               email: `${step.actionTarget}`,
             },
             {
-              roles: {
+              // roles: {
+              //   some: {
+              //     webstore: {
+              //       id: targetWebstoreId,
+              //     },
+              //   },
+              // },
+              userRoles: {
                 some: {
                   webstore: {
                     id: targetWebstoreId,
@@ -66,7 +73,14 @@ export async function duplicateWorkflow(
                 email: listener.from,
               },
               {
-                roles: {
+                // roles: {
+                //   some: {
+                //     webstore: {
+                //       id: targetWebstoreId,
+                //     },
+                //   },
+                // },
+                userRoles: {
                   some: {
                     webstore: {
                       id: targetWebstoreId,

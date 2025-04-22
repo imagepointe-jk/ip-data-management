@@ -1,6 +1,6 @@
 import {
   createAccessCode,
-  createUser,
+  // createUser,
   createWorkflowInstance,
   getFirstWorkflowForWebstore,
   getWebstore,
@@ -11,15 +11,16 @@ import {
   getWorkflowInstanceCurrentStep,
   setWorkflowInstanceStatus,
   updateWorkflowInstanceLastStartedDate,
-  getWorkflowInstancePurchaser,
-  getAllApproversFor,
+  // getWorkflowInstancePurchaser,
+  // getAllApproversFor,
   getAccessCodeWithIncludesByOrderAndEmail,
   setWorkflowInstanceDeniedData,
   setWorkflowInstanceApprovedData,
+  getWebstoreWithIncludesByUrl,
 } from "@/db/access/orderApproval";
 import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { sendEmail } from "@/utility/mail";
-import { getEnvVariable } from "@/utility/misc";
+import { deduplicateArray, getEnvVariable } from "@/utility/misc";
 import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
 import {
   createOrderUpdatedEmail,
@@ -44,10 +45,7 @@ type StartWorkflowParams = {
 };
 export async function startOrderWorkflow(params: StartWorkflowParams) {
   try {
-    console.log(`Setting up workflow isntance for WC order ${params.orderId}`);
     const { workflowInstance } = await setupOrderWorkflow(params);
-    // handleCurrentStep(workflowInstance);
-    console.log("Starting workflow from beginning");
     startWorkflowInstanceFromBeginning(workflowInstance.id);
   } catch (error) {
     sendEmail(
@@ -103,48 +101,42 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
 }
 
 async function setupOrderWorkflow(params: StartWorkflowParams) {
-  const { email, firstName, lastName, orderId, webhookSource } = params;
+  const { orderId, webhookSource } = params;
 
-  console.log("getting webstore");
-  const webstore = await getWebstore(webhookSource);
+  const webstore = await getWebstoreWithIncludesByUrl(webhookSource);
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
-  console.log("getting or creating purchaser");
   //try to get a user, or immediately create one if not found.
-  const purchaser =
-    (await getUser(webstore.id, email)) ||
-    (await createUser(
-      email,
-      `${firstName} ${lastName}`,
-      webstore.id,
-      "purchaser"
-    ));
+  //const purchaser =
+  //  (await getUser(webstore.id, email)) ||
+  //  (await createUser(
+  //    email,
+  //    `${firstName} ${lastName}`,
+  //    webstore.id,
+  //    "purchaser"
+  //  ));
 
-  console.log("getting approvers");
-  const approvers = await getAllApproversFor(webstore.id);
-  if (approvers.length === 0)
+  const deduplicatedUsers = deduplicateArray(
+    webstore.roles.flatMap((role) => role.users),
+    (user) => user.id
+  );
+  // const approvers = await getAllApproversFor(webstore.id);
+  if (deduplicatedUsers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);
 
-  console.log("getting first workflow");
   //assume for now that a webstore will only have one workflow for all orders
   const workflow = await getFirstWorkflowForWebstore(webstore.id);
   if (!workflow)
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
-  console.log("creating workflow isntance");
   const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
-  //TODO: We don't currently need access codes for purchasers, and a number of things would be easier if we stopped doing this
-  console.log("creating access code for purchaser");
-  await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
-  console.log("creating access codes for approvers");
-  for (const approver of approvers) {
-    await createAccessCode(workflowInstance.id, approver.id, "approver");
+  //console.log("creating access code for purchaser");
+  //await createAccessCode(workflowInstance.id, purchaser.id, "purchaser");
+  for (const user of deduplicatedUsers) {
+    await createAccessCode(workflowInstance.id, user.id, "approver");
   }
 
-  console.log(
-    `Finished setup on workflow instance ${workflowInstance.id} for webstore ${webstore.id}.`
-  );
   return {
     workflowInstance,
   };
@@ -192,7 +184,7 @@ async function doEmailAction(
   const { actionMessage, actionTarget, actionSubject } = step;
   const targetPrimary =
     actionTarget === "purchaser"
-      ? (await getWorkflowInstancePurchaser(workflowInstance.id))?.email
+      ? workflowInstance.purchaserEmail
       : actionTarget;
   if (!targetPrimary)
     throw new Error(
@@ -414,18 +406,18 @@ export async function handleOrderUpdated(
       `No access code found with user email ${userEmail} and order id ${order.id}`
     );
 
-  const purchaser = await getWorkflowInstancePurchaser(
-    foundCode.workflowInstance.id
-  );
-  if (!purchaser)
-    throw new Error(
-      `No purchaser found for instance ${foundCode.workflowInstance.id}`
-    );
+  // const purchaser = await getWorkflowInstancePurchaser(
+  //   foundCode.workflowInstance.id
+  // );
+  // if (!purchaser)
+  //   throw new Error(
+  //     `No purchaser found for instance ${foundCode.workflowInstance.id}`
+  //   );
 
   const orderUpdatedEmails = webstore.orderUpdatedEmails
     ? webstore.orderUpdatedEmails.split(";")
     : [];
-  orderUpdatedEmails.push(purchaser.email);
+  orderUpdatedEmails.push(foundCode.workflowInstance.purchaserEmail);
   orderUpdatedEmails.push(foundCode.user.email);
 
   const message = await createOrderUpdatedEmail(order, webstore.name);

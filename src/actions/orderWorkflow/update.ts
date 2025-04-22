@@ -140,23 +140,23 @@ export async function updateWebstore(
   ]);
 }
 
-export async function setUserIsApprover(
-  userId: number,
-  webstoreId: number,
-  isApprover: boolean
-) {
-  await prisma.orderWorkflowWebstoreUserRole.update({
-    where: {
-      userId_webstoreId: {
-        userId,
-        webstoreId,
-      },
-    },
-    data: {
-      role: isApprover ? "approver" : "purchaser",
-    },
-  });
-}
+// export async function setUserIsApprover(
+//   userId: number,
+//   webstoreId: number,
+//   isApprover: boolean
+// ) {
+//   await prisma.orderWorkflowWebstoreUserRole.update({
+//     where: {
+//       userId_webstoreId: {
+//         userId,
+//         webstoreId,
+//       },
+//     },
+//     data: {
+//       role: isApprover ? "approver" : "purchaser",
+//     },
+//   });
+// }
 
 export async function setUserEmail(id: number, email: string) {
   await prisma.orderWorkflowUser.update({

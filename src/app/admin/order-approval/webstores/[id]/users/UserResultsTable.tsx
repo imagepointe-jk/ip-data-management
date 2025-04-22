@@ -4,7 +4,7 @@ import {
   addRoleToUser,
   removeRoleFromUser,
   setUserEmail,
-  setUserIsApprover,
+  // setUserIsApprover,
 } from "@/actions/orderWorkflow/update";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
@@ -29,14 +29,14 @@ export function UserResultsTable({ webstore }: Props) {
   // const sortedUsers = [...webstore.userRoles.map((role) => role.user)];
   // sortedUsers.sort((a, b) => a.id - b.id);
 
-  async function onChangeUserType(
-    e: ChangeEvent<HTMLSelectElement>,
-    userId: number
-  ) {
-    await setUserIsApprover(userId, webstore.id, e.target.value === "approver");
-    router.refresh();
-    toast.changesSaved();
-  }
+  // async function onChangeUserType(
+  //   e: ChangeEvent<HTMLSelectElement>,
+  //   userId: number
+  // ) {
+  //   await setUserIsApprover(userId, webstore.id, e.target.value === "approver");
+  //   router.refresh();
+  //   toast.changesSaved();
+  // }
 
   async function onClickRole(
     userId: number,

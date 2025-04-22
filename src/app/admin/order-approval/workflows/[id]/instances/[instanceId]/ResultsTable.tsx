@@ -4,7 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { getWorkflowInstanceWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
-import { createApproverFrontEndUrl } from "@/utility/url";
+import { createApprovalFrontEndUrl } from "@/utility/url";
 import { UnwrapPromise } from "@/types/schema/misc";
 
 type Props = {
@@ -33,7 +33,7 @@ export function ResultsTable({ instance, webstoreUrl }: Props) {
           createCell: (code) => (
             <>
               {`${code.guid} `}(
-              <Link href={createApproverFrontEndUrl(webstoreUrl, code.guid)}>
+              <Link href={createApprovalFrontEndUrl(webstoreUrl, code.guid)}>
                 Front End Link
               </Link>
               )
@@ -44,10 +44,10 @@ export function ResultsTable({ instance, webstoreUrl }: Props) {
           headerName: "PIN (this instance only)",
           createCell: (code) => code.simplePin,
         },
-        {
-          headerName: "Role",
-          createCell: (code) => code.userRole,
-        },
+        // {
+        //   headerName: "Role",
+        //   createCell: (code) => code.userRole,
+        // },
       ]}
       className={styles["basic-table"]}
     />

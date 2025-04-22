@@ -4,6 +4,7 @@ import GenericTable from "@/components/GenericTable";
 import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { UnwrapPromise } from "@/types/schema/misc";
+import { deduplicateArray } from "@/utility/misc";
 import Link from "next/link";
 
 type Props = {
@@ -50,12 +51,18 @@ export function ResultsTable({ webstores }: Props) {
         },
         {
           headerName: "Associated Users",
-          createCell: (webstore) => (
-            <>
-              {webstore.userRoles.length}{" "}
-              <Link href={`webstores/${webstore.id}/users`}>(View)</Link>
-            </>
-          ),
+          createCell: (webstore) => {
+            const deduplicatedUsers = deduplicateArray(
+              webstore.roles.flatMap((role) => role.users),
+              (user) => user.id
+            );
+            return (
+              <>
+                {deduplicatedUsers.length}{" "}
+                <Link href={`webstores/${webstore.id}/users`}>(View)</Link>
+              </>
+            );
+          },
         },
       ]}
       className={styles["basic-table"]}

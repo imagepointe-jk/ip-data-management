@@ -1,5 +1,5 @@
 import { prisma } from "@/../prisma/client";
-import { OrderWorkflowUserRole } from "@/types/schema/orderApproval";
+// import { OrderWorkflowUserRole } from "@/types/schema/orderApproval";
 import { createRandomDigitString } from "@/utility/misc";
 import { Webstore } from "@prisma/client";
 
@@ -15,11 +15,6 @@ const webstoreIncludes = {
   workflows: {
     include: {
       instances: true,
-    },
-  },
-  userRoles: {
-    include: {
-      user: true,
     },
   },
   roles: {
@@ -48,6 +43,15 @@ export async function getWebstoreWithIncludes(id: number) {
   });
 }
 
+export async function getWebstoreWithIncludesByUrl(url: string) {
+  return prisma.webstore.findUnique({
+    where: {
+      url,
+    },
+    include: webstoreIncludes,
+  });
+}
+
 export async function getWebstores() {
   return prisma.webstore.findMany();
 }
@@ -70,46 +74,46 @@ export async function getUser(webstoreId: number, email: string) {
   });
 }
 
-export async function getAllApproversFor(webstoreId: number) {
-  return prisma.orderWorkflowUser.findMany({
-    where: {
-      roles: {
-        some: {
-          AND: [
-            {
-              webstore: {
-                id: webstoreId,
-              },
-            },
-            {
-              role: "approver",
-            },
-          ],
-        },
-      },
-    },
-  });
-}
+// export async function getAllApproversFor(webstoreId: number) {
+//   return prisma.orderWorkflowUser.findMany({
+//     where: {
+//       roles: {
+//         some: {
+//           AND: [
+//             {
+//               webstore: {
+//                 id: webstoreId,
+//               },
+//             },
+//             {
+//               role: "approver",
+//             },
+//           ],
+//         },
+//       },
+//     },
+//   });
+// }
 
-export async function createUser(
-  email: string,
-  name: string,
-  webstoreId: number,
-  role: OrderWorkflowUserRole
-) {
-  return prisma.orderWorkflowUser.create({
-    data: {
-      email,
-      name,
-      roles: {
-        create: {
-          webstoreId,
-          role,
-        },
-      },
-    },
-  });
-}
+// export async function createUser(
+//   email: string,
+//   name: string,
+//   webstoreId: number,
+//   role: OrderWorkflowUserRole
+// ) {
+//   return prisma.orderWorkflowUser.create({
+//     data: {
+//       email,
+//       name,
+//       roles: {
+//         create: {
+//           webstoreId,
+//           role,
+//         },
+//       },
+//     },
+//   });
+// }
 
 export async function getFirstWorkflowForWebstore(webstoreId: number) {
   return prisma.orderWorkflow.findFirst({
@@ -189,9 +193,9 @@ export async function getWorkflowWithIncludes(id: number) {
       instances: true,
       webstore: {
         include: {
-          userRoles: {
+          roles: {
             include: {
-              user: true,
+              users: true,
             },
           },
           checkoutFields: true,
@@ -404,26 +408,26 @@ export async function getWorkflowStepByNumber(
   });
 }
 
-export async function getWorkflowInstancePurchaser(instanceId: number) {
-  //assume for now that a workflow instance will only have one purchaser
-  return prisma.orderWorkflowUser.findFirst({
-    where: {
-      AND: [
-        {
-          accessCodes: {
-            some: {
-              instanceId,
-            },
-          },
-        },
-        {
-          roles: {
-            some: {
-              role: "purchaser",
-            },
-          },
-        },
-      ],
-    },
-  });
-}
+// export async function getWorkflowInstancePurchaser(instanceId: number) {
+//   //assume for now that a workflow instance will only have one purchaser
+//   return prisma.orderWorkflowUser.findFirst({
+//     where: {
+//       AND: [
+//         {
+//           accessCodes: {
+//             some: {
+//               instanceId,
+//             },
+//           },
+//         },
+//         {
+//           roles: {
+//             some: {
+//               role: "purchaser",
+//             },
+//           },
+//         },
+//       ],
+//     },
+//   });
+// }
