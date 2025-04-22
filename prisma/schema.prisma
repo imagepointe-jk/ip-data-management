@@ -292,6 +292,8 @@ model OrderWorkflowInstance {
   id                  Int                       @id @default(autoincrement())
   status              String
   wooCommerceOrderId  Int                       @unique
+  purchaserEmail      String                    @default("No Email")
+  purchaserName       String                    @default("No Name")
   currentStep         Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
   deniedReason        String?
   approvedComments    String?

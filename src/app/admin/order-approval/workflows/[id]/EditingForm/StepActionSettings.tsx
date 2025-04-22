@@ -95,13 +95,11 @@ export function StepActionSettings({ step }: Props) {
                     <option key={-1} value="">
                       Select...
                     </option>,
-                    ...workflowUsers
-                      .filter((user) => user.role === "approver")
-                      .map((user) => (
-                        <option key={user.id} value={user.email}>
-                          {user.name}
-                        </option>
-                      )),
+                    ...workflowUsers.map((user) => (
+                      <option key={user.id} value={user.email}>
+                        {user.name}
+                      </option>
+                    )),
                     <option key="purchaser" value="purchaser">
                       Purchaser
                     </option>,

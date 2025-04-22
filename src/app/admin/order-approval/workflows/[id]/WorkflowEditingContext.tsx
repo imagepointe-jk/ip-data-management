@@ -5,15 +5,16 @@ import { getFullWorkflow } from "@/actions/orderWorkflow/misc";
 import { updateWorkflow } from "@/actions/orderWorkflow/update";
 import { useToast } from "@/components/ToastProvider";
 import {
-  OrderWorkflowUserRole,
+  // OrderWorkflowUserRole,
   OrderWorkflowWithIncludes,
 } from "@/types/schema/orderApproval";
-import { OrderWorkflowUser } from "@prisma/client";
+import { deduplicateArray } from "@/utility/misc";
+import { OrderWorkflowUser, WebstoreUserRole } from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { DraftFunction, useImmer } from "use-immer";
 
 type EditingContextType = {
-  workflowUsers: (OrderWorkflowUser & { role: OrderWorkflowUserRole })[];
+  workflowUsers: OrderWorkflowUser[];
   workflowState: OrderWorkflowWithIncludes;
   updateWorkflowState: (
     arg: OrderWorkflowWithIncludes | DraftFunction<OrderWorkflowWithIncludes>
@@ -42,6 +43,10 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   const [loading, setLoading] = useState(false);
   const [syncedWithServer, setSyncedWithServer] = useState(true);
   const toast = useToast();
+  const workflowUsers = deduplicateArray(
+    workflowState.webstore.roles.flatMap((role) => role.users),
+    (user) => user.id
+  );
 
   //children are forced to use this wrapper for the default immer setstate function.
   //this way we can mark our state as "not synced with server" after normal state updates, but not after actually syncing with server.
@@ -80,10 +85,11 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   return (
     <EditingContext.Provider
       value={{
-        workflowUsers: workflowState.webstore.userRoles.map((role) => ({
-          ...role.user,
-          role: role.role === "approver" ? "approver" : "purchaser",
-        })),
+        // workflowUsers: workflowState.webstore.userRoles.map((role) => ({
+        //   ...role.user,
+        //   role: role.role === "approver" ? "approver" : "purchaser",
+        // })),
+        workflowUsers,
         workflowState,
         updateWorkflowState,
         loading,
