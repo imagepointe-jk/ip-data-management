@@ -11,7 +11,7 @@ import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { deleteView } from "@/actions/customizer/delete";
 import { wrap } from "@/utility/misc";
 import { Updater } from "use-immer";
-import { createLocationFrameInlineStyles } from "@/customizer/utils";
+import { createLocationFrameInlineStyles } from "@/customizer/utils/misc";
 
 type ProductViewProps = {
   selectedVariationId: number | undefined;

@@ -1,12 +1,6 @@
-import { convertDesignerObjectData } from "@/customizer/utils";
 import { Rect } from "react-konva";
-import { useDispatch } from "react-redux";
-import {
-  setSelectedEditorGuid,
-  setSelectedLocationId,
-  useEditorSelectors,
-} from "@/customizer/redux/slices/editor";
 import { productEditorSize } from "@/constants";
+import { normalizedTransformToPixels } from "@/customizer/utils/convert";
 
 type Props = {
   locations: {
@@ -18,13 +12,10 @@ type Props = {
   }[];
 };
 export function LocationFrames({ locations }: Props) {
-  const dispatch = useDispatch();
-  const { selectedLocation } = useEditorSelectors();
-
   return (
     <>
       {locations.map((location) => {
-        const { position, size } = convertDesignerObjectData(
+        const { position, size } = normalizedTransformToPixels(
           productEditorSize,
           productEditorSize,
           {
@@ -48,11 +39,7 @@ export function LocationFrames({ locations }: Props) {
             height={size.y}
             stroke={"gray"}
             strokeWidth={4}
-            opacity={selectedLocation.id === location.id ? 1 : 0.3}
-            onClick={() => {
-              dispatch(setSelectedLocationId(location.id));
-              dispatch(setSelectedEditorGuid(null));
-            }}
+            opacity={0.5}
           />
         );
       })}

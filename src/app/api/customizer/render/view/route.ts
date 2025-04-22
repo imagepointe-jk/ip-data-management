@@ -1,5 +1,5 @@
 import { easyCorsInit } from "@/constants";
-import { renderCartProductView } from "@/customizer/render";
+// import { renderCartProductView } from "@/customizer/render";
 import { validateCartStateProductView } from "@/types/validations/customizer";
 import { message } from "@/utility/misc";
 import { INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
@@ -15,15 +15,17 @@ export async function POST(request: NextRequest) {
       ? +body.renderScale
       : undefined;
 
-    const rendered = await renderCartProductView(parsed, bgImgUrl, renderScale);
+    return Response.json({ message: "old server rendering route" });
 
-    return new NextResponse(rendered, {
-      ...easyCorsInit,
-      headers: {
-        "Content-Type": "image/jpeg",
-        "Content-Disposition": "attachment; filename='my-product-view.jpg'",
-      },
-    });
+    // const rendered = await renderCartProductView(parsed, bgImgUrl, renderScale);
+
+    // return new NextResponse(rendered, {
+    //   ...easyCorsInit,
+    //   headers: {
+    //     "Content-Type": "image/jpeg",
+    //     "Content-Disposition": "attachment; filename='my-product-view.jpg'",
+    //   },
+    // });
   } catch (error) {
     console.error(error);
     return Response.json(message("Unknown error."), {

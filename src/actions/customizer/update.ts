@@ -2,6 +2,7 @@
 
 import { FullProductSettings } from "@/db/access/customizer";
 import { prisma } from "../../../prisma/client";
+import { CustomProductRequest } from "@prisma/client";
 
 export async function updateProductSettings(settings: FullProductSettings) {
   const { published, wooCommerceId, variations } = settings;
@@ -72,4 +73,13 @@ export async function updateProductSettings(settings: FullProductSettings) {
       },
     }),
   ]);
+}
+
+export async function updateQuoteRequest(data: CustomProductRequest) {
+  return prisma.customProductRequest.update({
+    where: {
+      id: data.id,
+    },
+    data,
+  });
 }

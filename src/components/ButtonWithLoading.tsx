@@ -12,6 +12,7 @@ type Props = {
   normalText?: string; //expected if no children provided
   loading: boolean;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
 };
 export function ButtonWithLoading({
@@ -23,6 +24,7 @@ export function ButtonWithLoading({
   loading,
   disabled,
   onClick,
+  type,
 }: Props) {
   return (
     <button
@@ -30,6 +32,7 @@ export function ButtonWithLoading({
       onClick={onClick}
       style={style}
       disabled={disabled}
+      type={type}
     >
       {loading ? (
         <LoadingIndicator className={spinnerClassName || styles["spinner"]} />

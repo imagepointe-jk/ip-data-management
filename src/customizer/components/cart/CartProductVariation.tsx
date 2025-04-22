@@ -1,6 +1,5 @@
 import {
   CartStateProductVariation,
-  CartStateProductView,
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
@@ -29,16 +28,18 @@ export function CartProductVariation({ variationInState, productData }: Props) {
                 (viewData) => viewData.id === view.id
               );
               return (
-                <CartProductVariationView
+                <RenderedProductView
                   key={view.id}
-                  viewInState={view}
-                  viewData={viewData}
+                  bgImgUrl={viewData?.imageUrl || ""}
+                  view={view}
                 />
               );
             })}
           </div>
           <div>
-            {`${wooCommerceProductData.name} (${variationData.color.name})`}
+            <div
+              className={styles["cart-item-name"]}
+            >{`${wooCommerceProductData.name} (${variationData.color.name})`}</div>
             <CartProductVariationForm
               productData={productData}
               variationInState={variationInState}
@@ -47,26 +48,6 @@ export function CartProductVariation({ variationInState, productData }: Props) {
         </>
       )}
     </div>
-  );
-}
-
-type CartProductVariationViewProps = {
-  viewInState: CartStateProductView;
-  viewData?: {
-    name: string;
-    imageUrl: string;
-  };
-};
-function CartProductVariationView({
-  viewInState,
-  viewData,
-}: CartProductVariationViewProps) {
-  return (
-    <RenderedProductView
-      bgImgUrl={viewData?.imageUrl || ""}
-      view={viewInState}
-      renderScale={0.3}
-    />
   );
 }
 
@@ -153,7 +134,10 @@ function CartProductVariationForm({
     <div className={styles["cart-item-form"]}>
       {fields.map((field) => (
         <div key={field.size}>
-          <label htmlFor={`${variationInState.id}-size-${field.size}`}>
+          <label
+            htmlFor={`${variationInState.id}-size-${field.size}`}
+            className={styles["input-label"]}
+          >
             {field.label}
           </label>
           <input

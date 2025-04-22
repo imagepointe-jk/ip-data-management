@@ -15,16 +15,16 @@ export function ArtworkControls() {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
-  const { selectedLocation } = useEditorSelectors();
+  const { selectedView } = useEditorSelectors();
   const dispatch = useDispatch();
 
   function onClickDelete() {
     if (!selectedEditorGuid) return;
 
-    const selectedArtwork = selectedLocation.artworks.find(
+    const selectedArtwork = selectedView.artworks.find(
       (art) => art.objectData.editorGuid === selectedEditorGuid
     );
-    const selectedText = selectedLocation.texts.find(
+    const selectedText = selectedView.texts.find(
       (text) => text.objectData.editorGuid === selectedEditorGuid
     );
 

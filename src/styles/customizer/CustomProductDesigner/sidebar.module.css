@@ -5,7 +5,7 @@
   height: 100%;
   box-sizing: border-box;
   padding: 0;
-  background-color: #4b4b4b;
+  background-color: var(--color-beta);
   overflow: hidden;
 }
 

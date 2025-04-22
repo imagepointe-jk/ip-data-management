@@ -3,28 +3,31 @@
 import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
   setSelectedEditorGuid,
-  setSelectedLocationId,
   setSelectedVariationId,
   setSelectedViewId,
   useEditorSelectors,
 } from "../redux/slices/editor";
-import { findVariationInCart } from "../utils";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import {
-  addProductVariation,
-  removeProductVariation,
-} from "../redux/slices/cart";
+import { addProductVariation, pruneCart } from "../redux/slices/cart";
+import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { useEditor } from "../EditorProvider";
+import { findVariationInCart } from "../utils/find";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();
 
   return (
     <div className={styles["main"]}>
-      {selectedProductData.variations.map((variation) => (
-        <VariationChoice key={variation.id} variationId={variation.id} />
-      ))}
+      <h2>Select a Color</h2>
+      <div className={styles["scroll-container"]}>
+        <div className={styles["cards-container"]}>
+          {selectedProductData.variations.map((variation) => (
+            <VariationChoice key={variation.id} variationId={variation.id} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -33,23 +36,29 @@ type VariationChoiceProps = {
   variationId: number;
 };
 function VariationChoice({ variationId }: VariationChoiceProps) {
-  const { selectedProductData } = useEditorSelectors();
+  const { selectedProductData, selectedView } = useEditorSelectors();
   const cart = useSelector((state: StoreType) => state.cart);
   const dispatch = useDispatch();
+  const { updateViewRender } = useEditor();
 
   const variationData = selectedProductData.variations.find(
     (variation) => variation.id === variationId
   );
   const isVariationInCart = !!findVariationInCart(cart.present, variationId);
-  const totalVariationsThisProduct =
-    cart.present.products.find(
-      (product) => product.id === selectedProductData.id
-    )?.variations.length || 0;
-  const removeAllowed = totalVariationsThisProduct > 1;
 
-  function onClickEdit() {
-    if (!isVariationInCart || !variationData) return;
+  function onClick() {
+    if (!variationData) return;
+    if (!isVariationInCart)
+      dispatch(
+        addProductVariation({
+          variationId: variationData.id,
+          targetProductData: selectedProductData,
+        })
+      );
 
+    updateViewRender(selectedView.id);
+    //the variation we're switching from might not have any designs, so prune the cart to prevent the user accumulating untouched variations
+    dispatch(pruneCart({ variationIdToPreserve: variationData.id }));
     const firstView = variationData.views[0];
     if (!firstView) throw new Error("No views");
 
@@ -58,84 +67,24 @@ function VariationChoice({ variationId }: VariationChoiceProps) {
 
     dispatch(setSelectedVariationId(variationData.id));
     dispatch(setSelectedViewId(firstView.id));
-    dispatch(setSelectedLocationId(firstLocation.id));
-    dispatch(setSelectedEditorGuid(null));
-  }
-
-  function onClickAdd() {
-    if (isVariationInCart || !variationData) return;
-
-    const firstView = variationData.views[0];
-    if (!firstView) throw new Error("No views");
-
-    const firstLocation = firstView.locations[0];
-    if (!firstLocation) throw new Error("No locations");
-
-    dispatch(
-      addProductVariation({
-        variationId,
-        targetProductData: selectedProductData,
-      })
-    );
-
-    dispatch(setSelectedVariationId(variationData.id));
-    dispatch(setSelectedViewId(firstView.id));
-    dispatch(setSelectedLocationId(firstLocation.id));
-    dispatch(setSelectedEditorGuid(null));
-  }
-
-  function onClickRemove() {
-    if (!isVariationInCart && removeAllowed) return;
-
-    const productInState = cart.present.products.find(
-      (product) => product.id === selectedProductData.id
-    );
-    const variationToSelect = productInState?.variations.filter(
-      (variation) => variation.id !== variationId
-    )[0];
-    if (!variationToSelect) throw new Error("Can't delete last variation");
-
-    const viewToSelect = variationToSelect.views[0];
-    if (!viewToSelect) throw new Error("No view to select");
-
-    const locationToSelect = viewToSelect.locations[0];
-    if (!locationToSelect) throw new Error("No location to select");
-
-    dispatch(
-      removeProductVariation({
-        targetProductId: selectedProductData.id,
-        variationId,
-      })
-    );
-    dispatch(setSelectedVariationId(variationToSelect.id));
-    dispatch(setSelectedViewId(viewToSelect.id));
-    dispatch(setSelectedLocationId(locationToSelect.id));
     dispatch(setSelectedEditorGuid(null));
   }
 
   return (
-    <div className={styles["choice"]}>
+    <div className={styles["card"]} onClick={onClick}>
       {variationData && (
         <>
-          <div
-            className={styles["choice-swatch"]}
-            style={{ backgroundColor: `#${variationData.color.hexCode}` }}
-          ></div>
-          <div>{variationData.color.name}</div>
-          <button onClick={onClickEdit} disabled={!isVariationInCart}>
-            Edit
-          </button>
-          <button onClick={onClickAdd} disabled={isVariationInCart}>
-            Add
-          </button>
-          <button
-            onClick={onClickRemove}
-            disabled={!isVariationInCart || !removeAllowed}
-          >
-            Remove
-          </button>
+          <div className={styles["img-container"]}>
+            <img
+              src={variationData.views[0]?.imageUrl || IMAGE_NOT_FOUND_URL}
+            />
+          </div>
+          <div className={styles["color-label"]}>
+            {variationData.color.name}
+          </div>
         </>
       )}
+      {!variationData && <>MISSING VARIATION DATA</>}
     </div>
   );
 }
