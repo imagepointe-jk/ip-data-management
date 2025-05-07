@@ -1,0 +1,94 @@
+.main {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.headers-container {
+  display: flex;
+}
+
+.header {
+  background-color: lightgray;
+  padding: 10px 0;
+  font-weight: bold;
+}
+
+.column-1 {
+  width: 100px;
+}
+
+.column-2 {
+  width: 225px;
+}
+
+.column-3 {
+  flex: 1;
+}
+
+.column-4 {
+  width: 100px;
+}
+
+.fake-table-row-container {
+  overflow: hidden;
+  height: 35px;
+  transition: 0.2s;
+}
+
+.fake-table-row-container.expanded {
+  height: 300px;
+}
+
+.fake-table-row-main {
+  display: flex;
+  padding: 10px 0;
+}
+
+.status-loading-indicator {
+  width: 15px;
+  height: 15px;
+}
+
+.order-details-loading-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+}
+
+.order-details-flex {
+  display: flex;
+  gap: 30px;
+}
+
+.order-details-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.line-items-table {
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.line-items-table th {
+  background-color: lightgray;
+}
+
+.line-items-table th,
+.line-items-table td {
+  border: 1px solid gray;
+  padding: 5px;
+}
+
+.order-details-heading {
+  font-weight: bold;
+}
+
+.order-details-fields-container {
+  font-size: 0.875rem;
+}
+
+.order-details-field-label {
+  font-weight: bold;
+}
