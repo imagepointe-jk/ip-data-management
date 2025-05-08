@@ -14,9 +14,10 @@ import {
 import { env } from "@/env";
 import { sendEmail } from "@/utility/mail";
 import { decryptWebstoreData } from "./encryption";
-import { setOrderStatus } from "@/fetch/woocommerce";
+import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { handleCurrentStep } from "./main";
 import { deduplicateArray } from "@/utility/misc";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -101,7 +102,30 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   if (!workflow)
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
-  const workflowInstance = await createWorkflowInstance(workflow.id, orderId);
+  const { key, secret } = decryptWebstoreData(webstore);
+  const order = await getOrder(orderId, webstore.url, key, secret);
+  const json = await order.json();
+  const parsed = parseWooCommerceOrderJson(json);
+  const purchaserEmail =
+    parsed.metaData.find((meta) => meta.key === "purchaser_email")?.value ||
+    "NO_EMAIL_FOUND";
+  const purchaserFirstName = parsed.metaData.find(
+    (meta) => meta.key === "purchaser_first_name"
+  )?.value;
+  const purchaserLastName = parsed.metaData.find(
+    (meta) => meta.key === "purchaser_last_name"
+  )?.value;
+  const purchaserName =
+    purchaserFirstName && purchaserLastName
+      ? `${purchaserFirstName} ${purchaserLastName}`
+      : "NO_NAME_FOUND";
+
+  const workflowInstance = await createWorkflowInstance(
+    workflow.id,
+    purchaserEmail,
+    purchaserName,
+    orderId
+  );
   for (const user of deduplicatedUsers) {
     await createAccessCode(workflowInstance.id, user.id, "approver");
   }
