@@ -90,7 +90,6 @@ export function OrderInstanceRow({
       const approverEmail = order.metaData.find(
         (meta) => meta.key === "approver"
       )?.value;
-      console.log("finding", approverEmail);
       setStatusText(`Waiting on ${findUserNameInRoles(`${approverEmail}`)}`);
     } catch (error) {
       console.error(error);

@@ -1,5 +1,5 @@
 import { easyCorsInit } from "@/constants";
-import { startOrderWorkflow } from "@/order-approval/main";
+import { startOrderWorkflow } from "@/order-approval/start";
 import { parseWooCommerceWebhookRequest } from "@/types/validations/orderApproval";
 import { NextRequest } from "next/server";
 
