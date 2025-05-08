@@ -2,10 +2,7 @@
 
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { prisma } from "../../../prisma/client";
-import {
-  handleWorkflowEvent,
-  startWorkflowInstanceFromBeginning,
-} from "@/order-approval/main";
+import { handleWorkflowEvent } from "@/order-approval/main";
 import {
   getAccessCodeWithIncludes,
   getWorkflowWithIncludes,
@@ -21,6 +18,7 @@ import path from "path";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { getOrder } from "@/fetch/woocommerce";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { startWorkflowInstanceFromBeginning } from "@/order-approval/start";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
