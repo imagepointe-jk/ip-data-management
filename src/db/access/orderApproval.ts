@@ -125,12 +125,16 @@ export async function getFirstWorkflowForWebstore(webstoreId: number) {
 
 export async function createWorkflowInstance(
   workflowId: number,
+  purchaserEmail: string,
+  purchaserName: string,
   wooCommerceOrderId: number
 ) {
   return prisma.orderWorkflowInstance.create({
     data: {
       wooCommerceOrderId,
       status: "waiting",
+      purchaserName,
+      purchaserEmail,
       parentWorkflowId: workflowId,
     },
   });
