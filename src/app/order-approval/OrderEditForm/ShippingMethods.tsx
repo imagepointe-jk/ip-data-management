@@ -22,6 +22,12 @@ export function ShippingMethods({
       (method.statusCode === 200 || method.statusCode === 429)
   );
 
+  function compareShippingMethodTitles(title1: string, title2: string) {
+    const cleaned1 = title1.replace("™", "&#8482;").replace("®", "&#174;");
+    const cleaned2 = title2.replace("™", "&#8482;").replace("®", "&#174;");
+    return cleaned1 === cleaned2;
+  }
+
   return (
     <div className={styles["shipping-methods-parent"]}>
       <div className={styles["shipping-methods-container"]}>
@@ -50,7 +56,10 @@ export function ShippingMethods({
                   name="shipping-method"
                   id={method.name}
                   value={method.name}
-                  checked={order.shippingLines[0]?.method_title === method.name}
+                  checked={compareShippingMethodTitles(
+                    order.shippingLines[0]?.method_title || "",
+                    method.name
+                  )}
                   onChange={(e) =>
                     onChangeShippingInfo({ method: e.target.value })
                   }
