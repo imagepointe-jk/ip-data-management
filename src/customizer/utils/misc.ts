@@ -9,7 +9,6 @@ import {
   CartStateProductVariation,
   CartStateProductView,
 } from "@/types/schema/customizer";
-import Konva from "konva";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -116,10 +115,4 @@ export function createInitialState(
 //each variation is treated as a separate cart item, so count the total variations of all products combined
 export function countCartItems(cart: CartState) {
   return cart.products.flatMap((product) => product.variations).length;
-}
-
-export function getCurrentViewDataURL() {
-  const stage = Konva.stages[0];
-  if (!stage) throw new Error("No Konva stage");
-  return stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
 }
