@@ -1,3 +1,5 @@
+"use server";
+
 import { validateUserFormData } from "@/types/validations/users";
 import { hashPassword } from "@/utility/auth";
 import { prisma } from "../../../prisma/client";
