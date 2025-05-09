@@ -12,7 +12,8 @@ import { CreateDesignButton } from "./CreateDesignButton";
 type Props = {
   searchParams?: any;
 };
-export default async function Designs({ searchParams }: Props) {
+export default async function Designs(props: Props) {
+  const searchParams = await props.searchParams;
   const {
     pageNumber,
     perPage,

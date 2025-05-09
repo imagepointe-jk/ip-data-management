@@ -7,11 +7,12 @@ import { notFound } from "next/navigation";
 import { DesignEditForm } from "./DesignEditForm/DesignEditForm";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function Design({ params }: Props) {
+export default async function Design(props: Props) {
+  const params = await props.params;
   const id = +params.id;
 
   if (!id) notFound();

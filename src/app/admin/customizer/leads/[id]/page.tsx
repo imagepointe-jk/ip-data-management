@@ -8,11 +8,12 @@ import { populateProductData } from "@/app/customizer/handleData";
 import { inspect } from "util";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const id = +params.id;
   if (isNaN(id)) return <h1>Invalid ID.</h1>;
 

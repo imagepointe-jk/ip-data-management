@@ -8,11 +8,12 @@ import { parseWooCommerceProduct } from "@/types/validations/woo";
 import { getColors } from "@/db/access/misc";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function ProductSettings({ params }: Props) {
+export default async function ProductSettings(props: Props) {
+  const params = await props.params;
   const id = +params.id;
   if (isNaN(id)) return <h1>Invalid ID.</h1>;
   const existingSettings = await getFullProductSettings(id);

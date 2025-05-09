@@ -4,10 +4,8 @@ import { message } from "@/utility/misc";
 import { BAD_REQUEST, NOT_FOUND } from "@/utility/statusCodes";
 import { NextRequest } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   if (isNaN(+params.id))
     return Response.json(message("Bad request."), {
       ...easyCorsInit,
