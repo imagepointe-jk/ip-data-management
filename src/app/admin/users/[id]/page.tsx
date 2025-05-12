@@ -2,11 +2,12 @@ import { prisma } from "@/../prisma/client";
 import { UserDataForm } from "./UserDataForm";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function User({ params }: Props) {
+export default async function User(props: Props) {
+  const params = await props.params;
   const id = +params.id;
   const existingUser = await prisma.user.findUnique({
     where: {

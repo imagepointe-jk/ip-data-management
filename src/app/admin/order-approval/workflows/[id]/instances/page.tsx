@@ -3,11 +3,17 @@ import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function Page({ params: { id } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const workflow = await getWorkflowWithIncludes(+id);
   if (!workflow) return <h1>Workflow {id} not found.</h1>;
 

@@ -7,11 +7,17 @@ import { Roles } from "./Roles";
 import { SingleRole } from "./SingleRole";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-export default async function Page({ params: { id } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const webstore = await getWebstoreWithIncludes(+id);
   if (!webstore) return <h1>Webstore {id} not found.</h1>;
 

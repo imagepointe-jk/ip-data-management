@@ -6,7 +6,8 @@ const defaultPerPage = 25;
 type Props = {
   searchParams?: any;
 };
-export default async function Page({ searchParams }: Props) {
+export default async function Page(props: Props) {
+  const searchParams = await props.searchParams;
   const { pageNumber } = parseSearchParams(searchParams);
   const requests = await getQuoteRequests({
     page: pageNumber,

@@ -7,10 +7,8 @@ import { NOT_FOUND } from "@/utility/statusCodes";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { handleRequestError } from "@/app/api/handleError";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = +params.id;
     if (isNaN(id))

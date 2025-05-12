@@ -8,12 +8,19 @@ import Link from "next/link";
 import { InvoiceSender } from "./InvoiceSender";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
     instanceId: string;
-  };
+  }>;
 };
-export default async function Page({ params: { id, instanceId } }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+
+  const {
+    id,
+    instanceId
+  } = params;
+
   const instance = await getWorkflowInstanceWithIncludes(+instanceId);
   if (!instance) return <h1>Instance {instanceId} not found.</h1>;
   const workflow = await getWorkflowWithIncludes(instance.parentWorkflowId);

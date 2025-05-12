@@ -2,7 +2,7 @@
 
 import { DesignResults } from "@/types/schema/designs";
 import { createContext, ReactNode, useContext, useEffect } from "react";
-import { createInitialState, getCurrentViewDataURL } from "./utils/misc";
+import { createInitialState } from "./utils/misc";
 import { useDispatch } from "react-redux";
 import { setProductData } from "./redux/slices/productData";
 import { setCartProducts, setViewRenderURL } from "./redux/slices/cart";
@@ -21,6 +21,7 @@ import {
   makeDesignResultsSerializable,
   makeProductDataSerializable,
 } from "./utils/convert";
+import Konva from "konva";
 
 type EditorContextType = {
   updateViewRender: (viewId: number) => void;
@@ -52,6 +53,12 @@ export function EditorProvider({
   const productDataInStore = useSelector(
     (state: StoreType) => state.productData
   );
+
+  function getCurrentViewDataURL() {
+    const stage = Konva.stages[0];
+    if (!stage) throw new Error("No Konva stage");
+    return stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
+  }
 
   function updateViewRender(viewId: number) {
     dispatch(setSelectedEditorGuid(null)); //deselect any selected objects, otherwise the transform widget will get into the render

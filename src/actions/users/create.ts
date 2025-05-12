@@ -1,8 +1,10 @@
+"use server";
+
 import { validateUserFormData } from "@/types/validations/users";
 import { hashPassword } from "@/utility/auth";
 import { prisma } from "../../../prisma/client";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function createUser(formData: FormData) {
   const parsed = validateUserFormData(formData);

@@ -227,8 +227,7 @@ export async function createWebstore(
   await prisma.webstoreShippingSettings.create({
     data: {
       webstoreId: webstore.id,
-      allowApproverChangeMethod:
-        shippingSettings?.allowApproverChangeMethod || false,
+      allowApproverChangeMethod: true, //currently allowed for all webstores
       allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
     },
   });
