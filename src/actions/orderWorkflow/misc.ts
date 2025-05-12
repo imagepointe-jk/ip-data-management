@@ -18,7 +18,10 @@ import path from "path";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { getOrder } from "@/fetch/woocommerce";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { startWorkflowInstanceFromBeginning } from "@/order-approval/start";
+import {
+  startOrderWorkflow,
+  startWorkflowInstanceFromBeginning,
+} from "@/order-approval/start";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -234,4 +237,17 @@ export async function sendInvoiceEmail(
     `Invoice for Order ${wooCommerceOrderId}`,
     message
   );
+}
+
+export async function startOrderWorkflowAction(
+  orderId: number,
+  webstoreUrl: string
+) {
+  return startOrderWorkflow({
+    email: "n/a",
+    firstName: "n/a",
+    lastName: "n/a", //these parameters are currently unused
+    orderId,
+    webhookSource: webstoreUrl,
+  });
 }

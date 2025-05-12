@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { restartWorkflow } from "@/actions/orderWorkflow/misc";
+import { deleteWorkflowInstance } from "@/actions/orderWorkflow/delete";
 
 type Props = {
   workflow: Exclude<
@@ -23,6 +24,20 @@ export function ResultsTable({ workflow }: Props) {
     await restartWorkflow(id);
     toast.toast("Workflow restarted.", "success");
     router.refresh();
+  }
+
+  async function onClickDelete(id: number) {
+    if (!confirm("Are you sure you want to delete this workflow instance?"))
+      return;
+
+    try {
+      await deleteWorkflowInstance(id);
+      toast.toast("Instance deleted.", "success");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.toast("Error deleting instance.", "error");
+    }
   }
 
   return (
@@ -54,13 +69,23 @@ export function ResultsTable({ workflow }: Props) {
         },
         {
           headerName: "Last Started On",
+          createCell: (instance) => instance.lastStartedAt.toLocaleString(),
+        },
+        {
+          headerName: "",
           createCell: (instance) => (
-            <>
-              {instance.lastStartedAt.toLocaleString()}
-              <button onClick={() => onClickRestart(instance.id)}>
-                Restart
-              </button>
-            </>
+            <button onClick={() => onClickRestart(instance.id)}>Restart</button>
+          ),
+        },
+        {
+          headerName: "",
+          createCell: (instance) => (
+            <button
+              className="button-danger"
+              onClick={() => onClickDelete(instance.id)}
+            >
+              DELETE
+            </button>
           ),
         },
       ]}
