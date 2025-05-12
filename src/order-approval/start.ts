@@ -103,8 +103,12 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
   const { key, secret } = decryptWebstoreData(webstore);
-  const order = await getOrder(orderId, webstore.url, key, secret);
-  const json = await order.json();
+  const orderResponse = await getOrder(orderId, webstore.url, key, secret);
+  if (!orderResponse.ok)
+    throw new Error(
+      `Received a ${orderResponse.status} response code while retrieving the order`
+    );
+  const json = await orderResponse.json();
   const parsed = parseWooCommerceOrderJson(json);
   const purchaserEmail =
     parsed.metaData.find((meta) => meta.key === "purchaser_email")?.value ||

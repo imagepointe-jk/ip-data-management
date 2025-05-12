@@ -1,4 +1,5 @@
-.spinner {
+.button .spinner {
   width: 20px;
   height: 20px;
+  filter: unset;
 }

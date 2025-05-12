@@ -33,11 +33,9 @@ export function EditingForm() {
 
   return (
     <div className="vert-flex-group" style={{ position: "relative" }}>
-      {workflowState.instances.length > 0 && (
-        <Link href={`${workflowState.id}/instances`}>
-          View {workflowState.instances.length} instance(s)
-        </Link>
-      )}
+      <Link href={`${workflowState.id}/instances`}>
+        View {workflowState.instances.length} instance(s)
+      </Link>
       <h2>
         Name:{" "}
         <input

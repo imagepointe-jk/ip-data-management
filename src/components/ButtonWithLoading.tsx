@@ -28,7 +28,7 @@ export function ButtonWithLoading({
 }: Props) {
   return (
     <button
-      className={className}
+      className={`${styles["button"]} ${className || ""}`}
       onClick={onClick}
       style={style}
       disabled={disabled}
