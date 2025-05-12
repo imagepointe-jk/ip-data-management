@@ -4,11 +4,12 @@ import { TEMP_getWebstore } from "./TEMP_DATA";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: {
-    webstoreId: Promise<string>;
-  };
+  params: Promise<{
+    webstoreId: string;
+  }>;
 };
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const webstore = await TEMP_getWebstore(+params.webstoreId);
   if (!webstore) notFound();
 
