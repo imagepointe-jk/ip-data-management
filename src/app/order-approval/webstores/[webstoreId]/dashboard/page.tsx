@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 type Props = {
   params: {
-    webstoreId: string;
+    webstoreId: Promise<string>;
   };
 };
 export default async function Page({ params }: Props) {
