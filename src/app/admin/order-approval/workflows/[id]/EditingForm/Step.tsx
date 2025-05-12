@@ -60,7 +60,10 @@ export function Step({ step, canBeMovedDown, canBeMovedUp }: StepProps) {
         <button
           className="button-danger"
           disabled={!syncedWithServer}
-          onClick={() => deleteStep(step.id)}
+          onClick={() => {
+            if (confirm("Are you sure you want to delete this step?"))
+              deleteStep(step.id);
+          }}
         >
           Delete
         </button>
