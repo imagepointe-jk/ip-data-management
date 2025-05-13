@@ -21,7 +21,10 @@ import { ShippingMethods } from "./ShippingMethods";
 import { CheckoutFields } from "./CheckoutFields";
 import { WebstoreCheckoutField } from "@prisma/client";
 import { useImmer } from "use-immer";
-import { getRatedShippingMethods } from "@/order-approval/shipping";
+import {
+  compareShippingMethodTitles,
+  getRatedShippingMethods,
+} from "@/order-approval/shipping";
 
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
@@ -154,8 +157,8 @@ export function OrderEditForm({
         method.total !== null &&
         (method.statusCode === 200 || method.statusCode === 429)
     );
-    const selectedValidMethod = validMethods.find(
-      (method) => method.name === selectedMethod
+    const selectedValidMethod = validMethods.find((method) =>
+      compareShippingMethodTitles(method.name, `${selectedMethod}`)
     );
     const validMethodsSorted = [...validMethods].sort((a, b) => {
       const aTotal = a.total ? +a.total : Number.MAX_SAFE_INTEGER;

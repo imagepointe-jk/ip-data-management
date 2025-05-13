@@ -17,7 +17,7 @@ import {
 const upsShippingCodes: { exactString: string; code: string }[] = [
   //domestic
   {
-    exactString: "UPS 3-Day Select&#174;",
+    exactString: "UPS 3 Day Select&#174;",
     code: "12",
   },
   {
@@ -250,4 +250,10 @@ export async function getRatedShippingMethods(
   );
 
   return ratedMethods;
+}
+
+export function compareShippingMethodTitles(title1: string, title2: string) {
+  const cleaned1 = title1.replace("™", "&#8482;").replace("®", "&#174;");
+  const cleaned2 = title2.replace("™", "&#8482;").replace("®", "&#174;");
+  return cleaned1 === cleaned2;
 }
