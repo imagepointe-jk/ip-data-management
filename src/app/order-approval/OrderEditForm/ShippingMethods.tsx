@@ -2,6 +2,7 @@ import { CONTACT_US_URL } from "@/constants";
 import styles from "@/styles/orderApproval/orderEditForm.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { ChangeShippingInfoParams, RatedShippingMethod } from "./OrderEditForm";
+import { compareShippingMethodTitles } from "@/order-approval/shipping";
 
 type Props = {
   order: WooCommerceOrder;
@@ -21,12 +22,6 @@ export function ShippingMethods({
       method.total !== null &&
       (method.statusCode === 200 || method.statusCode === 429)
   );
-
-  function compareShippingMethodTitles(title1: string, title2: string) {
-    const cleaned1 = title1.replace("™", "&#8482;").replace("®", "&#174;");
-    const cleaned2 = title2.replace("™", "&#8482;").replace("®", "&#174;");
-    return cleaned1 === cleaned2;
-  }
 
   return (
     <div className={styles["shipping-methods-parent"]}>
