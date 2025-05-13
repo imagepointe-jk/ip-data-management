@@ -2,7 +2,7 @@ import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 
 type Props = {
-  modifiedByUser: boolean;
+  modifiedByUser?: boolean;
 };
 
 export function NavButtons({ modifiedByUser }: Props) {
