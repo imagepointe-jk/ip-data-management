@@ -20,7 +20,7 @@ import { NavButtons } from "../NavButtons";
 import { ShippingMethods } from "./ShippingMethods";
 import { CheckoutFields } from "./CheckoutFields";
 import { WebstoreCheckoutField } from "@prisma/client";
-import { useImmer } from "use-immer";
+import { DraftFunction, Updater, useImmer } from "use-immer";
 import {
   compareShippingMethodTitles,
   getRatedShippingMethods,
@@ -79,19 +79,27 @@ export function OrderEditForm({
   const [order, setOrder] = useImmer(null as WooCommerceOrder | null);
   const [products, setProducts] = useState(null as WooCommerceProduct[] | null);
   const [loading, setLoading] = useState(true);
-  const [valuesMaybeUnsynced, setValuesMaybeUnsynced] = useState(false); //some values have to be calculated by woocommerce, so use this to show a warning that an update request must be made to make all values accurately reflect user changes
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
   const [ratedShippingMethods, setRatedShippingMethods] = useState(
     [] as RatedShippingMethod[]
   );
   const [helpMode, setHelpMode] = useState(false);
+  const [modifiedByUser, setModifiedByUser] = useState(false);
   const validShippingMethods = ratedShippingMethods.filter(
     (method) =>
       method.total !== null &&
       (method.statusCode === 200 || method.statusCode === 429)
   );
 
-  async function onClickSave() {
+  //wrapper used to force all changes by the user to mark the order as modified
+  function modifyOrder(
+    arg: (WooCommerceOrder | null) | DraftFunction<WooCommerceOrder | null>
+  ) {
+    setOrder(arg);
+    setModifiedByUser(true);
+  }
+
+  async function saveOrder() {
     if (!order || !products) return;
 
     //woocommerce API requires us to set quantity to 0 for any line items we want to delete
@@ -130,9 +138,9 @@ export function OrderEditForm({
         userEmail || ""
       );
       setOrder(updated);
+      setModifiedByUser(false);
 
       setRemoveLineItemIds([]);
-      setValuesMaybeUnsynced(false);
     } catch (error) {
       setOrder(null);
       console.error(error);
@@ -187,6 +195,7 @@ export function OrderEditForm({
     try {
       const order = await getOrder();
       setOrder(order);
+      setModifiedByUser(false);
 
       const ids = order.lineItems.map((item) => item.productId);
       const products = await getProducts(ids);
@@ -206,10 +215,7 @@ export function OrderEditForm({
     setLoading(false);
   }
 
-  function onChangeShippingInfo(
-    changes: ChangeShippingInfoParams,
-    mayUnsyncValues?: boolean
-  ) {
+  function onChangeShippingInfo(changes: ChangeShippingInfoParams) {
     if (!order) return;
     if (changes.method !== undefined) {
       //stop any invalid shipping method changes from taking place
@@ -221,21 +227,31 @@ export function OrderEditForm({
 
     setOrder((draft) => {
       if (!draft) return;
-      if (changes.firstName) draft.shipping.firstName = changes.firstName;
-      if (changes.lastName) draft.shipping.lastName = changes.lastName;
-      if (changes.address1) draft.shipping.address1 = changes.address1;
-      if (changes.address2) draft.shipping.address2 = changes.address2;
-      if (changes.city) draft.shipping.city = changes.city;
-      if (changes.state) draft.shipping.state = changes.state;
-      if (changes.postcode) draft.shipping.postcode = changes.postcode;
-      if (changes.country) draft.shipping.country = changes.country;
+      if (changes.firstName !== undefined)
+        draft.shipping.firstName = changes.firstName;
+      if (changes.lastName !== undefined)
+        draft.shipping.lastName = changes.lastName;
+      if (changes.address1 !== undefined)
+        draft.shipping.address1 = changes.address1;
+      if (changes.address2 !== undefined)
+        draft.shipping.address2 = changes.address2;
+      if (changes.city !== undefined) draft.shipping.city = changes.city;
+      if (changes.state !== undefined) draft.shipping.state = changes.state;
+      if (changes.postcode !== undefined)
+        draft.shipping.postcode = changes.postcode;
+      if (changes.country !== undefined)
+        draft.shipping.country = changes.country;
       if (changes.method) {
         const shippingLine = draft.shippingLines[0];
         if (shippingLine)
           shippingLine.method_title = changes.method || "SHIPPING METHOD ERROR";
       }
     });
-    if (mayUnsyncValues) setValuesMaybeUnsynced(true);
+    setModifiedByUser(true);
+  }
+
+  async function onBeforeApprove() {
+    if (modifiedByUser) saveOrder();
   }
 
   useEffect(() => {
@@ -263,10 +279,9 @@ export function OrderEditForm({
                 <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
                 <LineItemTable
                   order={order}
-                  setOrder={setOrder}
+                  setOrder={modifyOrder}
                   removeLineItemIds={removeLineItemIds}
                   setRemoveLineItemIds={setRemoveLineItemIds}
-                  setValuesMaybeUnsynced={setValuesMaybeUnsynced}
                 />
                 <div className={styles["extra-details-flex"]}>
                   <div className={styles["main-fields-parent"]}>
@@ -278,7 +293,7 @@ export function OrderEditForm({
                     <CheckoutFields
                       fields={checkoutFields}
                       order={order}
-                      setOrder={setOrder}
+                      setOrder={modifyOrder}
                     />
                     {permissions?.shipping?.method === "edit" && (
                       <ShippingMethods
@@ -305,10 +320,10 @@ export function OrderEditForm({
                   below.
                 </div>
                 <div className={styles["submit-row"]}>
-                  <button className={styles["submit"]} onClick={onClickSave}>
+                  <button className={styles["submit"]} onClick={saveOrder}>
                     Save All Changes
                   </button>
-                  {(valuesMaybeUnsynced || removeLineItemIds.length > 0) && (
+                  {modifiedByUser && (
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       className={styles["info-circle-warning"]}
@@ -335,7 +350,7 @@ export function OrderEditForm({
           />
         )}
       </div>
-      {showNavButtons && <NavButtons beforeApprove={onClickSave} />}
+      {showNavButtons && <NavButtons beforeApprove={onBeforeApprove} />}
     </>
   );
 }

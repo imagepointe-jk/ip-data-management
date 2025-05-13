@@ -10,14 +10,12 @@ type Props = {
   setOrder: Updater<WooCommerceOrder | null>;
   removeLineItemIds: number[];
   setRemoveLineItemIds: Dispatch<SetStateAction<number[]>>;
-  setValuesMaybeUnsynced: (b: boolean) => void;
 };
 export function LineItemTable({
   order,
   setOrder,
   removeLineItemIds,
   setRemoveLineItemIds,
-  setValuesMaybeUnsynced,
 }: Props) {
   function onChangeLineItemQuantity(id: number, valueStr: string) {
     if (!order) return;
@@ -30,8 +28,6 @@ export function LineItemTable({
         item.quantity = +valueStr;
         item.total = (item.quantity * item.price).toFixed(2);
       });
-
-      setValuesMaybeUnsynced(true);
     } catch (error) {
       console.error(error);
     }
