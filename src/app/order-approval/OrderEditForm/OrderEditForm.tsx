@@ -250,10 +250,6 @@ export function OrderEditForm({
     setModifiedByUser(true);
   }
 
-  async function onBeforeApprove() {
-    if (modifiedByUser) saveOrder();
-  }
-
   useEffect(() => {
     loadOrder();
   }, []);
@@ -350,7 +346,7 @@ export function OrderEditForm({
           />
         )}
       </div>
-      {showNavButtons && <NavButtons beforeApprove={onBeforeApprove} />}
+      {showNavButtons && <NavButtons modifiedByUser={modifiedByUser} />}
     </>
   );
 }
