@@ -47,7 +47,7 @@ export function ManualInstanceTrigger({ webstore }: Props) {
         </div>
         <div>
           The order must already exist in the WooCommerce database for the
-          webstore <strong>"{webstore.name}"</strong>.
+          webstore <strong>&quot;{webstore.name}&quot;</strong>.
         </div>
         <div>
           <label className="input-label">Order ID</label>
