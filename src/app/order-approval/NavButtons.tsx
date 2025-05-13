@@ -2,17 +2,16 @@ import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import styles from "@/styles/orderApproval/approverArea.module.css";
 
 type Props = {
-  beforeApprove?: () => Promise<void>;
+  modifiedByUser: boolean;
 };
 
-export function NavButtons({ beforeApprove }: Props) {
+export function NavButtons({ modifiedByUser }: Props) {
   const { parentWindow } = useIframe();
   const searchParams = new URLSearchParams(parentWindow.location?.search);
   const action = searchParams.get("action");
 
   async function onClickApprove() {
-    if (beforeApprove) await beforeApprove();
-    parentWindow.setSearchParam("action", "approve");
+    if (!modifiedByUser) parentWindow.setSearchParam("action", "approve");
   }
 
   return (
@@ -29,6 +28,12 @@ export function NavButtons({ beforeApprove }: Props) {
         <button
           className={styles["nav-button-approve"]}
           onClick={onClickApprove}
+          disabled={modifiedByUser}
+          title={
+            modifiedByUser
+              ? "Please save your changes before approving."
+              : undefined
+          }
         >
           Approve
         </button>

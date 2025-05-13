@@ -63,7 +63,7 @@ export async function getWebstoresWithIncludes() {
 }
 
 export async function getShippingMethods() {
-  return prisma.webstoreShippingMethod.findMany();
+  return prisma.webstoreShippingMethod.findMany({ orderBy: { name: "asc" } });
 }
 
 export async function getUser(webstoreId: number, email: string) {
@@ -194,7 +194,11 @@ export async function getWorkflowWithIncludes(id: number) {
           proceedListeners: true,
         },
       },
-      instances: true,
+      instances: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       webstore: {
         include: {
           roles: {
