@@ -49,6 +49,10 @@ const upsShippingCodes: { exactString: string; code: string }[] = [
     exactString: "UPS Worldwide Saver",
     code: "65",
   },
+  {
+    exactString: "UPS&#174; Standard",
+    code: "11",
+  },
 ];
 const uspsShippingCodes: { exactString: string; code: string }[] = [
   {
