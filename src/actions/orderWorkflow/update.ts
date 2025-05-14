@@ -138,6 +138,7 @@ export async function updateWebstore(
           label: field.label,
           type: field.type,
           options: field.options,
+          userCanEdit: field.userCanEdit,
         },
       })
     ),

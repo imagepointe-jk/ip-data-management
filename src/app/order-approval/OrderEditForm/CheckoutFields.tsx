@@ -18,6 +18,7 @@ export function CheckoutFields({
   metaDataToAdd,
   setMetaDataToAdd,
 }: Props) {
+  console.log(fields);
   function onChangeField(key: string, value: string) {
     //handle comments field differently since WooCommerce doesn't put it in the metadata
     if (key === "order_comments") {
@@ -91,6 +92,7 @@ export function CheckoutFields({
                 id={field.name}
                 value={getFieldValue(field.name)}
                 onChange={(e) => onChangeField(field.name, e.target.value)}
+                disabled={!field.userCanEdit}
               />
             )}
 
@@ -102,6 +104,7 @@ export function CheckoutFields({
                 rows={5}
                 value={getFieldValue(field.name)}
                 onChange={(e) => onChangeField(field.name, e.target.value)}
+                disabled={!field.userCanEdit}
               />
             )}
 
@@ -111,6 +114,7 @@ export function CheckoutFields({
                 id={field.name}
                 value={getFieldValue(field.name)}
                 onChange={(e) => onChangeField(field.name, e.target.value)}
+                disabled={!field.userCanEdit}
               >
                 {(field.options || "").split(/\s*\|\s*/g).map((option) => (
                   <option key={option} value={option}>

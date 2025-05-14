@@ -211,13 +211,14 @@ model WebstoreShippingMethod {
 }
 
 model WebstoreCheckoutField {
-  id         Int      @id @default(autoincrement())
-  webstoreId Int
-  name       String
-  label      String
-  type       String
-  options    String?
-  webstore   Webstore @relation(fields: [webstoreId], references: [id])
+  id          Int      @id @default(autoincrement())
+  webstoreId  Int
+  name        String
+  label       String
+  type        String
+  options     String?
+  userCanEdit Boolean  @default(true)
+  webstore    Webstore @relation(fields: [webstoreId], references: [id])
 }
 
 model OrderWorkflow {

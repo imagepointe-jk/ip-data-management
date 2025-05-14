@@ -55,6 +55,13 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
     });
   }
 
+  function onChangeCheckoutFieldEditable(id: number, val: boolean) {
+    setWebstoreState((draft) => {
+      const field = draft.checkoutFields.find((field) => field.id === id);
+      if (field) field.userCanEdit = val;
+    });
+  }
+
   return (
     <>
       <h2>Checkout Fields</h2>
@@ -117,6 +124,18 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
                 style={{
                   display: data.type !== "select" ? "none" : undefined,
                 }}
+              />
+            ),
+          },
+          {
+            headerName: "Editable",
+            createCell: (data) => (
+              <input
+                type="checkbox"
+                checked={data.userCanEdit}
+                onChange={(e) =>
+                  onChangeCheckoutFieldEditable(data.id, e.target.checked)
+                }
               />
             ),
           },
