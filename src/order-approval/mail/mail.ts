@@ -12,7 +12,6 @@ import path from "path";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { Webstore, WebstoreCheckoutField } from "@prisma/client";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
-import { getFieldValue } from "../checkoutFields";
 
 type Replacer = {
   description: string;
@@ -53,7 +52,7 @@ export const replacers: Replacer[] = [
         );
         const checkoutValues = webstoreCheckoutFields.map((field) => ({
           label: field.label,
-          value: getFieldValue(field.name, wcOrder) || "N/A",
+          value: getCheckoutFieldValue(field.name, wcOrder) || "N/A",
         }));
         const template = handlebars.compile(templateSource);
         const message = template({
@@ -344,4 +343,14 @@ export async function createOrderUpdatedEmail(
     console.error("Error creating support email", error);
     return "EMAIL ERROR";
   }
+}
+
+function getCheckoutFieldValue(fieldName: string, order: WooCommerceOrder) {
+  if (["order_comments", "customer_note"].includes(fieldName))
+    return order.customerNote;
+
+  const matchingMetaData = order.metaData.find(
+    (meta) => meta.key === fieldName
+  );
+  return matchingMetaData?.value;
 }
