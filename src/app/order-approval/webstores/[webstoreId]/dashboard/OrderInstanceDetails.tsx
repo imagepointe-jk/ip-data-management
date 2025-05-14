@@ -12,6 +12,8 @@ export function OrderInstanceDetails({
   instance,
   checkoutFields,
 }: Props) {
+  const totalWithoutShipping = +order.subtotal + +order.totalTax;
+
   function getFieldValue(name: string) {
     return order.metaData.find((meta) => meta.key === name)?.value || "n/a";
   }
@@ -38,7 +40,7 @@ export function OrderInstanceDetails({
           </tbody>
         </table>
         <div>Total Tax: ${order.totalTax}</div>
-        <div>Total (w/o shipping): ${order.total}</div>
+        <div>Total (w/o shipping): ${totalWithoutShipping.toFixed(2)}</div>
       </div>
       <div>
         <div className={styles["order-details-heading"]}>
