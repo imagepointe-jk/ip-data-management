@@ -103,6 +103,9 @@ export function StepActionSettings({ step }: Props) {
                     <option key="purchaser" value="purchaser">
                       Purchaser
                     </option>,
+                    <option key="approver" value="approver">
+                      Approver
+                    </option>,
                   ]}
                 </select>
               </div>

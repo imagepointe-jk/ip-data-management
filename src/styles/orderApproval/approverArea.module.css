@@ -64,7 +64,8 @@
   margin-top: 20px;
 }
 
-.nav-button-approve:disabled {
+.nav-button-approve:disabled,
+.approve-button:disabled {
   cursor: initial;
   background-color: rgb(135, 189, 135);
 }
