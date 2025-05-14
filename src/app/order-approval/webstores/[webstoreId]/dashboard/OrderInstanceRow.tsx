@@ -4,29 +4,36 @@ import styles from "@/styles/orderApproval/approverDashboard.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 import {
+  OrderWorkflowAccessCode,
   OrderWorkflowInstance,
   OrderWorkflowStep,
   OrderWorkflowStepProceedListener,
   OrderWorkflowUser,
+  Webstore,
   WebstoreCheckoutField,
   WebstoreUserRole,
 } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { TEMP_getOrder } from "./TEMP_DATA";
 import { OrderInstanceDetails } from "./OrderInstanceDetails";
+import { getOrderApprovalOrder } from "@/fetch/client/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 
 type Props = {
   steps: (OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   })[];
-  instance: OrderWorkflowInstance;
+  instance: OrderWorkflowInstance & {
+    accessCodes: (OrderWorkflowAccessCode & { user: OrderWorkflowUser })[];
+  };
   checkoutFields: WebstoreCheckoutField[];
+  webstore: Webstore;
   roles: (WebstoreUserRole & { users: OrderWorkflowUser[] })[];
 };
 export function OrderInstanceRow({
   instance,
   checkoutFields,
   steps,
+  webstore,
   roles,
 }: Props) {
   const [order, setOrder] = useState<WooCommerceOrder | null>(null);
@@ -36,9 +43,24 @@ export function OrderInstanceRow({
 
   async function getOrderData() {
     try {
-      const order = await TEMP_getOrder(instance.wooCommerceOrderId);
-      if (!order) throw new Error("Order not found");
-      setOrder(order);
+      const accessCodeWithViewerEmail = instance.accessCodes.find(
+        (code) => code.user.email === webstore.approverDashboardViewerEmail
+      );
+      if (!accessCodeWithViewerEmail)
+        throw new Error(
+          "No access code found belonging to a user with the specified dashboard-viewing email"
+        );
+
+      const orderResponse = await getOrderApprovalOrder(
+        accessCodeWithViewerEmail.guid
+      );
+      if (!orderResponse.ok)
+        throw new Error(
+          `Response status ${orderResponse.status} when fetching order`
+        );
+      const json = await orderResponse.json();
+      const parsed = parseWooCommerceOrderJson(json);
+      setOrder(parsed);
     } catch (error) {
       console.error(error);
     }

@@ -96,4 +96,5 @@ export type WebstoreEditorData = {
   shippingMethods: {
     id: number;
   }[];
+  approverDashboardViewerEmail: string;
 };

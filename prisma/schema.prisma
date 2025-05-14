@@ -171,28 +171,29 @@ model ProductSizeOptions {
 }
 
 model Webstore {
-  id                          Int                       @id @default(autoincrement())
-  name                        String
-  organizationName            String
-  url                         String                    @unique
-  apiKey                      String //encrypted
-  apiKeyEncryptIv             String
-  apiKeyEncryptTag            String
-  apiSecret                   String //encrypted
-  apiSecretEncryptIv          String
-  apiSecretEncryptTag         String
-  salesPersonName             String                    @default("None")
-  salesPersonEmail            String                    @default("None")
-  otherSupportEmails          String? //when a customer submits a help form, the email will also go to all of these addresses
-  orderUpdatedEmails          String?
-  customOrderApprovedEmail    String?
-  useCustomOrderApprovedEmail Boolean                   @default(false)
-  shippingEmailFilename       String                    @default("NO_SHIPPING_EMAIL")
-  shippingSettings            WebstoreShippingSettings?
-  shippingMethods             WebstoreShippingMethod[]
-  workflows                   OrderWorkflow[]
-  roles                       WebstoreUserRole[]
-  checkoutFields              WebstoreCheckoutField[]
+  id                           Int                       @id @default(autoincrement())
+  name                         String
+  organizationName             String
+  url                          String                    @unique
+  apiKey                       String //encrypted
+  apiKeyEncryptIv              String
+  apiKeyEncryptTag             String
+  apiSecret                    String //encrypted
+  apiSecretEncryptIv           String
+  apiSecretEncryptTag          String
+  salesPersonName              String                    @default("None")
+  salesPersonEmail             String                    @default("None")
+  otherSupportEmails           String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails           String?
+  customOrderApprovedEmail     String?
+  useCustomOrderApprovedEmail  Boolean                   @default(false)
+  shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
+  approverDashboardViewerEmail String                    @default("NO_EMAIL")
+  shippingSettings             WebstoreShippingSettings?
+  shippingMethods              WebstoreShippingMethod[]
+  workflows                    OrderWorkflow[]
+  roles                        WebstoreUserRole[]
+  checkoutFields               WebstoreCheckoutField[]
 }
 
 model WebstoreShippingSettings {
