@@ -177,6 +177,20 @@ export function MainSettings({
         </select>
       </div>
       <div>
+        <label className="input-label">
+          Shipping Team Email Override (intended for testing only)
+        </label>
+        <input
+          type="text"
+          value={webstoreState.shippingEmailDestOverride || ""}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.shippingEmailDestOverride = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
         <label className="input-label">Approver Dashboard Viewing Email</label>
         <input
           type="text"
@@ -189,32 +203,34 @@ export function MainSettings({
         />
       </div>
       <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={webstoreState.requirePinForApproval}
-            onChange={(e) =>
-              setWebstoreState((draft) => {
-                draft.requirePinForApproval = e.target.checked;
-              })
-            }
-          />
-          Require PIN for order approval
-        </label>
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={webstoreState.allowOrderHelpRequest}
-            onChange={(e) =>
-              setWebstoreState((draft) => {
-                draft.allowOrderHelpRequest = e.target.checked;
-              })
-            }
-          />
-          Show "I need help with my order" button
-        </label>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={webstoreState.requirePinForApproval}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.requirePinForApproval = e.target.checked;
+                })
+              }
+            />
+            Require PIN for order approval
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={webstoreState.allowOrderHelpRequest}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.allowOrderHelpRequest = e.target.checked;
+                })
+              }
+            />
+            Show "I need help with my order" button
+          </label>
+        </div>
       </div>
     </div>
   );

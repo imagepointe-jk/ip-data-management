@@ -101,4 +101,5 @@ export type WebstoreEditorData = {
   approverDashboardViewerEmail: string;
   requirePinForApproval: boolean;
   allowOrderHelpRequest: boolean;
+  shippingEmailDestOverride: string | null;
 };
