@@ -26,6 +26,9 @@ export default async function Page(props: Props) {
                 },
               },
             },
+            orderBy: {
+              createdAt: "desc",
+            },
           },
           steps: {
             include: {
