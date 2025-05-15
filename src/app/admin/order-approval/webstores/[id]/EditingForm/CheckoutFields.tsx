@@ -5,12 +5,16 @@ import { checkoutFieldTypes } from "@/order-approval/checkoutFields";
 import { WebstoreEditorData } from "@/types/schema/orderApproval";
 import { Updater } from "use-immer";
 import styles from "@/styles/orderApproval/webstoreEditForm.module.css";
+import { number } from "zod";
 
 type Props = {
   webstoreState: WebstoreEditorData;
   setWebstoreState: Updater<WebstoreEditorData>;
 };
 export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
+  const sortedCheckoutFields = [...webstoreState.checkoutFields];
+  sortedCheckoutFields.sort((a, b) => b.order - a.order);
+
   async function onClickAddCheckoutField() {
     const newField = await createWebstoreCheckoutField(webstoreState.id);
     setWebstoreState((draft) => {
@@ -62,11 +66,18 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
     });
   }
 
+  function onChangeCheckoutFieldOrder(id: number, val: number) {
+    setWebstoreState((draft) => {
+      const field = draft.checkoutFields.find((field) => field.id === id);
+      if (field) field.order = val;
+    });
+  }
+
   return (
     <>
       <h2>Checkout Fields</h2>
       <GenericTable
-        dataset={webstoreState.checkoutFields}
+        dataset={sortedCheckoutFields}
         columns={[
           {
             headerName: "Name",
@@ -135,6 +146,18 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
                 checked={data.userCanEdit}
                 onChange={(e) =>
                   onChangeCheckoutFieldEditable(data.id, e.target.checked)
+                }
+              />
+            ),
+          },
+          {
+            headerName: "Sorting",
+            createCell: (data) => (
+              <input
+                type="number"
+                value={data.order}
+                onChange={(e) =>
+                  onChangeCheckoutFieldOrder(data.id, +e.target.value)
                 }
               />
             ),

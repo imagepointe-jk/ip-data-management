@@ -222,6 +222,7 @@ model WebstoreCheckoutField {
   type        String
   options     String?
   userCanEdit Boolean  @default(true)
+  order       Int      @default(0) //sorting order
   webstore    Webstore @relation(fields: [webstoreId], references: [id])
 }
 

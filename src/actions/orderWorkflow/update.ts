@@ -147,6 +147,7 @@ export async function updateWebstore(
           type: field.type,
           options: field.options,
           userCanEdit: field.userCanEdit,
+          order: field.order,
         },
       })
     ),
