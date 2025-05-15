@@ -37,6 +37,8 @@ export type ChangeShippingInfoParams = {
   lastName?: string;
   address1?: string;
   address2?: string;
+  company?: string;
+  phone?: string;
   city?: string;
   state?: string;
   postcode?: string;
@@ -248,6 +250,9 @@ export function OrderEditForm({
         draft.shipping.address1 = changes.address1;
       if (changes.address2 !== undefined)
         draft.shipping.address2 = changes.address2;
+      if (changes.company !== undefined)
+        draft.shipping.company = changes.company;
+      if (changes.phone !== undefined) draft.shipping.phone = changes.phone;
       if (changes.city !== undefined) draft.shipping.city = changes.city;
       if (changes.state !== undefined) draft.shipping.state = changes.state;
       if (changes.postcode !== undefined)

@@ -18,7 +18,6 @@ export function CheckoutFields({
   metaDataToAdd,
   setMetaDataToAdd,
 }: Props) {
-  console.log(fields);
   function onChangeField(key: string, value: string) {
     //handle comments field differently since WooCommerce doesn't put it in the metadata
     if (key === "order_comments") {

@@ -67,6 +67,30 @@ export function ShippingInfo({ order, onChangeShippingInfo }: Props) {
           />
         </div>
         <div>
+          <label htmlFor="company">Company</label>
+          <input
+            type="text"
+            name="company"
+            id="company"
+            onChange={(e) =>
+              onChangeShippingInfo({ company: e.target.value }, true)
+            }
+            value={order.shipping.company}
+          />
+        </div>
+        <div>
+          <label htmlFor="phone">Phone Number</label>
+          <input
+            type="text"
+            name="phone"
+            id="phone"
+            onChange={(e) =>
+              onChangeShippingInfo({ phone: e.target.value }, true)
+            }
+            value={order.shipping.phone}
+          />
+        </div>
+        <div>
           <label htmlFor="city">City</label>
           <input
             type="text"
