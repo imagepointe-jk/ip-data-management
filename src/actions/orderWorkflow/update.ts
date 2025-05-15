@@ -77,6 +77,7 @@ export async function updateWebstore(
     changeApiKey,
     changeApiSecret,
     approverDashboardViewerEmail,
+    requirePinForApproval,
   } = data;
 
   const {
@@ -118,6 +119,7 @@ export async function updateWebstore(
           set: shippingMethods.map((method) => ({ id: method.id })),
         },
         approverDashboardViewerEmail,
+        requirePinForApproval,
       },
     }),
     prisma.webstoreShippingSettings.update({

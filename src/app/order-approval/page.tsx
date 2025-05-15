@@ -156,6 +156,7 @@ function Main() {
               loading={loading}
               error={actionAttempted && !loading && !actionSuccess}
               success={actionSuccess}
+              showPIN={serverData.requirePinForApproval}
               doApprove={doApprove}
             />
           )}

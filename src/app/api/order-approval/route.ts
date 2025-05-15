@@ -40,6 +40,9 @@ export async function GET(request: NextRequest) {
           foundAccessCode.workflowInstance.approvedByUser?.name,
         deniedByUserName: foundAccessCode.workflowInstance.deniedByUser?.name,
         instanceStatus: foundAccessCode.workflowInstance.status,
+        requirePinForApproval:
+          foundAccessCode.workflowInstance.parentWorkflow.webstore
+            .requirePinForApproval,
       },
       easyCorsInit
     );

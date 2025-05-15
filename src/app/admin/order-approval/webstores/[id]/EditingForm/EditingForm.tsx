@@ -25,6 +25,7 @@ const blankState: WebstoreEditorData = {
   shippingSettings: null,
   shippingEmailFilename: "NO_SHIPPING_EMAIL",
   approverDashboardViewerEmail: "",
+  requirePinForApproval: true,
 };
 type Props = {
   webstoreData: WebstoreEditorData | null;

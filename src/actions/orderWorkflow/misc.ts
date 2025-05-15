@@ -36,11 +36,23 @@ export async function receiveWorkflowEvent(
       },
       include: {
         user: true,
+        workflowInstance: {
+          include: {
+            parentWorkflow: {
+              include: {
+                webstore: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!foundAccessCode) throw new Error("Access code not found.");
 
-    const requiresPin = type === "approve" || type === "deny";
+    const requiresPin =
+      foundAccessCode.workflowInstance.parentWorkflow.webstore
+        .requirePinForApproval &&
+      (type === "approve" || type === "deny");
     if (requiresPin && foundAccessCode.simplePin !== `${pin}`)
       throw new Error("Invalid PIN.");
 

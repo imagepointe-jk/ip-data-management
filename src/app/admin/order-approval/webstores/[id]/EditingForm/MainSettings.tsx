@@ -22,7 +22,7 @@ export function MainSettings({
   const creatingNew = webstoreState.id === 0;
 
   return (
-    <>
+    <div className="vert-flex-group">
       <div>
         <h2 style={{ marginBottom: 0 }}>Name</h2>
         <input
@@ -188,6 +188,20 @@ export function MainSettings({
           }
         />
       </div>
-    </>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={webstoreState.requirePinForApproval}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.requirePinForApproval = e.target.checked;
+              })
+            }
+          />
+          Require PIN for order approval
+        </label>
+      </div>
+    </div>
   );
 }

@@ -189,6 +189,7 @@ model Webstore {
   useCustomOrderApprovedEmail  Boolean                   @default(false)
   shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
   approverDashboardViewerEmail String                    @default("NO_EMAIL")
+  requirePinForApproval        Boolean                   @default(true)
   shippingSettings             WebstoreShippingSettings?
   shippingMethods              WebstoreShippingMethod[]
   workflows                    OrderWorkflow[]
