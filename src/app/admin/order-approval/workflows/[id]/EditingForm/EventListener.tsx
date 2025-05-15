@@ -117,11 +117,16 @@ export function EventListener({ stepId, listener }: Props) {
           value={listener.from}
           onChange={(e) => onChangeFromValue(e.target.value)}
         >
-          {workflowUsers.map((user) => (
-            <option key={user.id} value={user.email}>
-              {user.name}
-            </option>
-          ))}
+          {[
+            ...workflowUsers.map((user) => (
+              <option key={user.id} value={user.email}>
+                {user.name}
+              </option>
+            )),
+            <option key={"approver"} value="approver">
+              Approver
+            </option>,
+          ]}
         </select>{" "}
       </div>
       <div>

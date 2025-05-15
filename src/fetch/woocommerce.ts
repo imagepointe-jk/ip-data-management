@@ -81,6 +81,7 @@ export type OrderUpdateData = {
   };
   line_items: { id: number; quantity?: number; total?: string }[];
   shipping_lines: { id: number; method_title: string }[];
+  meta_data: { id: number; key: string; value: string }[];
 };
 export async function updateOrder(
   storeUrl: string,
@@ -102,6 +103,31 @@ export async function updateOrder(
   };
 
   return fetch(`${storeUrl}/wp-json/wc/v3/orders/${data.id}`, requestOptions);
+}
+
+export async function addMetaDataToOrder(
+  orderId: number,
+  storeUrl: string,
+  storeKey: string,
+  storeSecret: string,
+  data: { key: string; value: string }[]
+) {
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      meta_data: data,
+    }),
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/orders/${orderId}`, requestOptions);
 }
 
 // export async function cancelOrder(

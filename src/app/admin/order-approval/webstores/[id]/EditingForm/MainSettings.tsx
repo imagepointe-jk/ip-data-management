@@ -176,6 +176,18 @@ export function MainSettings({
           ))}
         </select>
       </div>
+      <div>
+        <label className="input-label">Approver Dashboard Viewing Email</label>
+        <input
+          type="text"
+          value={webstoreState.approverDashboardViewerEmail}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.approverDashboardViewerEmail = e.target.value;
+            })
+          }
+        />
+      </div>
     </>
   );
 }

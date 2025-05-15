@@ -43,6 +43,10 @@ export type ChangeShippingInfoParams = {
   country?: string;
   method?: string;
 };
+export type MetaData = {
+  key: string;
+  value: string;
+};
 type Props = {
   orderId: number;
   storeUrl: string;
@@ -90,12 +94,18 @@ export function OrderEditForm({
       method.total !== null &&
       (method.statusCode === 200 || method.statusCode === 429)
   );
+  const [metaDataToAdd, setMetaDataToAdd] = useState<MetaData[]>([]);
 
   //wrapper used to force all changes by the user to mark the order as modified
   function modifyOrder(
     arg: (WooCommerceOrder | null) | DraftFunction<WooCommerceOrder | null>
   ) {
     setOrder(arg);
+    setModifiedByUser(true);
+  }
+
+  function modifyMetaDataToAdd(metaData: MetaData[]) {
+    setMetaDataToAdd(metaData);
     setModifiedByUser(true);
   }
 
@@ -134,10 +144,13 @@ export function OrderEditForm({
             address_2: order.shipping.address2,
           },
           shipping_lines: newShippingLines,
+          meta_data: order.metaData,
         },
+        metaDataToAdd,
         userEmail || ""
       );
       setOrder(updated);
+      setMetaDataToAdd([]);
       setModifiedByUser(false);
 
       setRemoveLineItemIds([]);
@@ -290,6 +303,8 @@ export function OrderEditForm({
                       fields={checkoutFields}
                       order={order}
                       setOrder={modifyOrder}
+                      metaDataToAdd={metaDataToAdd}
+                      setMetaDataToAdd={modifyMetaDataToAdd}
                     />
                     {permissions?.shipping?.method === "edit" && (
                       <ShippingMethods

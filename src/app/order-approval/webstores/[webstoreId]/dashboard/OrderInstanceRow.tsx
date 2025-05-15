@@ -4,59 +4,89 @@ import styles from "@/styles/orderApproval/approverDashboard.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
 import {
+  OrderWorkflowAccessCode,
   OrderWorkflowInstance,
   OrderWorkflowStep,
   OrderWorkflowStepProceedListener,
   OrderWorkflowUser,
+  Webstore,
   WebstoreCheckoutField,
   WebstoreUserRole,
 } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { TEMP_getOrder } from "./TEMP_DATA";
 import { OrderInstanceDetails } from "./OrderInstanceDetails";
+import { getOrderApprovalOrder } from "@/fetch/client/woocommerce";
+import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { IframeLink } from "@/components/IframeHelper/IframeLink";
 
+type WaitingOnUser = {
+  name: string;
+  email: string;
+};
 type Props = {
   steps: (OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   })[];
-  instance: OrderWorkflowInstance;
+  instance: OrderWorkflowInstance & {
+    accessCodes: (OrderWorkflowAccessCode & { user: OrderWorkflowUser })[];
+  };
   checkoutFields: WebstoreCheckoutField[];
+  webstore: Webstore;
   roles: (WebstoreUserRole & { users: OrderWorkflowUser[] })[];
 };
 export function OrderInstanceRow({
   instance,
   checkoutFields,
   steps,
+  webstore,
   roles,
 }: Props) {
   const [order, setOrder] = useState<WooCommerceOrder | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [expandedOnce, setExpandedOnce] = useState(false);
   const [statusText, setStatusText] = useState("");
+  const [waitingOnUser, setWaitingOnUser] = useState<WaitingOnUser>();
+  const dashboardViewerAccessCode = instance.accessCodes.find(
+    (code) => code.user.email === webstore.approverDashboardViewerEmail
+  )?.guid;
+  const waitingOnDashboardViewer =
+    waitingOnUser &&
+    waitingOnUser.email === webstore.approverDashboardViewerEmail;
 
   async function getOrderData() {
     try {
-      const order = await TEMP_getOrder(instance.wooCommerceOrderId);
-      if (!order) throw new Error("Order not found");
-      setOrder(order);
+      const accessCodeWithViewerEmail = instance.accessCodes.find(
+        (code) => code.user.email === webstore.approverDashboardViewerEmail
+      );
+      if (!accessCodeWithViewerEmail)
+        throw new Error(
+          "No access code found belonging to a user with the specified dashboard-viewing email"
+        );
+
+      const orderResponse = await getOrderApprovalOrder(
+        accessCodeWithViewerEmail.guid
+      );
+      if (!orderResponse.ok)
+        throw new Error(
+          `Response status ${orderResponse.status} when fetching order`
+        );
+      const json = await orderResponse.json();
+      const parsed = parseWooCommerceOrderJson(json);
+      setOrder(parsed);
     } catch (error) {
+      setStatusText("Workflow error.");
       console.error(error);
     }
   }
 
-  function findUserNameInRoles(email: string) {
-    const roleWithFromAddress = roles.find(
+  function findUserInRoles(email: string) {
+    const roleWithEmail = roles.find(
       (role) => !!role.users.find((user) => user.email === email)
     );
-    return (
-      roleWithFromAddress?.users.find((user) => user.email === email)?.name ||
-      "USER_NOT_FOUND"
-    );
+    return roleWithEmail?.users.find((user) => user.email === email);
   }
 
   async function resolveStatus() {
-    if (statusText) return;
-
     try {
       const step = steps.find((step) => step.order === instance.currentStep);
       if (!step)
@@ -73,9 +103,9 @@ export function OrderInstanceRow({
 
       //if an explicit email address, look for the user's name in the webstore roles
       if (firstProceedListener.from !== "approver") {
-        setStatusText(
-          `Waiting on ${findUserNameInRoles(firstProceedListener.from)}`
-        );
+        const userWithEmail = findUserInRoles(firstProceedListener.from);
+        setWaitingOnUser(userWithEmail);
+        setStatusText(`Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`);
         return;
       }
 
@@ -90,7 +120,9 @@ export function OrderInstanceRow({
       const approverEmail = order.metaData.find(
         (meta) => meta.key === "approver"
       )?.value;
-      setStatusText(`Waiting on ${findUserNameInRoles(`${approverEmail}`)}`);
+      const userWithEmail = findUserInRoles(`${approverEmail}`);
+      setWaitingOnUser(userWithEmail);
+      setStatusText(`Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`);
     } catch (error) {
       console.error(error);
       setStatusText("Workflow error.");
@@ -125,9 +157,22 @@ export function OrderInstanceRow({
           {statusText}
         </div>
         <div className={styles["column-4"]}>
-          <button onClick={() => setExpanded(!expanded)}>
-            {expanded ? "Hide" : "View"}
-          </button>
+          {waitingOnUser && (
+            <>
+              {!waitingOnDashboardViewer && (
+                <button onClick={() => setExpanded(!expanded)}>
+                  {expanded ? "Hide" : "View"}
+                </button>
+              )}
+              {waitingOnDashboardViewer && (
+                <IframeLink
+                  href={`${webstore.url}/order-approval?code=${dashboardViewerAccessCode}`}
+                >
+                  Edit
+                </IframeLink>
+              )}
+            </>
+          )}
         </div>
       </div>
       {order === null && (

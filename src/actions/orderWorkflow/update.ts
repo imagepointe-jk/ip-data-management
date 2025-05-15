@@ -1,7 +1,11 @@
 "use server";
 
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
-import { OrderUpdateData, updateOrder } from "@/fetch/woocommerce";
+import {
+  addMetaDataToOrder,
+  OrderUpdateData,
+  updateOrder,
+} from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { handleOrderUpdated } from "@/order-approval/main";
 import { UnwrapPromise } from "@/types/schema/misc";
@@ -72,6 +76,7 @@ export async function updateWebstore(
     shippingSettings,
     changeApiKey,
     changeApiSecret,
+    approverDashboardViewerEmail,
   } = data;
 
   const {
@@ -112,6 +117,7 @@ export async function updateWebstore(
         shippingMethods: {
           set: shippingMethods.map((method) => ({ id: method.id })),
         },
+        approverDashboardViewerEmail,
       },
     }),
     prisma.webstoreShippingSettings.update({
@@ -134,6 +140,7 @@ export async function updateWebstore(
           label: field.label,
           type: field.type,
           options: field.options,
+          userCanEdit: field.userCanEdit,
         },
       })
     ),
@@ -172,6 +179,7 @@ export async function setUserEmail(id: number, email: string) {
 export async function updateOrderAction(
   storeUrl: string,
   updateData: OrderUpdateData,
+  metaDataToAdd: { key: string; value: string }[],
   userEmail: string //the email of the user initiating the update action
 ) {
   const webstore = await prisma.webstore.findUnique({
@@ -182,6 +190,21 @@ export async function updateOrderAction(
   if (!webstore) throw new Error(`Webstore with url ${storeUrl} not found.`);
 
   const { key, secret } = decryptWebstoreData(webstore);
+
+  if (metaDataToAdd.length > 0) {
+    const addMetaDataResponse = await addMetaDataToOrder(
+      updateData.id,
+      storeUrl,
+      key,
+      secret,
+      metaDataToAdd
+    );
+    if (!addMetaDataResponse.ok)
+      throw new Error(
+        `API response code ${addMetaDataResponse.status} when trying to add metadata to order ${updateData.id} for store ${storeUrl}`
+      );
+  }
+
   const updateResponse = await updateOrder(storeUrl, key, secret, updateData);
   if (!updateResponse.ok)
     throw new Error(

@@ -10,6 +10,7 @@ import { sendEmail } from "@/utility/mail";
 import { decryptWebstoreData } from "./encryption";
 import { setOrderStatus } from "@/fetch/woocommerce";
 import { env } from "@/env";
+import { resolveDynamicUserIdentifier } from "./utility";
 
 export async function doStepAction(
   step: OrderWorkflowStep,
@@ -37,13 +38,13 @@ async function doEmailAction(
   workflowInstance: OrderWorkflowInstance
 ) {
   const { actionMessage, actionTarget, actionSubject } = step;
-  const targetPrimary =
-    actionTarget === "purchaser"
-      ? workflowInstance.purchaserEmail
-      : actionTarget;
+  const targetPrimary = await resolveDynamicUserIdentifier(
+    actionTarget,
+    workflowInstance
+  );
   if (!targetPrimary)
     throw new Error(
-      `Workflow instance ${workflowInstance.id} tried to send an email to an invalid target!`
+      `Workflow instance ${workflowInstance.id} tried to send an email to invalid target "${actionTarget}"!`
     );
   const otherTargets = step.otherActionTargets
     ? step.otherActionTargets.split(";")

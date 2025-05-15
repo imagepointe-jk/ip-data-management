@@ -4,6 +4,7 @@ import {
   getWebstoreWithIncludes,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
+import { WebstoreCheckoutField } from "@prisma/client";
 
 // export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
 // const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
@@ -58,6 +59,7 @@ export const orderApprovalServerDataSchema = z.object({
       label: z.string(),
       type: z.string(),
       options: z.string().nullable(),
+      userCanEdit: z.boolean(),
     })
   ),
 });
@@ -86,13 +88,7 @@ export type WebstoreEditorData = {
   otherSupportEmails: string | null;
   orderUpdatedEmails: string | null;
   shippingEmailFilename: string;
-  checkoutFields: {
-    id: number;
-    name: string;
-    label: string;
-    type: string;
-    options: string | null;
-  }[];
+  checkoutFields: WebstoreCheckoutField[];
   shippingSettings: {
     allowApproverChangeMethod: boolean;
     allowUpsToCanada: boolean;
@@ -100,4 +96,5 @@ export type WebstoreEditorData = {
   shippingMethods: {
     id: number;
   }[];
+  approverDashboardViewerEmail: string;
 };
