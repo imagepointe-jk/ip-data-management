@@ -63,6 +63,7 @@ type Props = {
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
+    showOrderHelpButton?: boolean;
   };
   shippingMethods: string[];
   userEmail?: string; //the email of the user accessing the order view
@@ -347,13 +348,15 @@ export function OrderEditForm({
                       title="Some values may be out-of-sync. Save changes to update."
                     />
                   )}
-                  <button
-                    className={styles["help-button"]}
-                    onClick={() => setHelpMode(true)}
-                  >
-                    <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
-                    my order
-                  </button>
+                  {special?.showOrderHelpButton && (
+                    <button
+                      className={styles["help-button"]}
+                      onClick={() => setHelpMode(true)}
+                    >
+                      <FontAwesomeIcon icon={faQuestionCircle} /> I need help
+                      with my order
+                    </button>
+                  )}
                 </div>
               </>
             )}

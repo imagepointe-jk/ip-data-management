@@ -43,6 +43,9 @@ export async function GET(request: NextRequest) {
         requirePinForApproval:
           foundAccessCode.workflowInstance.parentWorkflow.webstore
             .requirePinForApproval,
+        allowOrderHelpRequest:
+          foundAccessCode.workflowInstance.parentWorkflow.webstore
+            .allowOrderHelpRequest,
       },
       easyCorsInit
     );

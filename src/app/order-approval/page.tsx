@@ -188,6 +188,7 @@ function Main() {
                 }}
                 special={{
                   allowUpsShippingToCanada: serverData.allowUpsToCanada,
+                  showOrderHelpButton: serverData.allowOrderHelpRequest,
                 }}
                 userEmail={serverData.userEmail}
                 showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet

@@ -190,6 +190,7 @@ model Webstore {
   shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
   approverDashboardViewerEmail String                    @default("NO_EMAIL")
   requirePinForApproval        Boolean                   @default(true)
+  allowOrderHelpRequest        Boolean                   @default(true) //whether to allow approvers to request assistance with an order using the "I need help" button in the approver area
   shippingSettings             WebstoreShippingSettings?
   shippingMethods              WebstoreShippingMethod[]
   workflows                    OrderWorkflow[]

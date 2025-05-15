@@ -78,6 +78,7 @@ export async function updateWebstore(
     changeApiSecret,
     approverDashboardViewerEmail,
     requirePinForApproval,
+    allowOrderHelpRequest,
   } = data;
 
   const {
@@ -120,6 +121,7 @@ export async function updateWebstore(
         },
         approverDashboardViewerEmail,
         requirePinForApproval,
+        allowOrderHelpRequest,
       },
     }),
     prisma.webstoreShippingSettings.update({

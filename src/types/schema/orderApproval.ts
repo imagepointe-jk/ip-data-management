@@ -52,6 +52,7 @@ export const orderApprovalServerDataSchema = z.object({
   approvedByUserName: z.string().optional(),
   instanceStatus: z.string(),
   requirePinForApproval: z.boolean(),
+  allowOrderHelpRequest: z.boolean(),
   userEmail: z.string(), //the email of the user associated with the provided access code
   checkoutFields: z.array(
     z.object({
@@ -99,4 +100,5 @@ export type WebstoreEditorData = {
   }[];
   approverDashboardViewerEmail: string;
   requirePinForApproval: boolean;
+  allowOrderHelpRequest: boolean;
 };

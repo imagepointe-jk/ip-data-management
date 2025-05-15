@@ -202,6 +202,20 @@ export function MainSettings({
           Require PIN for order approval
         </label>
       </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={webstoreState.allowOrderHelpRequest}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.allowOrderHelpRequest = e.target.checked;
+              })
+            }
+          />
+          Show "I need help with my order" button
+        </label>
+      </div>
     </div>
   );
 }
