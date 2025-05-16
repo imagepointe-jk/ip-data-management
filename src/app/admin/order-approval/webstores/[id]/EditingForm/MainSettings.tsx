@@ -228,7 +228,7 @@ export function MainSettings({
                 })
               }
             />
-            Show "I need help with my order" button
+            Show &quot;I need help with my order&quot; button
           </label>
         </div>
       </div>
