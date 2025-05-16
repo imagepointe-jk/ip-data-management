@@ -165,6 +165,7 @@ function Main() {
               loading={loading}
               onClickSubmit={doDeny}
               success={actionSuccess}
+              showPIN={serverData.requirePinForApproval}
               error={actionAttempted && !loading && !actionSuccess}
             />
           )}
