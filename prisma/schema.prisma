@@ -15,6 +15,7 @@ model User {
   name         String        @unique
   email        String        @unique
   passwordHash String
+  role         String        @default("user") //this system is very primitive right now but no more than this is needed yet
   startedSyncs HubSpotSync[]
 }
 
