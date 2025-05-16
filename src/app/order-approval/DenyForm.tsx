@@ -8,11 +8,13 @@ type Props = {
   onClickSubmit: (reason: string, pin: string) => void;
   loading: boolean;
   success: boolean;
+  showPIN: boolean;
   error: boolean;
 };
 export default function DenyForm({
   loading,
   success,
+  showPIN,
   onClickSubmit,
   error,
 }: Props) {
@@ -42,16 +44,18 @@ export default function DenyForm({
             value={text}
             onChange={(e) => setText(e.target.value)}
           ></textarea>
-          <label htmlFor="pin" className={styles["pin-container"]}>
-            Enter PIN:{" "}
-            <input
-              type="text"
-              name="pin"
-              id="pin"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-            />
-          </label>
+          {showPIN && (
+            <label htmlFor="pin" className={styles["pin-container"]}>
+              Enter PIN:{" "}
+              <input
+                type="text"
+                name="pin"
+                id="pin"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+              />
+            </label>
+          )}
           <div>
             <button
               onClick={() => onClickSubmit(text, pin)}
