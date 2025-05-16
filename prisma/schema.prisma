@@ -188,7 +188,10 @@ model Webstore {
   customOrderApprovedEmail     String?
   useCustomOrderApprovedEmail  Boolean                   @default(false)
   shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
+  shippingEmailDestOverride    String? //overrides the IP shipping team email defined in env variables; useful for testing so the email doesn't actually go to the team
   approverDashboardViewerEmail String                    @default("NO_EMAIL")
+  requirePinForApproval        Boolean                   @default(true)
+  allowOrderHelpRequest        Boolean                   @default(true) //whether to allow approvers to request assistance with an order using the "I need help" button in the approver area
   shippingSettings             WebstoreShippingSettings?
   shippingMethods              WebstoreShippingMethod[]
   workflows                    OrderWorkflow[]
@@ -219,6 +222,7 @@ model WebstoreCheckoutField {
   type        String
   options     String?
   userCanEdit Boolean  @default(true)
+  order       Int      @default(0) //sorting order
   webstore    Webstore @relation(fields: [webstoreId], references: [id])
 }
 

@@ -8,12 +8,14 @@ type Props = {
   doApprove: (comments: string | null, pin: string) => void;
   loading: boolean;
   success: boolean;
+  showPIN: boolean;
   error: boolean;
 };
 export default function ApproveForm({
   loading,
   success,
   doApprove,
+  showPIN,
   error,
 }: Props) {
   const [acknowledged, setAcknowledged] = useState(false);
@@ -44,16 +46,18 @@ export default function ApproveForm({
               ></textarea>
             </div>
           </div>
-          <label htmlFor="pin" className={styles["pin-container"]}>
-            Enter PIN:{" "}
-            <input
-              type="text"
-              name="pin"
-              id="pin"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-            />
-          </label>
+          {showPIN && (
+            <label htmlFor="pin" className={styles["pin-container"]}>
+              Enter PIN:{" "}
+              <input
+                type="text"
+                name="pin"
+                id="pin"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+              />
+            </label>
+          )}
           <label htmlFor="approve-acknowledge">
             <input
               type="checkbox"

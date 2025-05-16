@@ -51,6 +51,8 @@ export const orderApprovalServerDataSchema = z.object({
   deniedByUserName: z.string().optional(),
   approvedByUserName: z.string().optional(),
   instanceStatus: z.string(),
+  requirePinForApproval: z.boolean(),
+  allowOrderHelpRequest: z.boolean(),
   userEmail: z.string(), //the email of the user associated with the provided access code
   checkoutFields: z.array(
     z.object({
@@ -60,6 +62,7 @@ export const orderApprovalServerDataSchema = z.object({
       type: z.string(),
       options: z.string().nullable(),
       userCanEdit: z.boolean(),
+      order: z.number(),
     })
   ),
 });
@@ -97,4 +100,7 @@ export type WebstoreEditorData = {
     id: number;
   }[];
   approverDashboardViewerEmail: string;
+  requirePinForApproval: boolean;
+  allowOrderHelpRequest: boolean;
+  shippingEmailDestOverride: string | null;
 };

@@ -156,6 +156,7 @@ function Main() {
               loading={loading}
               error={actionAttempted && !loading && !actionSuccess}
               success={actionSuccess}
+              showPIN={serverData.requirePinForApproval}
               doApprove={doApprove}
             />
           )}
@@ -187,6 +188,7 @@ function Main() {
                 }}
                 special={{
                   allowUpsShippingToCanada: serverData.allowUpsToCanada,
+                  showOrderHelpButton: serverData.allowOrderHelpRequest,
                 }}
                 userEmail={serverData.userEmail}
                 showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet

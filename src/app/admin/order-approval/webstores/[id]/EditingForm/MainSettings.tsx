@@ -22,7 +22,7 @@ export function MainSettings({
   const creatingNew = webstoreState.id === 0;
 
   return (
-    <>
+    <div className="vert-flex-group">
       <div>
         <h2 style={{ marginBottom: 0 }}>Name</h2>
         <input
@@ -177,6 +177,20 @@ export function MainSettings({
         </select>
       </div>
       <div>
+        <label className="input-label">
+          Shipping Team Email Override (intended for testing only)
+        </label>
+        <input
+          type="text"
+          value={webstoreState.shippingEmailDestOverride || ""}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.shippingEmailDestOverride = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
         <label className="input-label">Approver Dashboard Viewing Email</label>
         <input
           type="text"
@@ -188,6 +202,36 @@ export function MainSettings({
           }
         />
       </div>
-    </>
+      <div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={webstoreState.requirePinForApproval}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.requirePinForApproval = e.target.checked;
+                })
+              }
+            />
+            Require PIN for order approval
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={webstoreState.allowOrderHelpRequest}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.allowOrderHelpRequest = e.target.checked;
+                })
+              }
+            />
+            Show &quot;I need help with my order&quot; button
+          </label>
+        </div>
+      </div>
+    </div>
   );
 }

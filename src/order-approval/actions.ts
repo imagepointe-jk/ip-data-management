@@ -87,7 +87,9 @@ async function doWorkflowApprovedAction(
     workflowInstance.parentWorkflowId
   );
   if (!parentWorkflow) throw new Error("No parent workflow");
-  const shippingEmail = getEnvVariable("IP_SHIPPING_EMAIL");
+  const shippingEmail =
+    parentWorkflow.webstore.shippingEmailDestOverride ||
+    getEnvVariable("IP_SHIPPING_EMAIL");
   const shippingMessage = await createShippingEmail(workflowInstance.id);
 
   await sendEmail(

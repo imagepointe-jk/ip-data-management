@@ -276,7 +276,11 @@ const accessCodeIncludes = {
             include: {
               shippingMethods: true,
               shippingSettings: true,
-              checkoutFields: true,
+              checkoutFields: {
+                orderBy: {
+                  order: "desc" as "asc" | "desc",
+                },
+              },
             },
           },
         },

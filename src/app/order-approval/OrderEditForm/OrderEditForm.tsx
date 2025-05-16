@@ -37,6 +37,8 @@ export type ChangeShippingInfoParams = {
   lastName?: string;
   address1?: string;
   address2?: string;
+  company?: string;
+  phone?: string;
   city?: string;
   state?: string;
   postcode?: string;
@@ -61,6 +63,7 @@ type Props = {
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
+    showOrderHelpButton?: boolean;
   };
   shippingMethods: string[];
   userEmail?: string; //the email of the user accessing the order view
@@ -248,6 +251,9 @@ export function OrderEditForm({
         draft.shipping.address1 = changes.address1;
       if (changes.address2 !== undefined)
         draft.shipping.address2 = changes.address2;
+      if (changes.company !== undefined)
+        draft.shipping.company = changes.company;
+      if (changes.phone !== undefined) draft.shipping.phone = changes.phone;
       if (changes.city !== undefined) draft.shipping.city = changes.city;
       if (changes.state !== undefined) draft.shipping.state = changes.state;
       if (changes.postcode !== undefined)
@@ -342,13 +348,15 @@ export function OrderEditForm({
                       title="Some values may be out-of-sync. Save changes to update."
                     />
                   )}
-                  <button
-                    className={styles["help-button"]}
-                    onClick={() => setHelpMode(true)}
-                  >
-                    <FontAwesomeIcon icon={faQuestionCircle} /> I need help with
-                    my order
-                  </button>
+                  {special?.showOrderHelpButton && (
+                    <button
+                      className={styles["help-button"]}
+                      onClick={() => setHelpMode(true)}
+                    >
+                      <FontAwesomeIcon icon={faQuestionCircle} /> I need help
+                      with my order
+                    </button>
+                  )}
                 </div>
               </>
             )}
