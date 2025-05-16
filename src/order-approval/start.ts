@@ -92,7 +92,7 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 
   const deduplicatedUsers = deduplicateArray(
     webstore.roles.flatMap((role) => role.users),
-    (user) => user.id
+    (user) => `${user.id}`
   );
   if (deduplicatedUsers.length === 0)
     throw new Error(`No approver was found for webstore ${webstore.name}`);

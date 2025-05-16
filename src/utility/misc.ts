@@ -270,12 +270,15 @@ export function getConfinedRectDimensions(
   }
 }
 
-//provided an array of items and a way to get a unique ID per item, returns a new array without any objects that have the same ID.
-export function deduplicateArray<T>(arr: T[], getObjectId: (obj: T) => number) {
+//provided an array of items and a way to get a unique ID per item, returns a new array without any items that have the same ID. useful for deduplicating arrays of objects.
+export function deduplicateArray<T>(
+  arr: T[],
+  getStringifiedObjectId: (obj: T) => string
+) {
   const deduplicated: T[] = [];
-  const seenIds: number[] = [];
+  const seenIds: string[] = [];
   for (const obj of arr) {
-    const id = getObjectId(obj);
+    const id = getStringifiedObjectId(obj);
     if (seenIds.includes(id)) continue;
 
     deduplicated.push(obj);

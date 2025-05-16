@@ -51,6 +51,9 @@ function Main() {
     : serverData?.deniedByUserName
     ? "denied"
     : "INVALID_STATUS";
+  const waitingOnThisUser = serverData?.waitingOnUserEmails.find(
+    (email) => email === serverData.userEmail
+  );
 
   async function doApprove(comments: string | null, pin: string) {
     try {
@@ -131,14 +134,11 @@ function Main() {
     getServerData(accessCodeInParams);
   }, [accessCodeInParams]);
 
-  if (serverData?.instanceStatus === "finished") {
+  if (serverData && !waitingOnThisUser) {
     return (
       <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
-        Order {serverData?.orderId} has already been {instanceFinishedStatus} by{" "}
-        {serverData?.approvedByUserName ||
-          serverData?.deniedByUserName ||
-          "USER_NOT_FOUND"}
-        .{" "}
+        Order {serverData?.orderId} does not require any action from you at this
+        time.
       </div>
     );
   }

@@ -51,6 +51,7 @@ export const orderApprovalServerDataSchema = z.object({
   deniedByUserName: z.string().optional(),
   approvedByUserName: z.string().optional(),
   instanceStatus: z.string(),
+  waitingOnUserEmails: z.array(z.string()),
   requirePinForApproval: z.boolean(),
   allowOrderHelpRequest: z.boolean(),
   userEmail: z.string(), //the email of the user associated with the provided access code

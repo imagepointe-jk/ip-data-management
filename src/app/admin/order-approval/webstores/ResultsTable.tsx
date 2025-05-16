@@ -54,7 +54,7 @@ export function ResultsTable({ webstores }: Props) {
           createCell: (webstore) => {
             const deduplicatedUsers = deduplicateArray(
               webstore.roles.flatMap((role) => role.users),
-              (user) => user.id
+              (user) => `${user.id}`
             );
             return (
               <>
