@@ -45,7 +45,7 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   const toast = useToast();
   const workflowUsers = deduplicateArray(
     workflowState.webstore.roles.flatMap((role) => role.users),
-    (user) => user.id
+    (user) => `${user.id}`
   );
 
   //children are forced to use this wrapper for the default immer setstate function.

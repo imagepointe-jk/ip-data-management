@@ -25,7 +25,7 @@ export function UserResultsTable({ webstore }: Props) {
   const toast = useToast();
   const sortedUsers = [...webstore.roles.flatMap((role) => role.users)];
   sortedUsers.sort((a, b) => a.id - b.id);
-  const uniqueUsers = deduplicateArray(sortedUsers, (user) => user.id);
+  const uniqueUsers = deduplicateArray(sortedUsers, (user) => `${user.id}`);
   // const sortedUsers = [...webstore.userRoles.map((role) => role.user)];
   // sortedUsers.sort((a, b) => a.id - b.id);
 
