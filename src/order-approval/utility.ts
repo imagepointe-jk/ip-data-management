@@ -7,6 +7,7 @@ import { decryptWebstoreData } from "./encryption";
 import { getOrder } from "@/fetch/woocommerce";
 import { prisma } from "../../prisma/client";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 
 //dynamic values like "purchaser" and "approver" can be used for action targets, event listener "from" values, etc.
 export async function resolveDynamicUserIdentifier(
@@ -48,15 +49,17 @@ export async function resolveDynamicUserIdentifier(
   return approverEmail;
 }
 
-//each listener could potentially have a dynamnic "from" value such as "approver", so look at each listener, resolve its "from" value as needed, and check if it matches the source
-export async function findProceedListenerMatchingSource(
+//each listener could potentially have a dynamnic "from" value such as "approver", so look at each listener, resolve its "from" value as needed, and check if it matches the source and event type
+export async function matchProceedListenerToEvent(
   step: OrderWorkflowStep & {
     proceedListeners: OrderWorkflowStepProceedListener[];
   },
   workflowInstance: OrderWorkflowInstance,
-  source: string
+  source: string,
+  type: OrderWorkflowEventType
 ) {
   for (const listener of step.proceedListeners) {
+    if (listener.type !== type) continue;
     const resolvedFrom = await resolveDynamicUserIdentifier(
       listener.from,
       workflowInstance

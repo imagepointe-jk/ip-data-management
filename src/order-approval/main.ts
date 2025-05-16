@@ -15,7 +15,7 @@ import { sendEmail } from "@/utility/mail";
 import { OrderWorkflowInstance } from "@prisma/client";
 import { doStepAction } from "./actions";
 import { createOrderUpdatedEmail } from "./mail/mail";
-import { findProceedListenerMatchingSource } from "./utility";
+import { matchProceedListenerToEvent } from "./utility";
 
 //! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
@@ -50,10 +50,11 @@ export async function handleWorkflowEvent(
   }
 
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstanceId);
-  const matchingListener = await findProceedListenerMatchingSource(
+  const matchingListener = await matchProceedListenerToEvent(
     currentStep,
     workflowInstance,
-    source
+    source,
+    type
   );
   if (matchingListener) {
     await handleWorkflowEventDataBeforeProceeding(
