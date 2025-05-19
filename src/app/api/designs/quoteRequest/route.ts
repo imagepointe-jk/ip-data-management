@@ -36,19 +36,19 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof AppError) {
       error.serverPrint();
-      return Response.json(message(error.clientMessage), {
+      return NextResponse.json(message(error.clientMessage), {
         ...easyCorsInit,
         status: error.statusCode,
       });
     } else {
-      return Response.json(message("Unknown error."), {
+      return NextResponse.json(message("Unknown error."), {
         ...easyCorsInit,
         status: INTERNAL_SERVER_ERROR,
       });
     }
   }
 
-  return new Response(null, { ...easyCorsInit, status: 200 });
+  return new NextResponse(null, { ...easyCorsInit, status: 200 });
 }
 
 //accommodate the browser's preflight request
