@@ -3,6 +3,8 @@ import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
 import { ManualInstanceTrigger } from "./ManualInstanceTrigger";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{
     id: string;
