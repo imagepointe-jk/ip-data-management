@@ -9,6 +9,12 @@ import {
 } from "@/utility/statusCodes";
 import { NextRequest, NextResponse } from "next/server";
 
+const corsHeaders = new Headers({
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+});
+
 export async function POST(request: NextRequest) {
   try {
     const password = process.env.QUOTE_REQUEST_AUTH_PASSWORD;
@@ -36,22 +42,22 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof AppError) {
       error.serverPrint();
-      return Response.json(message(error.clientMessage), {
-        ...easyCorsInit,
+      return NextResponse.json(message(error.clientMessage), {
+        headers: corsHeaders,
         status: error.statusCode,
       });
     } else {
-      return Response.json(message("Unknown error."), {
-        ...easyCorsInit,
+      return NextResponse.json(message("Unknown error."), {
+        headers: corsHeaders,
         status: INTERNAL_SERVER_ERROR,
       });
     }
   }
 
-  return new Response(null, { ...easyCorsInit, status: 200 });
+  return new NextResponse(null, { headers: corsHeaders, status: 200 });
 }
 
 //accommodate the browser's preflight request
 export async function OPTIONS() {
-  return new NextResponse(null, { ...easyCorsInit, status: 204 });
+  return new NextResponse(null, { headers: corsHeaders, status: 204 });
 }
