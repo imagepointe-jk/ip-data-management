@@ -29,6 +29,11 @@ export default async function Page(props: Props) {
             orderBy: {
               createdAt: "desc",
             },
+            where: {
+              status: {
+                not: "finished",
+              },
+            },
           },
           steps: {
             include: {
