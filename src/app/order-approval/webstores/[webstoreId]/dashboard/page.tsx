@@ -58,7 +58,7 @@ export default async function Page(props: Props) {
   return (
     <IframeHelperProvider>
       <div className={styles["main"]}>
-        <h1>Dashboard for webstore {params.webstoreId}</h1>
+        <h1>Pending Orders</h1>
         <div>
           <div className={styles["headers-container"]}>
             <div className={`${styles["header"]} ${styles["column-1"]}`}>
