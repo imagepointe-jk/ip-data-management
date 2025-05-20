@@ -84,6 +84,11 @@ export default async function Page(props: Props) {
               />
             ))}
           </div>
+          {workflow.instances.length === 0 && (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              No orders waiting for approval.
+            </div>
+          )}
         </div>
       </div>
     </IframeHelperProvider>
