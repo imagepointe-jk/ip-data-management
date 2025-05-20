@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
         status: error.statusCode,
       });
     } else {
+      console.error(error);
       return NextResponse.json(message("Unknown error."), {
         headers: corsHeaders,
         status: INTERNAL_SERVER_ERROR,
