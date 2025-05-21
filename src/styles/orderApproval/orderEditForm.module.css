@@ -51,8 +51,12 @@
 .table-scroll {
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid gray;
   margin: 10px 0;
+}
+
+.table-scroll,
+.line-items-mobile-container {
+  border: 1px solid gray;
 }
 
 .table-scroll input {
@@ -130,7 +134,7 @@ td.line-item-x-container {
   padding: 10px;
   border-radius: 10px;
   border: 1px solid gray;
-  min-width: 320px;
+  min-width: 275px;
   max-width: 370px;
   min-height: 170px;
 }
@@ -270,6 +274,28 @@ td.line-item-x-container {
   font-size: 0.8rem;
 }
 
+.line-item-mobile {
+  display: flex;
+}
+
+.line-item-mobile-main {
+  display: flex;
+}
+
+.line-item-mobile-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.line-item-mobile-price {
+  font-size: 1.25rem;
+}
+
+.line-item-mobile-quantity {
+  font-size: 1.25rem;
+  width: 50px;
+}
+
 @media screen and (max-width: 768px) {
   .extra-details-flex {
     flex-direction: column-reverse;
@@ -279,7 +305,16 @@ td.line-item-x-container {
 @media screen and (max-width: 500px) {
   .flex-fields > div,
   .flex-fields input,
-  .flex-fields select {
+  .flex-fields select,
+  .flex-fields textarea {
     width: 100%;
+  }
+
+  .shipping-methods-parent {
+    flex-direction: column;
+  }
+
+  .submit-row {
+    flex-direction: column;
   }
 }
