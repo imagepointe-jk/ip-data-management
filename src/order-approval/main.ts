@@ -155,6 +155,6 @@ export async function handleOrderUpdated(
   const message = await createOrderUpdatedEmail(order, webstore.name);
 
   for (const email of orderUpdatedEmails) {
-    await sendEmail(email, `Order ${order.id} updated`, message);
+    await sendEmail(email, `ORDER #${order.id} CHANGED`, message);
   }
 }
