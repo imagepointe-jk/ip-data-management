@@ -30,9 +30,10 @@ export function UserUploads() {
     const file = files[0];
     if (!file) return;
 
+    const fileExtension = file.name.split(".")[1];
     const withNewFilename = new File(
       [file],
-      `user-uploaded-design-timestamp-${Date.now()}`,
+      `user-uploaded-design-timestamp-${Date.now()}.${fileExtension}`,
       {
         type: file.type,
         lastModified: file.lastModified,

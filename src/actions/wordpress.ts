@@ -9,6 +9,7 @@ export async function uploadMediaAction(
 ) {
   try {
     const file = formData.get("file") as File;
+    console.log("Name ", file.name);
     const response = await uploadMedia(file, realMediaLibraryFolderId);
 
     const json = await response.json();
