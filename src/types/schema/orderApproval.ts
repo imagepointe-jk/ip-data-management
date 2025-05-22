@@ -64,6 +64,7 @@ export const orderApprovalServerDataSchema = z.object({
       options: z.string().nullable(),
       userCanEdit: z.boolean(),
       order: z.number(),
+      style: z.string().nullable(),
     })
   ),
 });

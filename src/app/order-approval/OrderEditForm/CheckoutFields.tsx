@@ -81,7 +81,14 @@ export function CheckoutFields({
       <h3>Additional Information</h3>
       <div className={styles["flex-fields"]}>
         {fields.map((field) => (
-          <div key={field.id}>
+          <div
+            key={field.id}
+            className={
+              field.style === "emph"
+                ? styles["checkout-field-emphasized"]
+                : undefined
+            }
+          >
             <label htmlFor={field.name}>{field.label}</label>
 
             {field.type === "text" && (

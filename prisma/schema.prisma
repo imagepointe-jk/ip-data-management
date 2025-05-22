@@ -224,6 +224,7 @@ model WebstoreCheckoutField {
   options     String?
   userCanEdit Boolean  @default(true)
   order       Int      @default(0) //sorting order
+  style       String? //not CSS; expects simple values like "emph" for a visually emphasized field
   webstore    Webstore @relation(fields: [webstoreId], references: [id])
 }
 

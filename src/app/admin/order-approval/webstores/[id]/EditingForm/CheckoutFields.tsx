@@ -73,6 +73,13 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
     });
   }
 
+  function onChangeCheckoutFieldStyle(id: number, val: string) {
+    setWebstoreState((draft) => {
+      const field = draft.checkoutFields.find((field) => field.id === id);
+      if (field) field.style = val;
+    });
+  }
+
   return (
     <>
       <h2>Checkout Fields</h2>
@@ -160,6 +167,20 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
                   onChangeCheckoutFieldOrder(data.id, +e.target.value)
                 }
               />
+            ),
+          },
+          {
+            headerName: "Style",
+            createCell: (data) => (
+              <select
+                value={data.style || ""}
+                onChange={(e) =>
+                  onChangeCheckoutFieldStyle(data.id, e.target.value)
+                }
+              >
+                <option value=""></option>
+                <option value="emph">Emphasized</option>
+              </select>
             ),
           },
           {

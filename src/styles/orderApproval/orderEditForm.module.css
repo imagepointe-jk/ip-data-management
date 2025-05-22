@@ -296,6 +296,14 @@ td.line-item-x-container {
   width: 50px;
 }
 
+.checkout-field-emphasized {
+  outline: 3px solid yellow;
+}
+
+.checkout-field-emphasized label {
+  font-weight: bold;
+}
+
 @media screen and (max-width: 768px) {
   .extra-details-flex {
     flex-direction: column-reverse;
