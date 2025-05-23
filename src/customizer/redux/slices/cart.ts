@@ -245,6 +245,8 @@ export const cartSlice = createSlice({
         text.textData.style.strokeWidth = incomingStyle.strokeWidth;
       if (incomingStyle.textDecoration !== undefined)
         text.textData.style.textDecoration = incomingStyle.textDecoration;
+      if (incomingStyle.fontFamily !== undefined)
+        text.textData.style.fontFamily = incomingStyle.fontFamily;
     },
     addProductVariation: (
       state,

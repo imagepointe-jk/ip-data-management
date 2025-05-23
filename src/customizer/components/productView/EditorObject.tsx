@@ -111,6 +111,7 @@ export function EditorObject({
           fill={textData.style?.hexCode}
           align={textData.style?.align}
           fontStyle={textData.style?.fontStyle || undefined}
+          fontFamily={textData.style?.fontFamily}
           strokeWidth={textData.style?.strokeWidth || undefined}
           textDecoration={textData.style?.textDecoration || undefined}
           stroke={textData.style?.strokeHexCode || undefined}

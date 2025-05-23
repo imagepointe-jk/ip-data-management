@@ -22,6 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import debounce from "lodash.debounce";
 import { findTextInCart } from "@/customizer/utils/find";
+import { FontSelector } from "./FontSelector";
 
 export function TextEditor() {
   const dispatch = useDispatch();
@@ -140,101 +141,108 @@ export function TextEditor() {
         ></textarea>
       </div>
       {selectedText && (
-        <div className={styles["styles-container"]}>
-          <div>
-            Style
-            <div className={styles["button-row"]}>
-              <button
-                className={`${
-                  selectedText.textData.style?.fontStyle?.includes("bold")
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickStyle("bold")}
-              >
-                <FontAwesomeIcon icon={faBold} />
-              </button>
-              <button
-                className={`${
-                  selectedText.textData.style?.fontStyle?.includes("italic")
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickStyle("italic")}
-              >
-                <FontAwesomeIcon icon={faItalic} />
-              </button>
-              <button
-                className={`${
-                  selectedText.textData.style?.textDecoration === "underline"
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickDecoration("underline")}
-              >
-                <FontAwesomeIcon icon={faUnderline} />
-              </button>
-              <button
-                className={`${
-                  selectedText.textData.style?.textDecoration === "line-through"
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickDecoration("line-through")}
-              >
-                <FontAwesomeIcon
-                  onClick={() => onClickDecoration("line-through")}
-                  icon={faStrikethrough}
-                />
-              </button>
-            </div>
-          </div>
-          <div>
-            Color
+        <>
+          <div className={styles["styles-container"]}>
             <div>
-              <input
-                type="color"
-                value={selectedText.textData.style?.hexCode}
-                onChange={(e) => onChangeColor(e.target.value)}
-              />
+              Style
+              <div className={styles["button-row"]}>
+                <button
+                  className={`${
+                    selectedText.textData.style?.fontStyle?.includes("bold")
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickStyle("bold")}
+                >
+                  <FontAwesomeIcon icon={faBold} />
+                </button>
+                <button
+                  className={`${
+                    selectedText.textData.style?.fontStyle?.includes("italic")
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickStyle("italic")}
+                >
+                  <FontAwesomeIcon icon={faItalic} />
+                </button>
+                <button
+                  className={`${
+                    selectedText.textData.style?.textDecoration === "underline"
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickDecoration("underline")}
+                >
+                  <FontAwesomeIcon icon={faUnderline} />
+                </button>
+                <button
+                  className={`${
+                    selectedText.textData.style?.textDecoration ===
+                    "line-through"
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickDecoration("line-through")}
+                >
+                  <FontAwesomeIcon
+                    onClick={() => onClickDecoration("line-through")}
+                    icon={faStrikethrough}
+                  />
+                </button>
+              </div>
+            </div>
+            <div>
+              Color
+              <div>
+                <input
+                  type="color"
+                  value={selectedText.textData.style?.hexCode}
+                  onChange={(e) => onChangeColor(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              Align
+              <div className={styles["button-row"]}>
+                <button
+                  className={`${
+                    selectedText.textData.style?.align === "left"
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickAlign("left")}
+                >
+                  <FontAwesomeIcon icon={faAlignLeft} />
+                </button>
+                <button
+                  className={`${
+                    selectedText.textData.style?.align === "center"
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickAlign("center")}
+                >
+                  <FontAwesomeIcon icon={faAlignCenter} />
+                </button>
+                <button
+                  className={`${
+                    selectedText.textData.style?.align === "right"
+                      ? styles["style-button-active"]
+                      : ""
+                  }`}
+                  onClick={() => onClickAlign("right")}
+                >
+                  <FontAwesomeIcon icon={faAlignRight} />
+                </button>
+              </div>
             </div>
           </div>
-          <div>
-            Align
-            <div className={styles["button-row"]}>
-              <button
-                className={`${
-                  selectedText.textData.style?.align === "left"
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickAlign("left")}
-              >
-                <FontAwesomeIcon icon={faAlignLeft} />
-              </button>
-              <button
-                className={`${
-                  selectedText.textData.style?.align === "center"
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickAlign("center")}
-              >
-                <FontAwesomeIcon icon={faAlignCenter} />
-              </button>
-              <button
-                className={`${
-                  selectedText.textData.style?.align === "right"
-                    ? styles["style-button-active"]
-                    : ""
-                }`}
-                onClick={() => onClickAlign("right")}
-              >
-                <FontAwesomeIcon icon={faAlignRight} />
-              </button>
-            </div>
-          </div>
-        </div>
+          <FontSelector
+            selectedFont={selectedText.textData.style?.fontFamily}
+            selectedEditorGuid={selectedEditorGuid}
+          />
+        </>
       )}
       <button className={stylesMain["basic-button"]} onClick={onClickAdd}>
         Add Text

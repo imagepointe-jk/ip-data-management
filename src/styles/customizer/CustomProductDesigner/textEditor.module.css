@@ -32,3 +32,84 @@
   outline: 2px solid var(--color-alpha);
   background-color: white;
 }
+
+.font-selector-main {
+  width: 100%;
+}
+
+.fake-dropdown-main {
+  border: 1px solid lightgray;
+  position: relative;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.fake-dropdown-arrow {
+  position: absolute;
+  right: 10px;
+}
+
+.fake-dropdown {
+  position: absolute;
+  border: 1px solid lightgray;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  translate: 0 100%;
+}
+
+.fake-dropdown-page-button {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+}
+
+.fake-dropdown-page-buttons-container {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid lightgray;
+  padding: 5px 0;
+  gap: 10px;
+  cursor: initial;
+}
+
+.fake-dropdown-scroll {
+  height: 150px;
+  overflow: auto;
+}
+
+.font-item {
+  position: relative;
+  padding: 15px 10px;
+}
+
+.font-item:hover {
+  background-color: rgb(241, 241, 241);
+}
+
+.font-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.75rem;
+  color: gray;
+}
+
+.font-example {
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+
+.font-example-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 35px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}

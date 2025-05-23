@@ -29,6 +29,7 @@ const textStyleSchema = z.object({
   fontStyle: z
     .union([z.enum(["italic", "bold", "italic bold"]), z.null()])
     .optional(),
+  fontFamily: z.string().optional(),
   textDecoration: z
     .union([z.enum(["underline", "line-through"]), z.null()])
     .optional(),
@@ -106,6 +107,11 @@ export const quoteRequestSchema = z.object({
   local: z.string().optional(),
   comments: z.string().optional(),
   cart: cartStateSchema,
+});
+
+export const googleFontSchema = z.object({
+  family: z.string(),
+  url: z.string(),
 });
 
 export type PlacedObject = z.infer<typeof objectDataSchema>;
@@ -199,3 +205,4 @@ export type EditorContext = {
   addVariation: (variationId: number) => void;
   removeVariation: (variationId: number) => void;
 };
+export type GoogleFont = z.infer<typeof googleFontSchema>;
