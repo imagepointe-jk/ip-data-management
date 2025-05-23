@@ -128,6 +128,14 @@ export function TextEditor() {
     );
   }
 
+  function onChangeSize(value: number) {
+    if (!selectedEditorGuid || !selectedText) return;
+
+    dispatch(
+      editText({ guid: selectedEditorGuid, style: { fontSize: value } })
+    );
+  }
+
   return (
     <div className={styles["main"]}>
       <h2>Edit Text</h2>
@@ -236,6 +244,16 @@ export function TextEditor() {
                   <FontAwesomeIcon icon={faAlignRight} />
                 </button>
               </div>
+            </div>
+            <div>
+              Size
+              <input
+                type="number"
+                value={selectedText.textData.style?.fontSize}
+                min={10}
+                max={70}
+                onChange={(e) => onChangeSize(+e.target.value)}
+              />
             </div>
           </div>
           <FontSelector

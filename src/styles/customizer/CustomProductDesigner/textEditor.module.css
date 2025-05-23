@@ -12,6 +12,13 @@
   gap: 10px;
 }
 
+.styles-container input[type="number"] {
+  display: block;
+  font-size: 1.125rem;
+  padding: 5px;
+  width: 60px;
+}
+
 .button-row {
   display: flex;
   gap: 10px;
