@@ -206,6 +206,19 @@ export const cartSlice = createSlice({
       if (!viewInState)
         throw new Error(`View ${targetViewId} not found in state`);
 
+      const objectData = createNewObjectData(newGuid);
+      const viewInProductData = findViewInProductData(
+        targetProductData,
+        targetViewId
+      );
+      if (!viewInProductData)
+        throw new Error(`View ${targetViewId} not found in product data`);
+      const { constrainedPosition, constrainedSize } =
+        constrainEditorObjectTransform({
+          locations: viewInProductData.locations,
+          objectTransform: objectData,
+        });
+
       viewInState.texts.push({
         textData: {
           text: "New Text",
@@ -215,7 +228,17 @@ export const cartSlice = createSlice({
             align: "left",
           },
         },
-        objectData: createNewObjectData(newGuid),
+        objectData: {
+          ...objectData,
+          positionNormalized: {
+            x: constrainedPosition.x,
+            y: constrainedPosition.y,
+          },
+          sizeNormalized: {
+            x: constrainedSize.x,
+            y: constrainedSize.y,
+          },
+        },
       });
     },
     editText: (state, action: PayloadAction<EditTextPayload>) => {
