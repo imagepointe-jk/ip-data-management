@@ -164,7 +164,7 @@ export type EditorDialog =
   | "help"
   | "download"
   | null;
-export type EditorModal = "cart" | null;
+export type EditorModal = "cart" | "start over" | null;
 
 export type ViewWithIncludes = CustomProductView & {
   locations: CustomProductDecorationLocationNumeric[];

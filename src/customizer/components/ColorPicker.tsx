@@ -2,6 +2,7 @@
 
 import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
+  setModalOpen,
   setSelectedEditorGuid,
   setSelectedVariationId,
   setSelectedViewId,
@@ -17,6 +18,7 @@ import { findVariationInCart } from "../utils/find";
 
 export function ColorPicker() {
   const { selectedProductData } = useEditorSelectors();
+  const dispatch = useDispatch();
 
   return (
     <div className={styles["main"]}>
@@ -28,6 +30,14 @@ export function ColorPicker() {
           ))}
         </div>
       </div>
+      <button
+        className="button-danger"
+        onClick={() => {
+          dispatch(setModalOpen("start over"));
+        }}
+      >
+        Start Over
+      </button>
     </div>
   );
 }

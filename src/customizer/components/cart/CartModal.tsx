@@ -1,5 +1,6 @@
 import { Modal } from "@/components/Modal";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
+import stylesModal from "@/styles/customizer/CustomProductDesigner/modal.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../../redux/store";
 import { setModalOpen } from "../../redux/slices/editor";
@@ -55,8 +56,8 @@ export function CartModal() {
 
   return (
     <Modal
-      windowClassName={styles["modal"]}
-      xButtonClassName={styles["x"]}
+      windowClassName={`${styles["cart-modal"]} ${stylesModal["modal"]}`}
+      xButtonClassName={stylesModal["x"]}
       bgStyle={{ position: "sticky", height: "100%" }}
       onClickClose={() => dispatch(setModalOpen(null))}
     >

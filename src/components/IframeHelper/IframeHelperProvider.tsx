@@ -23,6 +23,7 @@ const messageTypes = {
     urlRequest: "ip-iframe-request-url",
     navigationRequest: "ip-iframe-navigation-request",
     heightChangeRequest: "ip-iframe-height-change-request",
+    refreshRequest: "ip-iframe-refresh-request",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -34,6 +35,7 @@ type IframeHelperContext = {
     location: ParentWindowData | null;
     requestNavigation: (href: string) => void;
     requestHeightChange: (newHeight: number) => void;
+    requestRefresh: () => void;
     setSearchParam: (name: string, value: string | null) => void;
   };
   loading: boolean;
@@ -110,6 +112,10 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
     postMessage({ type: messageTypes.outgoing.navigationRequest, href });
   }
 
+  function requestRefresh() {
+    postMessage({ type: messageTypes.outgoing.refreshRequest });
+  }
+
   function postMessage(data: any) {
     window.parent.postMessage(data, "*");
   }
@@ -153,6 +159,7 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
           requestNavigation,
           requestHeightChange,
           setSearchParam,
+          requestRefresh,
         },
         loading,
       }}

@@ -27,3 +27,7 @@ button:disabled,
 .button-small {
   padding: 6px;
 }
+
+.button-danger {
+  background-color: red;
+}
