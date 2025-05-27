@@ -5,7 +5,7 @@ import { prisma } from "../../../prisma/client";
 import { CustomProductRequest } from "@prisma/client";
 
 export async function updateProductSettings(settings: FullProductSettings) {
-  const { published, wooCommerceId, variations } = settings;
+  const { published, wooCommerceId, order, variations } = settings;
 
   const allViews = settings.variations
     .map((variation) => variation.views)
@@ -70,6 +70,7 @@ export async function updateProductSettings(settings: FullProductSettings) {
       data: {
         published,
         wooCommerceId,
+        order,
       },
     }),
   ]);

@@ -23,6 +23,9 @@ export async function getProductSettings() {
 
 export async function getProductSettingsWithIncludes() {
   const data = await prisma.customProductSettings.findMany({
+    orderBy: {
+      order: "desc",
+    },
     include: {
       variations: {
         orderBy: {

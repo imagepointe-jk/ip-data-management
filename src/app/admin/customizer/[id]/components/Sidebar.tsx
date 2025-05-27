@@ -99,6 +99,19 @@ export function Sidebar({
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
+        Order
+        <div>
+          <input
+            type="number"
+            value={settings.order}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                order: +e.target.value,
+              })
+            }
+          />
+        </div>
       </div>
     </div>
   );
