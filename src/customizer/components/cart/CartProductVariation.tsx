@@ -61,6 +61,7 @@ function CartProductVariationForm({
 }: CartProductVariationFormProps) {
   const dispatch = useDispatch();
   const { quantities } = variationInState;
+  console.log(productData);
   const dbVariation = productData.variations.find(
     (variation) => variation.id === variationInState.id
   );
