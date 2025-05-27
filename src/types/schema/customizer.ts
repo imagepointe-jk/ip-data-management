@@ -68,6 +68,7 @@ const cartStateProductLocationSchema = z.object({
 
 export const cartStateProductViewSchema = z.object({
   id: z.number(),
+  label: z.string().optional(), //indicates how the view was distinguished for the user while they were designing (e.g. the FRONT view)
   artworks: z.array(cartStateArtworkSchema),
   texts: z.array(cartStateTextSchema),
   currentRenderUrl: z.string(),
@@ -76,6 +77,7 @@ export const cartStateProductViewSchema = z.object({
 
 export const cartStateProductVariationSchema = z.object({
   id: z.number(),
+  label: z.string().optional(), //indicates how the variation was distinguished for the user while they were designing (e.g. a BLUE shirt)
   views: z.array(cartStateProductViewSchema),
   quantities: z.object({
     s: z.number(),
@@ -92,6 +94,7 @@ export const cartStateProductVariationSchema = z.object({
 
 const cartStateProductSchema = z.object({
   id: z.number(),
+  name: z.string().optional(), //indicates the product name shown to user while they were designing
   variations: z.array(cartStateProductVariationSchema),
 });
 

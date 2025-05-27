@@ -1,13 +1,11 @@
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import {
-  CustomProductDecorationLocationNumeric,
-  FullProductSettings,
-} from "@/db/access/customizer";
+import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
 import {
   CartState,
   CartStateProductLocation,
   CartStateProductVariation,
   CartStateProductView,
+  PopulatedProductSettings,
 } from "@/types/schema/customizer";
 
 export function createLocationFrameInlineStyles(
@@ -23,7 +21,7 @@ export function createLocationFrameInlineStyles(
 }
 
 export function createInitialState(
-  products: FullProductSettings[],
+  products: PopulatedProductSettings[],
   initialProductId: number,
   initialVariationId: number
 ) {
@@ -77,11 +75,14 @@ export function createInitialState(
     products: [
       {
         id: initialProduct.id,
+        name: initialProduct.product?.name || "PRODUCT_NOT_FOUND",
         variations: [
           {
             id: initialVariation.id,
+            label: initialVariation.color.name,
             views: initialVariation.views.map((view) => ({
               id: view.id,
+              label: view.name,
               artworks: [],
               texts: [],
               currentRenderUrl: view.imageUrl,

@@ -12,77 +12,75 @@
     <ul>
       <li>First Name: {{firstName}}</li>
       <li>Last Name: {{lastName}}</li>
+      <li>Email: {{email}}</li>
+      <li>Company: {{company}}</li>
+      <li>Local: {{#if local}}{{local}}{{else}}(n/a){{/if}}</li>
+      <li>Comments: {{#if comments}}{{comments}}{{else}}(n/a){{/if}}</li>
     </ul>
     {{#each cart.products}}
       <div
         style="padding: 10px; border: 1px solid black; margin-bottom: 10px; background-color: #dddddd"
       >
-        <div style="font-weight: bold;">Product Name</div>
-        <div>SKU: AS1234</div>
+        <div style="font-weight: bold;">{{name}}</div>
+        {{! <div>SKU: AS1234</div> }}
         {{#each variations}}
           <div
             style="padding: 10px; border: 1px solid black; background-color: white;"
           >
-            <div>Color: Black</div>
+            <div>{{label}}</div>
             <table style="border-collapse: collapse;">
               <tr>
-                <td style="border: 1px solid black; padding: 8px;">Small:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >Small:
                   {{quantities.s}}</td>
-                <td style="border: 1px solid black; padding: 8px;">Medium:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >Medium:
                   {{quantities.m}}</td>
-                <td style="border: 1px solid black; padding: 8px;">Large:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >Large:
                   {{quantities.l}}</td>
               </tr>
               <tr>
-                <td style="border: 1px solid black; padding: 8px;">XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >XL:
                   {{quantities.xl}}</td>
-                <td style="border: 1px solid black; padding: 8px;">2XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >2XL:
                   {{quantities.2xl}}</td>
-                <td style="border: 1px solid black; padding: 8px;">3XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >3XL:
                   {{quantities.3xl}}</td>
               </tr>
               <tr>
-                <td style="border: 1px solid black; padding: 8px;">4XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >4XL:
                   {{quantities.4xl}}</td>
-                <td style="border: 1px solid black; padding: 8px;">5XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >5XL:
                   {{quantities.5xl}}</td>
-                <td style="border: 1px solid black; padding: 8px;">6XL:
+                <td
+                  style="border: 1px solid black; padding: 8px; text-align: right;"
+                >6XL:
                   {{quantities.6xl}}</td>
               </tr>
             </table>
+            {{#each views}}
+              <div>
+                {{label}}:
+                <a href="{{currentRenderUrl}}">View Design</a>
+              </div>
+            {{/each}}
           </div>
         {{/each}}
       </div>
     {{/each}}
-    {{!-- <table style="border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th
-            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
-          >Name</th>
-          <th
-            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
-          >Quantity</th>
-          <th
-            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
-          >Price</th>
-          <th
-            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
-          >Tax</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each lineItems}}
-          <tr>
-            <td style="border: 1px solid black; padding: 8px;">{{name}}</td>
-            <td style="border: 1px solid black; padding: 8px;">{{quantity}}</td>
-            <td style="border: 1px solid black; padding: 8px;">${{total}}</td>
-            <td
-              style="border: 1px solid black; padding: 8px;"
-            >${{totalTax}}</td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table> --}}
   </body>
 </html>

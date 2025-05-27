@@ -2,7 +2,9 @@ import { createQuoteRequest } from "@/actions/customizer/create";
 import { updateQuoteRequest } from "@/actions/customizer/update";
 import { handleRequestError } from "@/app/api/handleError";
 import { easyCorsInit } from "@/constants";
+import { sendQuoteRequestEmail } from "@/customizer/mail/mail";
 import { uploadQuoteRequestRender } from "@/customizer/utils/server";
+import { QuoteRequestData } from "@/types/schema/customizer";
 import { validateQuoteRequest } from "@/types/validations/customizer";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -47,6 +49,8 @@ export async function POST(request: NextRequest) {
       ...createdQuoteRequest,
       cartJson: JSON.stringify(cart),
     });
+
+    sendQuoteRequestEmail(quoteRequest, updated.id);
 
     return Response.json(updated, easyCorsInit);
   } catch (error) {

@@ -297,8 +297,10 @@ export const cartSlice = createSlice({
       )!;
       const newVariation: CartStateProductVariation = {
         id: variationData.id,
+        label: variationData.color.name,
         views: variationData.views.map((view) => ({
           id: view.id,
+          label: view.name,
           artworks: [],
           texts: [],
           currentRenderUrl: view.imageUrl,
