@@ -22,6 +22,10 @@ export function validateCartState(data: any) {
   return cartStateSchema.parse(data);
 }
 
+export function isCartStateValid(data: any) {
+  return cartStateSchema.safeParse(data);
+}
+
 export function validateGoogleFontsJson(json: any) {
   const items = json.items;
   if (!Array.isArray(items)) throw new Error("No fonts array found");

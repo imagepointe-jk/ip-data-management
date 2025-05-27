@@ -2,7 +2,10 @@ import {
   getProductSettingsWithIncludes,
   getQuoteRequest,
 } from "@/db/access/customizer";
-import { validateCartState } from "@/types/validations/customizer";
+import {
+  isCartStateValid,
+  validateCartState,
+} from "@/types/validations/customizer";
 import { CustomProductsDisplay } from "./CustomProductsDisplay";
 import { populateProductData } from "@/app/customizer/handleData";
 import { inspect } from "util";
@@ -21,6 +24,7 @@ export default async function Page(props: Props) {
   if (!lead) return <h1>Lead {id} not found.</h1>;
 
   const parsedJson = JSON.parse(lead.cartJson);
+  if (!isCartStateValid(parsedJson).success) return <h1>Invalid cart data.</h1>;
   const parsedCart = validateCartState(parsedJson);
 
   const settings = await getProductSettingsWithIncludes();
