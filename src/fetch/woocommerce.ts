@@ -1,5 +1,9 @@
 import { env } from "@/env";
-import { WooCommerceASIProductUpdateData } from "@/types/schema/woocommerce";
+import {
+  WooCommerceASIProductUpdateData,
+  WooCommerceProduct,
+} from "@/types/schema/woocommerce";
+import { parseWooCommerceProduct } from "@/types/validations/woo";
 
 const standardCredentials = () => {
   const apiKey = process.env.WOOCOMMERCE_MAIN_API_KEY;
@@ -19,6 +23,38 @@ const standardHeaders = () => {
   );
   return headers;
 };
+
+export async function getProductsMultiple(
+  ids: number[],
+  storeUrl = "https://www.imagepointe.com",
+  key?: string,
+  secret?: string
+) {
+  const responses = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const response = await getProduct(id, storeUrl, key, secret);
+        if (!response.ok) {
+          throw new Error(
+            `Status ${response.status} while getting product id ${id}`
+          );
+        }
+        const json = await response.json();
+        return parseWooCommerceProduct(json);
+      } catch (error) {
+        console.error(`Error getting WooCommerce product: ${error}`);
+        return null;
+      }
+    })
+  );
+
+  const nonNull: WooCommerceProduct[] = [];
+  for (const r of responses) {
+    if (r !== null) nonNull.push(r);
+  }
+
+  return nonNull;
+}
 
 //this is being called from the front end, but only in the admin area,
 //so exposed credentials are not currently a concern
