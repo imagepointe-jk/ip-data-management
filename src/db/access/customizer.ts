@@ -21,8 +21,13 @@ export async function getProductSettings() {
   });
 }
 
-export async function getProductSettingsWithIncludes() {
+export async function getProductSettingsWithIncludes(params?: {
+  publishedOnly?: boolean;
+}) {
   const data = await prisma.customProductSettings.findMany({
+    where: {
+      published: params?.publishedOnly || undefined,
+    },
     orderBy: {
       order: "desc",
     },
