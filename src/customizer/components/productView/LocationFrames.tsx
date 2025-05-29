@@ -9,6 +9,7 @@ type Props = {
     positionY: number;
     width: number;
     height: number;
+    frameColor: string;
   }[];
 };
 export function LocationFrames({ locations }: Props) {
@@ -37,7 +38,7 @@ export function LocationFrames({ locations }: Props) {
             y={position.y}
             width={size.x}
             height={size.y}
-            stroke={"gray"}
+            stroke={`#${location.frameColor}`}
             strokeWidth={4}
             opacity={0.5}
           />
