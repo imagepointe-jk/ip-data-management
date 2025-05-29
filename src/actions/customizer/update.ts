@@ -25,6 +25,7 @@ export async function updateProductSettings(settings: FullProductSettings) {
           },
           data: {
             colorId: variation.colorId,
+            order: variation.order,
           },
         }),
         prisma.productSizeOptions.update({

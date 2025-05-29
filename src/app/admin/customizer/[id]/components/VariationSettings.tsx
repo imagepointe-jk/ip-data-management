@@ -143,6 +143,15 @@ export function VariationSettings({
     });
   }
 
+  function onChangeOrder(value: number) {
+    setSettings((draft) => {
+      const variation = draft.variations.find(
+        (variation) => variation.id === selectedVariationId
+      );
+      if (variation) variation.order = value;
+    });
+  }
+
   return (
     <div className={`${styles["sidebar"]} ${styles["sidebar-2"]}`}>
       <div className="vert-flex-group">
@@ -180,6 +189,14 @@ export function VariationSettings({
               </option>
             ))}
           </select>
+        </div>
+        <div>
+          <div>Order</div>
+          <input
+            type="number"
+            value={variation?.order}
+            onChange={(e) => onChangeOrder(+e.target.value)}
+          />
         </div>
         <div>
           <button

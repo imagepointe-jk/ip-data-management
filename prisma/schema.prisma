@@ -121,6 +121,7 @@ model CustomProductSettingsVariation {
   views                CustomProductView[]
   color                Color                 @relation(fields: [colorId], references: [id])
   colorId              Int
+  order                Int                   @default(0)
   sizeOptions          ProductSizeOptions    @relation(fields: [productSizeOptionsId], references: [id])
   productSizeOptionsId Int                   @unique
 }

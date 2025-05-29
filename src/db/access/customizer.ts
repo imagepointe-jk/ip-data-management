@@ -34,7 +34,7 @@ export async function getProductSettingsWithIncludes(params?: {
     include: {
       variations: {
         orderBy: {
-          id: "asc",
+          order: "desc",
         },
         include: {
           views: {
