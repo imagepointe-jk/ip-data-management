@@ -3,16 +3,16 @@
 import { GenericTableExplorer } from "@/components/GenericTableExplorer/GenericTableExplorer";
 import { WebstoreLog } from "@prisma/client";
 import styles from "@/styles/logs/logs.module.css";
-import { PAGE_SIZE } from "./page";
 
 type Props = {
   logs: WebstoreLog[];
   totalLogs: number;
+  pageSize: number;
 };
-export function ResultsExplorer({ logs, totalLogs }: Props) {
+export function ResultsExplorer({ logs, totalLogs, pageSize }: Props) {
   return (
     <GenericTableExplorer
-      pageSize={PAGE_SIZE}
+      pageSize={pageSize}
       totalRecords={totalLogs}
       dataset={logs}
       className={styles["basic-table"]}

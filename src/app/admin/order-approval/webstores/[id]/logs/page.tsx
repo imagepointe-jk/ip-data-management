@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { NextSearchParams } from "@/types/schema/misc";
 import { ResultsExplorer } from "./ResultsExplorer";
 
-export const PAGE_SIZE = 20;
 type Props = {
   params: Promise<{
     id: string;
@@ -19,6 +18,7 @@ export default async function Page({ params, searchParams }: Props) {
   });
   if (!webstore) notFound();
 
+  const pageSize = 20;
   const search = await searchParams;
   const page = isNaN(+`${search.page}`) ? 1 : +`${search.page}`;
   const [filteredLogs, allLogs] = await prisma.$transaction([
@@ -33,8 +33,8 @@ export default async function Page({ params, searchParams }: Props) {
           equals: search.severity ? `${search.severity}` : undefined,
         },
       },
-      take: PAGE_SIZE,
-      skip: PAGE_SIZE * (page - 1),
+      take: pageSize,
+      skip: pageSize * (page - 1),
       orderBy: {
         createdAt: search.sortDirection === "asc" ? "asc" : "desc",
       },
@@ -45,7 +45,11 @@ export default async function Page({ params, searchParams }: Props) {
   return (
     <>
       <h1>Logs for {webstore.name}</h1>
-      <ResultsExplorer logs={filteredLogs} totalLogs={allLogs.length} />
+      <ResultsExplorer
+        logs={filteredLogs}
+        totalLogs={allLogs.length}
+        pageSize={pageSize}
+      />
     </>
   );
 }
