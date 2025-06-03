@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "@/styles/PageNavigation/PageNavigation.module.css";
+import styles from "@/styles/PageNavigation/pageNavigation.module.css";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type Props = {
