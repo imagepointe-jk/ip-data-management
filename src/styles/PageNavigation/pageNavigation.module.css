@@ -1,0 +1,9 @@
+.page-numbers-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.page-numbers-container a {
+  display: block;
+}
