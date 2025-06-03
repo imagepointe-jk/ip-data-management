@@ -7,7 +7,12 @@ import { decryptWebstoreData } from "./encryption";
 import { getOrder } from "@/fetch/woocommerce";
 import { prisma } from "../../prisma/client";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
+import {
+  OrderWorkflowEventType,
+  WebstoreLogEvent,
+  WebstoreLogSeverity,
+} from "@/types/schema/orderApproval";
+import { createLog } from "@/actions/orderWorkflow/create";
 
 //dynamic values like "purchaser" and "approver" can be used for action targets, event listener "from" values, etc.
 export async function resolveDynamicUserIdentifier(
@@ -67,4 +72,29 @@ export async function matchProceedListenerToEvent(
     if (resolvedFrom === source) return listener;
   }
   return undefined;
+}
+
+//wrapper for more easily creating webstore log in the context of a workflow instance action.
+//helps keep things cleaner by not requiring the rest of the logic to be interrupted by retrieving the webstore id every time.
+export async function createWorkflowInstanceLog(
+  workflowInstanceId: number,
+  text: string,
+  severity: WebstoreLogSeverity,
+  event: WebstoreLogEvent
+) {
+  const workflowInstance = await prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id: workflowInstanceId,
+    },
+    include: {
+      parentWorkflow: {
+        include: {
+          webstore: true,
+        },
+      },
+    },
+  });
+
+  const webstoreId = workflowInstance?.parentWorkflow.webstoreId || -1; //if instance is not found, -1 will cause an error in createLog that will be caught there
+  return createLog(webstoreId, text, severity, event);
 }

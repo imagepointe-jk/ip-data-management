@@ -69,6 +69,16 @@ export const orderApprovalServerDataSchema = z.object({
   ),
 });
 
+const webstoreLogSeverities = ["info", "warning", "error"] as const;
+const webstoreLogSeverity = z.enum(webstoreLogSeverities);
+const webstoreLogEvents = [
+  "start workflow instance",
+  "approve workflow instance",
+  "deny workflow instance",
+  "send email",
+] as const;
+const webstoreLogEvent = z.enum(webstoreLogEvents);
+
 // export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
 export type OrderWorkflowActionType = z.infer<
   typeof orderWorkflowActionTypeSchema
@@ -106,3 +116,5 @@ export type WebstoreEditorData = {
   allowOrderHelpRequest: boolean;
   shippingEmailDestOverride: string | null;
 };
+export type WebstoreLogSeverity = z.infer<typeof webstoreLogSeverity>;
+export type WebstoreLogEvent = z.infer<typeof webstoreLogEvent>;

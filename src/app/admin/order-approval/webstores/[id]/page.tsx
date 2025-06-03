@@ -36,6 +36,9 @@ export default async function Page(props: Props) {
         {existingWebstore ? "Editing Webstore Data" : "Creating Webstore Data"}
       </h1>
       {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
+      <Link href={`${params.id}/logs`} style={{ marginLeft: "10px" }}>
+        View Logs
+      </Link>
       <EditingForm
         webstoreData={existingWebstore}
         shippingMethods={shippingMethods}
