@@ -52,14 +52,14 @@ export function ViewControls() {
         <>
           <button
             onClick={() => onClick("left")}
-            disabled={!isDirectionAvailable("left")}
+            disabled={selectedVariation.views.length < 2}
           >
             <FontAwesomeIcon icon={faChevronLeft} size={"2x"} />
           </button>
           <div>{viewData.name} View</div>
           <button
             onClick={() => onClick("right")}
-            disabled={!isDirectionAvailable("right")}
+            disabled={selectedVariation.views.length < 2}
           >
             <FontAwesomeIcon icon={faChevronRight} size={"2x"} />
           </button>
