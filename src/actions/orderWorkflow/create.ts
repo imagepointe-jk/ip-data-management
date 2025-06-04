@@ -5,9 +5,14 @@ import {
   getWebstoreById,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
-import { WebstoreEditorData } from "@/types/schema/orderApproval";
+import {
+  WebstoreEditorData,
+  WebstoreLogEvent,
+  WebstoreLogSeverity,
+} from "@/types/schema/orderApproval";
 import { encrypt } from "@/utility/misc";
 import { prisma } from "../../../prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function createWorkflow(webstoreId: number, name: string) {
   await prisma.orderWorkflow.create({
@@ -361,4 +366,29 @@ export async function createRole(webstoreId: number) {
       webstoreId,
     },
   });
+}
+
+export async function createLog(
+  webstoreId: number,
+  text: string,
+  severity: WebstoreLogSeverity,
+  event: WebstoreLogEvent
+) {
+  //isolated try-catch because if log creation ever fails, it should not cause anything else to fail
+  try {
+    return prisma.webstoreLog.create({
+      data: {
+        webstoreId,
+        text,
+        severity,
+        event,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Failed to create webstore log! Webstore id: ${webstoreId}; text: ${text}; severity: ${severity}; event: ${event}`
+    );
+  }
+
+  revalidatePath("/order-approval/webstores/");
 }

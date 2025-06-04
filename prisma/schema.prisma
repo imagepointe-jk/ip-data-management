@@ -10,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//#region General
 model User {
   id           Int           @id @default(autoincrement())
   name         String        @unique
@@ -19,6 +20,23 @@ model User {
   startedSyncs HubSpotSync[]
 }
 
+model Color {
+  id                    Int                              @id @default(autoincrement())
+  name                  String                           @unique
+  hexCode               String                           @unique
+  designs               Design[]
+  designVariations      DesignVariation[]
+  customProductSettings CustomProductSettingsVariation[]
+}
+
+model DignityApparelSearchString {
+  id        Int      @id @default(autoincrement())
+  search    String
+  createdAt DateTime @default(now())
+}
+
+//#endregion
+//#region Design Library
 model Design {
   id                       Int                 @id @default(autoincrement())
   designNumber             String
@@ -80,15 +98,8 @@ model DesignTag {
   designVariations DesignVariation[]
 }
 
-model Color {
-  id                    Int                              @id @default(autoincrement())
-  name                  String                           @unique
-  hexCode               String                           @unique
-  designs               Design[]
-  designVariations      DesignVariation[]
-  customProductSettings CustomProductSettingsVariation[]
-}
-
+//#endregion
+//#region HubSpot
 model HubSpotSync {
   id          Int       @id @default(autoincrement())
   startedBy   User      @relation(fields: [startedById], references: [id])
@@ -98,6 +109,8 @@ model HubSpotSync {
   progress    Decimal //0 is no progress, 1 is complete
 }
 
+//#endregion
+//#region Customizer
 //base table for customizer product records.
 //this table should not contain any product-specific fields that might be varied,
 //such as color, material, size, etc.
@@ -173,6 +186,8 @@ model ProductSizeOptions {
   customProductSettingsVariation CustomProductSettingsVariation?
 }
 
+//#endregion
+//#region Order Approval
 model Webstore {
   id                           Int                       @id @default(autoincrement())
   name                         String
@@ -200,6 +215,7 @@ model Webstore {
   workflows                    OrderWorkflow[]
   roles                        WebstoreUserRole[]
   checkoutFields               WebstoreCheckoutField[]
+  logs                         WebstoreLog[]
 }
 
 model WebstoreShippingSettings {
@@ -328,8 +344,14 @@ model OrderWorkflowAccessCode {
   @@id([userId, instanceId])
 }
 
-model DignityApparelSearchString {
-  id        Int      @id @default(autoincrement())
-  search    String
-  createdAt DateTime @default(now())
+model WebstoreLog {
+  id         Int      @id @default(autoincrement())
+  text       String
+  severity   String   @default("Info") //values like "Info", "Warning", "Error", etc.
+  event      String? //values like "Instance Started", "Instance Approved", "Email Failed", etc.
+  webstore   Webstore @relation(fields: [webstoreId], references: [id])
+  webstoreId Int
+  createdAt  DateTime @default(now())
 }
+
+//#endregion

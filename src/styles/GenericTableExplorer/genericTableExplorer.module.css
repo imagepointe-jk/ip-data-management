@@ -1,0 +1,19 @@
+.filters-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filters-row input[type="search"] {
+  font-size: 1rem;
+  padding: 8px;
+}
+
+.dropdown-container {
+  font-size: 0.75rem;
+}
+
+.dropdown-container select {
+  font-size: 1rem;
+}

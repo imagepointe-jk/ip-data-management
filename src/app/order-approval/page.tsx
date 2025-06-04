@@ -52,7 +52,8 @@ function Main() {
     ? "denied"
     : "INVALID_STATUS";
   const waitingOnThisUser = serverData?.waitingOnUserEmails.find(
-    (email) => email === serverData.userEmail
+    (email) =>
+      email.toLocaleLowerCase() === serverData.userEmail.toLocaleLowerCase()
   );
 
   async function doApprove(comments: string | null, pin: string) {

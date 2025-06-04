@@ -10,7 +10,11 @@ import { sendEmail } from "@/utility/mail";
 import { decryptWebstoreData } from "./encryption";
 import { setOrderStatus } from "@/fetch/woocommerce";
 import { env } from "@/env";
-import { resolveDynamicUserIdentifier } from "./utility";
+import {
+  createWorkflowInstanceLog,
+  resolveDynamicUserIdentifier,
+} from "./utility";
+import { createLog } from "@/actions/orderWorkflow/create";
 
 export async function doStepAction(
   step: OrderWorkflowStep,
@@ -60,9 +64,6 @@ async function doEmailAction(
   );
   const allTargets = [targetPrimary, ...otherTargets];
 
-  console.log(
-    `=====================Workflow Instance ${workflowInstance.id} sending email(s) to ${actionTarget} (${targetPrimary}) and ${otherTargets.length} other targets`
-  );
   for (const target of allTargets) {
     //The message may appear to be addressed directly to targetPrimary.
     //Clarify to anyone in allTargets that they are intentionally receiving the message as well.
@@ -71,7 +72,22 @@ async function doEmailAction(
         ? ""
         : `<strong>This message's primary recipient is ${targetPrimary}, but you have have been included on the email list for this order.</strong><br /><br />`;
 
-    await sendEmail(target, processedSubject, prepend + processedMessage);
+    try {
+      await sendEmail(target, processedSubject, prepend + processedMessage);
+      await createWorkflowInstanceLog(
+        workflowInstance.id,
+        `Step ${step.order} of workflow instance ${workflowInstance.id} sent an email to ${target}`,
+        "info",
+        "send email"
+      );
+    } catch (error) {
+      await createWorkflowInstanceLog(
+        workflowInstance.id,
+        `Step ${step.order} of workflow instance ${workflowInstance.id} failed to send an email to ${target}`,
+        "error",
+        "send email"
+      );
+    }
   }
 }
 
@@ -109,7 +125,19 @@ async function doWorkflowApprovedAction(
     );
     if (!response.ok)
       throw new Error(`The API responded with a ${response.status} status.`);
+    await createLog(
+      parentWorkflow.webstoreId,
+      `Workflow instance ${workflowInstance.id} successfully approved.`,
+      "info",
+      "approve workflow instance"
+    );
   } catch (error) {
+    createLog(
+      parentWorkflow.webstoreId,
+      `Error while approving workflow instance ${workflowInstance.id}. The instance was marked as finished, but the WooCommerce order's status could not be set to "PROCESSING".`,
+      "error",
+      "approve workflow instance"
+    );
     sendEmail(
       env.DEVELOPER_EMAIL,
       `Error approving workflow instance ${workflowInstance.id}`,
@@ -119,16 +147,16 @@ async function doWorkflowApprovedAction(
 }
 
 async function doWorkflowDeniedAction(workflowInstance: OrderWorkflowInstance) {
-  console.log(
-    `=====================Marking workflow instance ${workflowInstance.id} as "DENIED"`
-  );
   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+  await createWorkflowInstanceLog(
+    workflowInstance.id,
+    `Workflow instance ${workflowInstance.id} successfully denied.`,
+    "info",
+    "deny workflow instance"
+  );
 }
 
 async function doCancelOrderAction(workflowInstance: OrderWorkflowInstance) {
-  console.log(
-    `========================Canceling WooCommerce order ${workflowInstance.wooCommerceOrderId}`
-  );
   try {
     const workflow = await getWorkflowWithIncludes(
       workflowInstance.parentWorkflowId
@@ -149,7 +177,19 @@ async function doCancelOrderAction(workflowInstance: OrderWorkflowInstance) {
       throw new Error(
         `Canceling FAILED because of an API error ${cancelResponse.status}`
       );
+    await createLog(
+      workflow.webstoreId,
+      `WooCommerce order for workflow instance ${workflowInstance.id} successfully cancelled.`,
+      "info",
+      "deny workflow instance"
+    );
   } catch (error) {
     console.error(error);
+    await createWorkflowInstanceLog(
+      workflowInstance.id,
+      `WooCommerce order for workflow instance ${workflowInstance.id} could not be cancelled.`,
+      "error",
+      "deny workflow instance"
+    );
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode } from "react";
 
-type HasId = {
+export type HasId = {
   id: number | string;
 };
 type GenericTableColumn<T> = {
@@ -10,7 +10,7 @@ type GenericTableColumn<T> = {
   createCell: (data: T) => ReactNode;
   className?: string;
 };
-type Props<T> = {
+export type Props<T> = {
   dataset: T[];
   columns: GenericTableColumn<T>[];
   className?: string;

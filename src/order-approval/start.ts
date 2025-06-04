@@ -18,6 +18,7 @@ import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { handleCurrentStep } from "./main";
 import { deduplicateArray } from "@/utility/misc";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
+import { createLog } from "@/actions/orderWorkflow/create";
 
 type StartWorkflowParams = {
   webhookSource: string;
@@ -78,8 +79,20 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
       `Error starting workflow instance ${id}`,
       `Failed to set the corresponding WooCommerce order's status to "ON HOLD". This was the error: ${error}`
     );
+    createLog(
+      workflow.webstore.id,
+      `${error}`,
+      "error",
+      "start workflow instance"
+    );
   }
 
+  await createLog(
+    workflow.webstore.id,
+    `Workflow instance ${id} started`,
+    "info",
+    "start workflow instance"
+  );
   handleCurrentStep(instance);
 }
 
