@@ -69,7 +69,8 @@ export async function matchProceedListenerToEvent(
       listener.from,
       workflowInstance
     );
-    if (resolvedFrom === source) return listener;
+    if (resolvedFrom?.toLocaleLowerCase() === source.toLocaleLowerCase())
+      return listener;
   }
   return undefined;
 }
