@@ -50,10 +50,10 @@ export default async function Page(props: Props) {
       },
     },
   });
-  if (!webstore) notFound();
+  if (!webstore) return <>Webstore {params.webstoreId} could not be found.</>;
 
   const workflow = webstore.workflows[0];
-  if (!workflow) notFound();
+  if (!workflow) return <>Webstore {params.webstoreId} has no workflows.</>;
 
   return (
     <IframeHelperProvider>
