@@ -47,16 +47,21 @@ export function OrderInstanceRow({
   const [statusText, setStatusText] = useState("");
   const [waitingOnUser, setWaitingOnUser] = useState<WaitingOnUser>();
   const dashboardViewerAccessCode = instance.accessCodes.find(
-    (code) => code.user.email === webstore.approverDashboardViewerEmail
+    (code) =>
+      code.user.email.toLocaleLowerCase() ===
+      webstore.approverDashboardViewerEmail.toLocaleLowerCase()
   )?.guid;
   const waitingOnDashboardViewer =
     waitingOnUser &&
-    waitingOnUser.email === webstore.approverDashboardViewerEmail;
+    waitingOnUser.email.toLocaleLowerCase() ===
+      webstore.approverDashboardViewerEmail.toLocaleLowerCase();
 
   async function getOrderData() {
     try {
       const accessCodeWithViewerEmail = instance.accessCodes.find(
-        (code) => code.user.email === webstore.approverDashboardViewerEmail
+        (code) =>
+          code.user.email.toLocaleLowerCase() ===
+          webstore.approverDashboardViewerEmail.toLocaleLowerCase()
       );
       if (!accessCodeWithViewerEmail)
         throw new Error(
@@ -81,9 +86,14 @@ export function OrderInstanceRow({
 
   function findUserInRoles(email: string) {
     const roleWithEmail = roles.find(
-      (role) => !!role.users.find((user) => user.email === email)
+      (role) =>
+        !!role.users.find(
+          (user) => user.email.toLocaleLowerCase() === email.toLocaleLowerCase()
+        )
     );
-    return roleWithEmail?.users.find((user) => user.email === email);
+    return roleWithEmail?.users.find(
+      (user) => user.email.toLocaleLowerCase() === email.toLocaleLowerCase()
+    );
   }
 
   async function resolveStatus() {
