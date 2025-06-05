@@ -57,6 +57,10 @@ export default async function Page(props: Props) {
           <div>{lead.local || "N/A"}</div>
         </div>
         <div>
+          <div className="data-label">Phone</div>
+          <div>{lead.phone || "N/A"}</div>
+        </div>
+        <div>
           <div className="data-label">Submitted On</div>
           <div>{lead.createdAt.toLocaleString()}</div>
         </div>

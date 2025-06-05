@@ -3,7 +3,10 @@ import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.cs
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faRectangleList,
+} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
 import { countCartItems } from "../utils/misc";
@@ -30,7 +33,7 @@ export function CartBar() {
         onClick={onClickOpenCart}
       >
         <div>
-          <FontAwesomeIcon icon={faCartShopping} /> Cart
+          <FontAwesomeIcon icon={faRectangleList} /> Quote
         </div>
         <div>
           {productCount} item{productCount > 1 && "s"}

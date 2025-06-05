@@ -42,11 +42,23 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           </label>
           <input type="text" name="local" id="local" />
         </div>
+        <div>
+          <label htmlFor="phone" className={styles["input-label"]}>
+            Phone
+          </label>
+          <input type="tel" name="phone" id="phone" />
+        </div>
         <div className={styles["comments-container"]}>
           <label htmlFor="comments" className={styles["input-label"]}>
             Comments/Questions
           </label>
-          <textarea name="comments" id="comments" rows={6}></textarea>
+          <div className={styles["comments-subcontainer"]}>
+            <textarea name="comments" id="comments" rows={6}></textarea>
+            <div className={styles["comments-infobox"]}>
+              Please let us know any customizations you want to this design.
+              This includes changing the text colors and the design.
+            </div>
+          </div>
         </div>
       </div>
       {showError && (

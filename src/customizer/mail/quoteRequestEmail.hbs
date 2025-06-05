@@ -15,6 +15,7 @@
       <li>Email: {{email}}</li>
       <li>Company: {{company}}</li>
       <li>Local: {{#if local}}{{local}}{{else}}(n/a){{/if}}</li>
+      <li>Phone: {{#if phone}}{{phone}}{{else}}(n/a){{/if}}</li>
       <li>Comments: {{#if comments}}{{comments}}{{else}}(n/a){{/if}}</li>
     </ul>
     {{#each cart.products}}

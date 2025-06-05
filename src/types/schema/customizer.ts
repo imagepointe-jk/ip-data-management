@@ -108,6 +108,7 @@ export const quoteRequestSchema = z.object({
   email: z.string(),
   company: z.string(),
   local: z.string().optional(),
+  phone: z.string().optional(),
   comments: z.string().optional(),
   cart: cartStateSchema,
 });
