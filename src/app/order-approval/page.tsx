@@ -124,6 +124,7 @@ function Main() {
       setServerData(dataFromServer);
       setLoading(false);
     } catch (error) {
+      console.error(error);
       setLoading(false);
     }
   }
@@ -149,7 +150,9 @@ function Main() {
       {(loading || iframeLoading) && (
         <div className={styles["status-message"]}>Loading...</div>
       )}
-      {!serverData && !loading && !iframeLoading && <>Error.</>}
+      {!serverData && !loading && !iframeLoading && (
+        <>Error: Unable to load approval interface.</>
+      )}
       {serverData && (
         <div className={styles["main"]}>
           {action === "approve" && (
