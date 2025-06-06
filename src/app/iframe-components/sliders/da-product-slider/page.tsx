@@ -5,6 +5,7 @@ import { Card } from "./Card";
 import styles from "@/styles/iframe-components/sliders/daProductSlider.module.css";
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const BLACK = "#000000";
 const PURPLE = "#483370";
@@ -120,7 +121,7 @@ const products: Product[] = [
   },
 ];
 
-export default function Page() {
+function Page() {
   const search = useSearchParams();
   const skus = search.get("skus")
     ? `${search.get("skus")}`.split(",")
@@ -141,5 +142,13 @@ export default function Page() {
         slidingParentClassName={styles["sliding-parent"]}
       />
     </IframeHelperProvider>
+  );
+}
+
+export default function PageWrapped() {
+  return (
+    <Suspense>
+      <Page />
+    </Suspense>
   );
 }
