@@ -9,9 +9,10 @@ import { useIframe } from "./IframeHelperProvider";
 
 type Props = {
   href: string;
+  className?: string;
   children: ReactNode;
 };
-export function IframeLink({ children, href }: Props) {
+export function IframeLink({ children, className, href }: Props) {
   const {
     parentWindow: { requestNavigation },
   } = useIframe();
@@ -24,7 +25,7 @@ export function IframeLink({ children, href }: Props) {
   }
 
   return (
-    <a href={href} onClick={onClick}>
+    <a href={href} className={className} onClick={onClick}>
       {children}
     </a>
   );
