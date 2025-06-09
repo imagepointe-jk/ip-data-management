@@ -286,20 +286,3 @@ export function deduplicateArray<T>(
   }
   return deduplicated;
 }
-
-//easily get numeric px value from a string that may or may not be in the CSS-style format "100px", "25%", etc.
-//returns NaN if not in that format, or a fallback number if provided
-// export function getValueWithUnit(
-//   fullString: string,
-//   unitString: string,
-//   fallbackValue?: number
-// ) {
-//   console.log("received ", fullString);
-//   const fallbackToUse = fallbackValue !== undefined ? fallbackValue : NaN;
-//   const withoutUnit = fullString.replace(unitString, "");
-//   if (withoutUnit.length !== fullString.length - unitString.length)
-//     return fallbackToUse; //not correct format, so return NaN or the fallback
-
-//   if (!isNaN(+withoutUnit)) return +withoutUnit; //not a valid number, so return NaN or the fallback
-//   return fallbackToUse;
-// }
