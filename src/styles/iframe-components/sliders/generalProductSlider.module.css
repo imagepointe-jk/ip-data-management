@@ -1,0 +1,54 @@
+.sliding-parent {
+  height: 520px;
+}
+
+.card-container {
+  width: 353px;
+  height: 520px;
+}
+
+.card {
+  position: absolute;
+  inset: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featured-image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.overlay-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.507);
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.overlay-container:hover {
+  opacity: 1;
+}
+
+.product-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.product-link {
+  color: white;
+  background-color: #006ac6;
+  padding: 15px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 1.125rem;
+  margin-top: 25px;
+}
