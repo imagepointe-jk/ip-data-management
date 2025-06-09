@@ -1,0 +1,76 @@
+.main {
+  height: 350px;
+  position: relative;
+  overflow: hidden;
+  padding: 100px;
+}
+
+.sliding-container {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  transition: 0.2s;
+}
+
+.card {
+  flex: 0 0 350px;
+  transition: 0.2s;
+}
+
+.card.not-viewed {
+  opacity: 0.5;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.buttons-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  width: 600px;
+  height: 400px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button {
+  display: block;
+  background-color: #006ac6;
+  color: white;
+  border-radius: 100px;
+  padding: 10px 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.dots-container {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 0;
+}
+
+@media screen and (max-width: 768px) {
+  .main {
+    height: 220px;
+    padding: 75px;
+  }
+
+  .buttons-container {
+    width: 100%;
+  }
+
+  .card {
+    flex: 0 0 220px;
+  }
+
+  .button {
+    scale: 0.7;
+  }
+}

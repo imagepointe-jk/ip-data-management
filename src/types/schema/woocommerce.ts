@@ -4,6 +4,13 @@ export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
   weight: z.string(),
+  images: z.array(
+    z.object({
+      src: z.string(),
+      alt: z.string(),
+    })
+  ),
+  permalink: z.string(),
 });
 
 export const wooCommerceDAProductVariationSchema = z.object({

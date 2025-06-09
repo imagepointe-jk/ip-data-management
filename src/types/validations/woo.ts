@@ -58,6 +58,8 @@ export function parseWooCommerceOrderJson(json: any) {
 }
 
 export function parseWooCommerceProduct(json: any) {
+  if (!json.images) json.images = [];
+
   return wooCommerceProductSchema.parse(json);
 }
 
