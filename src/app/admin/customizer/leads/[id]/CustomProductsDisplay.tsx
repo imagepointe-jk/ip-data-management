@@ -125,9 +125,6 @@ export function CustomProductsDisplay({ cart, productSettings }: Props) {
                       const viewFromDb = variationFromDb?.views.find(
                         (dbView) => dbView.id === view.id
                       );
-                      console.log(
-                        `For ${variationFromDb?.color.name}, found ${viewFromDb?.id} by looking for ${view.id}`
-                      );
                       return (
                         <CustomProductView
                           key={view.id}

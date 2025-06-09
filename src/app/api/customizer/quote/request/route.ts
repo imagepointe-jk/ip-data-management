@@ -12,8 +12,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const quoteRequest = validateQuoteRequest(body);
-    const { cart, company, email, firstName, lastName, comments, local } =
-      quoteRequest;
+    const {
+      cart,
+      company,
+      email,
+      firstName,
+      lastName,
+      comments,
+      local,
+      phone,
+    } = quoteRequest;
 
     //first create the quote request in the database using empty cart data
     //this gives us a record id to include in the image files we upload
@@ -23,6 +31,7 @@ export async function POST(request: NextRequest) {
       email,
       company,
       local: local || null,
+      phone: phone || null,
       comments: comments || null,
       cartJson: "no cart data yet",
     });

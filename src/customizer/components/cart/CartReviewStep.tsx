@@ -11,7 +11,7 @@ export function CartReviewStep({ onClickContinue }: Props) {
 
   return (
     <>
-      <h2>My Cart</h2>
+      <h2>My Quote</h2>
       <div className={styles["cart-items-container"]}>
         {cart.present.products.map((item) => (
           <CartProductGroup key={item.id} productInState={item} />

@@ -25,6 +25,23 @@ export function CustomProductView({
         renderScale={2}
       />
       <div>({viewName})</div>
+      {view.artworks.length > 0 && (
+        <>
+          <div>Artworks</div>
+          <ul>
+            {view.artworks.map((art) => (
+              <li key={art.objectData.editorGuid}>
+                <span>
+                  {art.identifiers.designIdentifiers?.designId
+                    ? `Design ID ${art.identifiers.designIdentifiers.designId}`
+                    : `Custom Artwork`}
+                </span>
+                <a href={art.imageUrl}>(View Image)</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

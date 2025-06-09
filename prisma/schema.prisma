@@ -167,6 +167,7 @@ model CustomProductRequest {
   email     String
   company   String
   local     String?
+  phone     String?
   comments  String?
   cartJson  String
   createdAt DateTime @default(now())

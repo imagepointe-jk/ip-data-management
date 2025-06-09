@@ -31,6 +31,7 @@ export function CartModal() {
     const email = `${formData.get("email")}`;
     const company = `${formData.get("company")}`;
     const local = `${formData.get("local")}`;
+    const phone = `${formData.get("phone")}`;
     const comments = `${formData.get("comments")}`;
 
     setSubmitting(true);
@@ -42,6 +43,7 @@ export function CartModal() {
         email,
         company,
         local,
+        phone,
         comments,
         cart,
       });

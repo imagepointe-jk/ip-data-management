@@ -100,9 +100,27 @@
   width: 215px;
 }
 
-.comments-container,
-.comments-container textarea {
+.comments-container {
   width: 100%;
+}
+
+.comments-container textarea {
+  flex: 1;
+}
+
+.comments-subcontainer {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+
+.comments-infobox {
+  border: 1px solid var(--color-alpha);
+  max-width: 200px;
+  font-size: 0.825rem;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #006ac60f;
 }
 
 .primary-fields {
