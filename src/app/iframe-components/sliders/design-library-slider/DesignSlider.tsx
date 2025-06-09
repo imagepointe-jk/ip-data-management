@@ -1,0 +1,100 @@
+"use client";
+
+import { Color, Design } from "@prisma/client";
+import styles from "@/styles/iframe-components/sliders/designLibrarySlider.module.css";
+import { useEffect, useRef, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { Dots } from "../../subcomponents/Dots";
+
+const MIN_SCALE = 0.8;
+type Props = {
+  designs: (Design & { defaultBackgroundColor: Color })[];
+};
+export function DesignSlider({ designs }: Props) {
+  const [offset, setOffset] = useState(0);
+  const [viewedIndex, setViewedIndex] = useState(0);
+  const mainContainerRef = useRef<HTMLDivElement | null>(null);
+  const slidingContainerRef = useRef<HTMLDivElement | null>(null);
+  const canMoveLeft = viewedIndex > 0;
+  const canMoveRight = viewedIndex < designs.length - 1;
+
+  function calcCardScale(index: number) {
+    const distToViewedIndex = Math.abs(viewedIndex - index);
+    const result = -0.3 * distToViewedIndex + 1.4;
+    return result < MIN_SCALE ? MIN_SCALE : result;
+  }
+
+  function onClickButton(direction: "left" | "right") {
+    if (direction === "left" && canMoveLeft) setViewedIndex(viewedIndex - 1);
+    if (direction === "right" && canMoveRight) setViewedIndex(viewedIndex + 1);
+  }
+
+  useEffect(() => {
+    if (!mainContainerRef.current || !slidingContainerRef.current) return;
+
+    const mainContainerWidth =
+      mainContainerRef.current.getBoundingClientRect().width;
+    const firstCard = slidingContainerRef.current?.children[0] as
+      | HTMLDivElement
+      | undefined;
+    const style = firstCard ? getComputedStyle(firstCard) : undefined;
+    const splitFlex = `${style?.flex}`.split(" ");
+    const widthVal = +`${splitFlex[2]}`.replace("px", "");
+
+    setOffset((mainContainerWidth - widthVal) / 2 - viewedIndex * widthVal);
+  }, [viewedIndex]);
+
+  return (
+    <div className={styles["main"]} ref={mainContainerRef}>
+      <div
+        className={styles["sliding-container"]}
+        ref={slidingContainerRef}
+        style={{ left: `${offset}px` }}
+      >
+        {designs.map((design, i) => (
+          <div
+            key={design.id}
+            className={`${styles["card"]} ${
+              i !== viewedIndex ? styles["not-viewed"] : undefined
+            }`}
+            style={{
+              scale: calcCardScale(i),
+              zIndex: i === viewedIndex ? 1 : 0,
+            }}
+          >
+            <img
+              src={design.imageUrl}
+              className={styles["image"]}
+              style={{
+                backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className={styles["buttons-container"]}>
+        <button
+          className={styles["button"]}
+          onClick={() => onClickButton("left")}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} size="2x" />
+        </button>
+        <button
+          className={styles["button"]}
+          onClick={() => onClickButton("right")}
+        >
+          <FontAwesomeIcon icon={faChevronRight} size="2x" />
+        </button>
+      </div>
+      <Dots
+        total={designs.length}
+        activeIndex={viewedIndex}
+        className={styles["dots-container"]}
+      />
+    </div>
+  );
+}
