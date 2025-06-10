@@ -16,7 +16,9 @@ type Props = {
 };
 export function DesignSlider({ designs }: Props) {
   const [offset, setOffset] = useState(0);
-  const [viewedIndex, setViewedIndex] = useState(0);
+  const [viewedIndex, setViewedIndex] = useState(
+    Math.floor(designs.length / 2)
+  ); //start in the middle of the provided designs
   const mainContainerRef = useRef<HTMLDivElement | null>(null);
   const slidingContainerRef = useRef<HTMLDivElement | null>(null);
   const canMoveLeft = viewedIndex > 0;
