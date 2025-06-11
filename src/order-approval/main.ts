@@ -13,9 +13,9 @@ import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { sendEmail } from "@/utility/mail";
 import { OrderWorkflowInstance } from "@prisma/client";
-import { doStepAction } from "./actions";
 import { createOrderUpdatedEmail } from "./mail/mail";
 import { matchProceedListenerToEvent } from "./utility";
+import { doStepAction } from "./actions/main";
 
 //! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
@@ -49,6 +49,7 @@ export async function handleWorkflowEvent(
     );
   }
 
+  //check the current step's event listeners to see if any match the type and source of what was just received
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstanceId);
   const matchingListener = await matchProceedListenerToEvent(
     currentStep,
@@ -101,24 +102,25 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
   if (goto === "next") {
-    const parentWorkflow = await getWorkflowWithIncludes(
-      workflowInstance.parentWorkflowId
-    );
-    if (!parentWorkflow)
-      throw new Error(`No parent workflow found for ${workflowInstance.id}`);
-    const nextStep = parentWorkflow.steps.find(
-      (step) => step.order > workflowInstance.currentStep
-    );
+    await proceedToNextStepOrFinish(workflowInstance);
+    // const parentWorkflow = await getWorkflowWithIncludes(
+    //   workflowInstance.parentWorkflowId
+    // );
+    // if (!parentWorkflow)
+    //   throw new Error(`No parent workflow found for ${workflowInstance.id}`);
+    // const nextStep = parentWorkflow.steps.find(
+    //   (step) => step.order > workflowInstance.currentStep
+    // );
 
-    if (!nextStep) {
-      await setWorkflowInstanceStatus(workflowInstance.id, "finished");
-    } else {
-      await setWorkflowInstanceCurrentStep(
-        workflowInstance.id,
-        workflowInstance.currentStep + 1
-      );
-      handleCurrentStep(workflowInstance);
-    }
+    // if (!nextStep) {
+    //   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+    // } else {
+    //   await setWorkflowInstanceCurrentStep(
+    //     workflowInstance.id,
+    //     workflowInstance.currentStep + 1
+    //   );
+    //   handleCurrentStep(workflowInstance);
+    // }
   } else if (!isNaN(+goto)) {
     await setWorkflowInstanceCurrentStep(workflowInstance.id, +goto);
     handleCurrentStep(workflowInstance);
@@ -126,6 +128,29 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     throw new Error(
       `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
     );
+  }
+}
+
+async function proceedToNextStepOrFinish(
+  workflowInstance: OrderWorkflowInstance
+) {
+  const parentWorkflow = await getWorkflowWithIncludes(
+    workflowInstance.parentWorkflowId
+  );
+  if (!parentWorkflow)
+    throw new Error(`No parent workflow found for ${workflowInstance.id}`);
+  const nextStep = parentWorkflow.steps.find(
+    (step) => step.order > workflowInstance.currentStep
+  );
+
+  if (!nextStep) {
+    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+  } else {
+    await setWorkflowInstanceCurrentStep(
+      workflowInstance.id,
+      workflowInstance.currentStep + 1
+    );
+    handleCurrentStep(workflowInstance);
   }
 }
 

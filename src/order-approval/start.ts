@@ -19,7 +19,15 @@ import { handleCurrentStep } from "./main";
 import { deduplicateArray } from "@/utility/misc";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { createLog } from "@/actions/orderWorkflow/create";
+import {
+  OrderWorkflow,
+  OrderWorkflowInstance,
+  OrderWorkflowUser,
+  Webstore,
+  WebstoreUserRole,
+} from "@prisma/client";
 
+//#region Main
 type StartWorkflowParams = {
   webhookSource: string;
   orderId: number;
@@ -52,40 +60,19 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
   if (!workflow)
     throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
 
+  //find the first step
   const sortedSteps = [...workflow.steps];
   sortedSteps.sort((a, b) => a.order - b.order);
   const lowestStep = sortedSteps[0];
   const lowestStepOrder = lowestStep ? lowestStep.order : 0;
+
+  //update data
   await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
   await setWorkflowInstanceStatus(instance.id, "waiting");
   await setWorkflowInstanceDeniedData(instance.id, null, null);
   await setWorkflowInstanceApprovedData(instance.id, null, null);
   await updateWorkflowInstanceLastStartedDate(instance.id);
-
-  try {
-    const { key, secret } = decryptWebstoreData(workflow.webstore);
-    const response = await setOrderStatus(
-      instance.wooCommerceOrderId,
-      workflow.webstore.url,
-      key,
-      secret,
-      "on-hold"
-    );
-    if (!response.ok)
-      throw new Error(`The API responded with a ${response.status} status.`);
-  } catch (error) {
-    sendEmail(
-      env.DEVELOPER_EMAIL,
-      `Error starting workflow instance ${id}`,
-      `Failed to set the corresponding WooCommerce order's status to "ON HOLD". This was the error: ${error}`
-    );
-    createLog(
-      workflow.webstore.id,
-      `${error}`,
-      "error",
-      "start workflow instance"
-    );
-  }
+  await setOrderOnHold(workflow, instance);
 
   await createLog(
     workflow.webstore.id,
@@ -93,6 +80,8 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
     "info",
     "start workflow instance"
   );
+
+  //execute the first step
   handleCurrentStep(instance);
 }
 
@@ -103,18 +92,52 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
-  const deduplicatedUsers = deduplicateArray(
-    webstore.roles.flatMap((role) => role.users),
-    (user) => `${user.id}`
+  const { purchaserEmail, purchaserName } = await resolvePurchaserData(
+    webstore,
+    orderId
   );
-  if (deduplicatedUsers.length === 0)
-    throw new Error(`No approver was found for webstore ${webstore.name}`);
 
   //assume for now that a webstore will only have one workflow for all orders
+  const workflowInstance = await createInstanceOfFirstWorkflow(
+    webstore,
+    purchaserEmail,
+    purchaserName,
+    orderId
+  );
+
+  //create an access code for each user (although not all will need one)
+  const deduplicatedUsers = getDeduplicatedUsers(webstore.roles, webstore);
+  for (const user of deduplicatedUsers) {
+    await createAccessCode(workflowInstance.id, user.id, "approver");
+  }
+
+  return {
+    workflowInstance,
+  };
+}
+//#endregion
+//#region Helpers
+async function createInstanceOfFirstWorkflow(
+  webstore: Webstore,
+  purchaserEmail: string,
+  purchaserName: string,
+  orderId: number
+) {
   const workflow = await getFirstWorkflowForWebstore(webstore.id);
   if (!workflow)
     throw new Error(`No workflow found for webstore ${webstore.name}`);
 
+  const workflowInstance = await createWorkflowInstance(
+    workflow.id,
+    purchaserEmail,
+    purchaserName,
+    orderId
+  );
+
+  return workflowInstance;
+}
+
+async function resolvePurchaserData(webstore: Webstore, orderId: number) {
   const { key, secret } = decryptWebstoreData(webstore);
   const orderResponse = await getOrder(orderId, webstore.url, key, secret);
   if (!orderResponse.ok)
@@ -123,6 +146,7 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
     );
   const json = await orderResponse.json();
   const parsed = parseWooCommerceOrderJson(json);
+
   const purchaserEmail =
     parsed.metaData.find((meta) => meta.key === "purchaser_email")?.value ||
     "NO_EMAIL_FOUND";
@@ -137,17 +161,50 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
       ? `${purchaserFirstName} ${purchaserLastName}`
       : "NO_NAME_FOUND";
 
-  const workflowInstance = await createWorkflowInstance(
-    workflow.id,
-    purchaserEmail,
-    purchaserName,
-    orderId
-  );
-  for (const user of deduplicatedUsers) {
-    await createAccessCode(workflowInstance.id, user.id, "approver");
-  }
-
-  return {
-    workflowInstance,
-  };
+  return { purchaserEmail, purchaserName };
 }
+
+function getDeduplicatedUsers(
+  roles: (WebstoreUserRole & { users: OrderWorkflowUser[] })[],
+  webstore: Webstore
+) {
+  const deduplicatedUsers = deduplicateArray(
+    roles.flatMap((role) => role.users),
+    (user) => `${user.id}`
+  );
+  if (deduplicatedUsers.length === 0)
+    throw new Error(`No approver was found for webstore ${webstore.name}`);
+
+  return deduplicatedUsers;
+}
+
+async function setOrderOnHold(
+  workflow: OrderWorkflow & { webstore: Webstore },
+  instance: OrderWorkflowInstance
+) {
+  try {
+    const { key, secret } = decryptWebstoreData(workflow.webstore);
+    const response = await setOrderStatus(
+      instance.wooCommerceOrderId,
+      workflow.webstore.url,
+      key,
+      secret,
+      "on-hold"
+    );
+    if (!response.ok)
+      throw new Error(`The API responded with a ${response.status} status.`);
+  } catch (error) {
+    sendEmail(
+      env.DEVELOPER_EMAIL,
+      `Error starting workflow instance ${instance.id}`,
+      `Failed to set the corresponding WooCommerce order's status to "ON HOLD". This was the error: ${error}`
+    );
+    createLog(
+      workflow.webstore.id,
+      `${error}`,
+      "error",
+      "start workflow instance"
+    );
+  }
+}
+//#endregion
