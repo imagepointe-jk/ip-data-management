@@ -1,6 +1,5 @@
 "use client";
 
-import GenericTable from "@/components/GenericTable";
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
@@ -9,14 +8,15 @@ import { useToast } from "@/components/ToastProvider";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { restartWorkflow } from "@/actions/orderWorkflow/misc";
 import { deleteWorkflowInstance } from "@/actions/orderWorkflow/delete";
+import { GenericTableExplorer } from "@/components/GenericTableExplorer/GenericTableExplorer";
+import { OrderWorkflow, OrderWorkflowInstance } from "@prisma/client";
 
 type Props = {
-  workflow: Exclude<
-    UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
-    null
-  >;
+  workflow: OrderWorkflow & { instances: OrderWorkflowInstance[] };
+  pageSize: number;
+  totalInstances: number;
 };
-export function ResultsTable({ workflow }: Props) {
+export function ResultsExplorer({ workflow, pageSize, totalInstances }: Props) {
   const router = useRouter();
   const toast = useToast();
 
@@ -41,9 +41,14 @@ export function ResultsTable({ workflow }: Props) {
   }
 
   return (
-    <GenericTable
-      className={styles["basic-table"]}
+    <GenericTableExplorer
       dataset={workflow.instances}
+      pageSize={pageSize}
+      totalRecords={totalInstances}
+      tableStyle={{ width: "100%" }}
+      filteringProps={{
+        hideSearch: true,
+      }}
       columns={[
         {
           headerName: "ID",

@@ -14,8 +14,9 @@ type Dropdown = {
 };
 export type Props = {
   dropdowns?: Dropdown[];
+  hideSearch?: boolean;
 };
-export function Filtering({ dropdowns }: Props) {
+export function Filtering({ dropdowns, hideSearch }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -45,22 +46,24 @@ export function Filtering({ dropdowns }: Props) {
 
   return (
     <div className={styles["filters-row"]}>
-      <form onSubmit={(e) => onClickSearch(e)}>
-        <input
-          type="search"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button type="submit">Search</button>
-        <button
-          className="button-beta"
-          onClick={onClickClearSearch}
-          type="button"
-        >
-          Clear Search
-        </button>
-      </form>
+      {hideSearch !== true && (
+        <form onSubmit={(e) => onClickSearch(e)}>
+          <input
+            type="search"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button type="submit">Search</button>
+          <button
+            className="button-beta"
+            onClick={onClickClearSearch}
+            type="button"
+          >
+            Clear Search
+          </button>
+        </form>
+      )}
       {dropdowns &&
         dropdowns.map((item) => (
           <div key={item.paramName} className={styles["dropdown-container"]}>
