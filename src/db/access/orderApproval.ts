@@ -417,6 +417,9 @@ export async function getWorkflowStepByNumber(
       workflowId,
       order: stepNumber,
     },
+    include: {
+      proceedListeners: true,
+    },
   });
 }
 

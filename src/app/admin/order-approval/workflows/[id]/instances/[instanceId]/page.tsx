@@ -6,6 +6,7 @@ import {
 import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
 import { InvoiceSender } from "./InvoiceSender";
+import { prisma } from "@/prisma";
 
 type Props = {
   params: Promise<{
@@ -16,10 +17,7 @@ type Props = {
 export default async function Page(props: Props) {
   const params = await props.params;
 
-  const {
-    id,
-    instanceId
-  } = params;
+  const { id, instanceId } = params;
 
   const instance = await getWorkflowInstanceWithIncludes(+instanceId);
   if (!instance) return <h1>Instance {instanceId} not found.</h1>;
@@ -42,8 +40,21 @@ export default async function Page(props: Props) {
         <li>WooCommerce Order ID: {instance.wooCommerceOrderId}</li>
         <li>Status: {instance.status}</li>
         <li>
-          Current Step: {instance.currentStep} (
-          {step ? step.name : "Step not found"}){" "}
+          Current Step:{" "}
+          {step ? `${step.order} (${step.name})` : "Step not found"}
+          {step && step.proceedListeners.length > 0 && (
+            <ul>
+              <li>Listeners</li>
+              <ul>
+                {step.proceedListeners.map((listener) => (
+                  <li key={listener.id}>
+                    <strong>{listener.name}</strong>: Waiting for an &quot;
+                    {listener.type}&quot; event from {listener.from}
+                  </li>
+                ))}
+              </ul>
+            </ul>
+          )}
         </li>
       </ul>
       {instance.status === "finished" && (
