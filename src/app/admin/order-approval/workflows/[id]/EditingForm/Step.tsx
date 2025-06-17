@@ -1,53 +1,63 @@
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import { DraggableDiv } from "@/components/DraggableDiv/DraggableDiv";
 import {
   OrderWorkflowStep,
+  OrderWorkflowStepDisplay,
   OrderWorkflowStepProceedListener,
 } from "@prisma/client";
+import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { useEditingContext } from "../WorkflowEditingContext";
+import { StepDragBar } from "./StepDragBar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { StepActionSettings } from "./StepActionSettings";
 import { StepEndSettings } from "./StepEndSettings";
-import { StepMoveButtons } from "./StepMoveButtons";
 
-type StepProps = {
+type Props = {
   step: OrderWorkflowStep & {
+    display: OrderWorkflowStepDisplay | null;
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
-  canBeMovedUp: boolean;
-  canBeMovedDown: boolean;
+  expanded: boolean;
+  onClickExpand: (stepId: number) => void;
 };
-export function Step({ step, canBeMovedDown, canBeMovedUp }: StepProps) {
-  const { updateWorkflowState, syncedWithServer, deleteStep } =
-    useEditingContext();
+export function Step({ step, expanded, onClickExpand }: Props) {
+  const { updateWorkflowState } = useEditingContext();
+  const initialPosition = step.display
+    ? { x: step.display.positionX, y: step.display.positionY }
+    : undefined;
 
-  function onChangeName(value: string) {
+  function onChangePosition(position: { x: number; y: number }) {
     updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(
         (draftStep) => draftStep.id === step.id
       );
-      if (draftStep) draftStep.name = value;
+      if (draftStep && draftStep.display) {
+        draftStep.display.positionX = position.x;
+        draftStep.display.positionY = position.y;
+      }
     });
   }
 
   return (
-    <div className={styles["single-step-container"]}>
-      <div className={styles["single-step-top-row"]}>
-        <div>Step #{step.order}</div>
-        <StepMoveButtons
-          stepId={step.id}
-          canMoveDown={canBeMovedDown}
-          canMoveUp={canBeMovedUp}
-        />
-      </div>
-      <h3>
-        <div>Name</div>
-        <input
-          type="text"
-          value={step.name}
-          onChange={(e) => onChangeName(e.target.value)}
-        />
-      </h3>
-      <details>
-        <summary>Show more</summary>
+    <DraggableDiv
+      initialPosition={initialPosition}
+      dragBarChildren={<StepDragBar step={step} />}
+      className={styles["single-step-container"]}
+      contentContainerClassName={styles["single-step-content-container"]}
+      dragBarClassName={styles["single-step-drag-bar"]}
+      onDragFinish={onChangePosition}
+      style={{
+        zIndex: expanded ? 1 : "initial",
+        width: expanded ? "600px" : "300px",
+      }}
+    >
+      <div
+        className={styles["expandable-container"]}
+        style={{
+          overflow: "hidden",
+          height: expanded ? "initial" : 0,
+        }}
+      >
         <div className="vert-flex-group">
           <StepActionSettings step={step} />
 
@@ -55,24 +65,14 @@ export function Step({ step, canBeMovedDown, canBeMovedUp }: StepProps) {
 
           <StepEndSettings step={step} />
         </div>
-      </details>
-      <div>
-        <button
-          className="button-danger"
-          disabled={!syncedWithServer}
-          onClick={() => {
-            if (confirm("Are you sure you want to delete this step?"))
-              deleteStep(step.id);
-          }}
-        >
-          Delete
-        </button>
-        {!syncedWithServer && (
-          <span style={{ color: "red" }}>
-            Save your changes before deleting a step!
-          </span>
-        )}
       </div>
-    </div>
+      <button
+        className={styles["expand-button"]}
+        onClick={() => onClickExpand(step.id)}
+      >
+        <FontAwesomeIcon icon={expanded ? faMinus : faPlus} />
+        {`${expanded ? " Show Less" : " Show More"}`}
+      </button>
+    </DraggableDiv>
   );
 }

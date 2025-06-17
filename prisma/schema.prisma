@@ -288,6 +288,17 @@ model OrderWorkflowStep {
   proceedListeners     OrderWorkflowStepProceedListener[]
   workflowId           Int
   workflow             OrderWorkflow                      @relation(fields: [workflowId], references: [id])
+  displayId            Int?
+  display              OrderWorkflowStepDisplay?
+}
+
+//data for visualizing workflow steps in admin area
+model OrderWorkflowStepDisplay {
+  id        Int               @id @default(autoincrement())
+  positionX Int
+  positionY Int
+  step      OrderWorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  stepId    Int               @unique
 }
 
 //when an event is received, it's checked against the current step's ProceedListeners.

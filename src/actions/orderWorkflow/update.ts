@@ -21,6 +21,8 @@ export async function updateWorkflow(
     .map((step) => step.proceedListeners)
     .flat();
 
+  console.log(data.steps.map((step) => step.display));
+
   await prisma.$transaction([
     prisma.orderWorkflow.update({
       where: {
@@ -44,6 +46,18 @@ export async function updateWorkflow(
           actionSubject: step.actionSubject,
           actionMessage: step.actionMessage,
           proceedImmediatelyTo: step.proceedImmediatelyTo,
+          display: {
+            upsert: {
+              update: {
+                positionX: step.display?.positionX,
+                positionY: step.display?.positionY,
+              },
+              create: {
+                positionX: 0,
+                positionY: 0,
+              },
+            },
+          },
         },
       })
     ),

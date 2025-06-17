@@ -192,6 +192,7 @@ export async function getWorkflowWithIncludes(id: number) {
       steps: {
         include: {
           proceedListeners: true,
+          display: true,
         },
       },
       instances: {

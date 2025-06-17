@@ -1,6 +1,11 @@
 "use client";
 import styles from "@/styles/orderApproval/workflowPreview.module.css";
-import { faArrowDown, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faChevronLeft,
+  faChevronRight,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useEditingContext } from "./WorkflowEditingContext";
@@ -15,6 +20,7 @@ type StepPreview = {
 
 export function WorkflowPreview() {
   const [choices, setChoices] = useState<SimulationChoice[]>([]);
+  const [hidden, setHidden] = useState(false);
   const { workflowState } = useEditingContext();
   const steps = workflowState.steps;
   const sorted = [...steps];
@@ -45,7 +51,7 @@ export function WorkflowPreview() {
   }
 
   return (
-    <div className={styles["main"]}>
+    <div className={`${styles["main"]} ${hidden ? styles["hidden"] : ""}`}>
       {error && (
         <div className={styles["error-container"]}>
           {error.message} (At Step: {error.atStepNumber || "N/A"})
@@ -113,6 +119,12 @@ export function WorkflowPreview() {
         <FontAwesomeIcon icon={faInfoCircle} /> Preview not updating? Try
         clicking &quot;Save Changes&quot; and then refreshing the page.
       </div>
+      <button
+        className={styles["show-hide-button"]}
+        onClick={() => setHidden(!hidden)}
+      >
+        <FontAwesomeIcon icon={hidden ? faChevronLeft : faChevronRight} />
+      </button>
     </div>
   );
 }

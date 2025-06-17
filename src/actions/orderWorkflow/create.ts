@@ -174,6 +174,15 @@ export async function createStep(parentWorkflowId: number, order?: number) {
       actionMessage: "Your message here",
       actionSubject: "Your Subject Here",
       proceedImmediatelyTo: "next",
+      display: {
+        create: {
+          positionX: 0,
+          positionY: 0,
+        },
+      },
+    },
+    include: {
+      display: true,
     },
   });
 }

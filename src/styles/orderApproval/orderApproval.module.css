@@ -3,16 +3,55 @@
   text-align: left;
 }
 
+.steps-workspace {
+  position: relative;
+  border: 1px solid gray;
+  width: 100%;
+  height: 1000px;
+  overflow: auto;
+}
+
 .single-step-container {
   border-radius: 10px;
-  background-color: lightgray;
-  width: 600px;
+  background-color: #e7e7e7;
+}
+
+.single-step-content-container,
+.single-step-drag-bar {
   padding: 10px;
 }
 
-.single-step-top-row {
+.single-step-drag-bar {
+  background-color: lightgray;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+}
+
+.delete-step-button {
+  padding: 1px 5px;
+}
+
+.single-step-drag-bar .delete-step-button:disabled {
+  pointer-events: initial;
+  cursor: initial;
+}
+
+.expand-button {
+  background: none;
+  color: black;
+  font-size: 0.75rem;
+}
+
+.expand-button:hover {
+  background: none;
+}
+
+.expandable-container {
+  height: 0;
+  overflow: hidden;
 }
 
 .single-step-move-buttons-container {
@@ -36,10 +75,17 @@
   margin-bottom: 10px;
 }
 
-.save-changes-button {
+.floating-buttons-container {
   position: fixed;
-  right: 450px;
+  right: 45px;
   bottom: 10px;
+  display: flex;
+  gap: 20px;
+  z-index: 10;
+}
+
+.save-changes-button,
+.add-step-button {
   font-size: 1.5rem;
 }
 
@@ -49,6 +95,7 @@
   background-color: rgba(255, 255, 255, 0);
   transition: 0.2s;
   pointer-events: none;
+  z-index: 10;
 }
 
 .loading-blocker.loading {

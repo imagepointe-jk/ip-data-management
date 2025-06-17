@@ -14,6 +14,7 @@ type Vector2 = {
   y: number;
 };
 type Props = {
+  initialPosition?: Vector2;
   style?: CSSProperties;
   className?: string;
   contentContainerStyle?: CSSProperties;
@@ -26,6 +27,7 @@ type Props = {
 };
 export function DraggableDiv({
   children,
+  initialPosition,
   style,
   className,
   contentContainerClassName,
@@ -37,7 +39,9 @@ export function DraggableDiv({
 }: Props) {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const dragBarRef = useRef<HTMLDivElement | null>(null);
-  const [position, setPosition] = useState<Vector2>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Vector2>(
+    initialPosition || { x: 0, y: 0 }
+  );
   const positionRef = useRef<Vector2>({ x: 0, y: 0 }); //managed alongside position; stores the most recent value of position so it can be used in callbacks in onMouseUp
   const [dragging, setDragging] = useState(false);
   const prevMousePos = useRef<Vector2>({ x: 0, y: 0 }); //using ref because prevMousePos should not trigger re-renders
