@@ -97,16 +97,14 @@ export function constrainEditorObjectTransform(
     topLeftBounds.y,
     bottomRightBounds.y
   );
-  const clampedWidth = clamp(
-    objectTransform.sizeNormalized.x,
-    0.05,
-    closestLocation.width
-  );
-  const clampedHeight = clamp(
-    objectTransform.sizeNormalized.y,
-    0.05,
-    closestLocation.height
-  );
+  const widthFactor = closestLocation.width / objectTransform.sizeNormalized.x;
+  const heightFactor =
+    closestLocation.height / objectTransform.sizeNormalized.y;
+  const initialClampScale =
+    widthFactor < heightFactor ? widthFactor : heightFactor;
+  const finalClampScale = clamp(initialClampScale, 0, 1);
+  const clampedWidth = finalClampScale * objectTransform.sizeNormalized.x;
+  const clampedHeight = finalClampScale * objectTransform.sizeNormalized.y;
 
   return {
     constrainedPosition: {
