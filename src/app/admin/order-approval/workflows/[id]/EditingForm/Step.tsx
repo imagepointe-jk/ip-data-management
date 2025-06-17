@@ -73,6 +73,7 @@ export function Step({ step, expanded, onClickExpand }: Props) {
         <FontAwesomeIcon icon={expanded ? faMinus : faPlus} />
         {`${expanded ? " Show Less" : " Show More"}`}
       </button>
+      <div className={styles["step-id"]}>id: {step.id}</div>
     </DraggableDiv>
   );
 }
