@@ -24,6 +24,8 @@ type Props = {
   children?: ReactNode;
   dragBarChildren?: ReactNode;
   onDragFinish?: (position: Vector2) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 export function DraggableDiv({
   children,
@@ -36,6 +38,8 @@ export function DraggableDiv({
   dragBarClassName,
   dragBarStyle,
   onDragFinish,
+  onMouseEnter,
+  onMouseLeave,
 }: Props) {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const dragBarRef = useRef<HTMLDivElement | null>(null);
@@ -92,6 +96,8 @@ export function DraggableDiv({
     <div
       ref={mainRef}
       className={className}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         position: "absolute",
         left: `${position.x}px`,

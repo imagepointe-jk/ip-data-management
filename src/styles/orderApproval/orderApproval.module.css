@@ -16,6 +16,10 @@
   background-color: #e7e7e7;
 }
 
+.single-step-container.highlighted {
+  outline: 3px solid #006ac6;
+}
+
 .single-step-content-container,
 .single-step-drag-bar {
   padding: 10px;

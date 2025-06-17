@@ -18,9 +18,19 @@ type Props = {
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
   expanded: boolean;
+  highlighted: boolean;
   onClickExpand: (stepId: number) => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 };
-export function Step({ step, expanded, onClickExpand }: Props) {
+export function Step({
+  step,
+  expanded,
+  highlighted,
+  onClickExpand,
+  onMouseEnter,
+  onMouseLeave,
+}: Props) {
   const { updateWorkflowState } = useEditingContext();
   const initialPosition = step.display
     ? { x: step.display.positionX, y: step.display.positionY }
@@ -42,10 +52,14 @@ export function Step({ step, expanded, onClickExpand }: Props) {
     <DraggableDiv
       initialPosition={initialPosition}
       dragBarChildren={<StepDragBar step={step} />}
-      className={styles["single-step-container"]}
+      className={`${styles["single-step-container"]} ${
+        highlighted ? styles["highlighted"] : undefined
+      }`}
       contentContainerClassName={styles["single-step-content-container"]}
       dragBarClassName={styles["single-step-drag-bar"]}
       onDragFinish={onChangePosition}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       style={{
         zIndex: expanded ? 1 : "initial",
         width: expanded ? "600px" : "300px",

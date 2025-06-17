@@ -11,8 +11,10 @@ export function EditingForm() {
   const { workflowState, updateWorkflowState, loading, saveChanges } =
     useEditingContext();
   const [expandedStepIds, setExpandedStepIds] = useState<number[]>([]);
+  const [hoveredStepId, setHoveredStepId] = useState<number | null>(null);
   const sorted = [...workflowState.steps];
-  sorted.sort((a, b) => a.order - b.order); //sorting might not be necessary anymore with the positionable step functionality
+  sorted.sort((a, b) => a.order - b.order);
+  const idsToHighlight = getIdsToHighlight(); //when hovering over a step, highlight the step(s) that come after that step, for easier visualization
   // const first = sorted[0];
   // const last = sorted[sorted.length - 1];
 
@@ -46,6 +48,35 @@ export function EditingForm() {
     });
   }
 
+  function getIdsToHighlight(): number[] {
+    const hoveredStep = workflowState.steps.find(
+      (step) => step.id === hoveredStepId
+    );
+    if (!hoveredStep) return [];
+
+    const nextStep = sorted.find((step) => step.order > hoveredStep.order);
+    if (hoveredStep.proceedImmediatelyTo === "next") {
+      if (!nextStep) return [];
+      return [nextStep.id];
+    }
+    if (hoveredStep.proceedImmediatelyTo !== null) {
+      const goToStep = sorted.find(
+        (step) => `${step.order}` === hoveredStep.proceedImmediatelyTo
+      );
+      if (goToStep) return [goToStep.id];
+    }
+
+    const ids: number[] = [];
+
+    for (const listener of hoveredStep.proceedListeners) {
+      if (listener.goto === "next" && nextStep) ids.push(nextStep.id);
+      const goToStep = sorted.find((step) => `${step.order}` === listener.goto);
+      if (goToStep) ids.push(goToStep.id);
+    }
+
+    return ids;
+  }
+
   return (
     <div className="vert-flex-group" style={{ position: "relative" }}>
       <Link href={`${workflowState.id}/instances`}>
@@ -68,20 +99,13 @@ export function EditingForm() {
             key={step.id}
             step={step}
             expanded={expandedStepIds.includes(step.id)}
+            highlighted={idsToHighlight.includes(step.id)}
             onClickExpand={onToggleStepExpanded}
+            onMouseEnter={() => setHoveredStepId(step.id)}
+            onMouseLeave={() => setHoveredStepId(null)}
           />
         ))}
       </div>
-      {/* <div className="vert-flex-group">
-        {sorted.map((step) => (
-          <Step
-            key={step.id}
-            step={step}
-            canBeMovedDown={step.id !== last?.id}
-            canBeMovedUp={step.id !== first?.id}
-          />
-        ))}
-      </div> */}
       <div className={styles["floating-buttons-container"]}>
         <button
           type="button"
@@ -94,14 +118,6 @@ export function EditingForm() {
           Save Changes
         </button>
       </div>
-      {/* <div>
-        <button type="button" onClick={onClickAddStep}>
-          + Add Step
-        </button>
-      </div>
-      <button className={styles["save-changes-button"]} onClick={saveChanges}>
-        Save Changes
-      </button> */}
       <div
         className={`${styles["loading-blocker"]} ${
           loading ? styles["loading"] : ""
