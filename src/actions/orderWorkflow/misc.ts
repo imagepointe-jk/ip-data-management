@@ -298,6 +298,8 @@ export async function sendReminderEmails() {
   });
 
   for (const workflow of workflowsWithOldInstances) {
+    if (!workflow.webstore.sendReminderEmails) continue;
+
     const oldInstances = workflow.instances.map((instance) => ({
       id: instance.id,
       createdAt: instance.createdAt.toLocaleDateString(),
@@ -311,13 +313,27 @@ export async function sendReminderEmails() {
         instances: oldInstances,
       }
     );
-    await sendEmail("john.doe@example.com", "Outstanding Orders", message);
-    await createLog(
-      workflow.webstore.id,
-      `Sent reminder email for ${oldInstances.length} outstanding orders.`,
-      "info",
-      "send email"
-    );
+    const emails = workflow.webstore.reminderEmailTargets
+      ? workflow.webstore.reminderEmailTargets.split(";")
+      : [];
+    for (const email of emails) {
+      try {
+        await sendEmail(email, "Outstanding Orders", message);
+        await createLog(
+          workflow.webstore.id,
+          `Sent reminder email to ${email} for ${oldInstances.length} outstanding orders.`,
+          "info",
+          "send email"
+        );
+      } catch (error) {
+        await createLog(
+          workflow.webstore.id,
+          `Failed to send a reminder email to ${email}`,
+          "error",
+          "send email"
+        );
+      }
+    }
   }
 }
 
