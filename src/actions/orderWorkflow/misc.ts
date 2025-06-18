@@ -261,18 +261,36 @@ export async function sendReminderEmails() {
     where: {
       instances: {
         some: {
-          createdAt: {
-            lte: new Date(oneDayAgo),
-          },
+          AND: [
+            {
+              createdAt: {
+                lte: new Date(oneDayAgo),
+              },
+            },
+            {
+              status: {
+                not: "finished",
+              },
+            },
+          ],
         },
       },
     },
     include: {
       instances: {
         where: {
-          createdAt: {
-            lte: new Date(oneDayAgo),
-          },
+          AND: [
+            {
+              createdAt: {
+                lte: new Date(oneDayAgo),
+              },
+            },
+            {
+              status: {
+                not: "finished",
+              },
+            },
+          ],
         },
       },
       webstore: true,
