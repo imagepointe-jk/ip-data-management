@@ -17,6 +17,8 @@ const blankState: WebstoreEditorData = {
   orderUpdatedEmails: "",
   organizationName: "",
   otherSupportEmails: "",
+  reminderEmailTargets: "",
+  sendReminderEmails: true,
   salesPersonEmail: "",
   salesPersonName: "",
   url: "",
