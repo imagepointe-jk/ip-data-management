@@ -129,6 +129,13 @@ export function getTimeStampYearsAgo(yearsAgo: number) {
   return date.getTime();
 }
 
+export function getDaysSinceDate(date: Date) {
+  const twentyFourHours = 1000 * 60 * 60 * 24;
+  const msSinceDate = new Date().getTime() - date.getTime();
+  const days = msSinceDate / twentyFourHours;
+  return days;
+}
+
 export function findAllFormValues(
   formData: FormData,
   testFn: (fieldName: string, fieldValue: FormDataEntryValue) => boolean
