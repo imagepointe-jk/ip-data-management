@@ -133,13 +133,11 @@ function Page() {
       (sku) => sku.toLocaleLowerCase() === product.id.toLocaleLowerCase()
     )
   );
-  console.log("sorting by ", skus);
   const sortedProducts = sortByIdOrder(
     filteredProducts,
     skus,
     (product) => product.id
   );
-  console.log(sortedProducts.map((p) => p.id));
 
   return (
     <IframeHelperProvider>
