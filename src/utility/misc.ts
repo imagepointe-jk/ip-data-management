@@ -293,3 +293,32 @@ export function deduplicateArray<T>(
   }
   return deduplicated;
 }
+
+//sort firstArray based on the order of IDs given in idsArray.
+//firstArray can be any type, as long as getId can be used to pull unique IDs from each item in it.
+export function sortByIdOrder<T>(
+  firstArray: T[],
+  idsArray: string[],
+  getId: (item: T) => string
+): T[] {
+  const idToIndexMap = new Map<string, number>();
+
+  // Create a map of id => order index
+  idsArray.forEach((id, index) => {
+    idToIndexMap.set(id.toLocaleLowerCase(), index);
+  });
+
+  return [...firstArray].sort((a, b) => {
+    const idA = getId(a).toLocaleLowerCase();
+    const idB = getId(b).toLocaleLowerCase();
+    const indexA = idToIndexMap.get(idA);
+    const indexB = idToIndexMap.get(idB);
+
+    // Sort unknown IDs to the end, preserving their relative order
+    if (indexA === undefined && indexB === undefined) return 0;
+    if (indexA === undefined) return 1;
+    if (indexB === undefined) return -1;
+
+    return indexA - indexB;
+  });
+}

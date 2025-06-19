@@ -2,6 +2,7 @@ import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProv
 import { DesignSlider } from "./DesignSlider";
 import { prisma } from "@/prisma";
 import { NextSearchParams } from "@/types/schema/misc";
+import { sortByIdOrder } from "@/utility/misc";
 
 type Props = {
   params: Promise<{
@@ -11,21 +12,22 @@ type Props = {
 };
 export default async function Page({ params, searchParams }: Props) {
   const search = await searchParams;
-  const ids = `${search.ids}`.split(",").map((id) => +id);
+  const ids = `${search.ids}`.split(",");
   const designs = await prisma.design.findMany({
     where: {
       id: {
-        in: ids,
+        in: ids.map((id) => +id),
       },
     },
     include: {
       defaultBackgroundColor: true,
     },
   });
+  const sorted = sortByIdOrder(designs, ids, (design) => `${design.id}`);
 
   return (
     <IframeHelperProvider>
-      <DesignSlider designs={designs} />
+      <DesignSlider designs={sorted} />
     </IframeHelperProvider>
   );
 }

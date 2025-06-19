@@ -6,6 +6,7 @@ import styles from "@/styles/iframe-components/sliders/daProductSlider.module.cs
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { sortByIdOrder } from "@/utility/misc";
 
 const BLACK = "#000000";
 const PURPLE = "#483370";
@@ -123,6 +124,7 @@ const products: Product[] = [
 
 function Page() {
   const search = useSearchParams();
+  //"id" in the product array above is actually SKUs, but adapted for CardSlider so conform to the type HasID
   const skus = search.get("skus")
     ? `${search.get("skus")}`.split(",")
     : products.map((product) => product.id); //get all skus given by search params; include all if param not present
@@ -131,11 +133,18 @@ function Page() {
       (sku) => sku.toLocaleLowerCase() === product.id.toLocaleLowerCase()
     )
   );
+  console.log("sorting by ", skus);
+  const sortedProducts = sortByIdOrder(
+    filteredProducts,
+    skus,
+    (product) => product.id
+  );
+  console.log(sortedProducts.map((p) => p.id));
 
   return (
     <IframeHelperProvider>
       <CardSlider
-        dataset={filteredProducts}
+        dataset={sortedProducts}
         createCard={(data) => <Card card={data} />}
         cardClassName={styles["card"]}
         cardContainerClassName={styles["card-container"]}
