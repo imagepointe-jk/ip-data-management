@@ -9,6 +9,8 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { Dots } from "../../subcomponents/Dots";
+import { IframeLink } from "@/components/IframeHelper/IframeLink";
+import { wrap } from "@/utility/misc";
 
 const MIN_SCALE = 0.8;
 type Props = {
@@ -21,8 +23,8 @@ export function DesignSlider({ designs }: Props) {
   ); //start in the middle of the provided designs
   const mainContainerRef = useRef<HTMLDivElement | null>(null);
   const slidingContainerRef = useRef<HTMLDivElement | null>(null);
-  const canMoveLeft = viewedIndex > 0;
-  const canMoveRight = viewedIndex < designs.length - 1;
+  // const canMoveLeft = viewedIndex > 0;
+  // const canMoveRight = viewedIndex < designs.length - 1;
 
   function calcCardScale(index: number) {
     const distToViewedIndex = Math.abs(viewedIndex - index);
@@ -31,8 +33,8 @@ export function DesignSlider({ designs }: Props) {
   }
 
   function onClickButton(direction: "left" | "right") {
-    if (direction === "left" && canMoveLeft) setViewedIndex(viewedIndex - 1);
-    if (direction === "right" && canMoveRight) setViewedIndex(viewedIndex + 1);
+    const increment = direction === "left" ? -1 : 1;
+    setViewedIndex(wrap(viewedIndex + increment, 0, designs.length - 1));
   }
 
   useEffect(() => {
@@ -58,11 +60,12 @@ export function DesignSlider({ designs }: Props) {
         style={{ left: `${offset}px` }}
       >
         {designs.map((design, i) => (
-          <div
+          <IframeLink
             key={design.id}
             className={`${styles["card"]} ${
-              i !== viewedIndex ? styles["not-viewed"] : undefined
+              i !== viewedIndex ? styles["not-viewed"] : ""
             }`}
+            href={`https://www.imagepointe.com/design-library/?viewDesign=${design.id}`}
             style={{
               scale: calcCardScale(i),
               zIndex: i === viewedIndex ? 1 : 0,
@@ -75,7 +78,7 @@ export function DesignSlider({ designs }: Props) {
                 backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
               }}
             />
-          </div>
+          </IframeLink>
         ))}
       </div>
       <div className={styles["buttons-container"]}>
