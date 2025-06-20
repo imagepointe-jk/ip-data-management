@@ -301,7 +301,7 @@ export async function sendReminderEmails() {
     if (!workflow.webstore.sendReminderEmails) continue;
 
     const oldInstances = workflow.instances.map((instance) => ({
-      id: instance.id,
+      id: instance.wooCommerceOrderId,
       createdAt: instance.createdAt.toLocaleDateString(),
       daysAgo: Math.floor(getDaysSinceDate(instance.createdAt)),
     }));
