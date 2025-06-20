@@ -52,3 +52,9 @@
   font-size: 1.125rem;
   margin-top: 25px;
 }
+
+@media screen and (max-width: 480px) {
+  .card-container {
+    width: 300px;
+  }
+}
