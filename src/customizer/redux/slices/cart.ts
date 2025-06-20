@@ -20,7 +20,7 @@ import {
   findViewWithTextInCart,
 } from "@/customizer/utils/find";
 import { pixelTransformToNormalized } from "@/customizer/utils/convert";
-import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
+import { snapToNearest } from "@/utility/geometry";
 
 const initialState: CartState = {
   products: [],
@@ -170,11 +170,22 @@ export const cartSlice = createSlice({
       );
       if (!viewInProductData)
         throw new Error(`View ${targetViewId} not found in product data`);
-      const { constrainedPosition, constrainedSize } =
-        constrainEditorObjectTransform({
-          locations: viewInProductData.locations,
-          objectTransform: objectData,
-        });
+      const snapped = snapToNearest(
+        {
+          position: {
+            x: objectData.positionNormalized.x,
+            y: objectData.positionNormalized.y,
+          },
+          size: {
+            x: objectData.sizeNormalized.x,
+            y: objectData.sizeNormalized.y,
+          },
+        },
+        viewInProductData.locations.map((location) => ({
+          position: { x: location.positionX, y: location.positionY },
+          size: { x: location.width, y: location.height },
+        }))
+      );
 
       viewInState.artworks.push({
         imageUrl,
@@ -189,12 +200,12 @@ export const cartSlice = createSlice({
         objectData: {
           ...objectData,
           positionNormalized: {
-            x: constrainedPosition.x,
-            y: constrainedPosition.y,
+            x: snapped.position.x,
+            y: snapped.position.y,
           },
           sizeNormalized: {
-            x: constrainedSize.x,
-            y: constrainedSize.y,
+            x: snapped.size.x,
+            y: snapped.size.y,
           },
         },
       });
@@ -213,11 +224,22 @@ export const cartSlice = createSlice({
       );
       if (!viewInProductData)
         throw new Error(`View ${targetViewId} not found in product data`);
-      const { constrainedPosition, constrainedSize } =
-        constrainEditorObjectTransform({
-          locations: viewInProductData.locations,
-          objectTransform: objectData,
-        });
+      const snapped = snapToNearest(
+        {
+          position: {
+            x: objectData.positionNormalized.x,
+            y: objectData.positionNormalized.y,
+          },
+          size: {
+            x: objectData.sizeNormalized.x,
+            y: objectData.sizeNormalized.y,
+          },
+        },
+        viewInProductData.locations.map((location) => ({
+          position: { x: location.positionX, y: location.positionY },
+          size: { x: location.width, y: location.height },
+        }))
+      );
 
       viewInState.texts.push({
         textData: {
@@ -231,12 +253,12 @@ export const cartSlice = createSlice({
         objectData: {
           ...objectData,
           positionNormalized: {
-            x: constrainedPosition.x,
-            y: constrainedPosition.y,
+            x: snapped.position.x,
+            y: snapped.position.y,
           },
           sizeNormalized: {
-            x: constrainedSize.x,
-            y: constrainedSize.y,
+            x: snapped.size.x,
+            y: snapped.size.y,
           },
         },
       });
