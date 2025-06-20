@@ -6,6 +6,7 @@ import { AppError } from "@/error";
 import { DataError, SyncError, SyncWarning } from "@/processes/hubspot/error";
 import { dataToSheetBuffer } from "./spreadsheet";
 import { QuoteRequest } from "@/types/schema/designs";
+import path from "path";
 
 export async function sendEmail(
   recipientAddress: string,
@@ -120,4 +121,13 @@ export function sendIssuesSheet(
     "Results of HubSpot sync",
     [{ content: sheet, filename: "issues.xlsx" }]
   );
+}
+
+export function createHandlebarsEmailBody(templatePath: string, context?: any) {
+  const templateSource = fs.readFileSync(
+    path.resolve(process.cwd(), templatePath),
+    "utf-8"
+  );
+  const template = handlebars.compile(templateSource);
+  return template(context);
 }

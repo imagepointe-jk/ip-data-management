@@ -6,16 +6,18 @@ import styles from "@/styles/iframe-components/sliders/generalProductSlider.modu
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { sortByIdOrder } from "@/utility/misc";
 
 function Page() {
   const search = useSearchParams();
   const ids = `${search.get("ids")}`.split(",");
   const dataset = ids.map((id) => ({ id }));
+  const sorted = sortByIdOrder(dataset, ids, (item) => item.id);
 
   return (
     <IframeHelperProvider>
       <CardSlider
-        dataset={dataset}
+        dataset={sorted}
         createCard={(data) => <Card id={data.id} />}
         cardClassName={styles["card"]}
         cardContainerClassName={styles["card-container"]}

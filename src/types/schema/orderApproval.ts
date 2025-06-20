@@ -102,6 +102,8 @@ export type WebstoreEditorData = {
   salesPersonEmail: string;
   otherSupportEmails: string | null;
   orderUpdatedEmails: string | null;
+  reminderEmailTargets: string | null;
+  sendReminderEmails: boolean;
   shippingEmailFilename: string;
   checkoutFields: WebstoreCheckoutField[];
   shippingSettings: {

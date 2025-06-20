@@ -1,0 +1,41 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Outstanding Orders</title>
+  </head>
+  <body>
+    <p>Hello,</p>
+    <p>This is a reminder email to notify you that at least one outstanding
+      order for the webstore
+      <strong>{{webstoreName}}</strong>
+      requires attention. Please review the following order(s) and determine
+      whether any action is required.</p>
+    <table style="border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Order ID</th>
+          <th
+            style="border: 1px solid black; padding: 8px; background-color: lightgray;"
+          >Order Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each instances}}
+          <tr>
+            <td style="border: 1px solid black; padding: 8px;">{{id}}</td>
+            <td style="border: 1px solid black; padding: 8px;">{{createdAt}}
+              <strong>
+                ({{daysAgo}}
+                days ago)
+              </strong></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p><a href="{{webstoreUrl}}/order-approval-dashboard">View Approval
+        Dashboard</a></p>
+  </body>
+</html>

@@ -206,6 +206,8 @@ model Webstore {
   orderUpdatedEmails           String?
   customOrderApprovedEmail     String?
   useCustomOrderApprovedEmail  Boolean                   @default(false)
+  reminderEmailTargets         String? //semicolon-separated list of email addresses to send reminder emails to about outstanding orders 
+  sendReminderEmails           Boolean                   @default(true)
   shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
   shippingEmailDestOverride    String? //overrides the IP shipping team email defined in env variables; useful for testing so the email doesn't actually go to the team
   approverDashboardViewerEmail String                    @default("NO_EMAIL")

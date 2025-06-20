@@ -9,7 +9,8 @@
     "seed": "npx ts-node ./seed/seed.ts",
     "seedReal": "npx ts-node ./seed/seedReal.ts",
     "lint": "next lint",
-    "test": "npx jest"
+    "test": "npx jest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
@@ -55,6 +56,7 @@
     "@types/uuid": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "15.3.2",
+    "husky": "^9.1.7",
     "prisma": "^5.13.0",
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",

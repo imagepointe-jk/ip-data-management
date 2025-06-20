@@ -135,6 +135,37 @@ export function MainSettings({
       </div>
       <div>
         <label className="input-label">
+          Reminder email addresses (separate with {";"})
+        </label>
+        <input
+          type="text"
+          name="reminder-emails"
+          id="reminder-emails"
+          value={webstoreState.reminderEmailTargets || ""}
+          style={{ width: "600px" }}
+          onChange={(e) =>
+            setWebstoreState((draft) => {
+              draft.reminderEmailTargets = e.target.value;
+            })
+          }
+        />
+      </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={webstoreState.sendReminderEmails}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.sendReminderEmails = e.target.checked;
+              })
+            }
+          />
+          Send reminder emails
+        </label>
+      </div>
+      <div>
+        <label className="input-label">
           {!creatingNew ? "Change API Key " : "Set API Key "}
         </label>
         <input

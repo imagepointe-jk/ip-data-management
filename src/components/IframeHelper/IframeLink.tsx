@@ -4,15 +4,16 @@
 
 "use client";
 
-import { MouseEvent, ReactNode } from "react";
+import { CSSProperties, MouseEvent, ReactNode } from "react";
 import { useIframe } from "./IframeHelperProvider";
 
 type Props = {
   href: string;
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
 };
-export function IframeLink({ children, className, href }: Props) {
+export function IframeLink({ children, className, style, href }: Props) {
   const {
     parentWindow: { requestNavigation },
   } = useIframe();
@@ -25,7 +26,7 @@ export function IframeLink({ children, className, href }: Props) {
   }
 
   return (
-    <a href={href} className={className} onClick={onClick}>
+    <a href={href} className={className} style={style} onClick={onClick}>
       {children}
     </a>
   );

@@ -7,7 +7,7 @@ import {
   getAccessCodeWithIncludes,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
-import { sendEmail } from "@/utility/mail";
+import { createHandlebarsEmailBody, sendEmail } from "@/utility/mail";
 import {
   createSupportEmail,
   processFormattedText,
@@ -22,6 +22,8 @@ import {
   startOrderWorkflow,
   startWorkflowInstanceFromBeginning,
 } from "@/order-approval/start";
+import { getDaysSinceDate } from "@/utility/misc";
+import { createLog } from "./create";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -249,6 +251,90 @@ export async function sendInvoiceEmail(
     `Invoice for Order ${wooCommerceOrderId}`,
     message
   );
+}
+
+export async function sendReminderEmails() {
+  const twentyFourHours = 1000 * 60 * 60 * 24;
+  const now = Date.now();
+  const oneDayAgo = now - twentyFourHours;
+  const workflowsWithOldInstances = await prisma.orderWorkflow.findMany({
+    where: {
+      instances: {
+        some: {
+          AND: [
+            {
+              createdAt: {
+                lte: new Date(oneDayAgo),
+              },
+            },
+            {
+              status: {
+                not: "finished",
+              },
+            },
+          ],
+        },
+      },
+    },
+    include: {
+      instances: {
+        where: {
+          AND: [
+            {
+              createdAt: {
+                lte: new Date(oneDayAgo),
+              },
+            },
+            {
+              status: {
+                not: "finished",
+              },
+            },
+          ],
+        },
+      },
+      webstore: true,
+    },
+  });
+
+  for (const workflow of workflowsWithOldInstances) {
+    if (!workflow.webstore.sendReminderEmails) continue;
+
+    const oldInstances = workflow.instances.map((instance) => ({
+      id: instance.wooCommerceOrderId,
+      createdAt: instance.createdAt.toLocaleDateString(),
+      daysAgo: Math.floor(getDaysSinceDate(instance.createdAt)),
+    }));
+    const message = createHandlebarsEmailBody(
+      "src/order-approval/mail/outstandingInstances.hbs",
+      {
+        webstoreName: workflow.webstore.name,
+        webstoreUrl: workflow.webstore.url,
+        instances: oldInstances,
+      }
+    );
+    const emails = workflow.webstore.reminderEmailTargets
+      ? workflow.webstore.reminderEmailTargets.split(";")
+      : [];
+    for (const email of emails) {
+      try {
+        await sendEmail(email, "Outstanding Orders", message);
+        await createLog(
+          workflow.webstore.id,
+          `Sent reminder email to ${email} for ${oldInstances.length} outstanding orders.`,
+          "info",
+          "send email"
+        );
+      } catch (error) {
+        await createLog(
+          workflow.webstore.id,
+          `Failed to send a reminder email to ${email}`,
+          "error",
+          "send email"
+        );
+      }
+    }
+  }
 }
 
 export async function startOrderWorkflowAction(
