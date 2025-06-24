@@ -56,9 +56,16 @@ type IframeSize = {
 };
 type Props = {
   children: ReactNode;
+  iframeId?: string;
+  minHeight?: number;
   iframeSizes?: IframeSize[];
 };
-export function IframeHelperProvider({ children, iframeSizes }: Props) {
+export function IframeHelperProvider({
+  children,
+  iframeSizes,
+  iframeId,
+  minHeight,
+}: Props) {
   const [parentWindowData, setParentWindowData] = useState(
     null as ParentWindowData | null
   );
@@ -82,7 +89,10 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
   }
 
   function requestHeightChange(newHeight: number) {
+    if (minHeight && newHeight < minHeight) return;
+
     postMessage({
+      iframeId,
       type: messageTypes.outgoing.heightChangeRequest,
       height: `${newHeight}px`,
     });
@@ -143,7 +153,7 @@ export function IframeHelperProvider({ children, iframeSizes }: Props) {
     window.addEventListener("message", onParentWindowResponse);
     window.addEventListener("resize", onIframeResize);
 
-    postMessage({ type: messageTypes.outgoing.urlRequest });
+    postMessage({ iframeId, type: messageTypes.outgoing.urlRequest });
 
     return () => {
       window.removeEventListener("message", onParentWindowResponse);
