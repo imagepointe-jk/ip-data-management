@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import throttle from "lodash.throttle";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
+//this slider takes the visibility of cards into account when sliding. this allows for more intuitive behavior in some cases.
+//however, it also means the slider position does not derive from a simple "index" variable, since it can slide to positions between cards.
 type HasId = {
   id: number | string;
 };

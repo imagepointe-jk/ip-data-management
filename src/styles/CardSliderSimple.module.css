@@ -1,0 +1,83 @@
+.main {
+  position: relative;
+  margin: 0 50px;
+}
+
+.sliding-parent {
+  height: 475px;
+  overflow: hidden;
+  position: relative;
+  margin: auto;
+}
+
+.sliding-container {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  transition: 1s;
+}
+
+.card-container {
+  width: 300px;
+  height: 450px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+}
+
+.arrow-button {
+  width: 35px;
+  height: 35px;
+  padding: 10px;
+  border: none;
+  border-radius: 100px;
+  background-color: black;
+  color: white;
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.arrow-button:focus-visible {
+  outline-offset: 3px;
+}
+
+.arrow-button.disabled {
+  background-color: var(--armor-gray-500);
+}
+
+.arrow-icon-left {
+  left: -50px;
+}
+
+.arrow-icon-right {
+  right: -50px;
+}
+
+.dots-container {
+  display: flex;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .main {
+    margin: 0;
+  }
+
+  .arrow-icon-left {
+    left: 0;
+  }
+
+  .arrow-icon-right {
+    right: 0;
+  }
+}

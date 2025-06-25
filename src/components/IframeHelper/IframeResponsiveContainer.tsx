@@ -8,8 +8,9 @@ import { useIframe } from "./IframeHelperProvider";
 //this helps prevent scrollbars when content in an iframe changes its vertical size in response to narrower displays.
 type Props = {
   children: ReactNode;
+  className?: string;
 };
-export function IframeResponsiveContainer({ children }: Props) {
+export function IframeResponsiveContainer({ children, className }: Props) {
   const { parentWindow } = useIframe();
   const mainRef = useRef<HTMLDivElement | null>(null);
 
@@ -26,5 +27,9 @@ export function IframeResponsiveContainer({ children }: Props) {
     return () => observer.disconnect();
   }, [parentWindow]);
 
-  return <div ref={mainRef}>{children}</div>;
+  return (
+    <div ref={mainRef} className={className}>
+      {children}
+    </div>
+  );
 }

@@ -322,3 +322,14 @@ export function sortByIdOrder<T>(
     return indexA - indexB;
   });
 }
+
+export function wrapArray<T>(arr: T[], shift: number): T[] {
+  const len = arr.length;
+  if (len === 0) return [];
+
+  // Normalize the shift to be within array bounds and handle negatives
+  const normalizedShift = ((-shift % len) + len) % len;
+
+  // Positive shift moves elements from front to back (left shift)
+  return [...arr.slice(normalizedShift), ...arr.slice(0, normalizedShift)];
+}
