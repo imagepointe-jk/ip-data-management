@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import styles from "@/styles/AdminNavbar.module.css";
+import { useState } from "react";
 
 export default function NavbarLinks() {
   const path = usePathname();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <>
@@ -76,6 +79,16 @@ export default function NavbarLinks() {
         >
           Products
         </Link>
+      </li>
+      <li className={styles["dropdown-parent"]}>
+        <button onClick={() => setDropdownOpen(!dropdownOpen)}>More...</button>
+        {dropdownOpen && (
+          <ul className={styles["dropdown"]}>
+            <li>
+              <Link href="/admin/colors">Colors</Link>
+            </li>
+          </ul>
+        )}
       </li>
     </>
   );
