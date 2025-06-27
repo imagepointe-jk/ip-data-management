@@ -78,6 +78,7 @@
   align-items: center;
   color: white;
   background-size: cover;
+  background-position: center;
 }
 
 .inactive-card-overlay {
@@ -108,8 +109,16 @@
   }
 
   .main .slider {
-    max-width: 400px;
+    max-width: 550px;
     margin: auto;
+  }
+
+  .main .card-container {
+    width: 550px;
+  }
+
+  .card {
+    padding: 0 70px;
   }
 
   .inactive-cards-container {
@@ -127,15 +136,15 @@
 
 @media screen and (max-width: 768px) {
   .main .slider {
-    max-width: 300px;
+    max-width: 320px;
   }
 
   .main .card-container {
-    width: 300px;
+    width: 320px;
   }
 
   .card {
-    padding: 0 40px;
+    padding: 0 45px;
   }
 
   .heading {
