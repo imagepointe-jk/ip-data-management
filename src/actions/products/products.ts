@@ -62,14 +62,20 @@ async function syncRows(productData: ASIProductImportData[]) {
         );
 
       const searchJson = await searchResponse.json();
-      const firstResult = searchJson[0];
-      if (!firstResult || firstResult.sku !== data.sku)
+      if (!Array.isArray(searchJson))
+        throw new Error(`Unable to search for product with SKU ${data.sku}`);
+
+      const matchingResult = searchJson.find(
+        (item) =>
+          `${item.sku}`.toLocaleLowerCase() === data.sku.toLocaleLowerCase()
+      );
+      if (!matchingResult)
         throw new Error(
           `Couldn't find product with SKU ${data.sku} in the database`
         );
 
       const startTime = Date.now();
-      const updateResponse = await updateIPProduct(+firstResult.id, {
+      const updateResponse = await updateIPProduct(+matchingResult.id, {
         priceBreaks: {
           break1: data.priceBreaks[0],
           break2: data.priceBreaks[1],
