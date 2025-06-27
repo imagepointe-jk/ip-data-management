@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
-      <nav style={{ background: "none" }}>
+      <nav style={{ background: "none", zIndex: "initial" }}>
         <ul className="links-row">
           <li>
             <Link href="/admin/customizer" className="normal-link">

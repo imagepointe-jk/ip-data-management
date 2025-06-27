@@ -1,0 +1,22 @@
+.dropdown-parent {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  translate: 0 110%;
+  background-color: var(--color-alpha);
+  padding: 20px;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 275px;
+  z-index: 99;
+}
+
+.dropdown a {
+  display: block;
+}

@@ -21,12 +21,13 @@ model User {
 }
 
 model Color {
-  id                    Int                              @id @default(autoincrement())
-  name                  String                           @unique
-  hexCode               String                           @unique
-  designs               Design[]
-  designVariations      DesignVariation[]
-  customProductSettings CustomProductSettingsVariation[]
+  id                     Int                              @id @default(autoincrement())
+  name                   String                           @unique
+  hexCode                String                           @unique
+  displayInDesignLibrary Boolean                          @default(true)
+  designs                Design[]
+  designVariations       DesignVariation[]
+  customProductSettings  CustomProductSettingsVariation[]
 }
 
 model DignityApparelSearchString {

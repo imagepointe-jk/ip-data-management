@@ -169,25 +169,31 @@ export const colors: SeedColor[] = [
   {
     hexCode: "000000",
     name: "Black",
+    displayInDesignLibrary: true,
   },
   {
     hexCode: "cb2423",
     name: "Flag Red",
+    displayInDesignLibrary: true,
   },
   {
     hexCode: "ff6511",
     name: "Safety Orange",
+    displayInDesignLibrary: true,
   },
   {
     hexCode: "907b54",
     name: "Coyote Brown",
+    displayInDesignLibrary: true,
   },
   {
     hexCode: "625f43",
     name: "Olive Drab Green",
+    displayInDesignLibrary: true,
   },
   {
     hexCode: "46326f",
     name: "Purple",
+    displayInDesignLibrary: true,
   },
 ];

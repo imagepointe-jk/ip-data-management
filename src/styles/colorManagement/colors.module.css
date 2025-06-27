@@ -1,0 +1,46 @@
+.cards-container {
+  display: flex;
+  gap: 100px;
+  flex-wrap: wrap;
+}
+
+.card {
+  border: 1px solid black;
+  padding: 40px;
+  padding-top: 10px;
+  width: 300px;
+}
+
+.color-name {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.color-preview {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  margin-top: 20px;
+  border: 1px solid lightgray;
+}
+
+.color-settings {
+  font-size: 1rem;
+  font-weight: normal;
+  text-align: left;
+  margin-top: 10px;
+  border: 1px solid lightgray;
+  padding: 10px;
+}
+
+.floating-buttons-container {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+}
+
+.save-button {
+  width: 200px;
+}

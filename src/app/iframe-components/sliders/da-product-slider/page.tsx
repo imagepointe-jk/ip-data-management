@@ -37,7 +37,7 @@ const products: Product[] = [
     id: "DASSTRI003",
     name: "Dignity Comfort Tee",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/03/MG_0541_DASSTRI003_Royal_Ryan_Web1200px.jpg",
+      "https://www.imagepointe.com/wp-content/uploads/2025/05/MG_0541_DASSTRI003_Royal_Ryan_OPCMIA_Web.jpg",
     productUrl:
       "https://www.imagepointe.com/shop/dignity-apparel-products/dignity-comfort-tee/",
     subtext: "4.5 oz, poly/cotton/modal blend",
@@ -64,7 +64,7 @@ const products: Product[] = [
     id: "DASST002",
     name: "Dignity Premium Tee",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/04/IMG_0345_DASST002_Navy_Jess_Web1200px.jpg",
+      "https://www.imagepointe.com/wp-content/uploads/2025/04/DASST002-Navy-Jess-APWU-1200px.jpg",
     productUrl:
       "https://www.imagepointe.com/shop/dignity-apparel-products/dignity-premium-tee/",
     subtext: "6 oz, 100% ringspun cotton",
