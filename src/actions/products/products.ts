@@ -13,8 +13,6 @@ import handlebars from "handlebars";
 import { sendEmail } from "@/utility/mail";
 
 export async function startSync(formData: FormData) {
-  const startTime = new Date();
-
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     throw new AppError({
@@ -28,8 +26,13 @@ export async function startSync(formData: FormData) {
   const arrayBuffer = await file.arrayBuffer();
   const asiSheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "ASI");
   const parsed = validateASIProducts(asiSheet);
+  runSync(parsed);
   console.log("WooCommerce product sync initiated.");
-  const syncResults = await runSync(parsed);
+}
+
+async function runSync(data: ASIProductImportData[]) {
+  const startTime = new Date();
+  const syncResults = await syncRows(data);
 
   const endTime = new Date();
   await sendResultsEmail(
@@ -40,7 +43,7 @@ export async function startSync(formData: FormData) {
   );
 }
 
-async function runSync(productData: ASIProductImportData[]) {
+async function syncRows(productData: ASIProductImportData[]) {
   const syncErrors: { sku: string; error: string }[] = [];
   let successCount = 0;
   let processedCount = 0;
