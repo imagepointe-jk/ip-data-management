@@ -10,8 +10,18 @@ import {
   setSelectedEditorGuid,
   useEditorSelectors,
 } from "../redux/slices/editor";
+import { ActionCreators } from "redux-undo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronUp,
+  faRedo,
+  faTrashAlt,
+  faUndo,
+} from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
 export function ArtworkControls() {
+  const [expanded, setExpanded] = useState(false); //may want to store this state in redux at some point, but not necessary now
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
@@ -36,13 +46,34 @@ export function ArtworkControls() {
     dispatch(setSelectedEditorGuid(null));
   }
 
-  if (!selectedEditorGuid) return <></>;
-
   return (
     <div
-      className={`${styles["floating-container"]} ${styles["artwork-controls-bar"]}`}
+      className={`${styles["floating-container"]} ${
+        styles["artwork-controls-bar"]
+      } ${expanded ? styles["expanded"] : ""}`}
     >
-      <button onClick={onClickDelete}>Delete</button>
+      <button onClick={() => dispatch(ActionCreators.undo())}>
+        <FontAwesomeIcon icon={faUndo} />
+        {" Undo"}
+      </button>
+      <button onClick={() => dispatch(ActionCreators.redo())}>
+        <FontAwesomeIcon icon={faRedo} />
+        {" Redo"}
+      </button>
+      <button onClick={onClickDelete} disabled={!selectedEditorGuid}>
+        <FontAwesomeIcon icon={faTrashAlt} />
+        {" Delete"}
+      </button>
+      <button
+        className={styles["artwork-controls-bar-toggle"]}
+        onClick={() => setExpanded(!expanded)}
+      >
+        <FontAwesomeIcon
+          icon={faChevronUp}
+          className={styles["artwork-controls-bar-toggle-icon"]}
+        />
+        {expanded ? " Hide Tools" : "Show Tools"}
+      </button>
     </div>
   );
 }

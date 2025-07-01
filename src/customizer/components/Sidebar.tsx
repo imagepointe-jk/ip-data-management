@@ -58,16 +58,16 @@ export function Sidebar() {
       iconElement: <div className={styles["text-button-t"]}>T</div>,
       dialogToOpen: "text",
     },
-    {
-      text: "Undo",
-      iconElement: <FontAwesomeIcon icon={faUndo} size={"2x"} />,
-      onClickExtra: () => dispatch(ActionCreators.undo()),
-    },
-    {
-      text: "Redo",
-      iconElement: <FontAwesomeIcon icon={faRedo} size={"2x"} />,
-      onClickExtra: () => dispatch(ActionCreators.redo()),
-    },
+    // {
+    //   text: "Undo",
+    //   iconElement: <FontAwesomeIcon icon={faUndo} size={"2x"} />,
+    //   onClickExtra: () => dispatch(ActionCreators.undo()),
+    // },
+    // {
+    //   text: "Redo",
+    //   iconElement: <FontAwesomeIcon icon={faRedo} size={"2x"} />,
+    //   onClickExtra: () => dispatch(ActionCreators.redo()),
+    // },
     {
       text: "Download Design",
       iconElement: <FontAwesomeIcon icon={faDownload} size={"2x"} />,

@@ -50,7 +50,42 @@
   position: absolute;
   top: 10px;
   left: 50%;
+  translate: -50% -117%;
+  display: flex;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.artwork-controls-bar.expanded {
   translate: -50% 0;
+}
+
+.artwork-controls-bar-toggle {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 99%;
+  color: var(--color-beta);
+  font-weight: bold;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  padding: 5px;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 60%,
+    rgb(218, 218, 218) 100%
+  );
+  border: 1px solid lightgray;
+  border-top: none;
+}
+
+.artwork-controls-bar-toggle-icon {
+  rotate: 180deg;
+  transition: 0.2s;
+}
+
+.artwork-controls-bar.expanded .artwork-controls-bar-toggle-icon {
+  rotate: 0deg;
 }
 
 .cart-bar-main {

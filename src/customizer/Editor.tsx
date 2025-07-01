@@ -28,7 +28,7 @@ export function Editor() {
         <ViewControls />
         {openModal === "cart" && <CartModal />}
         {openModal === "start over" && <StartOverModal />}
-        {selectedEditorGuid && <ArtworkControls />}
+        <ArtworkControls />
       </div>
     </div>
   );
