@@ -123,7 +123,7 @@ export type DesignQuery = {
   similarToId?: number;
   allowDuplicates?: boolean;
   featuredOnly?: boolean;
-  status?: "Published" | "Draft";
+  status?: "Published" | "Draft" | "Any";
   subcategory?: string;
   keyword?: string;
   before?: number; //timestamp

@@ -32,7 +32,7 @@ export default async function Designs(props: Props) {
     designType,
     keyword,
     subcategory,
-    status,
+    status: status || "Any",
     featuredOnly,
     before,
     after,
