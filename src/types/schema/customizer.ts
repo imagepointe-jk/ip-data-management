@@ -177,7 +177,7 @@ export type VariationWithIncludes = CustomProductSettingsVariation & {
   views: ViewWithIncludes[];
 };
 export type PopulatedProductSettings = FullProductSettings & {
-  product: { name: string; weight: string } | undefined;
+  product: { name: string; sku: string; weight: string } | undefined;
 };
 export type PopulatedProductSettingsSerializable = Omit<
   FullProductSettings,

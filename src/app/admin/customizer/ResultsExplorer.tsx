@@ -47,6 +47,10 @@ export function ResultsExplorer({
           ),
         },
         {
+          headerName: "SKU",
+          createCell: (data) => data.product?.sku || "(Unknown SKU)",
+        },
+        {
           headerName: "Product Name",
           createCell: (data) =>
             data.product ? (

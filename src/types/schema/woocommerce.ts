@@ -3,6 +3,7 @@ import { z } from "zod";
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
+  sku: z.string(),
   weight: z.string(),
   images: z.array(
     z.object({

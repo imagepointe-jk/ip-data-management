@@ -24,7 +24,12 @@ export default async function ProductSettings(props: Props) {
 
   return (
     <>
-      <h1>{product ? product.name : "(Product not found)"}</h1>
+      <h1 style={{ marginBottom: "0" }}>
+        {product ? product.name : "(Product not found)"}
+      </h1>
+      <div style={{ marginTop: "0", marginBottom: "20px" }}>
+        {product?.sku || "(Unknown SKU)"}
+      </div>
       <ProductSettingsEditor settings={existingSettings} colors={colors} />
     </>
   );

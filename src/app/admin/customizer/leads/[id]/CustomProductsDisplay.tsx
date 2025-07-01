@@ -30,6 +30,7 @@ export function CustomProductsDisplay({ cart, productSettings }: Props) {
         return (
           <div key={product.id} className="content-frame vert-flex-group">
             <div>{productFromDb?.product?.name || "UNKNOWN PRODUCT"}</div>
+            <div>{productFromDb?.product?.sku || "UNKNOWN SKU"}</div>
 
             {/* Within each product, show all the variations of the product */}
 
