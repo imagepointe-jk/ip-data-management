@@ -163,6 +163,12 @@ export function Transformable({
       {selected && (
         <Transformer
           ref={transformerRef}
+          enabledAnchors={[
+            "top-left",
+            "top-right",
+            "bottom-right",
+            "bottom-left",
+          ]}
           onTransformStart={onTransformStart}
           onTransformEnd={onTransformEnd}
         />
