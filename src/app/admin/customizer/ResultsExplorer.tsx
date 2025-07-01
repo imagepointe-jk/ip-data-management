@@ -1,10 +1,10 @@
 "use client";
 
-import GenericTable from "@/components/GenericTable";
-import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import styles from "@/styles/customizer/CustomizerResultsTable.module.css";
+import { GenericTableExplorer } from "@/components/GenericTableExplorer/GenericTableExplorer";
 import { WooCommerceProduct } from "@/types/schema/woocommerce";
 import { createWooCommerceProductAdminUrl } from "@/utility/url";
+import styles from "@/styles/customizer/CustomizerResultsTable.module.css";
+import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import Link from "next/link";
 
 type Props = {
@@ -17,11 +17,23 @@ type Props = {
       }[];
     }[];
   }[];
+  totalRecords: number;
+  pageSize: number;
 };
-export default function ResultsTable({ productListings }: Props) {
+export function ResultsExplorer({
+  productListings,
+  pageSize,
+  totalRecords,
+}: Props) {
   return (
-    <GenericTable
+    <GenericTableExplorer
+      dataset={productListings}
+      pageSize={pageSize}
+      totalRecords={totalRecords}
       className={styles["table"]}
+      filteringProps={{
+        hideSearch: true,
+      }}
       columns={[
         {
           headerName: "Image",
@@ -59,7 +71,6 @@ export default function ResultsTable({ productListings }: Props) {
           createCell: (data) => data.variations.length,
         },
       ]}
-      dataset={productListings}
     />
   );
 }

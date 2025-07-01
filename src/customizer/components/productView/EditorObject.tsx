@@ -11,11 +11,11 @@ import {
 import { Image, Text } from "react-konva";
 import { EditorTextData, TransformArgsPx } from "@/types/schema/customizer";
 import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
-import { constrainEditorObjectTransform } from "@/customizer/utils/calculate";
 import {
   normalizedTransformToPixels,
   pixelTransformToNormalized,
 } from "@/customizer/utils/convert";
+import { snapToNearest } from "@/utility/geometry";
 
 type Props = {
   editorGuid: string;
@@ -66,22 +66,23 @@ export function EditorObject({
       params
     );
     //do the constraint calculation
-    const { constrainedPosition, constrainedSize } =
-      constrainEditorObjectTransform({
-        objectTransform: {
-          positionNormalized,
-          sizeNormalized,
-          rotationDegrees: 0,
-        },
-        locations,
-      });
+    const snapped = snapToNearest(
+      {
+        position: { x: positionNormalized.x, y: positionNormalized.y },
+        size: { x: sizeNormalized.x, y: sizeNormalized.y },
+      },
+      locations.map((location) => ({
+        position: { x: location.positionX, y: location.positionY },
+        size: { x: location.width, y: location.height },
+      }))
+    );
     //convert back to px to get values suitable for setting transform
     const { position: positionPx, size: sizePx } = normalizedTransformToPixels(
       productEditorSize,
       productEditorSize,
       {
-        positionNormalized: constrainedPosition,
-        sizeNormalized: constrainedSize,
+        positionNormalized: snapped.position,
+        sizeNormalized: snapped.size,
       }
     );
     return {

@@ -34,7 +34,7 @@ const data: CardData[] = [
   {
     id: "3",
     heading: "Webstore/ Fulfillment",
-    body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus ipsam, quidem eveniet eligendi deserunt ducimus ipsum, pariatur natus consectetur iusto.",
+    body: "Full e-commerce solutions including online store management, product sourcing, storage/fulfillment and shipping.",
     backgroundImageUrl:
       "https://www.imagepointe.com/wp-content/uploads/2025/06/Services_WebstoresFullfilment.jpg",
   },
