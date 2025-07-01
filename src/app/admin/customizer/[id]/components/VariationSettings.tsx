@@ -97,7 +97,11 @@ export function VariationSettings({
   ];
 
   async function onClickDeleteVariation() {
-    if (!selectedVariationId) return;
+    if (
+      !selectedVariationId ||
+      !confirm("Are you sure you want to delete this variation?")
+    )
+      return;
 
     try {
       await deleteVariation(selectedVariationId);

@@ -18,9 +18,10 @@ export async function deleteView(id: number) {
 }
 
 export async function deleteLocation(id: number) {
-  return prisma.customProductDecorationLocation.delete({
+  const deleted = await prisma.customProductDecorationLocation.delete({
     where: {
       id,
     },
   });
+  return deleted.id;
 }

@@ -63,7 +63,11 @@ export function LocationSettingsBox({
   }
 
   async function onClickDeleteLocation() {
-    if (selectedLocationId === undefined) return;
+    if (
+      selectedLocationId === undefined ||
+      !confirm("Are you sure you want to delete this location?")
+    )
+      return;
     setIsDeletingLocation(true);
 
     try {

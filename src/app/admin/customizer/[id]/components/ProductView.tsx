@@ -60,7 +60,12 @@ export function ProductView({
   }
 
   async function onClickDeleteView() {
-    if (!selectedView || !deleteAllowed) return;
+    if (
+      !selectedView ||
+      !deleteAllowed ||
+      !confirm("Are you sure you want to delete this view?")
+    )
+      return;
     setIsDeletingView(true);
 
     try {

@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastProvider";
 
 type SaveAreaProps = {
   errors: string[];
@@ -18,18 +19,21 @@ export function SaveArea({
   settingsState,
 }: SaveAreaProps) {
   const router = useRouter();
+  const toast = useToast();
 
   async function onClickSave() {
     if (saving) return;
 
+    setSaving(true);
     try {
-      setSaving(true);
       await updateProductSettings(settingsState);
       router.refresh();
-      setSaving(false);
+      toast.changesSaved();
     } catch (error) {
       console.error(error);
+      toast.toast("Error saving changes.", "error");
     }
+    setSaving(false);
   }
 
   return (
