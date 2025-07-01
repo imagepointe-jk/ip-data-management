@@ -11,6 +11,7 @@ import { Sidebar } from "./components/Sidebar";
 import { ViewArrows } from "./components/ViewArrows";
 import { Color } from "@prisma/client";
 import { VariationSettings } from "./components/VariationSettings";
+import { LocationSelectorBox } from "./components/LocationSelectorBox";
 
 export type ExpandedDialog = null | "location";
 type Props = {
@@ -156,6 +157,12 @@ export default function ProductSettingsEditor({
           totalViewLocations={view?.locations.length || 0}
           expanded={expandedDialog === "location"}
           setExpandedDialog={setExpandedDialog}
+        />
+
+        <LocationSelectorBox
+          locations={view?.locations || []}
+          selectedLocationId={locationId}
+          setSelectedLocationId={setLocationId}
         />
 
         <SaveArea

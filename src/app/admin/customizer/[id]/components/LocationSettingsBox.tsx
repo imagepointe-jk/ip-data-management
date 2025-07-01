@@ -199,7 +199,7 @@ export function LocationSettingsBox({
             </div>
           </div>
           <div>
-            Position X
+            <div>Position X</div>
             <input
               type="range"
               value={location.positionX * 100}
@@ -209,9 +209,21 @@ export function LocationSettingsBox({
                 })
               }
             />
+            <input
+              type="number"
+              min={0}
+              max={1}
+              step={0.01}
+              value={location.positionX}
+              onChange={(e) =>
+                onChangeLocationSettings(location.id, {
+                  positionX: +e.target.value,
+                })
+              }
+            />
           </div>
           <div>
-            Position Y
+            <div>Position Y</div>
             <input
               type="range"
               value={location.positionY * 100}
@@ -221,9 +233,21 @@ export function LocationSettingsBox({
                 })
               }
             />
+            <input
+              type="number"
+              min={0}
+              max={1}
+              step={0.01}
+              value={location.positionY}
+              onChange={(e) =>
+                onChangeLocationSettings(location.id, {
+                  positionY: +e.target.value,
+                })
+              }
+            />
           </div>
           <div>
-            Width
+            <div>Width</div>
             <input
               type="range"
               value={location.width * 100}
@@ -233,15 +257,39 @@ export function LocationSettingsBox({
                 })
               }
             />
+            <input
+              type="number"
+              min={0}
+              max={1}
+              step={0.01}
+              value={location.width}
+              onChange={(e) =>
+                onChangeLocationSettings(location.id, {
+                  width: +e.target.value,
+                })
+              }
+            />
           </div>
           <div>
-            Height
+            <div>Height</div>
             <input
               type="range"
               value={location.height * 100}
               onChange={(e) =>
                 onChangeLocationSettings(location.id, {
                   height: +e.target.value / 100,
+                })
+              }
+            />
+            <input
+              type="number"
+              min={0}
+              max={1}
+              step={0.01}
+              value={location.height}
+              onChange={(e) =>
+                onChangeLocationSettings(location.id, {
+                  height: +e.target.value,
                 })
               }
             />
