@@ -1,4 +1,5 @@
 import { findVariationInCart } from "@/customizer/utils/find";
+import { cloneArtwork, cloneText } from "@/customizer/utils/misc";
 import {
   CartState,
   CartStateProductVariation,
@@ -128,5 +129,43 @@ export function pruneCart(
       );
       return variation.id === variationIdToPreserve || hasAnyDesign;
     });
+  }
+}
+
+//note that this copy function depends on view indices corresponding correctly to each other.
+//e.g. view 0 of the source variation is a front view, and view 0 of the target variation is ALSO a front view.
+//this is currently not enforced or guaranteed in any way, and a safer approach might be better in the future.
+export function copyDesign(
+  state: CartState,
+  action: PayloadAction<{
+    sourceVariationId: number;
+    targetVariationId: number;
+  }>
+) {
+  const { sourceVariationId, targetVariationId } = action.payload;
+  const sourceVariation = findVariationInCart(state, sourceVariationId);
+  const targetVariation = findVariationInCart(state, targetVariationId);
+  if (!sourceVariation)
+    throw new Error(
+      `Source variation id ${sourceVariationId} not found in state`
+    );
+  if (!targetVariation)
+    throw new Error(
+      `Target variation id ${targetVariationId} not found in state`
+    );
+
+  for (let i = 0; i < targetVariation.views.length; i++) {
+    const targetView = targetVariation.views[i]!;
+    const sourceView = sourceVariation.views[i];
+    if (!sourceView) {
+      console.error(
+        `No source view index ${i} corresponding to target view index ${i}`
+      );
+      continue;
+    }
+    targetView.artworks = sourceView.artworks.map((artwork) =>
+      cloneArtwork(artwork)
+    );
+    targetView.texts = sourceView.texts.map((text) => cloneText(text));
   }
 }

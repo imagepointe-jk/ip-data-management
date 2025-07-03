@@ -150,6 +150,7 @@ export type TransformNormalized = {
 };
 
 export type CartStateArtwork = z.infer<typeof cartStateArtworkSchema>;
+export type CartStateText = z.infer<typeof cartStateTextSchema>;
 export type CartStateProductLocation = z.infer<
   typeof cartStateProductLocationSchema
 >;
@@ -168,7 +169,7 @@ export type EditorDialog =
   | "help"
   | "download"
   | null;
-export type EditorModal = "cart" | "start over" | null;
+export type EditorModal = "cart" | "start over" | "copy design" | null;
 
 export type ViewWithIncludes = CustomProductView & {
   locations: CustomProductDecorationLocationNumeric[];

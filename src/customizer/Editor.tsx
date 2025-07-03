@@ -10,6 +10,7 @@ import { CartModal } from "./components/cart/CartModal";
 import { ViewControls } from "./components/ViewControls";
 import "@/styles/customizer/CustomProductDesigner/main.css";
 import { StartOverModal } from "./components/StartOverModal";
+import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
 
 export function Editor() {
   const selectedEditorGuid = useSelector(
@@ -28,6 +29,7 @@ export function Editor() {
         <ViewControls />
         {openModal === "cart" && <CartModal />}
         {openModal === "start over" && <StartOverModal />}
+        {openModal === "copy design" && <CopyDesignModal />}
         <ArtworkControls />
       </div>
     </div>

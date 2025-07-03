@@ -2,11 +2,15 @@ import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
 import {
   CartState,
+  CartStateArtwork,
   CartStateProductLocation,
   CartStateProductVariation,
   CartStateProductView,
+  CartStateText,
+  PlacedObject,
   PopulatedProductSettings,
 } from "@/types/schema/customizer";
+import { v4 as uuidv4 } from "uuid";
 
 export function createLocationFrameInlineStyles(
   location: CustomProductDecorationLocationNumeric
@@ -116,4 +120,67 @@ export function createInitialState(
 //each variation is treated as a separate cart item, so count the total variations of all products combined
 export function countCartItems(cart: CartState) {
   return cart.products.flatMap((product) => product.variations).length;
+}
+
+//counts the total texts, artworks, etc. on a variation.
+//if 0, the variation has no design.
+export function countVariationDesignObjects(
+  variation: CartStateProductVariation & { views: CartStateProductView[] }
+) {
+  let sum = 0;
+  for (const view of variation.views) {
+    sum += view.artworks.length + view.texts.length;
+  }
+  return sum;
+}
+
+export function cloneArtwork(artwork: CartStateArtwork): CartStateArtwork {
+  return {
+    identifiers: {
+      designIdentifiers: artwork.identifiers.designIdentifiers
+        ? {
+            designId: artwork.identifiers.designIdentifiers.designId,
+            variationId: artwork.identifiers.designIdentifiers.variationId,
+          }
+        : undefined,
+    },
+    imageUrl: artwork.imageUrl,
+    objectData: cloneObjectData(artwork.objectData),
+  };
+}
+
+export function cloneText(text: CartStateText): CartStateText {
+  return {
+    objectData: cloneObjectData(text.objectData),
+    textData: {
+      text: text.textData.text,
+      style: text.textData.style
+        ? {
+            align: text.textData.style.align,
+            fontFamily: text.textData.style.fontFamily,
+            fontSize: text.textData.style.fontSize,
+            fontStyle: text.textData.style.fontStyle,
+            hexCode: text.textData.style.hexCode,
+            strokeHexCode: text.textData.style.strokeHexCode,
+            strokeWidth: text.textData.style.strokeWidth,
+            textDecoration: text.textData.style.textDecoration,
+          }
+        : undefined,
+    },
+  };
+}
+
+function cloneObjectData(objectData: PlacedObject) {
+  return {
+    editorGuid: uuidv4(),
+    positionNormalized: {
+      x: objectData.positionNormalized.x,
+      y: objectData.positionNormalized.y,
+    },
+    rotationDegrees: objectData.rotationDegrees,
+    sizeNormalized: {
+      x: objectData.sizeNormalized.x,
+      y: objectData.sizeNormalized.y,
+    },
+  };
 }

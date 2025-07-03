@@ -10,6 +10,7 @@ import {
   removeProductVariation as removeProductVariationFn,
   changeProductVariationQuantities as changeProductVariationQuantitiesFn,
   pruneCart as pruneCartFn,
+  copyDesign as copyDesignFn,
 } from "@/customizer/redux/slices/reducers/cart/cart";
 import {
   deleteTextFromState as deleteTextFromStateFn,
@@ -39,6 +40,7 @@ export const cartSlice = createSlice({
     changeProductVariationQuantities: changeProductVariationQuantitiesFn,
     setViewRenderURL: setViewRenderURLFn,
     pruneCart: pruneCartFn,
+    copyDesign: copyDesignFn,
   },
 });
 
@@ -55,4 +57,5 @@ export const {
   editText,
   setViewRenderURL,
   pruneCart,
+  copyDesign,
 } = cartSlice.actions;

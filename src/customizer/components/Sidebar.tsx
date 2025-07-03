@@ -2,12 +2,11 @@ import styles from "@/styles/customizer/CustomProductDesigner/sidebar.module.css
 import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import {
   faCloudArrowUp,
+  faCopy,
   faDownload,
   faPaintBrush,
   faQuestionCircle,
-  faRedo,
   faStar,
-  faUndo,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,21 +16,27 @@ import { UserUploads } from "./UserUploads";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { setDialogOpen } from "../redux/slices/editor";
-import { ActionCreators } from "redux-undo";
+import {
+  setDialogOpen,
+  setModalOpen,
+  useEditorSelectors,
+} from "../redux/slices/editor";
 import { TextEditor } from "./text/TextEditor";
 import { Help } from "./Help";
 import { DownloadDesign } from "./DownloadDesign";
-import { EditorDialog } from "@/types/schema/customizer";
+import { EditorDialog, EditorModal } from "@/types/schema/customizer";
 import { ReactNode } from "react";
+import { useEditor } from "../EditorProvider";
 
 type Button = {
   text: string;
   iconElement: ReactNode;
   dialogToOpen?: EditorDialog;
-  onClickExtra?: () => void; //a function to call on click that doesn't involve opening a dialog
+  onClickExtra?: () => void; //a function to call on click that doesn't involve opening a dialog or modal
 };
 export function Sidebar() {
+  const { updateViewRender } = useEditor();
+  const { selectedView } = useEditorSelectors();
   const dialogOpen = useSelector(
     (state: StoreType) => state.editorState.dialogOpen
   );
@@ -58,16 +63,14 @@ export function Sidebar() {
       iconElement: <div className={styles["text-button-t"]}>T</div>,
       dialogToOpen: "text",
     },
-    // {
-    //   text: "Undo",
-    //   iconElement: <FontAwesomeIcon icon={faUndo} size={"2x"} />,
-    //   onClickExtra: () => dispatch(ActionCreators.undo()),
-    // },
-    // {
-    //   text: "Redo",
-    //   iconElement: <FontAwesomeIcon icon={faRedo} size={"2x"} />,
-    //   onClickExtra: () => dispatch(ActionCreators.redo()),
-    // },
+    {
+      text: "Copy Design",
+      iconElement: <FontAwesomeIcon icon={faCopy} size="2x" />,
+      onClickExtra: () => {
+        updateViewRender(selectedView.id);
+        dispatch(setModalOpen("copy design"));
+      },
+    },
     {
       text: "Download Design",
       iconElement: <FontAwesomeIcon icon={faDownload} size={"2x"} />,

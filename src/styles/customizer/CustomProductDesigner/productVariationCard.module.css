@@ -1,27 +1,10 @@
-.main h2 {
-  text-align: center;
-}
-
-.scroll-container {
-  width: 380px;
-  height: 500px;
-  overflow-y: scroll;
-}
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 10px;
-}
-
 .card {
   padding: 5px;
-  border: 1px solid lightgray;
   border-radius: 5px;
+  outline: 1px solid lightgray;
   cursor: pointer;
   position: relative;
+  transition: 0.2s;
 }
 
 .img-container {
@@ -54,4 +37,21 @@
 
 .card:hover .color-label {
   opacity: 1;
+}
+
+.card.disabled {
+  cursor: initial;
+}
+
+.card.disabled .img-container img {
+  opacity: 0.5;
+}
+
+.card.disabled .color-label {
+  display: none;
+}
+
+.card.highlighted {
+  scale: 110%;
+  outline: 2px solid var(--color-alpha);
 }
