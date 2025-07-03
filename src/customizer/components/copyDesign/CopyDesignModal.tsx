@@ -13,7 +13,7 @@ import { findVariationInCart } from "@/customizer/utils/find";
 import { countVariationDesignObjects } from "@/customizer/utils/misc";
 import { copyDesign } from "@/customizer/redux/slices/cart";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 export function CopyDesignModal() {
@@ -22,6 +22,7 @@ export function CopyDesignModal() {
   );
   const { selectedProductData, selectedVariation } = useEditorSelectors();
   const cart = useSelector((store: StoreType) => store.cart.present);
+  const existingDesign = countVariationDesignObjects(selectedVariation) > 0;
   const dispatch = useDispatch();
 
   function onClickCopy() {
@@ -70,8 +71,15 @@ export function CopyDesignModal() {
             );
           })}
       </div>
+      {existingDesign && (
+        <div className={styles["existing-design-warning"]}>
+          <FontAwesomeIcon icon={faWarning} /> The color you&apos;re copying to
+          already has a design. The existing design will be REPLACED if you
+          continue.
+        </div>
+      )}
       <div className={styles["copy-button-container"]}>
-        <button onClick={onClickCopy}>
+        <button onClick={onClickCopy} disabled={!clickedVariationId}>
           <FontAwesomeIcon icon={faCopy} /> Copy
         </button>
       </div>
