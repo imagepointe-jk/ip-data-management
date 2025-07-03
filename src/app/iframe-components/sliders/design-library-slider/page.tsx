@@ -13,6 +13,9 @@ type Props = {
 export default async function Page({ params, searchParams }: Props) {
   const search = await searchParams;
   const ids = `${search.ids}`.split(",");
+  const finalUrl = search["final-url"]
+    ? decodeURIComponent(`${search["final-url"]}`)
+    : "https://www.imagepointe.com/design-library/";
   const designs = await prisma.design.findMany({
     where: {
       id: {
@@ -27,7 +30,7 @@ export default async function Page({ params, searchParams }: Props) {
 
   return (
     <IframeHelperProvider>
-      <DesignSlider designs={sorted} />
+      <DesignSlider designs={sorted} finalUrl={finalUrl} />
     </IframeHelperProvider>
   );
 }

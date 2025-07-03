@@ -60,6 +60,20 @@
   translate: -50% 0;
 }
 
+.final-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.fake-link {
+  border-radius: 10px;
+  background-color: #006ac6;
+  color: white;
+  padding: 10px;
+}
+
 @media screen and (max-width: 768px) {
   .main {
     height: 220px;

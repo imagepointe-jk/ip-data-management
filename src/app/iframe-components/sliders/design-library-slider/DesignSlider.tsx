@@ -15,9 +15,17 @@ import { wrap } from "@/utility/misc";
 const MIN_SCALE = 0.8;
 type Props = {
   designs: (Design & { defaultBackgroundColor: Color })[];
+  finalUrl: string;
 };
-export function DesignSlider({ designs }: Props) {
+export function DesignSlider({ designs, finalUrl }: Props) {
   const [offset, setOffset] = useState(0);
+  const items: {
+    design?: Design & { defaultBackgroundColor: Color };
+    singleLink?: string;
+  }[] = designs.map((design) => ({
+    design,
+  }));
+  items.push({ singleLink: finalUrl });
   const [viewedIndex, setViewedIndex] = useState(
     Math.floor(designs.length / 2)
   ); //start in the middle of the provided designs
@@ -34,7 +42,7 @@ export function DesignSlider({ designs }: Props) {
 
   function onClickButton(direction: "left" | "right") {
     const increment = direction === "left" ? -1 : 1;
-    setViewedIndex(wrap(viewedIndex + increment, 0, designs.length - 1));
+    setViewedIndex(wrap(viewedIndex + increment, 0, items.length - 1));
   }
 
   useEffect(() => {
@@ -59,25 +67,34 @@ export function DesignSlider({ designs }: Props) {
         ref={slidingContainerRef}
         style={{ left: `${offset}px` }}
       >
-        {designs.map((design, i) => (
+        {items.map((item, i) => (
           <IframeLink
-            key={design.id}
+            key={item.design?.id || item.singleLink || i}
             className={`${styles["card"]} ${
               i !== viewedIndex ? styles["not-viewed"] : ""
-            }`}
-            href={`https://www.imagepointe.com/design-library/?viewDesign=${design.id}`}
+            } ${item.singleLink ? styles["final-card"] : ""}`}
+            href={
+              item.singleLink
+                ? item.singleLink
+                : `https://www.imagepointe.com/design-library/?viewDesign=${item.design?.id}`
+            }
             style={{
               scale: calcCardScale(i),
               zIndex: i === viewedIndex ? 1 : 0,
             }}
           >
-            <img
-              src={design.imageUrl}
-              className={styles["image"]}
-              style={{
-                backgroundColor: `#${design.defaultBackgroundColor.hexCode}`,
-              }}
-            />
+            {item.design && (
+              <img
+                src={item.design.imageUrl}
+                className={styles["image"]}
+                style={{
+                  backgroundColor: `#${item.design.defaultBackgroundColor.hexCode}`,
+                }}
+              />
+            )}
+            {item.singleLink && (
+              <div className={styles["fake-link"]}>View More Designs</div>
+            )}
           </IframeLink>
         ))}
       </div>
@@ -96,7 +113,7 @@ export function DesignSlider({ designs }: Props) {
         </button>
       </div>
       <Dots
-        total={designs.length}
+        total={designs.length + 1}
         activeIndex={viewedIndex}
         className={styles["dots-container"]}
       />
