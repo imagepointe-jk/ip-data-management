@@ -64,7 +64,9 @@ export function CopyDesignModal() {
                 variation={variation}
                 disabled={!hasDesign}
                 highlighted={clickedVariationId === variation.id}
-                title={"This color has no designs yet."}
+                title={
+                  !hasDesign ? "This color has no designs yet." : undefined
+                }
                 onClick={() => setClickedVariationId(variation.id)}
                 imageOverride={variationInCart?.views[0]?.currentRenderUrl}
               />
