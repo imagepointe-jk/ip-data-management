@@ -7,9 +7,10 @@ import styles from "@/styles/iframe-components/sliders/generalProductSlider.modu
 import { IframeLink } from "@/components/IframeHelper/IframeLink";
 
 type Props = {
-  id: string;
+  id?: string;
+  finalUrl?: string;
 };
-export function Card({ id }: Props) {
+export function Card({ id, finalUrl }: Props) {
   const [product, setProduct] = useState<WooCommerceProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const image = product?.images ? product.images[0]?.src : undefined;
@@ -33,8 +34,16 @@ export function Card({ id }: Props) {
   }
 
   useEffect(() => {
-    getProduct();
+    if (!finalUrl) getProduct();
   }, []);
+
+  if (finalUrl) {
+    return (
+      <IframeLink className={styles["product-link"]} href={finalUrl}>
+        <div>View More Products</div>
+      </IframeLink>
+    );
+  }
 
   return (
     <>

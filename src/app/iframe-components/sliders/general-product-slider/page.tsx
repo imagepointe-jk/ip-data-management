@@ -11,14 +11,21 @@ import { sortByIdOrder } from "@/utility/misc";
 function Page() {
   const search = useSearchParams();
   const ids = `${search.get("ids")}`.split(",");
+  const finalUrl = search.get("final-url")
+    ? decodeURIComponent(`${search.get("final-url")}`)
+    : "https://www.imagepointe.com/promotional-products/";
   const dataset = ids.map((id) => ({ id }));
   const sorted = sortByIdOrder(dataset, ids, (item) => item.id);
+  const items: { id: string; finalUrl?: string }[] = sorted.map((item) => ({
+    id: item.id,
+  }));
+  items.push({ id: "zzz", finalUrl });
 
   return (
     <IframeHelperProvider>
       <CardSlider
-        dataset={sorted}
-        createCard={(data) => <Card id={data.id} />}
+        dataset={items}
+        createCard={(data) => <Card id={data.id} finalUrl={data.finalUrl} />}
         cardClassName={styles["card"]}
         cardContainerClassName={styles["card-container"]}
         slidingParentClassName={styles["sliding-parent"]}
