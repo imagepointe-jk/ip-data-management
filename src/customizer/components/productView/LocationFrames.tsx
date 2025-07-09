@@ -10,6 +10,7 @@ type Props = {
     width: number;
     height: number;
     frameColor: string;
+    visible: boolean;
   }[];
 };
 export function LocationFrames({ locations }: Props) {
@@ -40,7 +41,7 @@ export function LocationFrames({ locations }: Props) {
             height={size.y}
             stroke={`#${location.frameColor}`}
             strokeWidth={4}
-            opacity={0.5}
+            opacity={location.visible ? 0.5 : 0}
           />
         );
       })}

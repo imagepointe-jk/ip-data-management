@@ -125,6 +125,17 @@ export function LocationSettingsBox({
     });
   }
 
+  function onChangeLocationVisible(visible: boolean) {
+    setSettings((draft) => {
+      const location = draft.variations
+        .find((variation) => variation.id === selectedVariationId)
+        ?.views.find((view) => view.id === selectedViewId)
+        ?.locations.find((location) => location.id === selectedLocationId);
+
+      if (location) location.visible = visible;
+    });
+  }
+
   function onClickPasteLocationData() {
     if (!copiedLocationData) return;
 
@@ -201,6 +212,16 @@ export function LocationSettingsBox({
                 ></div>
               ))}
             </div>
+          </div>
+          <div>
+            <label>
+              Visible{" "}
+              <input
+                type="checkbox"
+                checked={location.visible}
+                onChange={(e) => onChangeLocationVisible(e.target.checked)}
+              />
+            </label>
           </div>
           <div>
             <div>Position X</div>
