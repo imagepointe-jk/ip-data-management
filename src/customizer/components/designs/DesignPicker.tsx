@@ -8,18 +8,23 @@ import {
 } from "@/customizer/redux/slices/designData";
 import styles from "@/styles/customizer/CustomProductDesigner/designPicker.module.css";
 import { getArrayPage } from "@/utility/misc";
-import { useState } from "react";
 import { DesignCard } from "./DesignCard";
+import {
+  setDesignBrowserPage,
+  setDesignBrowserSearch,
+  useEditorSelectors,
+} from "@/customizer/redux/slices/editor";
+import { useDispatch } from "react-redux";
 
 const pageSize = 20;
 
 export function DesignPicker() {
   const designResults = useDesignDataSelector();
+  const { designBrowserData } = useEditorSelectors();
+  const dispatch = useDispatch();
 
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const filtered = filterDesigns(designResults, search);
-  const resultsPage = getArrayPage(filtered, page, pageSize);
+  const filtered = filterDesigns(designResults, designBrowserData.search);
+  const resultsPage = getArrayPage(filtered, designBrowserData.page, pageSize);
   const totalPages = Math.ceil(filtered.length / pageSize);
 
   return (
@@ -29,8 +34,8 @@ export function DesignPicker() {
           className={styles["search"]}
           type="text"
           placeholder="Search designs..."
-          onChange={(e) => setSearch(e.target.value)}
-          value={search}
+          onChange={(e) => dispatch(setDesignBrowserSearch(e.target.value))}
+          value={designBrowserData.search}
         />
       </div>
       <div className={styles["results"]}>
@@ -41,11 +46,12 @@ export function DesignPicker() {
       <div>
         <PageControls
           curItemsPerPage={pageSize}
-          curPageNumber={page}
+          curPageNumber={designBrowserData.page}
           totalPages={totalPages}
           showJumpTo={false}
           buttonOverrides={{
-            onClickPageNumber: (clicked) => setPage(clicked),
+            onClickPageNumber: (clicked) =>
+              dispatch(setDesignBrowserPage(clicked)),
           }}
           mainClassName={styles["page-numbers"]}
           buttonClassName={styles["page-button"]}

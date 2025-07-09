@@ -19,6 +19,10 @@
   background-color: white;
 }
 
+.dialog {
+  z-index: 2;
+}
+
 .dialog-x {
   position: absolute;
   top: -5px;

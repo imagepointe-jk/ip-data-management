@@ -20,6 +20,10 @@ type EditorState = {
   selectedProductId: number;
   selectedVariationId: number;
   selectedViewId: number;
+  designBrowserData: {
+    search: string;
+    page: number;
+  };
 };
 const initialState: EditorState = {
   dialogOpen: null,
@@ -28,6 +32,10 @@ const initialState: EditorState = {
   selectedProductId: -1,
   selectedVariationId: -1,
   selectedViewId: -1,
+  designBrowserData: {
+    page: 1,
+    search: "",
+  },
 };
 
 export const editorSlice = createSlice({
@@ -51,6 +59,12 @@ export const editorSlice = createSlice({
     },
     setSelectedViewId: (state, action: PayloadAction<number>) => {
       state.selectedViewId = action.payload;
+    },
+    setDesignBrowserPage: (state, action: PayloadAction<number>) => {
+      state.designBrowserData.page = action.payload;
+    },
+    setDesignBrowserSearch: (state, action: PayloadAction<string>) => {
+      state.designBrowserData.search = action.payload;
     },
     selectNextView: (
       state,
@@ -100,6 +114,7 @@ export function useEditorSelectors() {
     selectedProductId,
     selectedVariationId,
     selectedViewId,
+    designBrowserData,
   } = useSelector((state: StoreType) => state.editorState);
   const state = useSelector((state: StoreType) => state.cart);
   const { data } = useSelector((state: StoreType) => state.productData);
@@ -128,6 +143,7 @@ export function useEditorSelectors() {
     selectedVariation,
     selectedView,
     allProductData: data,
+    designBrowserData,
   };
 }
 
@@ -140,4 +156,6 @@ export const {
   setSelectedViewId,
   selectNextView,
   selectPreviousView,
+  setDesignBrowserPage,
+  setDesignBrowserSearch,
 } = editorSlice.actions;
