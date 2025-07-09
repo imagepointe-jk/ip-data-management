@@ -50,7 +50,10 @@ export function StarterSteps({
   }
 
   function onClickBack() {
-    if (stepIndex > 0) setStepIndex(stepIndex - 1);
+    if (stepIndex > 0) {
+      setClickedVariationId(null);
+      setStepIndex(stepIndex - 1);
+    }
   }
 
   function onClickSkip() {
