@@ -169,3 +169,31 @@ export function copyDesign(
     targetView.texts = sourceView.texts.map((text) => cloneText(text));
   }
 }
+
+export function setFirstName(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.firstName = action.payload;
+}
+
+export function setLastName(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.lastName = action.payload;
+}
+
+export function setEmail(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.email = action.payload;
+}
+
+export function setCompany(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.company = action.payload;
+}
+
+export function setLocal(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.local = action.payload;
+}
+
+export function setPhone(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.phone = action.payload;
+}
+
+export function setComments(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.comments = action.payload;
+}

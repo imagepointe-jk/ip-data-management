@@ -18,21 +18,12 @@ export function CartModal() {
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
   const cart = useSelector((store: StoreType) => store.cart.present);
+  const { firstName, lastName, email, company, local, phone, comments } =
+    useSelector((store: StoreType) => store.cart.present.contactInfo);
 
   async function onClickSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitting) return;
-
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    const firstName = `${formData.get("first-name")}`;
-    const lastName = `${formData.get("last-name")}`;
-    const email = `${formData.get("email")}`;
-    const company = `${formData.get("company")}`;
-    const local = `${formData.get("local")}`;
-    const phone = `${formData.get("phone")}`;
-    const comments = `${formData.get("comments")}`;
 
     setSubmitting(true);
     setError(false);

@@ -11,6 +11,13 @@ import {
   changeProductVariationQuantities as changeProductVariationQuantitiesFn,
   pruneCart as pruneCartFn,
   copyDesign as copyDesignFn,
+  setComments as setCommentsFn,
+  setCompany as setCompanyFn,
+  setEmail as setEmailFn,
+  setFirstName as setFirstNameFn,
+  setLastName as setLastNameFn,
+  setLocal as setLocalFn,
+  setPhone as setPhoneFn,
 } from "@/customizer/redux/slices/reducers/cart/cart";
 import {
   deleteTextFromState as deleteTextFromStateFn,
@@ -22,6 +29,15 @@ import { setViewRenderURL as setViewRenderURLFn } from "@/customizer/redux/slice
 
 const initialState: CartState = {
   products: [],
+  contactInfo: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    company: "",
+    local: "",
+    phone: "",
+    comments: "",
+  },
 };
 
 export const cartSlice = createSlice({
@@ -41,6 +57,13 @@ export const cartSlice = createSlice({
     setViewRenderURL: setViewRenderURLFn,
     pruneCart: pruneCartFn,
     copyDesign: copyDesignFn,
+    setFirstName: setFirstNameFn,
+    setLastName: setLastNameFn,
+    setEmail: setEmailFn,
+    setCompany: setCompanyFn,
+    setLocal: setLocalFn,
+    setPhone: setPhoneFn,
+    setComments: setCommentsFn,
   },
 });
 
@@ -58,4 +81,11 @@ export const {
   setViewRenderURL,
   pruneCart,
   copyDesign,
+  setComments,
+  setCompany,
+  setEmail,
+  setFirstName,
+  setLastName,
+  setLocal,
+  setPhone,
 } = cartSlice.actions;

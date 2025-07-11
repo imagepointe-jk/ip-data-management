@@ -100,6 +100,15 @@ const cartStateProductSchema = z.object({
 
 export const cartStateSchema = z.object({
   products: z.array(cartStateProductSchema),
+  contactInfo: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    company: z.string(),
+    local: z.string(),
+    phone: z.string(),
+    comments: z.string(),
+  }),
 });
 
 export const quoteRequestSchema = z.object({

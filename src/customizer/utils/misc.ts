@@ -106,6 +106,15 @@ export function createInitialState(
         ],
       },
     ],
+    contactInfo: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      company: "",
+      local: "",
+      phone: "",
+      comments: "",
+    },
   };
 
   return {
