@@ -11,6 +11,9 @@ import { ViewControls } from "./components/ViewControls";
 import "@/styles/customizer/CustomProductDesigner/main.css";
 import { StartOverModal } from "./components/StartOverModal";
 import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
+import { IframeLink } from "@/components/IframeHelper/IframeLink";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 
 export function Editor() {
   const selectedEditorGuid = useSelector(
@@ -31,6 +34,13 @@ export function Editor() {
         {openModal === "start over" && <StartOverModal />}
         {openModal === "copy design" && <CopyDesignModal />}
         <ArtworkControls />
+        <IframeLink
+          href="https://www.imagepointe.com/contact-us/"
+          className={styles["feedback-link"]}
+          title="Feedback"
+        >
+          <FontAwesomeIcon icon={faComment} />
+        </IframeLink>
       </div>
     </div>
   );

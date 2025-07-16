@@ -139,3 +139,23 @@
   background: none;
   opacity: 15%;
 }
+
+.feedback-link {
+  background-color: var(--color-alpha);
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: white;
+  border-radius: 100px;
+  padding: 8px 10px;
+  transition: 0.2s;
+}
+
+.feedback-link:hover {
+  translate: 0 -5px;
+  scale: 110%;
+}
+
+.feedback-link svg {
+  pointer-events: none;
+}

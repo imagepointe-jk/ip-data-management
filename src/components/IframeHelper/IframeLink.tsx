@@ -11,9 +11,10 @@ type Props = {
   href: string;
   className?: string;
   style?: CSSProperties;
+  title?: string;
   children: ReactNode;
 };
-export function IframeLink({ children, className, style, href }: Props) {
+export function IframeLink({ children, className, style, title, href }: Props) {
   const {
     parentWindow: { requestNavigation },
   } = useIframe();
@@ -26,7 +27,13 @@ export function IframeLink({ children, className, style, href }: Props) {
   }
 
   return (
-    <a href={href} className={className} style={style} onClick={onClick}>
+    <a
+      href={href}
+      className={className}
+      style={style}
+      title={title}
+      onClick={onClick}
+    >
       {children}
     </a>
   );
