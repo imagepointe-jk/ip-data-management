@@ -11,9 +11,6 @@ import { ViewControls } from "./components/ViewControls";
 import "@/styles/customizer/CustomProductDesigner/main.css";
 import { StartOverModal } from "./components/StartOverModal";
 import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
-import { IframeLink } from "@/components/IframeHelper/IframeLink";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { HelpModal } from "./components/HelpModal";
 
 export function Editor() {
@@ -36,13 +33,6 @@ export function Editor() {
         {openModal === "copy design" && <CopyDesignModal />}
         {openModal === "help" && <HelpModal />}
         <ArtworkControls />
-        <IframeLink
-          href="https://www.imagepointe.com/contact-us/"
-          className={styles["feedback-link"]}
-          title="Feedback"
-        >
-          <FontAwesomeIcon icon={faComment} />
-        </IframeLink>
       </div>
     </div>
   );
