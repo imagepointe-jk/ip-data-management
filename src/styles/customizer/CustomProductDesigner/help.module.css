@@ -1,5 +1,4 @@
 .main {
-  width: 300px;
   max-height: 600px;
   overflow: auto;
   display: flex;

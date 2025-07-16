@@ -14,6 +14,7 @@ import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
 import { IframeLink } from "@/components/IframeHelper/IframeLink";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { HelpModal } from "./components/HelpModal";
 
 export function Editor() {
   const selectedEditorGuid = useSelector(
@@ -33,6 +34,7 @@ export function Editor() {
         {openModal === "cart" && <CartModal />}
         {openModal === "start over" && <StartOverModal />}
         {openModal === "copy design" && <CopyDesignModal />}
+        {openModal === "help" && <HelpModal />}
         <ArtworkControls />
         <IframeLink
           href="https://www.imagepointe.com/contact-us/"

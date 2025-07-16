@@ -22,7 +22,6 @@ import {
   useEditorSelectors,
 } from "../redux/slices/editor";
 import { TextEditor } from "./text/TextEditor";
-import { Help } from "./Help";
 import { DownloadDesign } from "./DownloadDesign";
 import { EditorDialog, EditorModal } from "@/types/schema/customizer";
 import { ReactNode } from "react";
@@ -79,7 +78,9 @@ export function Sidebar() {
     {
       text: "Help",
       iconElement: <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />,
-      dialogToOpen: "help",
+      onClickExtra: () => {
+        dispatch(setModalOpen("help"));
+      },
     },
   ];
 
@@ -111,7 +112,6 @@ export function Sidebar() {
           {dialogOpen === "designs" && <DesignPicker />}
           {dialogOpen === "upload" && <UserUploads />}
           {dialogOpen === "text" && <TextEditor />}
-          {dialogOpen === "help" && <Help />}
           {dialogOpen === "download" && <DownloadDesign />}
           <button
             className={stylesMain["dialog-x"]}

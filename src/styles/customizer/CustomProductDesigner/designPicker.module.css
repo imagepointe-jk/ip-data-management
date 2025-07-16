@@ -97,8 +97,10 @@
 
 .page-button {
   cursor: pointer;
+  background: none;
+  color: black;
 }
 
 .page-button.current {
-  scale: 140%;
+  text-decoration: underline;
 }
