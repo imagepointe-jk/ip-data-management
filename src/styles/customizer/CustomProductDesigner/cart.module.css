@@ -44,8 +44,23 @@
   display: flex;
 }
 
-.cart-item-name {
+.cart-item-name-row {
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cart-item-buttons {
+  display: flex;
+  gap: 5px;
+  padding-right: 10px;
+}
+
+.cart-item-buttons button {
+  padding: 5px 8px;
+  display: inline-flex;
+  gap: 5px;
 }
 
 .cart-item-form {

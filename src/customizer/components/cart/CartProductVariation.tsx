@@ -5,7 +5,21 @@ import {
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import { RenderedProductView } from "../RenderedProductView";
 import { useDispatch } from "react-redux";
-import { changeProductVariationQuantities } from "@/customizer/redux/slices/cart";
+import {
+  changeProductVariationQuantities,
+  removeProductVariation,
+} from "@/customizer/redux/slices/cart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { countCartItems } from "@/customizer/utils/misc";
+import { useSelector } from "react-redux";
+import { StoreType } from "@/customizer/redux/store";
+import {
+  setModalOpen,
+  setSelectedVariationId,
+  setSelectedViewId,
+  useEditorSelectors,
+} from "@/customizer/redux/slices/editor";
 
 type Props = {
   productData: PopulatedProductSettingsSerializable;
@@ -15,7 +29,47 @@ export function CartProductVariation({ variationInState, productData }: Props) {
   const variationData = productData.variations.find(
     (variation) => variation.id === variationInState.id
   );
+  const cart = useSelector((store: StoreType) => store.cart.present);
+  const { selectedVariation } = useEditorSelectors();
+  const dispatch = useDispatch();
   const wooCommerceProductData = productData.product;
+  const totalItems = countCartItems(cart);
+
+  function onClickEdit() {
+    if (!variationData) throw new Error("No variation data");
+
+    const firstView = variationData.views[0];
+    if (!firstView) throw new Error("No views");
+
+    dispatch(setSelectedVariationId(variationData.id));
+    dispatch(setSelectedViewId(firstView.id));
+    dispatch(setModalOpen(null));
+  }
+
+  function onClickDelete() {
+    if (!variationData) throw new Error("No variation data");
+
+    if (selectedVariation.id === variationData.id) {
+      //if the variation we're trying to delete is also the one currently selected, switch to any other variation first to prevent errors
+      const otherVariation = productData.variations.filter(
+        (variation) => variation.id !== variationData.id
+      )[0];
+      if (!otherVariation) throw new Error("No other variation to switch to");
+
+      const firstView = otherVariation.views[0];
+      if (!firstView) throw new Error("No views");
+
+      dispatch(setSelectedVariationId(otherVariation.id));
+      dispatch(setSelectedViewId(firstView.id));
+    }
+
+    dispatch(
+      removeProductVariation({
+        targetProductId: productData.id,
+        variationId: variationData.id,
+      })
+    );
+  }
 
   return (
     <div className={styles["cart-item-flex"]}>
@@ -37,9 +91,21 @@ export function CartProductVariation({ variationInState, productData }: Props) {
             })}
           </div>
           <div>
-            <div
-              className={styles["cart-item-name"]}
-            >{`${wooCommerceProductData.name} (${variationData.color.name})`}</div>
+            <div className={styles["cart-item-name-row"]}>
+              <div>{`${wooCommerceProductData.name} (${variationData.color.name})`}</div>
+              <div className={styles["cart-item-buttons"]}>
+                <button onClick={onClickEdit}>
+                  <FontAwesomeIcon icon={faPencil} />
+                  Edit
+                </button>
+                {totalItems > 1 && (
+                  <button className="button-danger" onClick={onClickDelete}>
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
             <CartProductVariationForm
               productData={productData}
               variationInState={variationInState}
