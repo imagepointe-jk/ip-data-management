@@ -2,6 +2,7 @@
 
 import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
+  setDialogOpen,
   setModalOpen,
   setSelectedEditorGuid,
   setSelectedVariationId,
@@ -15,40 +16,54 @@ import { addProductVariation, pruneCart } from "../redux/slices/cart";
 import { useEditor } from "../EditorProvider";
 import { findVariationInCart } from "../utils/find";
 import { ProductVariationCard } from "./ProductVariationCard";
+import { useState } from "react";
+import { countVariationDesignObjects } from "../utils/misc";
 
 export function ColorPicker() {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const { selectedProductData, selectedView } = useEditorSelectors();
   const cart = useSelector((state: StoreType) => state.cart);
   const dispatch = useDispatch();
   const { updateViewRender } = useEditor();
+  const selectedVariationData = selectedProductData.variations.find(
+    (variation) => variation.id === selectedId
+  );
+  const variationInCart = selectedId
+    ? findVariationInCart(cart.present, selectedId)
+    : undefined;
+  const selectedVariationDesignCount = variationInCart
+    ? countVariationDesignObjects(variationInCart)
+    : 0;
 
   function onClickVariation(id: number) {
-    const variationData = selectedProductData.variations.find(
-      (variation) => variation.id === id
-    );
-    const isVariationInCart = !!findVariationInCart(cart.present, id);
+    setSelectedId(id);
+  }
 
-    if (!variationData) return;
+  function onClickEdit() {
+    if (!selectedId || !selectedVariationData) return;
+
+    const isVariationInCart = !!findVariationInCart(cart.present, selectedId);
     if (!isVariationInCart)
       dispatch(
         addProductVariation({
-          variationId: variationData.id,
+          variationId: selectedVariationData.id,
           targetProductData: selectedProductData,
         })
       );
 
     updateViewRender(selectedView.id);
     //the variation we're switching from might not have any designs, so prune the cart to prevent the user accumulating untouched variations
-    dispatch(pruneCart({ variationIdToPreserve: variationData.id }));
-    const firstView = variationData.views[0];
+    dispatch(pruneCart({ variationIdToPreserve: selectedVariationData.id }));
+    const firstView = selectedVariationData.views[0];
     if (!firstView) throw new Error("No views");
 
     const firstLocation = firstView.locations[0];
     if (!firstLocation) throw new Error("No locations");
 
-    dispatch(setSelectedVariationId(variationData.id));
+    dispatch(setSelectedVariationId(selectedVariationData.id));
     dispatch(setSelectedViewId(firstView.id));
     dispatch(setSelectedEditorGuid(null));
+    dispatch(setDialogOpen(null));
   }
 
   return (
@@ -60,11 +75,15 @@ export function ColorPicker() {
             <ProductVariationCard
               key={variation.id}
               variation={variation}
+              highlighted={variation.id === selectedId}
               onClick={() => onClickVariation(variation.id)}
             />
           ))}
         </div>
       </div>
+      <button onClick={onClickEdit} disabled={!selectedId}>
+        {selectedVariationDesignCount > 0 ? "Edit Design" : "Start Designing"}
+      </button>
       <button
         className="button-danger"
         onClick={() => {

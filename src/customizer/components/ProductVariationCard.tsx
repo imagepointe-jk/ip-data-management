@@ -5,6 +5,9 @@ import {
 } from "@prisma/client";
 import styles from "@/styles/customizer/CustomProductDesigner/productVariationCard.module.css";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
+import { useSelector } from "react-redux";
+import { StoreType } from "../redux/store";
+import { findVariationInCart } from "../utils/find";
 
 type Props = {
   variation: CustomProductSettingsVariation & { color: Color } & {
@@ -24,6 +27,10 @@ export function ProductVariationCard({
   highlighted,
   imageOverride,
 }: Props) {
+  const cart = useSelector((store: StoreType) => store.cart.present);
+  const variationInState = findVariationInCart(cart, variation.id);
+  const firstView = variationInState?.views[0];
+
   function onClicked() {
     if (!disabled && onClick) onClick();
   }
@@ -39,7 +46,10 @@ export function ProductVariationCard({
       <div className={styles["img-container"]}>
         <img
           src={
-            imageOverride || variation.views[0]?.imageUrl || IMAGE_NOT_FOUND_URL
+            imageOverride ||
+            firstView?.currentRenderUrl ||
+            variation.views[0]?.imageUrl ||
+            IMAGE_NOT_FOUND_URL
           }
         />{" "}
       </div>

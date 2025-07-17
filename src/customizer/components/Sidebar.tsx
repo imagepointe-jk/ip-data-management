@@ -50,7 +50,10 @@ export function Sidebar() {
     {
       text: "Product Color",
       iconElement: <FontAwesomeIcon icon={faPaintBrush} size={"2x"} />,
-      dialogToOpen: "colors",
+      onClickExtra: () => {
+        updateViewRender(selectedView.id);
+        dispatch(setDialogOpen("colors"));
+      },
     },
     {
       text: "Upload Art",
