@@ -16,7 +16,7 @@ import { addProductVariation, pruneCart } from "../redux/slices/cart";
 import { useEditor } from "../EditorProvider";
 import { findVariationInCart } from "../utils/find";
 import { ProductVariationCard } from "./ProductVariationCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { countVariationDesignObjects } from "../utils/misc";
 
 export function ColorPicker() {
@@ -40,6 +40,10 @@ export function ColorPicker() {
   }
 
   function onClickEdit() {
+    dispatch(setDialogOpen(null));
+  }
+
+  useEffect(() => {
     if (!selectedId || !selectedVariationData) return;
 
     const isVariationInCart = !!findVariationInCart(cart.present, selectedId);
@@ -63,8 +67,7 @@ export function ColorPicker() {
     dispatch(setSelectedVariationId(selectedVariationData.id));
     dispatch(setSelectedViewId(firstView.id));
     dispatch(setSelectedEditorGuid(null));
-    dispatch(setDialogOpen(null));
-  }
+  }, [selectedId]);
 
   return (
     <div className={styles["main"]}>
