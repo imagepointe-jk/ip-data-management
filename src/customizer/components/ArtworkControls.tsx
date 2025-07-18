@@ -14,6 +14,7 @@ import {
 import { ActionCreators } from "redux-undo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBackward,
   faChevronUp,
   faRedo,
   faTrashAlt,
@@ -61,9 +62,22 @@ export function ArtworkControls() {
         <FontAwesomeIcon icon={faRedo} />
         {" Redo"}
       </button>
-      <button onClick={onClickDelete} disabled={!selectedEditorGuid}>
+      <button
+        className="button-danger"
+        onClick={onClickDelete}
+        disabled={!selectedEditorGuid}
+      >
         <FontAwesomeIcon icon={faTrashAlt} />
         {" Delete"}
+      </button>
+      <button
+        className="button-danger"
+        onClick={() => {
+          dispatch(setModalOpen("start over"));
+        }}
+      >
+        <FontAwesomeIcon icon={faBackward} />
+        {" Start Over"}
       </button>
       <button
         className={styles["artwork-controls-bar-toggle"]}
@@ -74,14 +88,6 @@ export function ArtworkControls() {
           className={styles["artwork-controls-bar-toggle-icon"]}
         />
         {expanded ? " Hide Tools" : "Show Tools"}
-      </button>
-      <button
-        className="button-danger"
-        onClick={() => {
-          dispatch(setModalOpen("start over"));
-        }}
-      >
-        Start Over
       </button>
     </div>
   );
