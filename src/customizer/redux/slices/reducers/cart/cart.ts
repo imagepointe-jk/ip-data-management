@@ -1,8 +1,11 @@
 import { findVariationInCart } from "@/customizer/utils/find";
-import { cloneArtwork, cloneText } from "@/customizer/utils/misc";
+import {
+  cloneArtwork,
+  cloneText,
+  createProductVariationForState,
+} from "@/customizer/utils/misc";
 import {
   CartState,
-  CartStateProductVariation,
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -29,36 +32,13 @@ export function addProductVariation(
       `Tried to add additional instance of variation ${variationId}`
     );
 
-  const variationData = targetProductData.variations.find(
-    (variation) => variation.id === variationId
+  const newVariation = createProductVariationForState(
+    variationId,
+    targetProductData
   );
-  if (!variationData) throw new Error(`Variation id ${variationId} not found`);
-
   const productInState = state.products.find(
     (product) => product.id === targetProductData.id
   )!;
-  const newVariation: CartStateProductVariation = {
-    id: variationData.id,
-    label: variationData.color.name,
-    views: variationData.views.map((view) => ({
-      id: view.id,
-      label: view.name,
-      artworks: [],
-      texts: [],
-      currentRenderUrl: view.imageUrl,
-    })),
-    quantities: {
-      "2xl": 0,
-      "3xl": 0,
-      "4xl": 0,
-      "5xl": 0,
-      "6xl": 0,
-      l: 0,
-      m: 0,
-      s: 0,
-      xl: 0,
-    },
-  };
 
   productInState?.variations.push(newVariation);
 }
@@ -144,15 +124,15 @@ export function copyDesign(
 ) {
   const { sourceVariationId, targetVariationId } = action.payload;
   const sourceVariation = findVariationInCart(state, sourceVariationId);
-  const targetVariation = findVariationInCart(state, targetVariationId);
   if (!sourceVariation)
     throw new Error(
       `Source variation id ${sourceVariationId} not found in state`
     );
+
+  const targetVariation = findVariationInCart(state, targetVariationId);
+
   if (!targetVariation)
-    throw new Error(
-      `Target variation id ${targetVariationId} not found in state`
-    );
+    throw new Error(`Variation ${targetVariationId} not found`);
 
   for (let i = 0; i < targetVariation.views.length; i++) {
     const targetView = targetVariation.views[i]!;

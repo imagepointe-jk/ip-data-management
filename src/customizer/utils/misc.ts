@@ -9,6 +9,7 @@ import {
   CartStateText,
   PlacedObject,
   PopulatedProductSettings,
+  PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { v4 as uuidv4 } from "uuid";
 
@@ -192,4 +193,39 @@ function cloneObjectData(objectData: PlacedObject) {
       y: objectData.sizeNormalized.y,
     },
   };
+}
+
+export function createProductVariationForState(
+  variationId: number,
+  targetProductData: PopulatedProductSettingsSerializable
+) {
+  const variationData = targetProductData.variations.find(
+    (variation) => variation.id === variationId
+  );
+  if (!variationData) throw new Error(`Variation id ${variationId} not found`);
+
+  const newVariation: CartStateProductVariation = {
+    id: variationData.id,
+    label: variationData.color.name,
+    views: variationData.views.map((view) => ({
+      id: view.id,
+      label: view.name,
+      artworks: [],
+      texts: [],
+      currentRenderUrl: view.imageUrl,
+    })),
+    quantities: {
+      "2xl": 0,
+      "3xl": 0,
+      "4xl": 0,
+      "5xl": 0,
+      "6xl": 0,
+      l: 0,
+      m: 0,
+      s: 0,
+      xl: 0,
+    },
+  };
+
+  return newVariation;
 }
