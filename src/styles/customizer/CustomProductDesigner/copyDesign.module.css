@@ -13,7 +13,7 @@
   flex-wrap: wrap;
   gap: 20px;
   align-items: flex-start;
-  height: 200px;
+  height: 260px;
   width: 370px;
   margin-top: 10px;
   overflow-y: auto;
@@ -23,6 +23,7 @@
 .existing-design-warning {
   color: red;
   font-weight: bold;
+  min-height: 20px;
 }
 
 .copy-button-container {

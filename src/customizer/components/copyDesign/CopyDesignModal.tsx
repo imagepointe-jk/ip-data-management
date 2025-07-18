@@ -37,7 +37,12 @@ export function CopyDesignModal() {
     useEditorSelectors();
   const { updateViewRender } = useEditor();
   const cart = useSelector((store: StoreType) => store.cart.present);
-  const existingDesign = countVariationDesignObjects(selectedVariation) > 0;
+  const willOverwriteExistingDesign = !!targetVariationIds.find((id) => {
+    const variationInCart = findVariationInCart(cart, id);
+    return variationInCart
+      ? countVariationDesignObjects(variationInCart) > 0
+      : 0;
+  });
   const dispatch = useDispatch();
 
   function onClickSourceVariation(id: number) {
@@ -167,13 +172,17 @@ export function CopyDesignModal() {
           />
         </div>
       </div>
-      {existingDesign && (
-        <div className={styles["existing-design-warning"]}>
-          <FontAwesomeIcon icon={faWarning} /> The color you&apos;re copying to
-          already has a design. The existing design will be REPLACED if you
-          continue.
-        </div>
-      )}
+
+      <div className={styles["existing-design-warning"]}>
+        {willOverwriteExistingDesign && (
+          <>
+            <FontAwesomeIcon icon={faWarning} /> A color you&apos;re copying to
+            already has a design. The existing design will be REPLACED if you
+            continue.
+          </>
+        )}
+      </div>
+
       <div className={styles["copy-button-container"]}>
         <button
           onClick={onClickCopy}
