@@ -3,7 +3,6 @@
 import styles from "@/styles/customizer/CustomProductDesigner/variationPicker.module.css";
 import {
   setDialogOpen,
-  setModalOpen,
   setSelectedEditorGuid,
   setSelectedVariationId,
   setSelectedViewId,
@@ -84,17 +83,11 @@ export function ColorPicker() {
           ))}
         </div>
       </div>
-      <button onClick={onClickEdit} disabled={!selectedId}>
-        {selectedVariationDesignCount > 0 ? "Edit Design" : "Start Designing"}
-      </button>
-      <button
-        className="button-danger"
-        onClick={() => {
-          dispatch(setModalOpen("start over"));
-        }}
-      >
-        Start Over
-      </button>
+      <div className={styles["edit-button-container"]}>
+        <button onClick={onClickEdit} disabled={!selectedId}>
+          {selectedVariationDesignCount > 0 ? "Edit Design" : "Start Designing"}
+        </button>
+      </div>
     </div>
   );
 }

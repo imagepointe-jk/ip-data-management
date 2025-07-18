@@ -7,6 +7,7 @@ import {
   deleteTextFromState,
 } from "../redux/slices/cart";
 import {
+  setModalOpen,
   setSelectedEditorGuid,
   useEditorSelectors,
 } from "../redux/slices/editor";
@@ -21,7 +22,7 @@ import {
 import { useState } from "react";
 
 export function ArtworkControls() {
-  const [expanded, setExpanded] = useState(false); //may want to store this state in redux at some point, but not necessary now
+  const [expanded, setExpanded] = useState(true); //may want to store this state in redux at some point, but not necessary now
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
@@ -73,6 +74,14 @@ export function ArtworkControls() {
           className={styles["artwork-controls-bar-toggle-icon"]}
         />
         {expanded ? " Hide Tools" : "Show Tools"}
+      </button>
+      <button
+        className="button-danger"
+        onClick={() => {
+          dispatch(setModalOpen("start over"));
+        }}
+      >
+        Start Over
       </button>
     </div>
   );

@@ -4,7 +4,7 @@
 
 .scroll-container {
   width: 380px;
-  height: 500px;
+  height: 460px;
   overflow-y: scroll;
 }
 
@@ -54,4 +54,10 @@
 
 .card:hover .color-label {
   opacity: 1;
+}
+
+.edit-button-container {
+  display: flex;
+  justify-self: center;
+  margin-top: 20px;
 }
