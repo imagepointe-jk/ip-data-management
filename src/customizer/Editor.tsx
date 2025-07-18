@@ -12,13 +12,14 @@ import "@/styles/customizer/CustomProductDesigner/main.css";
 import { StartOverModal } from "./components/StartOverModal";
 import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
 import { HelpModal } from "./components/HelpModal";
+import { GlobalLoading } from "./components/GlobalLoading";
 
 export function Editor() {
-  const selectedEditorGuid = useSelector(
-    (store: StoreType) => store.editorState.selectedEditorGuid
-  );
   const openModal = useSelector(
     (store: StoreType) => store.editorState.modalOpen
+  );
+  const globalLoading = useSelector(
+    (store: StoreType) => store.editorState.globalLoading
   );
 
   return (
@@ -33,6 +34,7 @@ export function Editor() {
         {openModal === "copy design" && <CopyDesignModal />}
         {openModal === "help" && <HelpModal />}
         <ArtworkControls />
+        {globalLoading.loading && <GlobalLoading />}
       </div>
     </div>
   );

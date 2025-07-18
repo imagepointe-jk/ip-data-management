@@ -13,6 +13,10 @@ import {
   getAdjacentViewId,
 } from "@/customizer/utils/find";
 
+type GlobalLoadingType = {
+  loading: boolean;
+  progress: number | null; //between 0 and 1; if null, loading can still be true, but loading progress bar will not be shown
+};
 type EditorState = {
   dialogOpen: EditorDialog;
   modalOpen: EditorModal;
@@ -20,6 +24,7 @@ type EditorState = {
   selectedProductId: number;
   selectedVariationId: number;
   selectedViewId: number;
+  globalLoading: GlobalLoadingType;
   designBrowserData: {
     search: string;
     page: number;
@@ -32,6 +37,10 @@ const initialState: EditorState = {
   selectedProductId: -1,
   selectedVariationId: -1,
   selectedViewId: -1,
+  globalLoading: {
+    loading: false,
+    progress: null,
+  },
   designBrowserData: {
     page: 1,
     search: "",
@@ -65,6 +74,9 @@ export const editorSlice = createSlice({
     },
     setDesignBrowserSearch: (state, action: PayloadAction<string>) => {
       state.designBrowserData.search = action.payload;
+    },
+    setGlobalLoading: (state, action: PayloadAction<GlobalLoadingType>) => {
+      state.globalLoading = action.payload;
     },
     selectNextView: (
       state,
@@ -158,4 +170,5 @@ export const {
   selectPreviousView,
   setDesignBrowserPage,
   setDesignBrowserSearch,
+  setGlobalLoading,
 } = editorSlice.actions;

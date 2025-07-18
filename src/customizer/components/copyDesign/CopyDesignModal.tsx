@@ -1,5 +1,6 @@
 import { Modal } from "@/components/Modal";
 import {
+  setGlobalLoading,
   setModalOpen,
   setSelectedVariationId,
   setSelectedViewId,
@@ -75,6 +76,14 @@ export function CopyDesignModal() {
     if (!sourceVariationId || targetVariationIds.length === 0) return;
     const initialVariationId = selectedVariation.id;
     const initialViewId = selectedView.id;
+    const totalViews = targetVariationIds.reduce((accum, id) => {
+      const variationData = selectedProductData.variations.find(
+        (variation) => variation.id === id
+      );
+      return accum + (variationData?.views.length || 0);
+    }, 0);
+    dispatch(setGlobalLoading({ loading: true, progress: 0 }));
+    let viewsRendered = 0;
 
     for (const id of targetVariationIds) {
       let variation = findVariationInCart(cart, id);
@@ -96,7 +105,6 @@ export function CopyDesignModal() {
 
       //now that we know the variation is there, copy the design to it from the source
       dispatch(copyDesign({ sourceVariationId, targetVariationId: id }));
-      // dispatch(setSelectedVariationId(id));
 
       const views = selectedProductData.variations.find(
         (variation) => variation.id === id
@@ -108,11 +116,21 @@ export function CopyDesignModal() {
         dispatch(setSelectedViewId(view.id));
         await waitForMs(1000);
         updateViewRender(view.id);
+        viewsRendered++;
+        dispatch(
+          setGlobalLoading({
+            loading: true,
+            progress: viewsRendered / totalViews,
+          })
+        );
       }
     }
     //switch back to whatever the user was viewing before we took away control
     dispatch(setSelectedVariationId(initialVariationId));
     dispatch(setSelectedViewId(initialViewId));
+
+    dispatch(setModalOpen(null));
+    dispatch(setGlobalLoading({ loading: false, progress: null }));
   }
 
   return (
