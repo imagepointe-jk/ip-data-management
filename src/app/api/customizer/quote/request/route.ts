@@ -3,7 +3,11 @@ import { updateQuoteRequest } from "@/actions/customizer/update";
 import { handleRequestError } from "@/app/api/handleError";
 import { easyCorsInit } from "@/constants";
 import { sendQuoteRequestEmail } from "@/customizer/mail/mail";
-import { uploadQuoteRequestRender } from "@/customizer/utils/server";
+import {
+  getNamesForQuoteRequestDesigns,
+  uploadQuoteRequestRender,
+} from "@/customizer/utils/server";
+import { prisma } from "@/prisma";
 import { QuoteRequestData } from "@/types/schema/customizer";
 import { validateQuoteRequest } from "@/types/validations/customizer";
 import { NextRequest, NextResponse } from "next/server";
@@ -59,7 +63,9 @@ export async function POST(request: NextRequest) {
       cartJson: JSON.stringify(cart),
     });
 
-    sendQuoteRequestEmail(quoteRequest, updated.id);
+    const designNames = await getNamesForQuoteRequestDesigns(cart);
+    const designNamesStringified = designNames.join(", ");
+    sendQuoteRequestEmail(quoteRequest, updated.id, designNamesStringified);
 
     return Response.json(updated, easyCorsInit);
   } catch (error) {

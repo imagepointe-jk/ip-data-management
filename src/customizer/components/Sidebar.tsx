@@ -78,13 +78,14 @@ export function Sidebar() {
       iconElement: <FontAwesomeIcon icon={faDownload} size={"2x"} />,
       dialogToOpen: "download",
     },
-    {
-      text: "Help",
-      iconElement: <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />,
-      onClickExtra: () => {
-        dispatch(setModalOpen("help"));
-      },
-    },
+    //Help section temporarily hidden
+    // {
+    //   text: "Help",
+    //   iconElement: <FontAwesomeIcon icon={faQuestionCircle} size={"2x"} />,
+    //   onClickExtra: () => {
+    //     dispatch(setModalOpen("help"));
+    //   },
+    // },
   ];
 
   return (

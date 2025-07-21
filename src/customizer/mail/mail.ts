@@ -7,7 +7,8 @@ import path from "path";
 
 export async function sendQuoteRequestEmail(
   quoteRequest: QuoteRequestData,
-  newLeadId: number
+  newLeadId: number,
+  designNames: string
 ) {
   try {
     const templateSource = fs.readFileSync(
@@ -18,6 +19,7 @@ export async function sendQuoteRequestEmail(
     const message = template({
       ...quoteRequest,
       adminLink: `${env.NEXT_PUBLIC_BASE_URL}/admin/customizer/leads/${newLeadId}`,
+      designNames,
     });
 
     await sendEmail(env.QUOTE_REQUEST_DEST_EMAIL, "New Quote Request", message);
