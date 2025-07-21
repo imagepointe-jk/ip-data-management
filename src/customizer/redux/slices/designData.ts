@@ -10,7 +10,22 @@ export type DesignWithIncludesSerializable = Omit<
 export type DesignResultsSerializable = Omit<DesignResults, "designs"> & {
   designs: DesignWithIncludesSerializable[];
 };
-const initialState: { data: DesignResultsSerializable | null } = {
+const initialState: {
+  data: {
+    designs: DesignResultsSerializable;
+    categories: {
+      id: number;
+      name: string;
+      designSubcategories: {
+        id: number;
+        name: string;
+      }[];
+      designType: {
+        name: string;
+      };
+    }[];
+  } | null;
+} = {
   data: null,
 };
 
@@ -20,7 +35,20 @@ export const designDataSlice = createSlice({
   reducers: {
     setDesignData: (
       state,
-      action: PayloadAction<DesignResultsSerializable>
+      action: PayloadAction<{
+        designs: DesignResultsSerializable;
+        categories: {
+          id: number;
+          name: string;
+          designSubcategories: {
+            id: number;
+            name: string;
+          }[];
+          designType: {
+            name: string;
+          };
+        }[];
+      }>
     ) => {
       state.data = action.payload;
     },

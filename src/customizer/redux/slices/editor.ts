@@ -27,6 +27,8 @@ type EditorState = {
   globalLoading: GlobalLoadingType;
   designBrowserData: {
     search: string;
+    library: "screen print" | "embroidery";
+    subcategoryId: number | null;
     page: number;
   };
 };
@@ -44,6 +46,8 @@ const initialState: EditorState = {
   designBrowserData: {
     page: 1,
     search: "",
+    library: "screen print",
+    subcategoryId: null,
   },
 };
 
@@ -74,6 +78,19 @@ export const editorSlice = createSlice({
     },
     setDesignBrowserSearch: (state, action: PayloadAction<string>) => {
       state.designBrowserData.search = action.payload;
+    },
+    setDesignBrowserLibrary: (
+      state,
+      action: PayloadAction<"screen print" | "embroidery">
+    ) => {
+      state.designBrowserData.library = action.payload;
+    },
+    setDesignBrowserSubcategoryId: (
+      state,
+      action: PayloadAction<number | null>
+    ) => {
+      state.designBrowserData.subcategoryId = action.payload;
+      state.designBrowserData.page = 1;
     },
     setGlobalLoading: (state, action: PayloadAction<GlobalLoadingType>) => {
       state.globalLoading = action.payload;
@@ -170,5 +187,6 @@ export const {
   selectPreviousView,
   setDesignBrowserPage,
   setDesignBrowserSearch,
+  setDesignBrowserSubcategoryId,
   setGlobalLoading,
 } = editorSlice.actions;

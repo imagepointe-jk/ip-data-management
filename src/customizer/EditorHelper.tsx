@@ -9,7 +9,11 @@ import { useEffect, useState } from "react";
 import { StarterSteps } from "./components/StarterSteps";
 
 type Props = Omit<EditorProps, "initialProductId" | "initialVariationId">;
-export default function EditorHelper({ designs, productData }: Props) {
+export default function EditorHelper({
+  designs,
+  productData,
+  categoryHierarchy,
+}: Props) {
   const iframe = useIframe();
   const [initialProductId, setInitialProductId] = useState(
     null as number | null
@@ -52,6 +56,7 @@ export default function EditorHelper({ designs, productData }: Props) {
         initialProductId={initialProductId}
         initialVariationId={initialVariationId}
         productData={productData}
+        categoryHierarchy={categoryHierarchy}
       >
         <Editor />
       </EditorProvider>

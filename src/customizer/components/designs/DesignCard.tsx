@@ -51,7 +51,7 @@ export function DesignCard({ design }: Props) {
         addDesignPayload: {
           designId: design.id,
           variationId,
-          designData: designData.designs,
+          designData: designData.designs.designs,
         },
         targetViewId: selectedViewId,
         targetProductData: selectedProductData,

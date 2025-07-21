@@ -41,6 +41,17 @@ export type EditorProps = {
   initialVariationId: number;
   designs: DesignResults;
   productData: PopulatedProductSettings[];
+  categoryHierarchy: {
+    id: number;
+    name: string;
+    designSubcategories: {
+      id: number;
+      name: string;
+    }[];
+    designType: {
+      name: string;
+    };
+  }[];
 };
 export function EditorProvider({
   children,
@@ -48,6 +59,7 @@ export function EditorProvider({
   initialProductId,
   initialVariationId,
   productData,
+  categoryHierarchy,
 }: EditorProps & { children: ReactNode }) {
   const dispatch = useDispatch();
   const productDataInStore = useSelector(
@@ -78,7 +90,12 @@ export function EditorProvider({
     const serializableDesigns = makeDesignResultsSerializable(designs);
 
     dispatch(setProductData(serializableData));
-    dispatch(setDesignData(serializableDesigns));
+    dispatch(
+      setDesignData({
+        designs: serializableDesigns,
+        categories: categoryHierarchy,
+      })
+    );
     dispatch(setCartProducts(initialDesignState));
     dispatch(setSelectedProductId(initialProduct.id));
     dispatch(setSelectedVariationId(initialVariation.id));

@@ -5,7 +5,7 @@ const EditorHelper = dynamic(() => import("@/customizer/EditorHelper"), {
 }); //this is the recommended workaround for errors related to combining Next.js and Konva
 //recommended by Konva dev here: https://github.com/konvajs/react-konva#usage-with-nextjs
 //the !!false appears to be a temporary workaround for Next.js 15: https://github.com/PostHog/posthog/issues/26016
-import { getDesigns } from "@/db/access/designs";
+import { getDesignCategoryHierarchy, getDesigns } from "@/db/access/designs";
 import { getProductSettingsWithIncludes } from "@/db/access/customizer";
 import { populateProductData } from "@/app/customizer/handleData";
 
@@ -15,6 +15,7 @@ export default async function Page() {
   const designs = await getDesigns({
     perPage: 9999,
   });
+  const categories = await getDesignCategoryHierarchy();
   const settings = await getProductSettingsWithIncludes({
     publishedOnly: true,
   });
@@ -22,7 +23,11 @@ export default async function Page() {
 
   return (
     <IframeHelperProvider>
-      <EditorHelper designs={designs} productData={productData} />
+      <EditorHelper
+        designs={designs}
+        productData={productData}
+        categoryHierarchy={categories}
+      />
     </IframeHelperProvider>
   );
 }
