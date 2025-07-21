@@ -22,3 +22,7 @@ export const CONTACT_US_URL = "https://www.imagepointe.com/contact-us/";
 export const productEditorSize = 650; //temporary; eventually width will need to be dynamic to allow for view resizing
 export const PRODUCT_CUSTOMIZER_RENDER_RML_FOLDER_ID = 8;
 export const PRODUCT_CUSTOMIZER_USER_UPLOADS_RML_FOLDER_ID = 16;
+
+export const VERSIONS = {
+  customizer: "1.0",
+};

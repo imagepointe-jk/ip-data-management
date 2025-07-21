@@ -109,6 +109,7 @@ export const cartStateSchema = z.object({
     phone: z.string(),
     comments: z.string(),
   }),
+  createdInVersion: z.string().optional(),
 });
 
 export const quoteRequestSchema = z.object({
