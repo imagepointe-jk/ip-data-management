@@ -35,6 +35,9 @@ export function CopyDesignModal() {
   const [targetVariationIds, setTargetVariationIds] = useState<number[]>([]);
   const { selectedProductData, selectedVariation, selectedView } =
     useEditorSelectors();
+  const globalLoading = useSelector(
+    (store: StoreType) => store.editorState.globalLoading
+  );
   const { updateViewRender } = useEditor();
   const cart = useSelector((store: StoreType) => store.cart.present);
   const willOverwriteExistingDesign = !!targetVariationIds.find((id) => {
@@ -174,7 +177,7 @@ export function CopyDesignModal() {
       </div>
 
       <div className={styles["existing-design-warning"]}>
-        {willOverwriteExistingDesign && (
+        {willOverwriteExistingDesign && !globalLoading.loading && (
           <>
             <FontAwesomeIcon icon={faWarning} /> A color you&apos;re copying to
             already has a design. The existing design will be REPLACED if you
