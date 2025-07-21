@@ -1,12 +1,8 @@
-import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartShopping,
-  faRectangleList,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRectangleList } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { setModalOpen, useEditorSelectors } from "../redux/slices/editor";
 import { countCartItems } from "../utils/misc";
@@ -25,20 +21,13 @@ export function CartBar() {
   }
 
   return (
-    <div
-      className={`${stylesMain["floating-container"]} ${stylesMain["cart-bar-main"]}`}
-    >
-      <button
-        className={stylesMain["cart-bar-button"]}
-        onClick={onClickOpenCart}
-      >
-        <div>
-          <FontAwesomeIcon icon={faRectangleList} /> Quote
-        </div>
-        <div>
-          {productCount} item{productCount > 1 && "s"}
-        </div>
-      </button>
-    </div>
+    <button className={stylesMain["cart-bar-button"]} onClick={onClickOpenCart}>
+      <div>
+        <FontAwesomeIcon icon={faRectangleList} /> Quote
+      </div>
+      <div>
+        {productCount} item{productCount > 1 && "s"}
+      </div>
+    </button>
   );
 }
