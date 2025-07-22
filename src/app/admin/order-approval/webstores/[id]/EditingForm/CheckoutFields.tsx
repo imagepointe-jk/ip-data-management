@@ -23,6 +23,9 @@ export function CheckoutFields({ webstoreState, setWebstoreState }: Props) {
   }
 
   async function onClickDeleteCheckoutField(id: number) {
+    if (!confirm("Are you sure you want to delete this checkout field?"))
+      return;
+
     await deleteCheckoutField(id);
     setWebstoreState((draft) => {
       draft.checkoutFields = draft.checkoutFields.filter(

@@ -74,6 +74,9 @@ export function EventListener({ stepId, listener }: Props) {
   }
 
   async function onClickDelete() {
+    if (!confirm("Are you sure you want to delete this event listener?"))
+      return;
+
     await deleteEventListener(listener.id);
     updateWorkflowState((draft) => {
       const draftStep = draft.steps.find(

@@ -45,6 +45,8 @@ export function DesignVariations({
   }
 
   async function onClickDeleteVariation(id: number) {
+    if (!confirm("Are you sure you want to delete this variation?")) return;
+
     await deleteDesignVariation(id);
     setDesign((draft) => {
       draft.variations = draft.variations.filter(

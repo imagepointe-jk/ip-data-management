@@ -27,6 +27,8 @@ export function SingleRole({ role }: Props) {
   }
 
   async function onClickDelete() {
+    if (!confirm("Are you sure you want to delete this role?")) return;
+
     try {
       await deleteRole(role.id);
       router.refresh();
