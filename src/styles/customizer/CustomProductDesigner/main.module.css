@@ -51,35 +51,29 @@
 
 .artwork-controls-bar {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  translate: -50% -117%;
+  top: 50%;
+  right: 10px;
+  translate: 109% -50%;
   display: flex;
+  flex-direction: column;
   gap: 10px;
   transition: 0.2s;
 }
 
 .artwork-controls-bar.expanded {
-  translate: -50% 0;
+  translate: 0 -50%;
 }
 
 .artwork-controls-bar-toggle {
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  translate: -50% 99%;
+  left: 0;
+  top: 50%;
+  translate: -127% -50%;
+  border-radius: 100px;
   color: var(--color-beta);
-  font-weight: bold;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  padding: 5px;
-  background: linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 1) 60%,
-    rgb(218, 218, 218) 100%
-  );
+  padding: 5px 8px;
   border: 1px solid lightgray;
-  border-top: none;
+  background-color: white;
 }
 
 .artwork-controls-bar-toggle-icon {
@@ -91,6 +85,12 @@
   rotate: 0deg;
 }
 
+.artwork-controls-bar-toggle-text {
+  position: absolute;
+  top: -21px;
+  left: -4px;
+}
+
 .cart-bar-button {
   display: flex;
   gap: 10px;
@@ -99,6 +99,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
+  background-color: var(--color-beta);
 }
 
 .product-view-frame {
@@ -117,9 +118,8 @@
 
 .view-controls-main {
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  translate: -50% 0;
+  bottom: 15px;
+  right: 15px;
   display: flex;
   justify-content: center;
   align-items: center;

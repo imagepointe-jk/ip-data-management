@@ -8,7 +8,7 @@ import { ActionCreators } from "redux-undo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBackward,
-  faChevronUp,
+  faChevronRight,
   faRedo,
   faTrashAlt,
   faUndo,
@@ -65,10 +65,10 @@ export function ArtworkControls() {
         onClick={() => setExpanded(!expanded)}
       >
         <FontAwesomeIcon
-          icon={faChevronUp}
+          icon={faChevronRight}
           className={styles["artwork-controls-bar-toggle-icon"]}
         />
-        {expanded ? " Hide Tools" : "Show Tools"}
+        <div className={styles["artwork-controls-bar-toggle-text"]}>Tools</div>
       </button>
     </div>
   );
