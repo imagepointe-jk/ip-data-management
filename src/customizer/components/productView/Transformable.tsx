@@ -4,11 +4,15 @@ import { Group, Transformer } from "react-konva";
 import { useSelector } from "react-redux";
 import { StoreType } from "@/customizer/redux/store";
 import { useDispatch } from "react-redux";
-import { setObjectTransform } from "@/customizer/redux/slices/cart";
+import {
+  deleteObjectFromState,
+  setObjectTransform,
+} from "@/customizer/redux/slices/cart";
 import {
   TransformArgsPx,
   TransformArgsPxOptional,
 } from "@/types/schema/customizer";
+import { setSelectedEditorGuid } from "@/customizer/redux/slices/editor";
 
 //? As of Aug. 2024 the official Konva docs say there is no official "React way" to use the Transformer.
 //? This generalized component appears to work well enough for now.
@@ -135,7 +139,18 @@ export function Transformable({
   }
 
   useEffect(() => {
-    if (!selected) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Delete" && selectedEditorGuid) {
+        dispatch(deleteObjectFromState({ guid: selectedEditorGuid }));
+        dispatch(setSelectedEditorGuid(null));
+      }
+    }
+
+    if (!selected) {
+      window.removeEventListener("keydown", onKeyDown);
+      return;
+    }
+    window.addEventListener("keydown", onKeyDown);
 
     const transformer = transformerRef.current;
     const main = mainRef.current;
@@ -154,6 +169,7 @@ export function Transformable({
     return () => {
       node.off("dragstart", onDragStart);
       node.off("dragend", onDragEnd);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [selected]);
 

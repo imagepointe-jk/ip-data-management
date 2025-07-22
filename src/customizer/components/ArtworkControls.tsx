@@ -2,15 +2,8 @@ import styles from "@/styles/customizer/CustomProductDesigner/main.module.css";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { useDispatch } from "react-redux";
-import {
-  deleteArtworkFromState,
-  deleteTextFromState,
-} from "../redux/slices/cart";
-import {
-  setModalOpen,
-  setSelectedEditorGuid,
-  useEditorSelectors,
-} from "../redux/slices/editor";
+import { deleteObjectFromState } from "../redux/slices/cart";
+import { setModalOpen, setSelectedEditorGuid } from "../redux/slices/editor";
 import { ActionCreators } from "redux-undo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,24 +20,12 @@ export function ArtworkControls() {
   const selectedEditorGuid = useSelector(
     (store: StoreType) => store.editorState.selectedEditorGuid
   );
-  const { selectedView } = useEditorSelectors();
   const dispatch = useDispatch();
 
   function onClickDelete() {
     if (!selectedEditorGuid) return;
 
-    const selectedArtwork = selectedView.artworks.find(
-      (art) => art.objectData.editorGuid === selectedEditorGuid
-    );
-    const selectedText = selectedView.texts.find(
-      (text) => text.objectData.editorGuid === selectedEditorGuid
-    );
-
-    if (selectedArtwork)
-      dispatch(deleteArtworkFromState({ guid: selectedEditorGuid }));
-    if (selectedText)
-      dispatch(deleteTextFromState({ guid: selectedEditorGuid }));
-
+    dispatch(deleteObjectFromState({ guid: selectedEditorGuid }));
     dispatch(setSelectedEditorGuid(null));
   }
 

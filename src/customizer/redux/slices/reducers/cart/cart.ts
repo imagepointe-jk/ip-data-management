@@ -1,4 +1,8 @@
-import { findVariationInCart } from "@/customizer/utils/find";
+import {
+  findVariationInCart,
+  findViewWithArtworkInCart,
+  findViewWithTextInCart,
+} from "@/customizer/utils/find";
 import {
   cloneArtwork,
   cloneText,
@@ -110,6 +114,25 @@ export function pruneCart(
       return variation.id === variationIdToPreserve || hasAnyDesign;
     });
   }
+}
+
+export function deleteObjectFromState(
+  state: CartState,
+  action: PayloadAction<{ guid: string }>
+) {
+  const { guid } = action.payload;
+  const viewWithArtwork = findViewWithArtworkInCart(state, guid);
+  const viewWithText = findViewWithTextInCart(state, guid);
+
+  if (viewWithArtwork) {
+    viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
+      (artwork) => artwork.objectData.editorGuid !== guid
+    );
+  } else if (viewWithText) {
+    viewWithText.texts = viewWithText.texts.filter(
+      (text) => text.objectData.editorGuid !== guid
+    );
+  } else console.error("Guid not found for delete operation");
 }
 
 //note that this copy function depends on view indices corresponding correctly to each other.

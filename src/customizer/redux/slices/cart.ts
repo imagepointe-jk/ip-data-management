@@ -1,13 +1,11 @@
 import { CartState } from "@/types/schema/customizer";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  deleteArtworkFromState as deleteArtworkFromStateFn,
-  addDesign as addDesignFn,
-} from "@/customizer/redux/slices/reducers/cart/artwork";
+import { addDesign as addDesignFn } from "@/customizer/redux/slices/reducers/cart/artwork";
 import {
   setCartProducts as setCartProductsFn,
   addProductVariation as addProductVariationFn,
   removeProductVariation as removeProductVariationFn,
+  deleteObjectFromState as deleteObjectFromStateFn,
   changeProductVariationQuantities as changeProductVariationQuantitiesFn,
   pruneCart as pruneCartFn,
   copyDesign as copyDesignFn,
@@ -20,7 +18,6 @@ import {
   setPhone as setPhoneFn,
 } from "@/customizer/redux/slices/reducers/cart/cart";
 import {
-  deleteTextFromState as deleteTextFromStateFn,
   addText as addTextFn,
   editText as editTextFn,
 } from "@/customizer/redux/slices/reducers/cart/text";
@@ -45,8 +42,7 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     setCartProducts: setCartProductsFn,
-    deleteArtworkFromState: deleteArtworkFromStateFn,
-    deleteTextFromState: deleteTextFromStateFn,
+    deleteObjectFromState: deleteObjectFromStateFn,
     setObjectTransform: setObjectTransformFn,
     addDesign: addDesignFn,
     addText: addTextFn,
@@ -72,8 +68,7 @@ export const {
   addDesign,
   addText,
   addProductVariation,
-  deleteArtworkFromState,
-  deleteTextFromState,
+  deleteObjectFromState,
   removeProductVariation,
   changeProductVariationQuantities,
   setObjectTransform,

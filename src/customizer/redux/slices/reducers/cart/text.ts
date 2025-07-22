@@ -2,7 +2,6 @@ import {
   findTextInCart,
   findViewInCart,
   findViewInProductData,
-  findViewWithTextInCart,
 } from "@/customizer/utils/find";
 import {
   CartState,
@@ -112,17 +111,4 @@ export function editText(
     text.textData.style.textDecoration = incomingStyle.textDecoration;
   if (incomingStyle.fontFamily !== undefined)
     text.textData.style.fontFamily = incomingStyle.fontFamily;
-}
-
-export function deleteTextFromState(
-  state: CartState,
-  action: PayloadAction<{ guid: string }>
-) {
-  const { guid } = action.payload;
-
-  const viewWithText = findViewWithTextInCart(state, guid);
-  if (!viewWithText) throw new Error("Could not find text to delete");
-  viewWithText.texts = viewWithText.texts.filter(
-    (text) => text.objectData.editorGuid !== guid
-  );
 }

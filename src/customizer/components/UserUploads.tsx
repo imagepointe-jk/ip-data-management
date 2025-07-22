@@ -83,7 +83,10 @@ export function UserUploads() {
       >
         {status !== "loading" && <>Select a File...</>}
         {status === "loading" && (
-          <LoadingIndicator className={styles["spinner"]} />
+          <LoadingIndicator
+            className={styles["spinner"]}
+            style={{ filter: "none", width: "18px", height: "18px" }}
+          />
         )}
         <input
           id="customizer-upload"

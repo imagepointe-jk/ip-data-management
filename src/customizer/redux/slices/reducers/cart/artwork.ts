@@ -1,8 +1,4 @@
-import {
-  findViewInCart,
-  findViewInProductData,
-  findViewWithArtworkInCart,
-} from "@/customizer/utils/find";
+import { findViewInCart, findViewInProductData } from "@/customizer/utils/find";
 import {
   CartState,
   PopulatedProductSettingsSerializable,
@@ -107,17 +103,4 @@ export function addDesign(
       },
     },
   });
-}
-
-export function deleteArtworkFromState(
-  state: CartState,
-  action: PayloadAction<{ guid: string }>
-) {
-  const { guid } = action.payload;
-  const viewWithArtwork = findViewWithArtworkInCart(state, guid);
-
-  if (!viewWithArtwork) throw new Error("Could not find artwork to delete");
-  viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
-    (artwork) => artwork.objectData.editorGuid !== guid
-  );
 }
