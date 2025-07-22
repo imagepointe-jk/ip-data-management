@@ -13,7 +13,7 @@ type Props = {
 export default function Filter({ categories }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { age, designType, featuredOnly, status, subcategory } =
+  const { age, designType, featuredOnly, status, subcategory, fileExtension } =
     getSearchValues();
 
   const categoriesToShow = categories.filter(
@@ -68,6 +68,18 @@ export default function Filter({ categories }: Props) {
     router.refresh();
   }
 
+  function onChangeFileExtension(e: ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete("fileExt");
+    if (["any-jpg", "all-jpg", "any-png", "all-png"].includes(value))
+      newSearchParams.set("fileExt", value);
+
+    router.push(`designs?${newSearchParams}`);
+    router.refresh();
+  }
+
   function onChangeFeaturedOnly(e: ChangeEvent<HTMLInputElement>) {
     const checked = e.target.checked;
 
@@ -88,6 +100,7 @@ export default function Filter({ categories }: Props) {
     const designTypeInParams = searchParams.get("designType");
     const subcategoryInParams = searchParams.get("subcategory");
     const statusInParams = searchParams.get("status");
+    const fileExtInParams = searchParams.get("fileExt");
 
     return {
       subcategory:
@@ -103,6 +116,7 @@ export default function Filter({ categories }: Props) {
           : "none",
       featuredOnly: featuredOnlyInParams === null ? false : true,
       designType: `${designTypeInParams}`,
+      fileExtension: `${fileExtInParams}`,
     };
   }
 
@@ -129,6 +143,13 @@ export default function Filter({ categories }: Props) {
         <option value={"none"}>Any Age</option>
         <option value={"new"}>New Designs</option>
         <option value={"old"}>Classics</option>
+      </select>
+      <select onChange={onChangeFileExtension} value={fileExtension}>
+        <option value={"none"}>Any File Extension</option>
+        <option value={"any-png"}>Any PNG</option>
+        <option value={"all-png"}>All PNG</option>
+        <option value={"any-jpg"}>Any JPG</option>
+        <option value={"all-jpg"}>All JPG</option>
       </select>
       <label htmlFor="featured">
         <input

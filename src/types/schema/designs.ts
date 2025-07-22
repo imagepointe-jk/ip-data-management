@@ -128,6 +128,7 @@ export type DesignQuery = {
   keyword?: string;
   before?: number; //timestamp
   after?: number; //timestamp
+  fileExtension?: string;
 };
 export type DesignResults = ResultsPagination & {
   designs: DesignWithIncludes[];

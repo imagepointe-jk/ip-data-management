@@ -17,7 +17,8 @@ export function filterDesigns(
       designTypeCondition({ design, query }) &&
       subcategoryCondition({ design, query }) &&
       keywordCondition({ design, query }) &&
-      similarCondition(design, designForSimilarCheck)
+      similarCondition(design, designForSimilarCheck) &&
+      fileExtensionCondition({ design, query })
     );
   });
 }
@@ -85,6 +86,32 @@ function keywordCondition(params: ConditionParams) {
     .includes(keywordLower);
 
   return inName || inDescription || inDesignNumber || inSubcategories || inTags;
+}
+
+function fileExtensionCondition(params: ConditionParams) {
+  const {
+    query: { fileExtension },
+    design,
+  } = params;
+  if (fileExtension === undefined) return true;
+
+  const split = fileExtension.split("-");
+  const operator = split[0] === "any" ? "any" : "all";
+  const extension = split[1] === "jpg" ? "jpg" : "png";
+
+  const inMainDesign = design.imageUrl
+    .toLocaleLowerCase()
+    .includes(`.${extension}`);
+  const variationsWithExtension = design.variations.filter((variation) =>
+    variation.imageUrl.toLocaleLowerCase().includes(`.${extension}`)
+  );
+
+  if (operator === "all")
+    return (
+      inMainDesign &&
+      variationsWithExtension.length === design.variations.length
+    );
+  else return inMainDesign || variationsWithExtension.length > 0;
 }
 
 function similarCondition(

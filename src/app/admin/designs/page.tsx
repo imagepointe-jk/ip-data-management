@@ -25,6 +25,7 @@ export default async function Designs(props: Props) {
     before,
     after,
     sortBy,
+    fileExtension,
   } = parseSearchParams(searchParams);
   const { designs, totalResults } = await getDesigns({
     pageNumber,
@@ -37,6 +38,7 @@ export default async function Designs(props: Props) {
     before,
     after,
     sortBy,
+    fileExtension,
   });
   const categories = await getDesignCategoryHierarchy();
 
@@ -61,6 +63,9 @@ export default async function Designs(props: Props) {
       </Link>
       <Search />
       <Filter categories={categories} />
+      <div>
+        <strong>{totalResults}</strong> total results
+      </div>
       <ResultsTable designs={designs} />
       {designs.length === 0 && <h2>No results</h2>}
 
@@ -114,6 +119,7 @@ function parseSearchParams(searchParams: any): Omit<
   const sortDirection = decodeURIComponent(
     searchParams.sortDirection
   ) as SortingDirection;
+  const fileExtension = searchParams.fileExt;
 
   return {
     pageNumber,
@@ -134,5 +140,6 @@ function parseSearchParams(searchParams: any): Omit<
           type: "Date",
           direction: "Descending",
         },
+    fileExtension,
   };
 }
