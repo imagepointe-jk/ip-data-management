@@ -1,4 +1,8 @@
-import { addText, editText } from "@/customizer/redux/slices/cart";
+import {
+  addText,
+  deleteObjectFromState,
+  editText,
+} from "@/customizer/redux/slices/cart";
 import {
   setSelectedEditorGuid,
   useEditorSelectors,
@@ -57,6 +61,13 @@ export function TextEditor() {
       })
     );
     dispatch(setSelectedEditorGuid(newGuid));
+  }
+
+  function onClickDelete() {
+    if (!selectedEditorGuid || !selectedText) return;
+
+    dispatch(deleteObjectFromState({ guid: selectedEditorGuid }));
+    dispatch(setSelectedEditorGuid(null));
   }
 
   function onChangeText(e: ChangeEvent<HTMLTextAreaElement>) {
@@ -262,9 +273,18 @@ export function TextEditor() {
           />
         </>
       )}
-      <button className={stylesMain["basic-button"]} onClick={onClickAdd}>
-        Add Text
-      </button>
+      <div className={styles["action-buttons-container"]}>
+        <button className={stylesMain["basic-button"]} onClick={onClickAdd}>
+          Add Text
+        </button>
+        <button
+          className={`button-danger ${stylesMain["basic-button"]}`}
+          disabled={!selectedText}
+          onClick={onClickDelete}
+        >
+          Delete Text
+        </button>
+      </div>
     </div>
   );
 }

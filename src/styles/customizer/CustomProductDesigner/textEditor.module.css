@@ -120,3 +120,8 @@
     rgba(255, 255, 255, 1) 100%
   );
 }
+
+.action-buttons-container {
+  display: flex;
+  gap: 10px;
+}
