@@ -70,11 +70,6 @@
   margin-top: 20px;
 }
 
-.input-label {
-  display: block;
-  font-size: 0.825rem;
-}
-
 .cart-item-form input {
   width: 100px;
   padding: 10px;
@@ -109,12 +104,6 @@
   margin: 0;
 }
 
-.quote-step-main input {
-  font-size: 1.25rem;
-  padding: 8px;
-  width: 215px;
-}
-
 .comments-container {
   width: 100%;
 }
@@ -136,16 +125,6 @@
   padding: 10px;
   border-radius: 10px;
   background-color: #006ac60f;
-}
-
-.primary-fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.primary-field-single-container {
-  width: 49%;
 }
 
 .quote-buttons-container {

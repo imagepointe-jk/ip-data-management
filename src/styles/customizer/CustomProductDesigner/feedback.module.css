@@ -1,0 +1,55 @@
+.feedback-button {
+  border-radius: 100px;
+  position: absolute;
+  bottom: 17px;
+  left: 120px;
+  padding: 17px 18px;
+}
+
+.feedback-button svg {
+  scale: 160%;
+}
+
+.feedback-label {
+  position: absolute;
+  color: var(--color-beta);
+  font-weight: bold;
+  top: -19px;
+  left: 50%;
+  translate: -50% 0;
+}
+
+.feedback-textarea {
+  font-size: 1rem;
+}
+
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.submit-button {
+  font-size: 1.125rem;
+  margin-top: 20px;
+  width: 100px;
+}
+
+.success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 80%;
+}
+
+.success-check {
+  color: #54cd54;
+}
+
+.success-container p {
+  margin-top: 0;
+}
+
+.success-container h2 {
+  margin-top: 0;
+}

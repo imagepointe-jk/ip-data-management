@@ -3,6 +3,7 @@ import {
   PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
+import stylesForm from "@/styles/customizer/CustomProductDesigner/forms.module.css";
 import { RenderedProductView } from "../RenderedProductView";
 import { useDispatch } from "react-redux";
 import {
@@ -202,12 +203,13 @@ function CartProductVariationForm({
         <div key={field.size}>
           <label
             htmlFor={`${variationInState.id}-size-${field.size}`}
-            className={styles["input-label"]}
+            className={stylesForm["input-label"]}
           >
             {field.label}
           </label>
           <input
             type="number"
+            className={stylesForm["form-input"]}
             id={`${variationInState.id}-size-${field.size}`}
             value={field.value}
             onChange={(e) =>

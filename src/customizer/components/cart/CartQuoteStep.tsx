@@ -11,6 +11,7 @@ import {
 } from "@/customizer/redux/slices/cart";
 import { StoreType } from "@/customizer/redux/store";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
+import stylesForm from "@/styles/customizer/CustomProductDesigner/forms.module.css";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
@@ -27,14 +28,15 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
   return (
     <div className={styles["quote-step-main"]}>
       <h2>Contact Information</h2>
-      <div className={styles["primary-fields"]}>
+      <div className={stylesForm["primary-fields"]}>
         <div>
-          <label htmlFor="first-name" className={styles["input-label"]}>
+          <label htmlFor="first-name" className={stylesForm["input-label"]}>
             First Name
           </label>
           <input
             type="text"
             name="first-name"
+            className={stylesForm["form-input"]}
             id="first-name"
             value={firstName}
             onChange={(e) => dispatch(setFirstName(e.target.value))}
@@ -42,12 +44,13 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           />
         </div>
         <div>
-          <label htmlFor="last-name" className={styles["input-label"]}>
+          <label htmlFor="last-name" className={stylesForm["input-label"]}>
             Last Name
           </label>
           <input
             type="text"
             name="last-name"
+            className={stylesForm["form-input"]}
             id="last-name"
             value={lastName}
             onChange={(e) => dispatch(setLastName(e.target.value))}
@@ -55,12 +58,13 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           />
         </div>
         <div>
-          <label htmlFor="email" className={styles["input-label"]}>
+          <label htmlFor="email" className={stylesForm["input-label"]}>
             Email
           </label>
           <input
             type="email"
             name="email"
+            className={stylesForm["form-input"]}
             id="email"
             value={email}
             onChange={(e) => dispatch(setEmail(e.target.value))}
@@ -68,12 +72,13 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           />
         </div>
         <div>
-          <label htmlFor="company" className={styles["input-label"]}>
+          <label htmlFor="company" className={stylesForm["input-label"]}>
             Union/Organization
           </label>
           <input
             type="text"
             name="company"
+            className={stylesForm["form-input"]}
             id="company"
             value={company}
             onChange={(e) => dispatch(setCompany(e.target.value))}
@@ -81,31 +86,33 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
           />
         </div>
         <div>
-          <label htmlFor="local" className={styles["input-label"]}>
+          <label htmlFor="local" className={stylesForm["input-label"]}>
             Union Local
           </label>
           <input
             type="text"
             name="local"
+            className={stylesForm["form-input"]}
             id="local"
             value={local}
             onChange={(e) => dispatch(setLocal(e.target.value))}
           />
         </div>
         <div>
-          <label htmlFor="phone" className={styles["input-label"]}>
+          <label htmlFor="phone" className={stylesForm["input-label"]}>
             Phone
           </label>
           <input
             type="tel"
             name="phone"
+            className={stylesForm["form-input"]}
             id="phone"
             value={phone}
             onChange={(e) => dispatch(setPhone(e.target.value))}
           />
         </div>
         <div className={styles["comments-container"]}>
-          <label htmlFor="comments" className={styles["input-label"]}>
+          <label htmlFor="comments" className={stylesForm["input-label"]}>
             Comments/Questions
           </label>
           <div className={styles["comments-subcontainer"]}>
