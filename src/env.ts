@@ -16,6 +16,7 @@ export const env = {
   IP_SHIPPING_EMAIL: process.env.IP_SHIPPING_EMAIL!,
   IP_PRODUCT_SYNC_NOTIFICATION_EMAIL:
     process.env.IP_PRODUCT_SYNC_NOTIFICATION_EMAIL!,
+  CUSTOMIZER_FEEDBACK_DEST_EMAIL: process.env.CUSTOMIZER_FEEDBACK_DEST_EMAIL!,
 };
 
 for (const [key, value] of Object.entries(env)) {

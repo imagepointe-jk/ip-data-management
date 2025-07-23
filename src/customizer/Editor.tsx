@@ -13,6 +13,8 @@ import { StartOverModal } from "./components/StartOverModal";
 import { CopyDesignModal } from "./components/copyDesign/CopyDesignModal";
 import { HelpModal } from "./components/HelpModal";
 import { GlobalLoading } from "./components/GlobalLoading";
+import { FeedbackButton } from "./components/feedback/FeedbackButton";
+import { FeedbackModal } from "./components/feedback/FeedbackModal";
 
 export function Editor() {
   const openModal = useSelector(
@@ -33,7 +35,9 @@ export function Editor() {
         {openModal === "start over" && <StartOverModal />}
         {openModal === "copy design" && <CopyDesignModal />}
         {openModal === "help" && <HelpModal />}
+        {openModal === "feedback" && <FeedbackModal />}
         <ArtworkControls />
+        <FeedbackButton />
         {globalLoading.loading && <GlobalLoading />}
       </div>
     </div>

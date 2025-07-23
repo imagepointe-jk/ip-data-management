@@ -178,7 +178,13 @@ export type EditorDialog =
   | "text"
   | "download"
   | null;
-export type EditorModal = "cart" | "start over" | "copy design" | "help" | null;
+export type EditorModal =
+  | "cart"
+  | "start over"
+  | "copy design"
+  | "help"
+  | "feedback"
+  | null;
 
 export type ViewWithIncludes = CustomProductView & {
   locations: CustomProductDecorationLocationNumeric[];
