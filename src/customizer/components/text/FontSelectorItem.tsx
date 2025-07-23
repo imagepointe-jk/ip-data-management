@@ -1,15 +1,19 @@
 import { GoogleFont } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/textEditor.module.css";
-import { useEffect } from "react";
+import { CSSProperties, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { editText } from "@/customizer/redux/slices/cart";
+import { useEditorSelectors } from "@/customizer/redux/slices/editor";
 
 type Props = {
-  font: GoogleFont;
-  selectedEditorGuid: string | null;
+  data: GoogleFont[];
+  index: number;
+  style: CSSProperties;
 };
-export function FontSelectorItem({ font, selectedEditorGuid }: Props) {
+export function FontSelectorItem({ data, index, style }: Props) {
+  const { selectedEditorGuid } = useEditorSelectors();
   const dispatch = useDispatch();
+  const font = data[index];
   function isFontAdded(key: string) {
     for (const font of document.fonts) {
       if (font.family === key) return true;
@@ -18,7 +22,7 @@ export function FontSelectorItem({ font, selectedEditorGuid }: Props) {
   }
 
   function onClick() {
-    if (!selectedEditorGuid) return;
+    if (!selectedEditorGuid || !font) return;
 
     dispatch(
       editText({
@@ -31,17 +35,21 @@ export function FontSelectorItem({ font, selectedEditorGuid }: Props) {
   }
 
   useEffect(() => {
-    if (isFontAdded(font.family)) return;
+    if (!font || isFontAdded(font.family)) return;
 
     const fontFace = new FontFace(font.family, `url("${font.url}")`);
     document.fonts.add(fontFace);
   }, []);
 
   return (
-    <div className={styles["font-item"]} onClick={onClick}>
-      <div className={styles["font-label"]}>{font.family}</div>
+    <div
+      className={styles["font-item"]}
+      style={{ ...style, width: "90%" }}
+      onClick={onClick}
+    >
+      <div className={styles["font-label"]}>{font?.family || "UNKNOWN"}</div>
       <div
-        style={{ fontFamily: font.family }}
+        style={{ fontFamily: font?.family }}
         className={styles["font-example"]}
       >
         The quick brown fox jumped over the lazy dog
