@@ -262,6 +262,20 @@ export function MainSettings({
             Show &quot;I need help with my order&quot; button
           </label>
         </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={webstoreState.autoCreateApprover}
+              onChange={(e) =>
+                setWebstoreState((draft) => {
+                  draft.autoCreateApprover = e.target.checked;
+                })
+              }
+            />
+            Auto-create new approvers from &quot;approver&quot; field
+          </label>
+        </div>
       </div>
     </div>
   );

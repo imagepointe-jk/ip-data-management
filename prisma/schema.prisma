@@ -215,6 +215,7 @@ model Webstore {
   approverDashboardViewerEmail String                    @default("NO_EMAIL")
   requirePinForApproval        Boolean                   @default(true)
   allowOrderHelpRequest        Boolean                   @default(true) //whether to allow approvers to request assistance with an order using the "I need help" button in the approver area
+  autoCreateApprover           Boolean                   @default(false) //if true, will automatically create a new user based on the email address in the "approver" field coming from WC (if one doesn't already exist) 
   shippingSettings             WebstoreShippingSettings?
   shippingMethods              WebstoreShippingMethod[]
   workflows                    OrderWorkflow[]

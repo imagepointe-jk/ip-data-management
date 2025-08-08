@@ -95,6 +95,7 @@ export async function updateWebstore(
     approverDashboardViewerEmail,
     requirePinForApproval,
     allowOrderHelpRequest,
+    autoCreateApprover,
     shippingEmailDestOverride,
   } = data;
 
@@ -141,6 +142,7 @@ export async function updateWebstore(
         approverDashboardViewerEmail,
         requirePinForApproval,
         allowOrderHelpRequest,
+        autoCreateApprover,
         shippingEmailDestOverride,
       },
     }),

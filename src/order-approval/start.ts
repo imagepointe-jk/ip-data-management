@@ -2,7 +2,8 @@ import {
   createAccessCode,
   createWorkflowInstance,
   getFirstWorkflowForWebstore,
-  getWebstoreWithIncludesByUrl,
+  getWebstoreByUrl,
+  getWebstoreUserRoles,
   getWorkflowInstance,
   getWorkflowWithIncludes,
   setWorkflowInstanceApprovedData,
@@ -18,7 +19,10 @@ import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
 import { handleCurrentStep } from "./main";
 import { deduplicateArray } from "@/utility/misc";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
-import { createLog } from "@/actions/orderWorkflow/create";
+import {
+  createLog,
+  createOrConnectWebstoreUser,
+} from "@/actions/orderWorkflow/create";
 import {
   OrderWorkflow,
   OrderWorkflowInstance,
@@ -88,10 +92,11 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
 async function setupOrderWorkflow(params: StartWorkflowParams) {
   const { orderId, webhookSource } = params;
 
-  const webstore = await getWebstoreWithIncludesByUrl(webhookSource);
+  const webstore = await getWebstoreByUrl(webhookSource);
   if (!webstore)
     throw new Error(`No webstore was found with url ${webhookSource}`);
 
+  await handleAutoApproverCreation(webstore, orderId);
   const { purchaserEmail, purchaserName } = await resolvePurchaserData(
     webstore,
     orderId
@@ -106,7 +111,8 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
   );
 
   //create an access code for each user (although not all will need one)
-  const deduplicatedUsers = getDeduplicatedUsers(webstore.roles, webstore);
+  const roles = await getWebstoreUserRoles(webstore.id);
+  const deduplicatedUsers = getDeduplicatedUsers(roles, webstore);
   for (const user of deduplicatedUsers) {
     await createAccessCode(workflowInstance.id, user.id, "approver");
   }
@@ -117,6 +123,29 @@ async function setupOrderWorkflow(params: StartWorkflowParams) {
 }
 //#endregion
 //#region Helpers
+async function handleAutoApproverCreation(webstore: Webstore, orderId: number) {
+  if (!webstore.autoCreateApprover) return;
+
+  //webstore setting is true, so take a look at the approver email on the order
+  const order = await getParsedOrder(webstore, orderId);
+  const approverEmail = order.metaData.find(
+    (meta) => meta.key === "approver"
+  )?.value;
+  if (!approverEmail)
+    //none was found, so we can't proceed
+    throw new Error(
+      `Auto-creation of approver user FAILED while setting up workflow instance for order ${orderId}. No email was provided.`
+    );
+
+  //if we get here, we need to create a new user
+  //we currently have no way to know the name of the person with the given email, so they get a default name
+  await createOrConnectWebstoreUser(
+    webstore.id,
+    `Approver (${approverEmail})`,
+    approverEmail
+  );
+}
+
 async function createInstanceOfFirstWorkflow(
   webstore: Webstore,
   purchaserEmail: string,
@@ -138,14 +167,7 @@ async function createInstanceOfFirstWorkflow(
 }
 
 async function resolvePurchaserData(webstore: Webstore, orderId: number) {
-  const { key, secret } = decryptWebstoreData(webstore);
-  const orderResponse = await getOrder(orderId, webstore.url, key, secret);
-  if (!orderResponse.ok)
-    throw new Error(
-      `Received a ${orderResponse.status} response code while retrieving the order`
-    );
-  const json = await orderResponse.json();
-  const parsed = parseWooCommerceOrderJson(json);
+  const parsed = await getParsedOrder(webstore, orderId);
 
   const purchaserEmail =
     parsed.metaData.find((meta) => meta.key === "purchaser_email")?.value ||
@@ -206,5 +228,16 @@ async function setOrderOnHold(
       "start workflow instance"
     );
   }
+}
+
+async function getParsedOrder(webstore: Webstore, orderId: number) {
+  const { key, secret } = decryptWebstoreData(webstore);
+  const orderResponse = await getOrder(orderId, webstore.url, key, secret);
+  if (!orderResponse.ok)
+    throw new Error(
+      `Received a ${orderResponse.status} response code while retrieving the order`
+    );
+  const json = await orderResponse.json();
+  return parseWooCommerceOrderJson(json);
 }
 //#endregion

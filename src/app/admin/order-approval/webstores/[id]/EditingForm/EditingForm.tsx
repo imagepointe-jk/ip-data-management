@@ -29,6 +29,7 @@ const blankState: WebstoreEditorData = {
   approverDashboardViewerEmail: "",
   requirePinForApproval: true,
   allowOrderHelpRequest: true,
+  autoCreateApprover: false,
   shippingEmailDestOverride: "",
 };
 type Props = {

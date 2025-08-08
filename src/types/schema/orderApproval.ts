@@ -116,6 +116,7 @@ export type WebstoreEditorData = {
   approverDashboardViewerEmail: string;
   requirePinForApproval: boolean;
   allowOrderHelpRequest: boolean;
+  autoCreateApprover: boolean;
   shippingEmailDestOverride: string | null;
 };
 export type WebstoreLogSeverity = z.infer<typeof webstoreLogSeverity>;

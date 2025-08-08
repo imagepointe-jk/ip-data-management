@@ -43,12 +43,22 @@ export async function getWebstoreWithIncludes(id: number) {
   });
 }
 
-export async function getWebstoreWithIncludesByUrl(url: string) {
+export async function getWebstoreByUrl(url: string) {
   return prisma.webstore.findUnique({
     where: {
       url,
     },
-    include: webstoreIncludes,
+  });
+}
+
+export async function getWebstoreUserRoles(id: number) {
+  return prisma.webstoreUserRole.findMany({
+    where: {
+      webstoreId: id,
+    },
+    include: {
+      users: true,
+    },
   });
 }
 
