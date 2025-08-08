@@ -1,18 +1,19 @@
 "use client";
 
+import { deleteUser } from "@/actions/orderWorkflow/delete";
 import {
   addRoleToUser,
   removeRoleFromUser,
   setUserEmail,
-  // setUserIsApprover,
 } from "@/actions/orderWorkflow/update";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
 import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { deduplicateArray } from "@/utility/misc";
+import { OrderWorkflowUser } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   webstore: Exclude<
@@ -26,17 +27,6 @@ export function UserResultsTable({ webstore }: Props) {
   const sortedUsers = [...webstore.roles.flatMap((role) => role.users)];
   sortedUsers.sort((a, b) => a.id - b.id);
   const uniqueUsers = deduplicateArray(sortedUsers, (user) => `${user.id}`);
-  // const sortedUsers = [...webstore.userRoles.map((role) => role.user)];
-  // sortedUsers.sort((a, b) => a.id - b.id);
-
-  // async function onChangeUserType(
-  //   e: ChangeEvent<HTMLSelectElement>,
-  //   userId: number
-  // ) {
-  //   await setUserIsApprover(userId, webstore.id, e.target.value === "approver");
-  //   router.refresh();
-  //   toast.changesSaved();
-  // }
 
   async function onClickRole(
     userId: number,
@@ -55,6 +45,20 @@ export function UserResultsTable({ webstore }: Props) {
       router.refresh();
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async function onClickDeleteUser(user: OrderWorkflowUser) {
+    if (!confirm(`Are you sure you want to delete the user ${user.name}?`))
+      return;
+
+    try {
+      await deleteUser(user.id);
+      toast.toast("User deleted.", "success");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.toast("Error deleting user.", "error");
     }
   }
 
@@ -111,23 +115,17 @@ export function UserResultsTable({ webstore }: Props) {
             </>
           ),
         },
-        // {
-        //   headerName: "Type",
-        //   createCell: (user) => (
-        //     <select
-        //       defaultValue={
-        //         webstore.userRoles.find((role) => role.userId === user.id)
-        //           ?.role === "approver"
-        //           ? "approver"
-        //           : "customer"
-        //       }
-        //       onChange={(e) => onChangeUserType(e, user.id)}
-        //     >
-        //       <option value="approver">Approver</option>
-        //       <option value="customer">Customer</option>
-        //     </select>
-        //   ),
-        // },
+        {
+          headerName: "",
+          createCell: (data) => (
+            <button
+              className="button-danger"
+              onClick={() => onClickDeleteUser(data)}
+            >
+              Delete
+            </button>
+          ),
+        },
       ]}
     />
   );

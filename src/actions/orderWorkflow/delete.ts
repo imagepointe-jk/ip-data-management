@@ -122,3 +122,18 @@ export async function deleteRole(id: number) {
     },
   });
 }
+
+export async function deleteUser(id: number) {
+  return prisma.$transaction([
+    prisma.orderWorkflowAccessCode.deleteMany({
+      where: {
+        userId: id,
+      },
+    }),
+    prisma.orderWorkflowUser.delete({
+      where: {
+        id,
+      },
+    }),
+  ]);
+}
