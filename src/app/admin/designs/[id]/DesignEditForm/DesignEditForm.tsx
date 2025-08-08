@@ -11,6 +11,7 @@ import { Color, DesignTag, DesignType } from "@prisma/client";
 import { useImmer } from "use-immer";
 import { MainSection } from "./MainSection";
 import { SecondarySection } from "./SecondarySection";
+import { useRouter } from "next/navigation";
 
 type DesignDataFormProps = {
   existingDesign: DesignWithIncludes;
@@ -28,6 +29,7 @@ export function DesignEditForm({
 }: DesignDataFormProps) {
   const [design, setDesign] = useImmer(existingDesign);
   const toast = useToast();
+  const router = useRouter();
 
   async function onClickSave() {
     await updateDesign(design);

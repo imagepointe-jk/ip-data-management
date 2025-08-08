@@ -2,11 +2,13 @@
 
 import { createCategory, createSubcategory } from "@/actions/designs/create";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { useToast } from "@/components/ToastProvider";
 import { DesignCategoryWithIncludes } from "@/types/schema/designs";
 import { findAllFormValues } from "@/utility/misc";
-import { DesignCategory, DesignType } from "@prisma/client";
+import { DesignType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { SubcategoryDelete } from "./SubcategoryDelete";
 
 type Props = {
   categories: DesignCategoryWithIncludes[];
@@ -16,6 +18,7 @@ export function CategoryEditor({ categories, designTypes }: Props) {
   const [creatingId, setCreatingId] = useState(null as number | null); //the id of the category for which we're currently waiting for subcategory creation to finish, if any.
   const [creatingCategory, setCreatingCategory] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   async function onSubmitCreateCategory(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -106,6 +109,7 @@ export function CategoryEditor({ categories, designTypes }: Props) {
           <ButtonWithLoading loading={creatingCategory} normalText="+ Create" />
         </div>
       </form>
+      <SubcategoryDelete categories={categories} />
     </>
   );
 }

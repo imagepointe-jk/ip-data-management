@@ -8,6 +8,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { DesignWithIncludes } from "@/types/schema/designs";
 import { AsyncCheckbox } from "@/components/AsyncCheckbox";
 import { updateDesign } from "@/actions/designs/update";
+import { Design } from "@prisma/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { deleteDesign } from "@/actions/designs/delete";
+import { useToast } from "@/components/ToastProvider";
 
 type Props = {
   designs: DesignWithIncludes[];
@@ -15,6 +20,7 @@ type Props = {
 export default function ResultsTable({ designs }: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const toast = useToast();
 
   const sortByInParams = decodeURIComponent(`${searchParams.get("sortBy")}`);
   const sortDirectionInParams = decodeURIComponent(
@@ -88,6 +94,22 @@ export default function ResultsTable({ designs }: Props) {
 
     router.push(`designs?${newSearchParams}`);
     router.refresh();
+  }
+
+  async function onClickDeleteDesign(design: Design) {
+    if (
+      !confirm(`Are you sure you want to delete design ${design.designNumber}?`)
+    )
+      return;
+
+    try {
+      await deleteDesign(design.id);
+      router.refresh();
+      toast.toast(`Design ${design.designNumber} deleted.`, "success");
+    } catch (error) {
+      console.error(error);
+      toast.toast("Error deleting design.", "error");
+    }
   }
 
   return (
@@ -167,6 +189,17 @@ export default function ResultsTable({ designs }: Props) {
             </div>
           ),
           createCell: (design) => design.priority,
+        },
+        {
+          headerName: "",
+          createCell: (design) => (
+            <button
+              className="button-danger"
+              onClick={() => onClickDeleteDesign(design)}
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
+          ),
         },
       ]}
     />
