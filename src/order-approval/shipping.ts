@@ -93,7 +93,6 @@ async function rateShippingMethod(
 }
 
 async function getParsedUpsRate(params: ShippingRateParams) {
-  console.log("called", params.totalWeight);
   const {
     firstName,
     lastName,
