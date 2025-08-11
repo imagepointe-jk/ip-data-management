@@ -93,6 +93,7 @@ async function rateShippingMethod(
 }
 
 async function getParsedUpsRate(params: ShippingRateParams) {
+  console.log("called", params.totalWeight);
   const {
     firstName,
     lastName,
@@ -210,15 +211,18 @@ export async function getRatedShippingMethods(
 ) {
   if (!products) throw new Error("No products");
 
-  const totalWeight = products.reduce((accum, product) => {
-    const matchingLineItem = order.lineItems.find(
-      (item) => item.productId === product.id
-    );
-    const thisWeight = matchingLineItem
-      ? matchingLineItem.quantity * +product.weight
-      : 0;
-    return accum + thisWeight;
-  }, 0);
+  //currently we aren't showing actual rates due to concerns about accuracy. we only want to check availability of different methods.
+  //using a placeholder weight value for now just to satisfy the API requirements.
+  // const totalWeight = products.reduce((accum, product) => {
+  //   const matchingLineItem = order.lineItems.find(
+  //     (item) => item.productId === product.id
+  //   );
+  //   const thisWeight = matchingLineItem
+  //     ? matchingLineItem.quantity * +product.weight
+  //     : 0;
+  //   return accum + thisWeight;
+  // }, 0);
+  const totalWeight = 5;
 
   const permittedShippingMethods = shippingMethods.filter((method) => {
     if (special?.allowUpsShippingToCanada) return method;

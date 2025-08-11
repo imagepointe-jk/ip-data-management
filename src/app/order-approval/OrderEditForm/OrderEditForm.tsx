@@ -26,6 +26,8 @@ import {
   getRatedShippingMethods,
 } from "@/order-approval/shipping";
 
+//! This component has some issues with speculative generality and has become quite complicated.
+//! Could use serious refactoring when there's time.
 export type Permission = "view" | "edit" | "hidden";
 export type RatedShippingMethod = {
   name: string;
