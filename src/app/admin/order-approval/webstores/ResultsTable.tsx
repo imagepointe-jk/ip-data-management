@@ -16,6 +16,10 @@ export function ResultsTable({ webstores }: Props) {
       dataset={webstores}
       columns={[
         {
+          headerName: "ID",
+          createCell: (webstore) => webstore.id,
+        },
+        {
           headerName: "Name",
           createCell: (webstore) => (
             <Link href={`webstores/${webstore.id}`}>{webstore.name}</Link>
