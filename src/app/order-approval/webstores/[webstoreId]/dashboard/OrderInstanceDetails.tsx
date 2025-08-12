@@ -15,6 +15,9 @@ export function OrderInstanceDetails({
   const totalWithoutShipping = +order.subtotal + +order.totalTax;
 
   function getFieldValue(name: string) {
+    if (["order_comments", "customer_note"].includes(name))
+      return order.customerNote || "n/a";
+
     return order.metaData.find((meta) => meta.key === name)?.value || "n/a";
   }
 
