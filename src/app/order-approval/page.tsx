@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { OrderEditForm } from "@/app/order-approval/OrderEditForm/OrderEditForm";
@@ -23,186 +23,195 @@ import {
 } from "@/actions/orderWorkflow/misc";
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import ApproveForm from "./ApproveForm";
+import { NextSearchParams } from "@/types/schema/misc";
+// import { Main } from "./Main";
 
-export default function Page() {
-  return (
-    <IframeHelperProvider>
-      <Main />
-    </IframeHelperProvider>
-  );
+type Props = {
+  searchParams: NextSearchParams;
+};
+export default async function Page({ searchParams }: Props) {
+  const search = await searchParams;
+  if (!search.code) return <>Error: No access code provided.</>;
+
+  return <div>Server-side: {search.code}</div>;
+  // return (
+  //   <IframeHelperProvider>
+  //     <Main />
+  //   </IframeHelperProvider>
+  // );
 }
 
-function Main() {
-  const [serverData, setServerData] = useState(
-    null as OrderApprovalServerData | null
-  );
-  const [accessCode, setAccessCode] = useState("");
-  const { parentWindow, loading: iframeLoading } = useIframe();
-  const [loading, setLoading] = useState(true);
-  const [actionSuccess, setActionSuccess] = useState(false);
-  const [actionAttempted, setActionAttempted] = useState(false);
-  const search = new URLSearchParams(parentWindow.location?.search);
-  const accessCodeInParams = search.get("code")
-    ? `${search.get("code")}`
-    : null;
-  const action = search.get("action") ? `${search.get("action")}` : null;
-  const instanceFinishedStatus = serverData?.approvedByUserName
-    ? "approved"
-    : serverData?.deniedByUserName
-    ? "denied"
-    : "INVALID_STATUS";
-  const waitingOnThisUser = serverData?.waitingOnUserEmails.find(
-    (email) =>
-      email.toLocaleLowerCase() === serverData.userEmail.toLocaleLowerCase()
-  );
+// function Main() {
+//   const [serverData, setServerData] = useState(
+//     null as OrderApprovalServerData | null
+//   );
+//   const [accessCode, setAccessCode] = useState("");
+//   const { parentWindow, loading: iframeLoading } = useIframe();
+//   const [loading, setLoading] = useState(true);
+//   const [actionSuccess, setActionSuccess] = useState(false);
+//   const [actionAttempted, setActionAttempted] = useState(false);
+//   const search = new URLSearchParams(parentWindow.location?.search);
+//   const accessCodeInParams = search.get("code")
+//     ? `${search.get("code")}`
+//     : null;
+//   const action = search.get("action") ? `${search.get("action")}` : null;
+//   const instanceFinishedStatus = serverData?.approvedByUserName
+//     ? "approved"
+//     : serverData?.deniedByUserName
+//     ? "denied"
+//     : "INVALID_STATUS";
+//   const waitingOnThisUser = serverData?.waitingOnUserEmails.find(
+//     (email) =>
+//       email.toLocaleLowerCase() === serverData.userEmail.toLocaleLowerCase()
+//   );
 
-  async function doApprove(comments: string | null, pin: string) {
-    try {
-      setLoading(true);
-      setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "approve", comments, pin);
-      setActionSuccess(true);
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
-  }
+//   async function doApprove(comments: string | null, pin: string) {
+//     try {
+//       setLoading(true);
+//       setActionAttempted(true);
+//       await receiveWorkflowEvent(accessCode, "approve", comments, pin);
+//       setActionSuccess(true);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//     setLoading(false);
+//   }
 
-  async function doDeny(reason: string, pin: string) {
-    try {
-      setLoading(true);
-      setActionAttempted(true);
-      await receiveWorkflowEvent(accessCode, "deny", reason, pin);
-      setActionSuccess(true);
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
-  }
+//   async function doDeny(reason: string, pin: string) {
+//     try {
+//       setLoading(true);
+//       setActionAttempted(true);
+//       await receiveWorkflowEvent(accessCode, "deny", reason, pin);
+//       setActionSuccess(true);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//     setLoading(false);
+//   }
 
-  async function getOrder() {
-    const orderResponse = await getOrderApprovalOrder(accessCode);
-    const orderJson = await orderResponse.json();
-    return parseWooCommerceOrderJson(orderJson);
-  }
+//   async function getOrder() {
+//     const orderResponse = await getOrderApprovalOrder(accessCode);
+//     const orderJson = await orderResponse.json();
+//     return parseWooCommerceOrderJson(orderJson);
+//   }
 
-  async function getProducts(ids: number[]) {
-    const responses = await Promise.all(
-      ids.map(async (id) => {
-        try {
-          const response = await getOrderApprovalProduct(id, accessCode);
-          if (!response.ok)
-            throw new Error(
-              `Status ${response.status} while getting product id ${id}`
-            );
-          const json = await response.json();
-          return parseWooCommerceProduct(json);
-        } catch (error) {
-          console.error(error);
-          return null;
-        }
-      })
-    );
-    const nonNull: WooCommerceProduct[] = [];
-    for (const r of responses) {
-      if (r !== null) nonNull.push(r);
-    }
-    return nonNull;
-  }
+//   async function getProducts(ids: number[]) {
+//     const responses = await Promise.all(
+//       ids.map(async (id) => {
+//         try {
+//           const response = await getOrderApprovalProduct(id, accessCode);
+//           if (!response.ok)
+//             throw new Error(
+//               `Status ${response.status} while getting product id ${id}`
+//             );
+//           const json = await response.json();
+//           return parseWooCommerceProduct(json);
+//         } catch (error) {
+//           console.error(error);
+//           return null;
+//         }
+//       })
+//     );
+//     const nonNull: WooCommerceProduct[] = [];
+//     for (const r of responses) {
+//       if (r !== null) nonNull.push(r);
+//     }
+//     return nonNull;
+//   }
 
-  async function onSubmitHelpForm(data: FormData) {
-    data.append("code", accessCode);
-    await receiveOrderHelpForm(data);
-  }
+//   async function onSubmitHelpForm(data: FormData) {
+//     data.append("code", accessCode);
+//     await receiveOrderHelpForm(data);
+//   }
 
-  async function getServerData(accessCode: string) {
-    try {
-      const dataResponse = await getOrderApprovalServerData(accessCode);
-      const dataJson = await dataResponse.json();
-      const dataFromServer = validateOrderApprovalServerData(dataJson);
+//   async function getServerData(accessCode: string) {
+//     try {
+//       const dataResponse = await getOrderApprovalServerData(accessCode);
+//       const dataJson = await dataResponse.json();
+//       const dataFromServer = validateOrderApprovalServerData(dataJson);
 
-      setServerData(dataFromServer);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
-  }
+//       setServerData(dataFromServer);
+//       setLoading(false);
+//     } catch (error) {
+//       console.error(error);
+//       setLoading(false);
+//     }
+//   }
 
-  useEffect(() => {
-    if (accessCodeInParams === null) return;
+//   useEffect(() => {
+//     if (accessCodeInParams === null) return;
 
-    setAccessCode(accessCodeInParams);
-    getServerData(accessCodeInParams);
-  }, [accessCodeInParams]);
+//     setAccessCode(accessCodeInParams);
+//     getServerData(accessCodeInParams);
+//   }, [accessCodeInParams]);
 
-  if (serverData && !waitingOnThisUser) {
-    return (
-      <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
-        Order {serverData?.orderId} does not require any action from you at this
-        time.
-      </div>
-    );
-  }
+//   if (serverData && !waitingOnThisUser) {
+//     return (
+//       <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
+//         Order {serverData?.orderId} does not require any action from you at this
+//         time.
+//       </div>
+//     );
+//   }
 
-  return (
-    <>
-      {(loading || iframeLoading) && (
-        <div className={styles["status-message"]}>Loading...</div>
-      )}
-      {!serverData && !loading && !iframeLoading && (
-        <>Error: Unable to load approval interface.</>
-      )}
-      {serverData && (
-        <div className={styles["main"]}>
-          {action === "approve" && (
-            <ApproveForm
-              loading={loading}
-              error={actionAttempted && !loading && !actionSuccess}
-              success={actionSuccess}
-              showPIN={serverData.requirePinForApproval}
-              doApprove={doApprove}
-            />
-          )}
-          {action === "deny" && (
-            <DenyForm
-              loading={loading}
-              onClickSubmit={doDeny}
-              success={actionSuccess}
-              showPIN={serverData.requirePinForApproval}
-              error={actionAttempted && !loading && !actionSuccess}
-            />
-          )}
-          {action === null && (
-            <div className={styles["order-view-container"]}>
-              <OrderEditForm
-                orderId={serverData.orderId}
-                shippingMethods={serverData.shippingMethods.map(
-                  (method) => method.name
-                )}
-                getOrder={getOrder}
-                getProducts={getProducts}
-                onSubmitHelpForm={onSubmitHelpForm}
-                storeUrl={serverData.storeUrl}
-                permissions={{
-                  shipping: {
-                    method: serverData.allowApproverChangeMethod
-                      ? "edit"
-                      : "hidden",
-                  },
-                }}
-                special={{
-                  allowUpsShippingToCanada: serverData.allowUpsToCanada,
-                  showOrderHelpButton: serverData.allowOrderHelpRequest,
-                }}
-                userEmail={serverData.userEmail}
-                showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet
-                checkoutFields={serverData.checkoutFields}
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </>
-  );
-}
+//   return (
+//     <>
+//       {(loading || iframeLoading) && (
+//         <div className={styles["status-message"]}>Loading...</div>
+//       )}
+//       {!serverData && !loading && !iframeLoading && (
+//         <>Error: Unable to load approval interface.</>
+//       )}
+//       {serverData && (
+//         <div className={styles["main"]}>
+//           {action === "approve" && (
+//             <ApproveForm
+//               loading={loading}
+//               error={actionAttempted && !loading && !actionSuccess}
+//               success={actionSuccess}
+//               showPIN={serverData.requirePinForApproval}
+//               doApprove={doApprove}
+//             />
+//           )}
+//           {action === "deny" && (
+//             <DenyForm
+//               loading={loading}
+//               onClickSubmit={doDeny}
+//               success={actionSuccess}
+//               showPIN={serverData.requirePinForApproval}
+//               error={actionAttempted && !loading && !actionSuccess}
+//             />
+//           )}
+//           {action === null && (
+//             <div className={styles["order-view-container"]}>
+//               <OrderEditForm
+//                 orderId={serverData.orderId}
+//                 shippingMethods={serverData.shippingMethods.map(
+//                   (method) => method.name
+//                 )}
+//                 getOrder={getOrder}
+//                 getProducts={getProducts}
+//                 onSubmitHelpForm={onSubmitHelpForm}
+//                 storeUrl={serverData.storeUrl}
+//                 permissions={{
+//                   shipping: {
+//                     method: serverData.allowApproverChangeMethod
+//                       ? "edit"
+//                       : "hidden",
+//                   },
+//                 }}
+//                 special={{
+//                   allowUpsShippingToCanada: serverData.allowUpsToCanada,
+//                   showOrderHelpButton: serverData.allowOrderHelpRequest,
+//                 }}
+//                 userEmail={serverData.userEmail}
+//                 showNavButtons={!actionSuccess && !actionAttempted} //Only show the buttons if an action hasn't been attempted yet
+//                 checkoutFields={serverData.checkoutFields}
+//               />
+//             </div>
+//           )}
+//         </div>
+//       )}
+//     </>
+//   );
+// }
