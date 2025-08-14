@@ -24,6 +24,9 @@ import {
 import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import ApproveForm from "./ApproveForm";
 import { NextSearchParams } from "@/types/schema/misc";
+import { prisma } from "@/prisma";
+import { getOrder } from "@/fetch/woocommerce";
+import { decryptWebstoreData } from "@/order-approval/encryption";
 // import { Main } from "./Main";
 
 type Props = {
@@ -31,9 +34,53 @@ type Props = {
 };
 export default async function Page({ searchParams }: Props) {
   const search = await searchParams;
-  if (!search.code) return <>Error: No access code provided.</>;
+  const code = search.code;
+  if (!code || !(typeof code === "string"))
+    return <>Error: No access code provided.</>;
 
-  return <div>Server-side: {search.code}</div>;
+  const foundAccessCode = await prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      guid: code,
+    },
+    include: {
+      workflowInstance: {
+        include: {
+          parentWorkflow: {
+            include: {
+              webstore: {
+                include: {
+                  shippingMethods: true,
+                  shippingSettings: true,
+                  checkoutFields: true,
+                },
+              },
+              steps: {
+                include: {
+                  proceedListeners: true,
+                },
+              },
+            },
+          },
+          approvedByUser: true,
+          deniedByUser: true,
+        },
+      },
+      user: true,
+    },
+  });
+
+  if (!foundAccessCode) return <>Error: Access code not found.</>;
+
+  const webstore = foundAccessCode.workflowInstance.parentWorkflow.webstore;
+  const orderId = foundAccessCode.workflowInstance.wooCommerceOrderId;
+  const { key, secret } = decryptWebstoreData(webstore);
+  const order = await getOrder(orderId, webstore.url, key, secret);
+  if (!order.ok) return <>Error: Unable to retrieve order id {orderId}.</>;
+
+  const json = await order.json();
+  const parsed = parseWooCommerceOrderJson(json);
+
+  return <div>Server-side: {parsed.lineItems[0]?.name}</div>;
   // return (
   //   <IframeHelperProvider>
   //     <Main />
