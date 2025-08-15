@@ -1,0 +1,52 @@
+.main {
+  border: 1px solid gray;
+  margin: 10px 0;
+}
+
+.fake-table-header-row {
+  background-color: lightgray;
+  display: flex;
+}
+
+.fake-table-header {
+  font-weight: bold;
+  padding: 10px;
+}
+
+.fake-table-column-1 {
+  flex: 3;
+}
+
+.fake-table-column-2 {
+  flex: 20;
+}
+
+.fake-table-column-3 {
+  flex: 10;
+}
+
+.fake-table-column-4 {
+  flex: 10;
+  text-align: right;
+}
+
+.fake-table-column-5 {
+  flex: 10;
+  text-align: right;
+}
+
+.fake-table-row {
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+
+.fake-table-cell {
+  padding: 10px;
+}
+
+.main input[type="number"] {
+  font-size: 1.125rem;
+  padding: 5px;
+  width: 75px;
+}

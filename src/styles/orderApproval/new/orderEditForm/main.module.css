@@ -1,0 +1,9 @@
+.main {
+  border-radius: 10px;
+  border: 1px solid gray;
+  background-color: lightgray;
+  padding: 10px;
+  min-height: 600px;
+  max-width: 800px;
+  margin: auto;
+}

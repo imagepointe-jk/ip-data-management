@@ -1,0 +1,23 @@
+.heading {
+  margin-bottom: 0;
+}
+
+.fields-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 550px;
+}
+
+.fields-flex input[type="text"],
+.fields-flex select {
+  width: 250px;
+}
+
+.fields-flex input[type="text"],
+.fields-flex select,
+.fields-flex textarea {
+  display: block;
+  padding: 5px;
+  font-size: 1.125rem;
+}

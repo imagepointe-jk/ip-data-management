@@ -1,7 +1,7 @@
 // "use client";
 
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
-import { OrderEditForm } from "@/app/order-approval/OrderEditForm/OrderEditForm";
+// import { OrderEditForm } from "@/app/order-approval/OrderEditForm/OrderEditForm";
 import { validateOrderApprovalServerData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
 import styles from "@/styles/orderApproval/approverArea.module.css";
@@ -25,8 +25,9 @@ import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 import ApproveForm from "./ApproveForm";
 import { NextSearchParams } from "@/types/schema/misc";
 import { prisma } from "@/prisma";
-import { getOrder } from "@/fetch/woocommerce";
+import { getOrder, getProductsMultiple } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
+import { OrderEditForm } from "./OrderEditFormNEW/OrderEditForm";
 // import { Main } from "./Main";
 
 type Props = {
@@ -79,8 +80,14 @@ export default async function Page({ searchParams }: Props) {
 
   const json = await order.json();
   const parsed = parseWooCommerceOrderJson(json);
+  const products = await getProductsMultiple(
+    parsed.lineItems.map((item) => item.productId),
+    webstore.url,
+    key,
+    secret
+  );
 
-  return <div>Server-side: {parsed.lineItems[0]?.name}</div>;
+  return <OrderEditForm order={parsed} />;
   // return (
   //   <IframeHelperProvider>
   //     <Main />
