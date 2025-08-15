@@ -6,17 +6,18 @@ export type FieldType = {
   label: string;
   type: HTMLInputTypeAttribute | "select" | "textarea";
   editable?: boolean;
-  defaultValue?: string;
+  value?: string;
   options?: {
     label: string;
     value: string;
   }[];
+  onChange: (value: string) => void;
 };
 type Props = {
   field: FieldType;
 };
 export function Field({ field }: Props) {
-  const { label, type, defaultValue, options, editable } = field;
+  const { label, type, value, options, editable, onChange } = field;
 
   return (
     <div className={styles["field-container"]}>
@@ -25,17 +26,29 @@ export function Field({ field }: Props) {
       {type === "text" && (
         <input
           type="text"
-          defaultValue={defaultValue}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           disabled={editable === false}
         />
       )}
 
       {type === "textarea" && (
-        <textarea cols={40} rows={5} disabled={editable === false}></textarea>
+        <textarea
+          cols={40}
+          rows={5}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={editable === false}
+        ></textarea>
       )}
 
       {type === "select" && (
-        <select disabled={editable === false}>
+        <select
+          disabled={editable === false}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option></option>
           {options &&
             options.map((option) => (
               <option key={option.value}>{option.label}</option>

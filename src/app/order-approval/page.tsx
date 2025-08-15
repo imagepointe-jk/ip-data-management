@@ -52,7 +52,11 @@ export default async function Page({ searchParams }: Props) {
                 include: {
                   shippingMethods: true,
                   shippingSettings: true,
-                  checkoutFields: true,
+                  checkoutFields: {
+                    orderBy: {
+                      order: "desc",
+                    },
+                  },
                 },
               },
               steps: {
@@ -80,14 +84,22 @@ export default async function Page({ searchParams }: Props) {
 
   const json = await order.json();
   const parsed = parseWooCommerceOrderJson(json);
-  const products = await getProductsMultiple(
-    parsed.lineItems.map((item) => item.productId),
-    webstore.url,
-    key,
-    secret
-  );
+  //do we even need to get products?
+  // const products = await getProductsMultiple(
+  //   parsed.lineItems.map((item) => item.productId),
+  //   webstore.url,
+  //   key,
+  //   secret
+  // );
 
-  return <OrderEditForm order={parsed} />;
+  return (
+    <OrderEditForm
+      order={parsed}
+      checkoutFields={
+        foundAccessCode.workflowInstance.parentWorkflow.webstore.checkoutFields
+      }
+    />
+  );
   // return (
   //   <IframeHelperProvider>
   //     <Main />

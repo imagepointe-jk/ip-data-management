@@ -1,8 +1,15 @@
 import styles from "@/styles/orderApproval/new/orderEditForm/lineItems.module.css";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
+import { LineItemRow } from "./LineItemRow";
+import { DraftFunction } from "use-immer";
 
-export function LineItems() {
+type Props = {
+  order: WooCommerceOrder;
+  modifyOrder: (
+    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
+  ) => void;
+};
+export function LineItems({ order, modifyOrder }: Props) {
   return (
     <div className={styles["main"]}>
       <div className={styles["fake-table-header-row"]}>
@@ -30,37 +37,9 @@ export function LineItems() {
           Amount
         </div>
       </div>
-      <div className={styles["fake-table-row"]}>
-        <div
-          className={`${styles["fake-table-cell"]} ${styles["fake-table-column-1"]}`}
-        >
-          <button>
-            <FontAwesomeIcon icon={faXmark} />
-          </button>
-        </div>
-        <div
-          className={`${styles["fake-table-cell"]} ${styles["fake-table-column-2"]}`}
-        >
-          Test 2 - Test
-        </div>
-        <div
-          className={`${styles["fake-table-cell"]} ${styles["fake-table-column-3"]}`}
-        >
-          <input type="number" />
-        </div>
-        <div
-          className={`${styles["fake-table-cell"]} ${styles["fake-table-column-4"]}`}
-        >
-          {" "}
-          $100.00{" "}
-        </div>
-        <div
-          className={`${styles["fake-table-cell"]} ${styles["fake-table-column-5"]}`}
-        >
-          {" "}
-          $100.00{" "}
-        </div>
-      </div>
+      {order.lineItems.map((item) => (
+        <LineItemRow key={item.id} lineItem={item} modifyOrder={modifyOrder} />
+      ))}
     </div>
   );
 }
