@@ -6,26 +6,35 @@ import { LineItems } from "./LineItems";
 import { OrderTotals } from "./OrderTotals";
 import { DraftFunction, useImmer } from "use-immer";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { ShippingInfo } from "./ShippingInfo";
 import { AdditionalInfo } from "./AdditionalInfo";
 import { WebstoreCheckoutField } from "@prisma/client";
+import { SubmitArea } from "./SubmitArea";
+import { Overlays } from "./Overlays";
 
 export type MetaData = {
   key: string;
   value: string;
 };
+export type OrderEditFormStatus = "idle" | "loading" | "error";
 type Props = {
   order: WooCommerceOrder;
+  storeUrl: string;
+  userEmail: string; //the email of the user accessing the order view
   checkoutFields: WebstoreCheckoutField[];
 };
-export function OrderEditForm({ order: initialOrder, checkoutFields }: Props) {
+export function OrderEditForm({
+  order: initialOrder,
+  storeUrl,
+  userEmail,
+  checkoutFields,
+}: Props) {
   const [order, sO] = useImmer(initialOrder); //"sO" = setOrder; should only be called from the modifyOrder wrapper
   const [stateModified, setStateModified] = useState(false); //allows us to mark the order state as "modified" to remind the user that they've made changes
   //to add metadata that isn't already in the WC order, WC requires us to make a separate POST request
   //keep track of anything we're going to add here
-  const [metaDataToAdd, sMDTA] = useState<MetaData[]>([]); //smda = setMetaDataToAdd; should only be called from the modifyMetaDataToAdd wrapper
+  const [metaDataToAdd, sMDTA] = useState<MetaData[]>([]); //sMDTA = setMetaDataToAdd; should only be called from the modifyMetaDataToAdd wrapper
+  const [status, setStatus] = useState<OrderEditFormStatus>("idle");
 
   //force all order state modifications to go through this wrapper; this ensures that all updates mark the order state as "modified"
   function modifyOrder(
@@ -56,18 +65,15 @@ export function OrderEditForm({ order: initialOrder, checkoutFields }: Props) {
         modifyOrder={modifyOrder}
         modifyMetaDataToAdd={modifyMetaDataToAdd}
       />
-      <div className={styles["submit-row"]}>
-        <button className={styles["save-button"]}>Save All Changes</button>
-        {stateModified && (
-          <span title="Some values may be out-of-sync. Save changes to update.">
-            <FontAwesomeIcon
-              icon={faInfoCircle}
-              className={styles["info-circle-warning"]}
-              size="2x"
-            />
-          </span>
-        )}
-      </div>
+      <SubmitArea
+        order={order}
+        stateModified={stateModified}
+        storeUrl={storeUrl}
+        userEmail={userEmail}
+        setStatus={setStatus}
+        setStateModified={setStateModified}
+      />
+      <Overlays status={status} setStatus={setStatus} />
     </div>
   );
 }

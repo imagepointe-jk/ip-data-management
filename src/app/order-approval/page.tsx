@@ -59,15 +59,8 @@ export default async function Page({ searchParams }: Props) {
                   },
                 },
               },
-              steps: {
-                include: {
-                  proceedListeners: true,
-                },
-              },
             },
           },
-          approvedByUser: true,
-          deniedByUser: true,
         },
       },
       user: true,
@@ -95,6 +88,8 @@ export default async function Page({ searchParams }: Props) {
   return (
     <OrderEditForm
       order={parsed}
+      storeUrl={webstore.url}
+      userEmail={foundAccessCode.user.email}
       checkoutFields={
         foundAccessCode.workflowInstance.parentWorkflow.webstore.checkoutFields
       }
