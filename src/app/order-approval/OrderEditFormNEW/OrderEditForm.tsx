@@ -35,6 +35,7 @@ export function OrderEditForm({
   //keep track of anything we're going to add here
   const [metaDataToAdd, sMDTA] = useState<MetaData[]>([]); //sMDTA = setMetaDataToAdd; should only be called from the modifyMetaDataToAdd wrapper
   const [status, setStatus] = useState<OrderEditFormStatus>("idle");
+  const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
 
   //force all order state modifications to go through this wrapper; this ensures that all updates mark the order state as "modified"
   function modifyOrder(
@@ -53,7 +54,12 @@ export function OrderEditForm({
     <div className={styles["main"]}>
       <h2>Order {order.id}</h2>
       <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
-      <LineItems order={order} modifyOrder={modifyOrder} />
+      <LineItems
+        order={order}
+        modifyOrder={modifyOrder}
+        removeLineItemIds={removeLineItemIds}
+        setRemoveLineItemIds={setRemoveLineItemIds}
+      />
       <div className={styles["fields-and-totals-flex"]}>
         <ShippingInfo order={order} modifyOrder={modifyOrder} />
         <OrderTotals order={order} />
@@ -70,8 +76,12 @@ export function OrderEditForm({
         stateModified={stateModified}
         storeUrl={storeUrl}
         userEmail={userEmail}
+        metaDataToAdd={metaDataToAdd}
+        removeLineItemIds={removeLineItemIds}
         setStatus={setStatus}
         setStateModified={setStateModified}
+        modifyOrder={modifyOrder}
+        modifyMetaDataToAdd={modifyMetaDataToAdd}
       />
       <Overlays status={status} setStatus={setStatus} />
     </div>

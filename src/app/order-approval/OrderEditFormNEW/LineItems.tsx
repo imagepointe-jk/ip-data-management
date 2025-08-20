@@ -8,8 +8,15 @@ type Props = {
   modifyOrder: (
     arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
   ) => void;
+  removeLineItemIds: number[];
+  setRemoveLineItemIds: (ids: number[]) => void;
 };
-export function LineItems({ order, modifyOrder }: Props) {
+export function LineItems({
+  order,
+  modifyOrder,
+  removeLineItemIds,
+  setRemoveLineItemIds,
+}: Props) {
   return (
     <div className={styles["main"]}>
       <div className={styles["fake-table-header-row"]}>
@@ -38,7 +45,14 @@ export function LineItems({ order, modifyOrder }: Props) {
         </div>
       </div>
       {order.lineItems.map((item) => (
-        <LineItemRow key={item.id} lineItem={item} modifyOrder={modifyOrder} />
+        <LineItemRow
+          key={item.id}
+          order={order}
+          lineItem={item}
+          modifyOrder={modifyOrder}
+          removeLineItemIds={removeLineItemIds}
+          setRemoveLineItemIds={setRemoveLineItemIds}
+        />
       ))}
     </div>
   );

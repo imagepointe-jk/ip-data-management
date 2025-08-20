@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DraftFunction } from "use-immer";
 
 type Props = {
+  order: WooCommerceOrder;
   lineItem: {
     id: number;
     name: string;
@@ -15,9 +16,19 @@ type Props = {
   modifyOrder: (
     arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
   ) => void;
+  removeLineItemIds: number[];
+  setRemoveLineItemIds: (ids: number[]) => void;
 };
-export function LineItemRow({ lineItem, modifyOrder }: Props) {
+export function LineItemRow({
+  order,
+  lineItem,
+  modifyOrder,
+  removeLineItemIds,
+  setRemoveLineItemIds,
+}: Props) {
   const { name, price, quantity, total, id } = lineItem;
+  const markedForDeletion = removeLineItemIds.includes(id);
+  const undeletedItemsLeft = order.lineItems.length - removeLineItemIds.length;
 
   function onChangeQuantity(value: string) {
     const newValue = +value;
@@ -25,8 +36,24 @@ export function LineItemRow({ lineItem, modifyOrder }: Props) {
 
     modifyOrder((draft) => {
       const lineItem = draft.lineItems.find((item) => item.id === id);
-      if (lineItem) lineItem.quantity = newValue;
+      if (!lineItem) {
+        console.error(`Line item with id ${id} not found`);
+        return;
+      }
+
+      lineItem.quantity = newValue;
+      //we HAVE to update the total ourselves when we update the quantity
+      //otherwise WC API will (incorrectly) change the unit price of the item so that newQuantity * unitPrice still equals the existing total
+      lineItem.total = (lineItem.quantity * lineItem.price).toFixed(2);
     });
+  }
+
+  function onClickDeleteButton() {
+    setRemoveLineItemIds(
+      markedForDeletion
+        ? removeLineItemIds.filter((existingId) => existingId !== id)
+        : [...removeLineItemIds, id]
+    );
   }
 
   return (
@@ -34,9 +61,15 @@ export function LineItemRow({ lineItem, modifyOrder }: Props) {
       <div
         className={`${styles["fake-table-cell"]} ${styles["fake-table-column-1"]}`}
       >
-        <button>
-          <FontAwesomeIcon icon={faXmark} />
-        </button>
+        {!(!markedForDeletion && undeletedItemsLeft < 2) && (
+          <button
+            className={styles["remove-line-item-button"]}
+            onClick={onClickDeleteButton}
+          >
+            {!markedForDeletion && <FontAwesomeIcon icon={faXmark} />}
+            {markedForDeletion && "Undo"}
+          </button>
+        )}
       </div>
       <div
         className={`${styles["fake-table-cell"]} ${styles["fake-table-column-2"]}`}
@@ -49,6 +82,7 @@ export function LineItemRow({ lineItem, modifyOrder }: Props) {
         <input
           type="number"
           value={quantity}
+          disabled={markedForDeletion}
           onChange={(e) => onChangeQuantity(e.target.value)}
         />
       </div>
@@ -62,6 +96,7 @@ export function LineItemRow({ lineItem, modifyOrder }: Props) {
       >
         ${total}
       </div>
+      {markedForDeletion && <div className={styles["cross-out"]}></div>}
     </div>
   );
 }

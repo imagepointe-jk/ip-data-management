@@ -7,6 +7,7 @@ export type FieldType = {
   type: HTMLInputTypeAttribute | "select" | "textarea";
   editable?: boolean;
   value?: string;
+  style?: "emph";
   options?: {
     label: string;
     value: string;
@@ -17,11 +18,15 @@ type Props = {
   field: FieldType;
 };
 export function Field({ field }: Props) {
-  const { label, type, value, options, editable, onChange } = field;
+  const { label, type, value, options, editable, style, onChange } = field;
 
   return (
-    <div className={styles["field-container"]}>
-      <div className={styles["field-label"]}>{label}</div>
+    <div
+      className={
+        style === "emph" ? styles["checkout-field-emphasized"] : undefined
+      }
+    >
+      <label className={styles["field-label"]}>{label}</label>
 
       {type === "text" && (
         <input

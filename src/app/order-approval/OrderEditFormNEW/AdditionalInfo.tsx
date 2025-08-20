@@ -95,12 +95,15 @@ export function AdditionalInfo({
               .split(/\s*\|\s*/g)
               .map((option) => ({ label: option, value: option }))
           : undefined;
+        const emph = "emph";
+        const style = field.style === emph ? emph : undefined;
 
         return {
           id: `${field.id}`,
           label: field.label,
           type: field.type,
           value: getFieldValue(field.name),
+          style,
           options,
           onChange: (value) => onChangeField(field.name, value),
         };
