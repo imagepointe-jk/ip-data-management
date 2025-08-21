@@ -4,7 +4,8 @@ import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProv
 // import { OrderEditForm } from "@/app/order-approval/OrderEditForm/OrderEditForm";
 import { validateOrderApprovalServerData } from "@/types/validations/orderApproval";
 import { useEffect, useState } from "react";
-import styles from "@/styles/orderApproval/approverArea.module.css";
+import styles from "@/styles/orderApproval/new/page.module.css";
+// import styles from "@/styles/orderApproval/approverArea.module.css";
 import DenyForm from "./DenyForm";
 import {
   getOrderApprovalOrder,
@@ -28,6 +29,14 @@ import { prisma } from "@/prisma";
 import { getOrder, getProductsMultiple } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { OrderEditForm } from "./OrderEditFormNEW/OrderEditForm";
+import Link from "next/link";
+import {
+  OrderWorkflowInstance,
+  OrderWorkflowStep,
+  OrderWorkflowStepProceedListener,
+} from "@prisma/client";
+import { deduplicateArray } from "@/utility/misc";
+import { resolveDynamicUserIdentifier } from "@/order-approval/utility";
 // import { Main } from "./Main";
 
 type Props = {
@@ -59,6 +68,11 @@ export default async function Page({ searchParams }: Props) {
                   },
                 },
               },
+              steps: {
+                include: {
+                  proceedListeners: true,
+                },
+              },
             },
           },
         },
@@ -68,9 +82,33 @@ export default async function Page({ searchParams }: Props) {
   });
 
   if (!foundAccessCode) return <>Error: Access code not found.</>;
+  const currentStep =
+    foundAccessCode.workflowInstance.parentWorkflow.steps.find(
+      (step) => step.order === foundAccessCode.workflowInstance.currentStep
+    );
+  if (!currentStep)
+    throw new Error(
+      `Current step of workflow ${foundAccessCode.workflowInstance.parentWorkflowId} not found.`
+    );
+  const waitingOnUserEmails = await resolveWaitingOnUserEmails(
+    foundAccessCode.workflowInstance,
+    currentStep
+  );
+  const waitingOnThisUser = waitingOnUserEmails.find(
+    (email) =>
+      email.toLocaleLowerCase() ===
+      foundAccessCode.user.email.toLocaleLowerCase()
+  );
+  const orderId = foundAccessCode.workflowInstance.wooCommerceOrderId;
+  if (!waitingOnThisUser) {
+    return (
+      <div style={{ textAlign: "center", fontSize: "1.25rem" }}>
+        Order {orderId} does not require any action from you at this time.
+      </div>
+    );
+  }
 
   const webstore = foundAccessCode.workflowInstance.parentWorkflow.webstore;
-  const orderId = foundAccessCode.workflowInstance.wooCommerceOrderId;
   const { key, secret } = decryptWebstoreData(webstore);
   const order = await getOrder(orderId, webstore.url, key, secret);
   if (!order.ok) return <>Error: Unable to retrieve order id {orderId}.</>;
@@ -86,20 +124,49 @@ export default async function Page({ searchParams }: Props) {
   // );
 
   return (
-    <OrderEditForm
-      order={parsed}
-      storeUrl={webstore.url}
-      userEmail={foundAccessCode.user.email}
-      checkoutFields={
-        foundAccessCode.workflowInstance.parentWorkflow.webstore.checkoutFields
-      }
-    />
+    <>
+      <div className={styles["info-text"]}>
+        Please review the following order and make changes if needed. Once
+        finished, please save your changes and then approve or deny the order.
+      </div>
+      <OrderEditForm
+        order={parsed}
+        storeUrl={webstore.url}
+        userEmail={foundAccessCode.user.email}
+        allowHelpRequest={webstore.allowOrderHelpRequest}
+        checkoutFields={
+          foundAccessCode.workflowInstance.parentWorkflow.webstore
+            .checkoutFields
+        }
+      />
+      <div className={styles["nav-buttons"]}>
+        <Link href="/approve"></Link>
+        <Link href="/deny"></Link>
+      </div>
+    </>
   );
   // return (
   //   <IframeHelperProvider>
   //     <Main />
   //   </IframeHelperProvider>
   // );
+}
+
+async function resolveWaitingOnUserEmails(
+  instance: OrderWorkflowInstance,
+  step: OrderWorkflowStep & {
+    proceedListeners: OrderWorkflowStepProceedListener[];
+  }
+) {
+  const allFromValues = step.proceedListeners.map((listener) => listener.from);
+  const deduplicated = deduplicateArray(allFromValues, (val) => val);
+  const emails: string[] = [];
+  for (const from of deduplicated) {
+    const resolved =
+      (await resolveDynamicUserIdentifier(from, instance)) || "EMAIL_NOT_FOUND";
+    emails.push(resolved);
+  }
+  return emails;
 }
 
 // function Main() {

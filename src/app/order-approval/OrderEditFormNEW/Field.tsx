@@ -1,5 +1,6 @@
 import { HTMLInputTypeAttribute } from "react";
 import styles from "@/styles/orderApproval/new/orderEditForm/fieldsSection.module.css";
+import stylesMain from "@/styles/orderApproval/new/orderEditForm/main.module.css";
 
 export type FieldType = {
   id: string;
@@ -31,6 +32,7 @@ export function Field({ field }: Props) {
       {type === "text" && (
         <input
           type="text"
+          className={stylesMain["field"]}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={editable === false}
@@ -41,6 +43,7 @@ export function Field({ field }: Props) {
         <textarea
           cols={40}
           rows={5}
+          className={stylesMain["field"]}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={editable === false}
@@ -49,6 +52,7 @@ export function Field({ field }: Props) {
 
       {type === "select" && (
         <select
+          className={stylesMain["field"]}
           disabled={editable === false}
           value={value}
           onChange={(e) => onChange(e.target.value)}

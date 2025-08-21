@@ -11,6 +11,8 @@ import { AdditionalInfo } from "./AdditionalInfo";
 import { WebstoreCheckoutField } from "@prisma/client";
 import { SubmitArea } from "./SubmitArea";
 import { Overlays } from "./Overlays";
+import { HelpForm } from "./HelpForm";
+import { NavButtons } from "../NavButtonsNEW";
 
 export type MetaData = {
   key: string;
@@ -22,12 +24,14 @@ type Props = {
   storeUrl: string;
   userEmail: string; //the email of the user accessing the order view
   checkoutFields: WebstoreCheckoutField[];
+  allowHelpRequest: boolean;
 };
 export function OrderEditForm({
   order: initialOrder,
   storeUrl,
   userEmail,
   checkoutFields,
+  allowHelpRequest,
 }: Props) {
   const [order, sO] = useImmer(initialOrder); //"sO" = setOrder; should only be called from the modifyOrder wrapper
   const [stateModified, setStateModified] = useState(false); //allows us to mark the order state as "modified" to remind the user that they've made changes
@@ -36,6 +40,7 @@ export function OrderEditForm({
   const [metaDataToAdd, sMDTA] = useState<MetaData[]>([]); //sMDTA = setMetaDataToAdd; should only be called from the modifyMetaDataToAdd wrapper
   const [status, setStatus] = useState<OrderEditFormStatus>("idle");
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
+  const [helpMode, setHelpMode] = useState(false);
 
   //force all order state modifications to go through this wrapper; this ensures that all updates mark the order state as "modified"
   function modifyOrder(
@@ -51,39 +56,45 @@ export function OrderEditForm({
   }
 
   return (
-    <div className={styles["main"]}>
-      <h2>Order {order.id}</h2>
-      <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
-      <LineItems
-        order={order}
-        modifyOrder={modifyOrder}
-        removeLineItemIds={removeLineItemIds}
-        setRemoveLineItemIds={setRemoveLineItemIds}
-      />
-      <div className={styles["fields-and-totals-flex"]}>
-        <ShippingInfo order={order} modifyOrder={modifyOrder} />
-        <OrderTotals order={order} />
+    <>
+      <div className={styles["main"]}>
+        <h2>Order {order.id}</h2>
+        <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
+        <LineItems
+          order={order}
+          modifyOrder={modifyOrder}
+          removeLineItemIds={removeLineItemIds}
+          setRemoveLineItemIds={setRemoveLineItemIds}
+        />
+        <div className={styles["fields-and-totals-flex"]}>
+          <ShippingInfo order={order} modifyOrder={modifyOrder} />
+          <OrderTotals order={order} />
+        </div>
+        <AdditionalInfo
+          order={order}
+          checkoutFields={checkoutFields}
+          metaDataToAdd={metaDataToAdd}
+          modifyOrder={modifyOrder}
+          modifyMetaDataToAdd={modifyMetaDataToAdd}
+        />
+        <SubmitArea
+          order={order}
+          stateModified={stateModified}
+          storeUrl={storeUrl}
+          userEmail={userEmail}
+          metaDataToAdd={metaDataToAdd}
+          removeLineItemIds={removeLineItemIds}
+          showHelpButton={allowHelpRequest}
+          setHelpMode={setHelpMode}
+          setStatus={setStatus}
+          setStateModified={setStateModified}
+          modifyOrder={modifyOrder}
+          modifyMetaDataToAdd={modifyMetaDataToAdd}
+        />
+        {helpMode && <HelpForm setHelpMode={setHelpMode} />}
+        <Overlays status={status} setStatus={setStatus} />
       </div>
-      <AdditionalInfo
-        order={order}
-        checkoutFields={checkoutFields}
-        metaDataToAdd={metaDataToAdd}
-        modifyOrder={modifyOrder}
-        modifyMetaDataToAdd={modifyMetaDataToAdd}
-      />
-      <SubmitArea
-        order={order}
-        stateModified={stateModified}
-        storeUrl={storeUrl}
-        userEmail={userEmail}
-        metaDataToAdd={metaDataToAdd}
-        removeLineItemIds={removeLineItemIds}
-        setStatus={setStatus}
-        setStateModified={setStateModified}
-        modifyOrder={modifyOrder}
-        modifyMetaDataToAdd={modifyMetaDataToAdd}
-      />
-      <Overlays status={status} setStatus={setStatus} />
-    </div>
+      <NavButtons allowApprove={!stateModified} display={{ review: false }} />
+    </>
   );
 }

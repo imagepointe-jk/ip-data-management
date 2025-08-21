@@ -1,0 +1,24 @@
+.main {
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.deny-button {
+  background-color: red;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.deny-button:disabled {
+  cursor: initial;
+  background-color: lightgray;
+}

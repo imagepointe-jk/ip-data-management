@@ -12,6 +12,8 @@ type Props = {
   userEmail: string;
   metaDataToAdd: MetaData[];
   removeLineItemIds: number[];
+  showHelpButton: boolean;
+  setHelpMode: (helpMode: boolean) => void;
   setStatus: (status: OrderEditFormStatus) => void;
   setStateModified: (modified: boolean) => void;
   modifyOrder: (order: WooCommerceOrder) => void;
@@ -24,6 +26,8 @@ export function SubmitArea({
   userEmail,
   metaDataToAdd,
   removeLineItemIds,
+  showHelpButton,
+  setHelpMode,
   setStatus,
   setStateModified,
   modifyMetaDataToAdd,
@@ -86,6 +90,15 @@ export function SubmitArea({
             size="2x"
           />
         </span>
+      )}
+      {showHelpButton && (
+        <button
+          className={styles["help-button"]}
+          onClick={() => setHelpMode(true)}
+        >
+          <FontAwesomeIcon icon={faInfoCircle} />
+          {" I need help with my order"}
+        </button>
       )}
     </div>
   );
