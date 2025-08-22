@@ -23,7 +23,7 @@ import { WebstoreCheckoutField } from "@prisma/client";
 import { DraftFunction, Updater, useImmer } from "use-immer";
 import {
   compareShippingMethodTitles,
-  getRatedShippingMethods,
+  // getRatedShippingMethods,
 } from "@/order-approval/shipping";
 
 //! This component has some issues with speculative generality and has become quite complicated.
@@ -126,35 +126,35 @@ export function OrderEditForm({
     setLoading(true);
     try {
       //first get updated methods based on any changed shipping info
-      const updatedMethods = await getRatedShippingMethods(
-        order,
-        products,
-        shippingMethods,
-        special
-      );
-      setRatedShippingMethods(updatedMethods);
+      // const updatedMethods = await getRatedShippingMethods(
+      //   order,
+      //   products,
+      //   shippingMethods,
+      //   special
+      // );
+      // setRatedShippingMethods(updatedMethods);
 
-      const newShippingLines = choosePostUpdateShippingLines(updatedMethods);
-      const updated = await updateOrderAction(
-        storeUrl,
-        {
-          ...order,
-          line_items: lineItemsWithDeletions,
-          customer_note: order.customerNote,
-          shipping: {
-            ...order.shipping,
-            first_name: order.shipping.firstName,
-            last_name: order.shipping.lastName,
-            address_1: order.shipping.address1,
-            address_2: order.shipping.address2,
-          },
-          shipping_lines: newShippingLines,
-          meta_data: order.metaData,
-        },
-        metaDataToAdd,
-        userEmail || ""
-      );
-      setOrder(updated);
+      // const newShippingLines = choosePostUpdateShippingLines(updatedMethods);
+      // const updated = await updateOrderAction(
+      //   storeUrl,
+      //   {
+      //     ...order,
+      //     line_items: lineItemsWithDeletions,
+      //     customer_note: order.customerNote,
+      //     shipping: {
+      //       ...order.shipping,
+      //       first_name: order.shipping.firstName,
+      //       last_name: order.shipping.lastName,
+      //       address_1: order.shipping.address1,
+      //       address_2: order.shipping.address2,
+      //     },
+      //     shipping_lines: newShippingLines,
+      //     meta_data: order.metaData,
+      //   },
+      //   metaDataToAdd,
+      //   userEmail || ""
+      // );
+      // setOrder(updated);
       setMetaDataToAdd([]);
       setModifiedByUser(false);
 
@@ -218,14 +218,14 @@ export function OrderEditForm({
       const ids = order.lineItems.map((item) => item.productId);
       const products = await getProducts(ids);
 
-      const methods = await getRatedShippingMethods(
-        order,
-        products,
-        shippingMethods,
-        special
-      );
+      // const methods = await getRatedShippingMethods(
+      //   order,
+      //   products,
+      //   shippingMethods,
+      //   special
+      // );
 
-      setRatedShippingMethods(methods);
+      // setRatedShippingMethods(methods);
       setProducts(products);
     } catch (error) {
       console.error(error);

@@ -1,0 +1,21 @@
+.main {
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid gray;
+  min-width: 275px;
+  max-width: 370px;
+  min-height: 170px;
+}
+
+.main h4 {
+  margin-top: 0;
+}
+
+.row {
+  display: block;
+}
+
+.invalid {
+  color: gray;
+}

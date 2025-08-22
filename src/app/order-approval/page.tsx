@@ -134,6 +134,7 @@ export default async function Page({ searchParams }: Props) {
         storeUrl={webstore.url}
         userEmail={foundAccessCode.user.email}
         allowHelpRequest={webstore.allowOrderHelpRequest}
+        shippingMethods={webstore.shippingMethods}
         checkoutFields={
           foundAccessCode.workflowInstance.parentWorkflow.webstore
             .checkoutFields
