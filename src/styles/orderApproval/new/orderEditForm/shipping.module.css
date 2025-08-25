@@ -1,5 +1,4 @@
 .main {
-  margin-top: 20px;
   border-radius: 10px;
   padding: 10px;
   border: 1px solid gray;
@@ -17,5 +16,5 @@
 }
 
 .invalid {
-  color: gray;
+  display: none;
 }

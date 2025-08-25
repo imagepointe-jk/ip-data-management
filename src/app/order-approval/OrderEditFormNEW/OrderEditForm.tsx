@@ -21,6 +21,7 @@ import {
   RatedShippingMethod,
   reviseOrderAfterShippingRates,
 } from "./helpers/shipping";
+import { BeforeSubmitArea } from "./BeforeSubmitArea";
 
 export type MetaData = {
   key: string;
@@ -72,11 +73,16 @@ export function OrderEditForm({
     setStatus("loading");
     try {
       //first get updated methods based on any changed shipping info
+      let start = Date.now();
+      console.log(
+        "Getting updated shipping rates based on current shipping info..."
+      );
       const newRatedMethods = await getRatedShippingMethods(
         order,
         shippingMethods
       );
       setRatedShippingMethods(newRatedMethods);
+      console.log(`Shipping rates retrieved in ${Date.now() - start} ms.`);
 
       //we might need to edit what the user has selected (e.g. if the changed shipping address makes the selected shipping method invalid)
       const revisedOrder = reviseOrderAfterShippingRates(
@@ -84,6 +90,8 @@ export function OrderEditForm({
         newRatedMethods
       );
 
+      console.log("Updating order data...");
+      start = Date.now();
       const updatedOrder = await updateOrderAction(
         storeUrl,
         createUpdateData(revisedOrder, removeLineItemIds),
@@ -91,10 +99,12 @@ export function OrderEditForm({
         userEmail
       );
 
+      console.log(`Order updated in ${Date.now() - start} ms.`);
       setStatus("idle");
       modifyOrder(updatedOrder);
       modifyMetaDataToAdd([]);
       setStateModified(false);
+      setRemoveLineItemIds([]);
     } catch (error) {
       console.error(error);
       setStatus("error");
@@ -103,12 +113,15 @@ export function OrderEditForm({
 
   useEffect(() => {
     async function initial() {
+      const start = Date.now();
+      console.log("Getting initial shipping rates...");
       const newRatedMethods = await getRatedShippingMethods(
         order,
         shippingMethods
       );
       setRatedShippingMethods(newRatedMethods);
       setStatus("idle");
+      console.log(`Shipping rates retrieved in ${Date.now() - start} ms.`);
     }
     initial();
   }, []);
@@ -135,8 +148,9 @@ export function OrderEditForm({
           modifyOrder={modifyOrder}
           modifyMetaDataToAdd={modifyMetaDataToAdd}
         />
-        <ShippingMethods
+        <BeforeSubmitArea
           order={order}
+          modifyOrder={modifyOrder}
           ratedShippingMethods={ratedShippingMethods}
         />
         <SubmitArea
@@ -157,7 +171,10 @@ export function OrderEditForm({
         {helpMode && <HelpForm setHelpMode={setHelpMode} />}
         <Overlays status={status} setStatus={setStatus} />
       </div>
-      <NavButtons allowApprove={!stateModified} display={{ review: false }} />
+      <NavButtons
+        allowApprove={!stateModified && removeLineItemIds.length === 0}
+        display={{ review: false }}
+      />
     </>
   );
 }

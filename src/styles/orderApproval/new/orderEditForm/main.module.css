@@ -73,6 +73,28 @@
   font-size: 1.125rem;
 }
 
+.before-submit-area-flex {
+  display: flex;
+  margin-top: 20px;
+  gap: 20px;
+  align-items: center;
+}
+
+.info-box {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #006ac6;
+  width: 200px;
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #006ac611;
+}
+
+.edit-help-text {
+  margin-top: 10px;
+  font-size: 0.8rem;
+}
+
 .nav-buttons {
   display: flex;
   justify-content: center;

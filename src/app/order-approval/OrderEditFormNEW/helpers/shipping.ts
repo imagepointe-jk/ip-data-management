@@ -10,21 +10,24 @@ import {
 } from "@/types/validations/shipping";
 import { WebstoreShippingMethod } from "@prisma/client";
 
+export function cleanShippingMethodName(name: string) {
+  //matches escaped version of ® symbol, escaped version of ™ symbol, and anything else that isn't a number or letter
+  const regex = /&#8482;|&#174;|[^a-zA-Z\s\d]/g;
+  return name.replace(regex, "");
+}
+
 //we have to do string matching because we're relying on the string we get back from woocommerce to determine what shipping was chosen for the order.
 //be as permissive as possible by ignoring symbols and using lowercase, while minimizing chance of false matches.
 export function findMatchingShippingMethod(
   methodName: string,
   allShippingMethods: { id: number; name: string }[]
 ) {
-  //matches escaped version of ® symbol, escaped version of ™ symbol, and anything else that isn't a number or letter
-  const regex = /&#8482;|&#174;|[^a-zA-Z\s\d]/g;
-
-  const cleanedTarget = methodName.toLocaleLowerCase().replace(regex, "");
+  const cleanedTarget = cleanShippingMethodName(methodName).toLocaleLowerCase();
 
   return allShippingMethods.find((existingMethod) => {
-    const cleanedExisting = existingMethod.name
-      .toLocaleLowerCase()
-      .replace(regex, "");
+    const cleanedExisting = cleanShippingMethodName(
+      existingMethod.name
+    ).toLocaleLowerCase();
     return cleanedExisting === cleanedTarget;
   });
 }

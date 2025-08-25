@@ -61,7 +61,7 @@ export function SubmitArea({
       <button className={styles["button-primary"]} onClick={onClickSave}>
         Save All Changes
       </button>
-      {stateModified && (
+      {(stateModified || removeLineItemIds.length > 0) && (
         <span title="Some values may be out-of-sync. Save changes to update.">
           <FontAwesomeIcon
             icon={faInfoCircle}
