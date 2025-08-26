@@ -108,7 +108,7 @@ async function sendToTargets(params: {
     } catch (error) {
       await createWorkflowInstanceLog(
         workflowInstance.id,
-        `Step ${step.order} of workflow instance ${workflowInstance.id} failed to send an email to ${target}`,
+        `Step ${step.order} of workflow instance ${workflowInstance.id} failed to send an email to ${target}; ${error}`,
         "error",
         "send email"
       );
