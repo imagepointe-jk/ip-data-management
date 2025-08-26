@@ -3,7 +3,7 @@ import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import styles from "@/styles/orderApproval/new/approve.module.css";
 import { useState } from "react";
-import { NavButtons } from "../NavButtonsNEW";
+import { NavButtons } from "../NavButtons";
 
 type Props = {
   requirePin: boolean;

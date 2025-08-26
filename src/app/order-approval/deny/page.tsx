@@ -1,6 +1,6 @@
 import { NextSearchParams } from "@/types/schema/misc";
 import { prisma } from "@/prisma";
-import { NavButtons } from "../NavButtonsNEW";
+import { NavButtons } from "../NavButtons";
 import { DenyForm } from "./DenyForm";
 
 type Props = {

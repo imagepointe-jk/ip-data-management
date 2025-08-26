@@ -1,7 +1,6 @@
 "use server";
 
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
-import { prisma } from "../../../prisma/client";
 import { handleWorkflowEvent } from "@/order-approval/main";
 import {
   getAccessCodeWithIncludes,
@@ -25,6 +24,7 @@ import {
 import { getDaysSinceDate } from "@/utility/misc";
 import { createLog } from "./create";
 import { env } from "@/env";
+import { prisma } from "@/prisma";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -130,8 +130,6 @@ export async function receiveOrderHelpForm(data: {
   comments: string;
   code: string;
 }) {
-  // const comments = formData.get("comments");
-  // const code = formData.get("code");
   const { code, comments } = data;
   if (!comments || !code)
     throw new Error(

@@ -8,11 +8,11 @@ import {
 } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { handleOrderUpdated } from "@/order-approval/main";
+import { prisma } from "@/prisma";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { WebstoreEditorData } from "@/types/schema/orderApproval";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { encrypt } from "@/utility/misc";
-import { prisma } from "../../../prisma/client";
 
 export async function updateWorkflow(
   data: Exclude<UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>, null>
@@ -20,8 +20,6 @@ export async function updateWorkflow(
   const proceedListeners = data.steps
     .map((step) => step.proceedListeners)
     .flat();
-
-  console.log(data.steps.map((step) => step.display));
 
   await prisma.$transaction([
     prisma.orderWorkflow.update({
@@ -174,24 +172,6 @@ export async function updateWebstore(
     ),
   ]);
 }
-
-// export async function setUserIsApprover(
-//   userId: number,
-//   webstoreId: number,
-//   isApprover: boolean
-// ) {
-//   await prisma.orderWorkflowWebstoreUserRole.update({
-//     where: {
-//       userId_webstoreId: {
-//         userId,
-//         webstoreId,
-//       },
-//     },
-//     data: {
-//       role: isApprover ? "approver" : "purchaser",
-//     },
-//   });
-// }
 
 export async function setUserEmail(id: number, email: string) {
   await prisma.orderWorkflowUser.update({

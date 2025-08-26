@@ -1,17 +1,16 @@
 "use server";
 
 import {
-  // createUser,
   getWebstoreById,
   getWorkflowWithIncludes,
 } from "@/db/access/orderApproval";
+import { prisma } from "@/prisma";
 import {
   WebstoreEditorData,
   WebstoreLogEvent,
   WebstoreLogSeverity,
 } from "@/types/schema/orderApproval";
 import { encrypt } from "@/utility/misc";
-import { prisma } from "../../../prisma/client";
 import { revalidatePath } from "next/cache";
 
 export async function createWorkflow(webstoreId: number, name: string) {
@@ -44,13 +43,6 @@ export async function duplicateWorkflow(
               email: `${step.actionTarget}`,
             },
             {
-              // roles: {
-              //   some: {
-              //     webstore: {
-              //       id: targetWebstoreId,
-              //     },
-              //   },
-              // },
               userRoles: {
                 some: {
                   webstore: {

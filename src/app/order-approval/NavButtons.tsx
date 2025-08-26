@@ -1,36 +1,56 @@
-import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
-import styles from "@/styles/orderApproval/approverArea.module.css";
+"use client";
+
+import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import { useRouter } from "next/navigation";
 
 type Props = {
-  modifiedByUser?: boolean;
+  allowApprove?: boolean;
+  display?: {
+    approve?: boolean;
+    deny?: boolean;
+    review?: boolean;
+  };
 };
+export function NavButtons({ allowApprove, display }: Props) {
+  const router = useRouter();
 
-export function NavButtons({ modifiedByUser }: Props) {
-  const { parentWindow } = useIframe();
-  const searchParams = new URLSearchParams(parentWindow.location?.search);
-  const action = searchParams.get("action");
+  function onClickApprove() {
+    if (allowApprove === false) return;
 
-  async function onClickApprove() {
-    if (!modifiedByUser) parentWindow.setSearchParam("action", "approve");
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+    router.push(
+      `${window.location.origin}/order-approval/approve?code=${code}`
+    );
+  }
+
+  function onClickReview() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+    router.push(`${window.location.origin}/order-approval?code=${code}`);
+  }
+
+  function onClickDeny() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+    router.push(`${window.location.origin}/order-approval/deny?code=${code}`);
   }
 
   return (
-    <div className={styles["nav-buttons-container"]}>
-      {action !== null && (
-        <button
-          className={styles["nav-button-review"]}
-          onClick={() => parentWindow.setSearchParam("action", null)}
-        >
+    <div className={styles["nav-buttons"]}>
+      {display?.review !== false && (
+        <button className={styles["review-button"]} onClick={onClickReview}>
           Review
         </button>
       )}
-      {action !== "approve" && (
+      {display?.approve !== false && (
         <button
-          className={styles["nav-button-approve"]}
+          className={`${styles["approve-button"]} ${
+            allowApprove === false ? styles["disabled"] : ""
+          }`}
           onClick={onClickApprove}
-          disabled={modifiedByUser}
           title={
-            modifiedByUser
+            allowApprove === false
               ? "Please save your changes before approving."
               : undefined
           }
@@ -38,11 +58,8 @@ export function NavButtons({ modifiedByUser }: Props) {
           Approve
         </button>
       )}
-      {action !== "deny" && (
-        <button
-          className={styles["nav-button-deny"]}
-          onClick={() => parentWindow.setSearchParam("action", "deny")}
-        >
+      {display?.deny !== false && (
+        <button className={styles["deny-button"]} onClick={onClickDeny}>
           Deny
         </button>
       )}
