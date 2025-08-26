@@ -1,7 +1,6 @@
 "use server";
 
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
-import { prisma } from "../../../prisma/client";
 import { handleWorkflowEvent } from "@/order-approval/main";
 import {
   getAccessCodeWithIncludes,
@@ -24,6 +23,8 @@ import {
 } from "@/order-approval/start";
 import { getDaysSinceDate } from "@/utility/misc";
 import { createLog } from "./create";
+import { env } from "@/env";
+import { prisma } from "@/prisma";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -125,9 +126,11 @@ export async function moveWorkflowStep(
   };
 }
 
-export async function receiveOrderHelpForm(formData: FormData) {
-  const comments = formData.get("comments");
-  const code = formData.get("code");
+export async function receiveOrderHelpForm(data: {
+  comments: string;
+  code: string;
+}) {
+  const { code, comments } = data;
   if (!comments || !code)
     throw new Error(
       `An invalid order help form was submitted for access code ${
@@ -148,7 +151,7 @@ export async function receiveOrderHelpForm(formData: FormData) {
     user,
   } = foundCode;
 
-  const webstoresEmail = process.env.IP_WEBSTORES_EMAIL;
+  const webstoresEmail = env.IP_WEBSTORES_EMAIL;
   if (!webstoresEmail) throw new Error("Missing webstores email");
 
   const otherEmails = webstore.otherSupportEmails?.split(";") || [];

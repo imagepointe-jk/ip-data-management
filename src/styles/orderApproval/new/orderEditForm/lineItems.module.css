@@ -1,0 +1,74 @@
+.main {
+  border: 1px solid gray;
+  margin: 10px 0;
+}
+
+.fake-table-header-row {
+  background-color: lightgray;
+  display: flex;
+}
+
+.fake-table-header {
+  font-weight: bold;
+  padding: 10px;
+}
+
+.fake-table-column-1 {
+  flex: 3;
+}
+
+.fake-table-column-2 {
+  flex: 20;
+}
+
+.fake-table-column-3 {
+  flex: 10;
+}
+
+.fake-table-column-4 {
+  flex: 10;
+  text-align: right;
+}
+
+.fake-table-column-5 {
+  flex: 10;
+  text-align: right;
+}
+
+.fake-table-row {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  position: relative;
+}
+
+.fake-table-cell {
+  padding: 10px;
+}
+
+.main input[type="number"] {
+  font-size: 1.125rem;
+  padding: 5px;
+  width: 75px;
+}
+
+.cross-out {
+  position: absolute;
+  left: 60px;
+  right: 5px;
+  top: 50%;
+  translate: 0 -50%;
+  height: 2px;
+  background-color: red;
+}
+
+.remove-line-item-button {
+  color: white;
+  background-color: red;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  padding: 3px 5px;
+  margin: auto;
+  display: block;
+}

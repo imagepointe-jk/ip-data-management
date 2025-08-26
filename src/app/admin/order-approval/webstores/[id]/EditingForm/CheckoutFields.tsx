@@ -1,11 +1,24 @@
 import { createWebstoreCheckoutField } from "@/actions/orderWorkflow/create";
 import { deleteCheckoutField } from "@/actions/orderWorkflow/delete";
 import GenericTable from "@/components/GenericTable";
-import { checkoutFieldTypes } from "@/order-approval/checkoutFields";
 import { WebstoreEditorData } from "@/types/schema/orderApproval";
 import { Updater } from "use-immer";
 import styles from "@/styles/orderApproval/webstoreEditForm.module.css";
-import { number } from "zod";
+
+const checkoutFieldTypes = [
+  {
+    name: "text",
+    displayName: "Text",
+  },
+  {
+    name: "select",
+    displayName: "Select",
+  },
+  {
+    name: "textarea",
+    displayName: "Text Area",
+  },
+];
 
 type Props = {
   webstoreState: WebstoreEditorData;

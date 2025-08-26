@@ -76,4 +76,8 @@ const upsErrors: { code: string; message: string }[] = [
     code: "111286",
     message: "Invalid state",
   },
+  {
+    code: "111215",
+    message: "Service not available for residential destinations",
+  },
 ];

@@ -1,80 +1,45 @@
-import { RatedShippingMethod } from "@/app/order-approval/OrderEditForm/OrderEditForm";
 import {
   getUpsRate,
   getUspsDomesticPrice,
   getUspsInternationalPrice,
 } from "@/fetch/client/shipping";
-import {
-  WooCommerceOrder,
-  WooCommerceProduct,
-} from "@/types/schema/woocommerce";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import {
   validateUpsRateResponse,
   validateUspsPriceResponse,
 } from "@/types/validations/shipping";
+import { WebstoreShippingMethod } from "@prisma/client";
 
-//we have to do exact string matching because we're relying on the string we get back from woocommerce to determine what shipping was chosen for the order.
-const upsShippingCodes: { exactString: string; code: string }[] = [
-  //domestic
-  {
-    exactString: "UPS 3 Day Select&#174;",
-    code: "12",
-  },
-  {
-    exactString: "UPS&#174; Ground",
-    code: "03",
-  },
-  {
-    exactString: "UPS 2nd Day Air&#174;",
-    code: "02",
-  },
-  {
-    exactString: "UPS Next Day Air&#174;",
-    code: "01",
-  },
-  //intl
-  {
-    exactString: "UPS Worldwide Express&#8482;",
-    code: "07",
-  },
-  {
-    exactString: "UPS Worldwide Express Plus&#8482;",
-    code: "54",
-  },
-  {
-    exactString: "UPS Worldwide Expedited",
-    code: "08",
-  },
-  {
-    exactString: "UPS Worldwide Saver",
-    code: "65",
-  },
-  {
-    exactString: "UPS&#174; Standard",
-    code: "11",
-  },
-];
-const uspsShippingCodes: { exactString: string; code: string }[] = [
-  {
-    exactString: "Priority Mail&#174; (USPS)",
-    code: "PRIORITY_MAIL",
-  },
-  {
-    exactString: "Ground Advantage&#8482; (USPS)",
-    code: "USPS_GROUND_ADVANTAGE",
-  },
-  {
-    exactString: "Priority Mail International&#174; (USPS)",
-    code: "PRIORITY_MAIL_INTERNATIONAL",
-  },
-  {
-    exactString: "Priority Mail Express International&#8482; (USPS)",
-    code: "PRIORITY_MAIL_EXPRESS_INTERNATIONAL",
-  },
-];
+export function cleanShippingMethodName(name: string) {
+  //matches escaped version of ® symbol, escaped version of ™ symbol, and anything else that isn't a number or letter
+  const regex = /&#8482;|&#174;|[^a-zA-Z\s\d]/g;
+  return name.replace(regex, "");
+}
 
+//we have to do string matching because we're relying on the string we get back from woocommerce to determine what shipping was chosen for the order.
+//be as permissive as possible by ignoring symbols and using lowercase, while minimizing chance of false matches.
+export function findMatchingShippingMethod(
+  methodName: string,
+  allShippingMethods: { id: number; name: string }[]
+) {
+  const cleanedTarget = cleanShippingMethodName(methodName).toLocaleLowerCase();
+
+  return allShippingMethods.find((existingMethod) => {
+    const cleanedExisting = cleanShippingMethodName(
+      existingMethod.name
+    ).toLocaleLowerCase();
+    return cleanedExisting === cleanedTarget;
+  });
+}
+
+export type RatedShippingMethod = {
+  id: number;
+  name: string;
+  total: string | null;
+  statusCode: number | null;
+};
 type ShippingRateParams = {
-  method: string;
+  method: WebstoreShippingMethod;
   totalWeight: number;
   firstName: string;
   lastName: string;
@@ -88,7 +53,8 @@ type ShippingRateParams = {
 async function rateShippingMethod(
   params: ShippingRateParams
 ): Promise<RatedShippingMethod> {
-  if (params.method.includes("UPS")) return getParsedUpsRate(params);
+  if (params.method.name.toLocaleLowerCase().includes("ups"))
+    return getParsedUpsRate(params);
   else return getParsedUspsRate(params);
 }
 
@@ -106,20 +72,9 @@ async function getParsedUpsRate(params: ShippingRateParams) {
     method,
   } = params;
 
-  const nullResult: RatedShippingMethod = {
-    name: method,
-    total: null,
-    statusCode: null,
-  };
-
-  const matchingData = upsShippingCodes.find(
-    (code) => code.exactString === method
-  );
-  if (!matchingData) return nullResult;
-
   const ratingResponse = await getUpsRate({
     service: {
-      code: matchingData.code,
+      code: method.serviceCodeStr,
       description: "abc",
     },
     shipTo: {
@@ -141,6 +96,12 @@ async function getParsedUpsRate(params: ShippingRateParams) {
     } catch (error) {
       console.error(`UPS API response ${ratingResponse.status}`);
     }
+    const nullResult: RatedShippingMethod = {
+      id: method.id,
+      name: params.method.name,
+      total: null,
+      statusCode: ratingResponse.status,
+    };
     nullResult.statusCode = ratingResponse.status;
     return nullResult;
   }
@@ -148,44 +109,36 @@ async function getParsedUpsRate(params: ShippingRateParams) {
   const ratingJson = await ratingResponse.json();
   const parsed = validateUpsRateResponse(ratingJson);
   return {
-    name: method,
+    id: method.id,
+    name: method.name,
     total: parsed.RateResponse.RatedShipment.TotalCharges.MonetaryValue,
     statusCode: ratingResponse.status,
   };
 }
 
 async function getParsedUspsRate(params: ShippingRateParams) {
-  const nullResult: RatedShippingMethod = {
-    name: params.method,
-    total: null,
-    statusCode: null,
-  };
-
-  const matchingData = uspsShippingCodes.find(
-    (code) => code.exactString === params.method
-  );
-  if (!matchingData) {
-    console.error(`No match found for ${params.method}`);
-    return nullResult;
-  }
-
   const isDomestic = params.countryCode === "US";
 
   const priceResponse = isDomestic
     ? await getUspsDomesticPrice({
         destinationZIPCode: params.postalCode,
-        mailClass: matchingData.code,
+        mailClass: params.method.serviceCodeStr,
         weight: params.totalWeight,
       })
     : await getUspsInternationalPrice({
-        mailClass: matchingData.code,
+        mailClass: params.method.serviceCodeStr,
         weight: params.totalWeight,
         foreignPostalCode: params.postalCode,
         destinationCountryCode: params.countryCode,
       });
   if (!priceResponse.ok) {
     console.error(`USPS API response ${priceResponse.status}`);
-    nullResult.statusCode = priceResponse.status;
+    const nullResult: RatedShippingMethod = {
+      id: params.method.id,
+      name: params.method.name,
+      total: null,
+      statusCode: priceResponse.status,
+    };
     return nullResult;
   }
 
@@ -193,7 +146,8 @@ async function getParsedUspsRate(params: ShippingRateParams) {
   const parsed = validateUspsPriceResponse(priceJson);
 
   return {
-    name: params.method,
+    id: params.method.id,
+    name: params.method.name,
     total: parsed.totalBasePrice.toFixed(2),
     statusCode: priceResponse.status,
   };
@@ -201,15 +155,12 @@ async function getParsedUspsRate(params: ShippingRateParams) {
 
 export async function getRatedShippingMethods(
   order: WooCommerceOrder,
-  products: WooCommerceProduct[],
-  shippingMethods: string[],
+  allShippingMethods: WebstoreShippingMethod[],
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
   }
 ) {
-  if (!products) throw new Error("No products");
-
   //currently we aren't showing actual rates due to concerns about accuracy. we only want to check availability of different methods.
   //using a placeholder weight value for now just to satisfy the API requirements.
   // const totalWeight = products.reduce((accum, product) => {
@@ -223,9 +174,12 @@ export async function getRatedShippingMethods(
   // }, 0);
   const totalWeight = 5;
 
-  const permittedShippingMethods = shippingMethods.filter((method) => {
+  const permittedShippingMethods = allShippingMethods.filter((method) => {
     if (special?.allowUpsShippingToCanada) return method;
-    return order?.shipping.country !== "CA" || !method.includes("UPS");
+    return (
+      order?.shipping.country !== "CA" ||
+      !method.name.toLocaleLowerCase().includes("ups")
+    );
   });
 
   const {
@@ -259,8 +213,59 @@ export async function getRatedShippingMethods(
   return ratedMethods;
 }
 
-export function compareShippingMethodTitles(title1: string, title2: string) {
-  const cleaned1 = title1.replace("™", "&#8482;").replace("®", "&#174;");
-  const cleaned2 = title2.replace("™", "&#8482;").replace("®", "&#174;");
-  return cleaned1 === cleaned2;
+export function reviseOrderAfterShippingRates(
+  order: WooCommerceOrder,
+  newRatedShippingMethods: RatedShippingMethod[]
+): WooCommerceOrder {
+  if (newRatedShippingMethods.length === 0) return order; //not much we can do if there are no valid methods for the order
+
+  const existingShippingLine = order.shippingLines[0];
+  if (!existingShippingLine) throw new Error("No shipping line to update");
+
+  const selectedMethodName = existingShippingLine.method_title || "";
+  const selectedMethodIsValid = isShippingMethodValid(
+    selectedMethodName,
+    newRatedShippingMethods
+  );
+  if (selectedMethodIsValid) return order;
+
+  const cheapest = findCheapestShippingMethod(newRatedShippingMethods);
+
+  return {
+    ...order,
+    shippingLines: [
+      {
+        id: existingShippingLine.id,
+        method_title: cheapest.name,
+      },
+    ],
+  };
+}
+
+function isShippingMethodValid(
+  methodName: string,
+  ratedShippingMethods: RatedShippingMethod[]
+) {
+  const initialMatch = findMatchingShippingMethod(
+    methodName,
+    ratedShippingMethods
+  );
+  const fullMatch = ratedShippingMethods.find(
+    (method) => method.id === initialMatch?.id
+  );
+  return fullMatch ? fullMatch.total !== null : false;
+}
+
+function findCheapestShippingMethod(
+  ratedShippingMethods: RatedShippingMethod[]
+) {
+  const sorted = [...ratedShippingMethods].sort((a, b) => {
+    const aTotal = a.total ? +a.total : Number.MAX_SAFE_INTEGER;
+    const bTotal = b.total ? +b.total : Number.MAX_SAFE_INTEGER; // make sure that any methods with NULL totals get pushed to the end
+    return aTotal - bTotal;
+  });
+
+  const cheapest = sorted[0];
+  if (!cheapest) throw new Error("No shipping methods provided to sort");
+  return cheapest;
 }

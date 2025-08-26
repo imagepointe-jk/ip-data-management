@@ -1,8 +1,7 @@
 import styles from "@/styles/orderApproval/approverDashboard.module.css";
 import { OrderInstanceRow } from "./OrderInstanceRow";
-import { notFound } from "next/navigation";
-import { prisma } from "../../../../../../prisma/client";
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
+import { prisma } from "@/prisma";
 
 type Props = {
   params: Promise<{

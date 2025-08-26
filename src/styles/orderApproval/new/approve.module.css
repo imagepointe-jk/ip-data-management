@@ -1,0 +1,29 @@
+.main {
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.approve-button {
+  background-color: green;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.approve-button:disabled {
+  cursor: initial;
+  background-color: rgb(146, 202, 146);
+}
+
+.pin {
+  font-size: 1.125rem;
+  width: 100px;
+}

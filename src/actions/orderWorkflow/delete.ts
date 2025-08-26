@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "../../../prisma/client";
+import { prisma } from "@/prisma";
 
 export async function deleteWorkflowInstance(id: number) {
   await prisma.orderWorkflowAccessCode.deleteMany({
