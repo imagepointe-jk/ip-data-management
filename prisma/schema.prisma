@@ -229,7 +229,7 @@ model WebstoreShippingSettings {
   allowApproverChangeMethod Boolean
   allowUpsToCanada          Boolean
   webstoreId                Int      @unique
-  webstore                  Webstore @relation(fields: [webstoreId], references: [id])
+  webstore                  Webstore @relation(fields: [webstoreId], references: [id], onDelete: Cascade)
 }
 
 model WebstoreShippingMethod {
@@ -250,7 +250,7 @@ model WebstoreCheckoutField {
   userCanEdit Boolean  @default(true)
   order       Int      @default(0) //sorting order
   style       String? //not CSS; expects simple values like "emph" for a visually emphasized field
-  webstore    Webstore @relation(fields: [webstoreId], references: [id])
+  webstore    Webstore @relation(fields: [webstoreId], references: [id], onDelete: Cascade)
 }
 
 model OrderWorkflow {

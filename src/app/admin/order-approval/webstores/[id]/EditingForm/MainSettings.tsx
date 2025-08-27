@@ -19,8 +19,6 @@ export function MainSettings({
   setApiSecret,
   shippingEmailFilenames,
 }: Props) {
-  const creatingNew = webstoreState.id === 0;
-
   return (
     <div className="vert-flex-group">
       <div>
@@ -165,27 +163,21 @@ export function MainSettings({
         </label>
       </div>
       <div>
-        <label className="input-label">
-          {!creatingNew ? "Change API Key " : "Set API Key "}
-        </label>
+        <label className="input-label">{"Change API Key "}</label>
         <input
           type="text"
           name="api-key"
           id="api-key"
-          required={creatingNew}
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
         />
       </div>
       <div>
-        <label className="input-label">
-          {!creatingNew ? "Change API Secret " : "Set API Secret "}
-        </label>
+        <label className="input-label">{"Change API Secret "}</label>
         <input
           type="text"
           name="api-secret"
           id="api-secret"
-          required={creatingNew}
           value={apiSecret}
           onChange={(e) => setApiSecret(e.target.value)}
         />

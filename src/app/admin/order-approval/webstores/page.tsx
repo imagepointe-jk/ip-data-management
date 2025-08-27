@@ -1,6 +1,6 @@
 import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
 import { ResultsTable } from "./ResultsTable";
-import Link from "next/link";
+import { CreateButton } from "./CreateButton";
 
 export default async function Page() {
   const webstores = await getWebstoresWithIncludes();
@@ -15,9 +15,7 @@ export default async function Page() {
         order approval system.
       </p>
       <ResultsTable webstores={sortedWebstores} />
-      <Link href="webstores/0" className="link-as-button">
-        + Add Webstore
-      </Link>
+      <CreateButton />
     </>
   );
 }

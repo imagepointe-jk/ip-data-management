@@ -7,6 +7,7 @@ import { EditingForm } from "./EditingForm/EditingForm";
 import { ShortcodeReference } from "../../ShortcodeReference";
 import fs from "fs";
 import path from "path";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{
@@ -15,13 +16,9 @@ type Props = {
 };
 export default async function Page(props: Props) {
   const params = await props.params;
-  const existingWebstore = await getWebstoreWithIncludes(+params.id);
+  const webstore = await getWebstoreWithIncludes(+params.id);
 
-  if (!existingWebstore && params.id !== "0")
-    return <h1>Webstore {params.id} not found.</h1>;
-
-  if (existingWebstore && !existingWebstore.shippingSettings)
-    return <h1>Webstore shipping settings not found.</h1>;
+  if (!webstore || !webstore.shippingSettings) notFound();
 
   const shippingMethods = await getShippingMethods();
   const filenames = fs
@@ -32,15 +29,13 @@ export default async function Page(props: Props) {
 
   return (
     <>
-      <h1>
-        {existingWebstore ? "Editing Webstore Data" : "Creating Webstore Data"}
-      </h1>
-      {existingWebstore && <Link href={`${params.id}/users`}>View Users</Link>}
+      <h1>Editing Webstore Data</h1>
+      {webstore && <Link href={`${params.id}/users`}>View Users</Link>}
       <Link href={`${params.id}/logs`} style={{ marginLeft: "10px" }}>
         View Logs
       </Link>
       <EditingForm
-        webstoreData={existingWebstore}
+        webstoreData={webstore}
         shippingMethods={shippingMethods}
         shortcodeReference={<ShortcodeReference />}
         shippingEmailFilenames={filenames}

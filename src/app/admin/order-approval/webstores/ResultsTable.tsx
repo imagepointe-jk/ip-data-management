@@ -1,16 +1,35 @@
 "use client";
 
+import { deleteWebstore } from "@/actions/orderWorkflow/delete";
 import GenericTable from "@/components/GenericTable";
+import { useToast } from "@/components/ToastProvider";
 import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { UnwrapPromise } from "@/types/schema/misc";
 import { deduplicateArray } from "@/utility/misc";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type Props = {
   webstores: UnwrapPromise<ReturnType<typeof getWebstoresWithIncludes>>;
 };
 export function ResultsTable({ webstores }: Props) {
+  const toast = useToast();
+  const router = useRouter();
+
+  async function onClickDelete(id: number) {
+    if (!confirm("Are you sure you want to delete this webstore?")) return;
+
+    try {
+      await deleteWebstore(id);
+      toast.toast("Webstore deleted.", "success");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.toast("Error deleting webstore.", "error");
+    }
+  }
+
   return (
     <GenericTable
       dataset={webstores}
@@ -67,6 +86,17 @@ export function ResultsTable({ webstores }: Props) {
               </>
             );
           },
+        },
+        {
+          headerName: "",
+          createCell: (webstore) => (
+            <button
+              className="button-danger"
+              onClick={() => onClickDelete(webstore.id)}
+            >
+              DELETE
+            </button>
+          ),
         },
       ]}
       className={styles["basic-table"]}

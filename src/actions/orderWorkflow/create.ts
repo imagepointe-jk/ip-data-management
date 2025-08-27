@@ -179,62 +179,26 @@ export async function createStep(parentWorkflowId: number, order?: number) {
   });
 }
 
-export async function createWebstore(
-  data: WebstoreEditorData & { apiKey: string; apiSecret: string }
-) {
-  const {
-    name,
-    orderUpdatedEmails,
-    organizationName,
-    otherSupportEmails,
-    salesPersonEmail,
-    salesPersonName,
-    shippingMethods,
-    shippingSettings,
-    url,
-    shippingEmailFilename,
-    apiKey: apiKeyInput,
-    apiSecret: apiSecretInput,
-  } = data;
-
-  const {
-    ciphertext: apiKey,
-    iv: apiKeyEncryptIv,
-    tag: apiKeyEncryptTag,
-  } = encrypt(apiKeyInput);
-  const {
-    ciphertext: apiSecret,
-    iv: apiSecretEncryptIv,
-    tag: apiSecretEncryptTag,
-  } = encrypt(apiSecretInput);
-
+export async function createDefaultWebstore() {
   const webstore = await prisma.webstore.create({
     data: {
-      name,
-      url,
-      organizationName,
-      otherSupportEmails,
-      orderUpdatedEmails,
-      salesPersonEmail,
-      salesPersonName,
-      apiKey,
-      apiKeyEncryptIv,
-      apiKeyEncryptTag: apiKeyEncryptTag.toString("base64"),
-      apiSecret,
-      apiSecretEncryptIv,
-      apiSecretEncryptTag: apiSecretEncryptTag.toString("base64"),
-      shippingEmailFilename,
-      shippingMethods: {
-        connect: shippingMethods.map((method) => ({ id: method.id })),
-      },
+      name: "New Webstore",
+      url: "example.com",
+      organizationName: "",
+      apiKey: "",
+      apiKeyEncryptIv: "",
+      apiKeyEncryptTag: "",
+      apiSecret: "",
+      apiSecretEncryptIv: "",
+      apiSecretEncryptTag: "",
     },
   });
 
   await prisma.webstoreShippingSettings.create({
     data: {
       webstoreId: webstore.id,
-      allowApproverChangeMethod: true, //currently allowed for all webstores
-      allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
+      allowApproverChangeMethod: true,
+      allowUpsToCanada: false,
     },
   });
 

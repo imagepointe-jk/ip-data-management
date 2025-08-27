@@ -137,3 +137,11 @@ export async function deleteUser(id: number) {
     }),
   ]);
 }
+
+export async function deleteWebstore(id: number) {
+  return prisma.webstore.delete({
+    where: {
+      id,
+    },
+  });
+}
