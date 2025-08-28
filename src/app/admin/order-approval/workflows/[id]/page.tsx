@@ -1,6 +1,6 @@
 import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
-import { EditingForm } from "./EditingForm/EditingForm";
-import { WorkflowPreview } from "./WorkflowPreview";
+import { EditingForm } from "./WorkflowEditor/EditingForm";
+import { Sidebar } from "./WorkflowEditor/Sidebar/Sidebar";
 import { ShortcodeReference } from "../../ShortcodeReference";
 import { WorkflowEditingContextProvider } from "./WorkflowEditingContext";
 
@@ -25,7 +25,7 @@ export default async function Page(props: Props) {
           <EditingForm />
           <ShortcodeReference />
         </div>
-        <WorkflowPreview />
+        <Sidebar />
       </WorkflowEditingContextProvider>
     </>
   );

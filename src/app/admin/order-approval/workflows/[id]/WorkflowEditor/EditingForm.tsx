@@ -5,7 +5,7 @@ import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
 import { ChangeEvent, useState } from "react";
 import { useEditingContext } from "../WorkflowEditingContext";
-import { Step } from "./Step";
+import { Step } from "../EditingForm/Step";
 
 export function EditingForm() {
   const { workflowState, updateWorkflowState, loading, saveChanges } =
