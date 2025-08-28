@@ -8,17 +8,7 @@ type Props = {
   step: OrderWorkflowStep;
 };
 export function StepDragBar({ step }: Props) {
-  const { updateWorkflowState, syncedWithServer, deleteStep } =
-    useEditingContext();
-
-  function onChangeName(value: string) {
-    updateWorkflowState((draft) => {
-      const draftStep = draft.steps.find(
-        (draftStep) => draftStep.id === step.id
-      );
-      if (draftStep) draftStep.name = value;
-    });
-  }
+  const { syncedWithServer, deleteStep } = useEditingContext();
 
   function onClickDelete() {
     if (!syncedWithServer) return;
@@ -29,11 +19,7 @@ export function StepDragBar({ step }: Props) {
 
   return (
     <>
-      <input
-        type="text"
-        value={step.name}
-        onChange={(e) => onChangeName(e.target.value)}
-      />
+      {step.name}
       <button
         className={`${styles["delete-step-button"]} button-danger`}
         disabled={!syncedWithServer}

@@ -5,7 +5,7 @@ import {
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { EventListener } from "./EventListener";
 import { createEventListener } from "@/actions/orderWorkflow/create";
-import { useEditingContext } from "../WorkflowEditingContext";
+import { useEditingContext } from "../../../WorkflowEditingContext";
 
 type Props = {
   step: OrderWorkflowStep & {

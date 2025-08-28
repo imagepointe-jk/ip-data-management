@@ -1,0 +1,54 @@
+.main {
+  position: fixed;
+  right: 0;
+  top: 100px;
+  bottom: 0;
+  border: 1px solid gray;
+  padding: 20px;
+  width: 400px;
+  background-color: white;
+  transition: 0.2s;
+}
+
+.main.hidden {
+  translate: 100% 0;
+}
+
+.show-hide-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -100% 0;
+  padding: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.show-hide-button,
+.show-hide-button:hover {
+  background-color: gray;
+}
+
+.tabs-container {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: 0 -100%;
+}
+
+.tab {
+  background-color: gray;
+  border: none;
+  color: white;
+  font-size: 0.75rem;
+  padding: 5px;
+}
+
+.tab:hover {
+  background-color: gray;
+}
+
+.tab.inactive {
+  background-color: lightgray;
+}

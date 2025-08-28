@@ -7,34 +7,20 @@ import {
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { useEditingContext } from "../WorkflowEditingContext";
 import { StepDragBar } from "./StepDragBar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { StepActionSettings } from "./StepActionSettings";
-import { StepEndSettings } from "./StepEndSettings";
 
 type Props = {
   step: OrderWorkflowStep & {
     display: OrderWorkflowStepDisplay | null;
     proceedListeners: OrderWorkflowStepProceedListener[];
   };
-  expanded: boolean;
-  highlighted: boolean;
-  onClickExpand: (stepId: number) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
 };
-export function Step({
-  step,
-  expanded,
-  highlighted,
-  onClickExpand,
-  onMouseEnter,
-  onMouseLeave,
-}: Props) {
-  const { updateWorkflowState } = useEditingContext();
+export function Step({ step }: Props) {
+  const { updateWorkflowState, selectedStepId, setSelectedStepId } =
+    useEditingContext();
   const initialPosition = step.display
     ? { x: step.display.positionX, y: step.display.positionY }
     : undefined;
+  const highlighted = selectedStepId === step.id;
 
   function onChangePosition(position: { x: number; y: number }) {
     updateWorkflowState((draft) => {
@@ -46,6 +32,8 @@ export function Step({
         draftStep.display.positionY = position.y;
       }
     });
+
+    setSelectedStepId(step.id);
   }
 
   return (
@@ -58,35 +46,7 @@ export function Step({
       contentContainerClassName={styles["single-step-content-container"]}
       dragBarClassName={styles["single-step-drag-bar"]}
       onDragFinish={onChangePosition}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{
-        zIndex: expanded ? 1 : "initial",
-        width: expanded ? "600px" : "300px",
-      }}
     >
-      <div
-        className={styles["expandable-container"]}
-        style={{
-          overflow: "hidden",
-          height: expanded ? "initial" : 0,
-        }}
-      >
-        <div className="vert-flex-group">
-          <StepActionSettings step={step} />
-
-          {/* Proceed behavior */}
-
-          <StepEndSettings step={step} />
-        </div>
-      </div>
-      <button
-        className={styles["expand-button"]}
-        onClick={() => onClickExpand(step.id)}
-      >
-        <FontAwesomeIcon icon={expanded ? faMinus : faPlus} />
-        {`${expanded ? " Show Less" : " Show More"}`}
-      </button>
       <div className={styles["step-id"]}>id: {step.id}</div>
     </DraggableDiv>
   );
