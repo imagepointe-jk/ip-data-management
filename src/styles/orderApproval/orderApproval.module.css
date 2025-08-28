@@ -32,6 +32,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  min-width: 180px;
 }
 
 .delete-step-button {
@@ -41,21 +42,6 @@
 .single-step-drag-bar .delete-step-button:disabled {
   pointer-events: initial;
   cursor: initial;
-}
-
-.expand-button {
-  background: none;
-  color: black;
-  font-size: 0.75rem;
-}
-
-.expand-button:hover {
-  background: none;
-}
-
-.expandable-container {
-  height: 0;
-  overflow: hidden;
 }
 
 .single-step-move-buttons-container {

@@ -1,8 +1,7 @@
 import { orderWorkflowActionTypes } from "@/types/schema/orderApproval";
 import { makeStringTitleCase } from "@/utility/misc";
 import { OrderWorkflowStep } from "@prisma/client";
-import { useEditingContext } from "../WorkflowEditingContext";
-import { useState } from "react";
+import { useEditingContext } from "../../../WorkflowEditingContext";
 
 type Props = {
   step: OrderWorkflowStep;
@@ -76,40 +75,39 @@ export function StepActionSettings({ step }: Props) {
           <>
             {/* Action Target */}
 
-            <div style={{ display: "flex" }}>
-              <div>
-                <div className="input-label">Action Target</div>
-                <input
-                  type="text"
-                  value={step.actionTarget || ""}
-                  onChange={(e) => onChangeActionTarget(e.target.value)}
-                />
-              </div>
-              <div>
-                <div className="input-label">Quick Select</div>
-                <select
-                  value=""
-                  onChange={(e) => onChangeActionTarget(e.target.value)}
-                >
-                  {[
-                    <option key={-1} value="">
-                      Select...
-                    </option>,
-                    ...workflowUsers.map((user) => (
-                      <option key={user.id} value={user.email}>
-                        {user.name}
-                      </option>
-                    )),
-                    <option key="purchaser" value="purchaser">
-                      Purchaser
-                    </option>,
-                    <option key="approver" value="approver">
-                      Approver
-                    </option>,
-                  ]}
-                </select>
-              </div>
+            <div>
+              <div className="input-label">Action Target</div>
+              <input
+                type="text"
+                value={step.actionTarget || ""}
+                onChange={(e) => onChangeActionTarget(e.target.value)}
+              />
             </div>
+            <div>
+              <div className="input-label">Quick Select Action Target</div>
+              <select
+                value=""
+                onChange={(e) => onChangeActionTarget(e.target.value)}
+              >
+                {[
+                  <option key={-1} value="">
+                    Select...
+                  </option>,
+                  ...workflowUsers.map((user) => (
+                    <option key={user.id} value={user.email}>
+                      {user.name}
+                    </option>
+                  )),
+                  <option key="purchaser" value="purchaser">
+                    Purchaser
+                  </option>,
+                  <option key="approver" value="approver">
+                    Approver
+                  </option>,
+                ]}
+              </select>
+            </div>
+            <div style={{ display: "flex" }}></div>
 
             {/* Other action targets */}
 
@@ -121,7 +119,7 @@ export function StepActionSettings({ step }: Props) {
                 type="text"
                 value={step.otherActionTargets || ""}
                 onChange={(e) => onChangeOtherActionTargets(e.target.value)}
-                style={{ width: "500px" }}
+                style={{ width: "350px" }}
               />
             </div>
 
@@ -143,7 +141,7 @@ export function StepActionSettings({ step }: Props) {
               <textarea
                 value={step.actionMessage || ""}
                 onChange={(e) => onChangeActionMessage(e.target.value)}
-                cols={60}
+                cols={48}
                 rows={10}
               ></textarea>
             </div>

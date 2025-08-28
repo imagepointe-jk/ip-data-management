@@ -3,7 +3,7 @@
 import { deleteEventListener } from "@/actions/orderWorkflow/delete";
 import { orderWorkflowEventTypes } from "@/types/schema/orderApproval";
 import { OrderWorkflowStepProceedListener } from "@prisma/client";
-import { useEditingContext } from "../WorkflowEditingContext";
+import { useEditingContext } from "../../../WorkflowEditingContext";
 
 type Props = {
   stepId: number;

@@ -16,6 +16,8 @@ import { DraftFunction, useImmer } from "use-immer";
 type EditingContextType = {
   workflowUsers: OrderWorkflowUser[];
   workflowState: OrderWorkflowWithIncludes;
+  selectedStepId: number | null;
+  setSelectedStepId: (id: number | null) => void;
   updateWorkflowState: (
     arg: OrderWorkflowWithIncludes | DraftFunction<OrderWorkflowWithIncludes>
   ) => void;
@@ -42,6 +44,7 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   const [workflowState, setWorkflowState] = useImmer(workflow);
   const [loading, setLoading] = useState(false);
   const [syncedWithServer, setSyncedWithServer] = useState(true);
+  const [selectedStepId, setSelectedStepId] = useState<null | number>(null);
   const toast = useToast();
   const workflowUsers = deduplicateArray(
     workflowState.webstore.roles.flatMap((role) => role.users),
@@ -94,6 +97,8 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
         updateWorkflowState,
         loading,
         syncedWithServer,
+        selectedStepId,
+        setSelectedStepId,
         saveChanges,
         syncStateWithServer,
         deleteStep: deleteStepFn,
