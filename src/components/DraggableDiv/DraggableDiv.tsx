@@ -46,7 +46,7 @@ export function DraggableDiv({
   const [position, setPosition] = useState<Vector2>(
     initialPosition || { x: 0, y: 0 }
   );
-  const positionRef = useRef<Vector2>({ x: 0, y: 0 }); //managed alongside position; stores the most recent value of position so it can be used in callbacks in onMouseUp
+  const positionRef = useRef<Vector2>(initialPosition || { x: 0, y: 0 }); //managed alongside position; stores the most recent value of position so it can be used in callbacks in onMouseUp
   const [dragging, setDragging] = useState(false);
   const prevMousePos = useRef<Vector2>({ x: 0, y: 0 }); //using ref because prevMousePos should not trigger re-renders
 
