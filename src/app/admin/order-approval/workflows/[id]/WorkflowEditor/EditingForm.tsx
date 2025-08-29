@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ChangeEvent } from "react";
 import { useEditingContext } from "../WorkflowEditingContext";
 import { Step } from "./Step";
+import { ConnectionLines } from "./ConnectionLines";
+import { createConnectionLines } from "./helpers/helpers";
 
 export function EditingForm() {
   const { workflowState, updateWorkflowState, loading, saveChanges } =
@@ -54,6 +56,7 @@ export function EditingForm() {
         />
       </h2>
       <div className={styles["steps-workspace"]}>
+        <ConnectionLines lines={createConnectionLines(workflowState.steps)} />
         {sorted.map((step) => (
           <Step key={step.id} step={step} />
         ))}

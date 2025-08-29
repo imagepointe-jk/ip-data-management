@@ -109,3 +109,38 @@ function constrainRectPosition(targetRect: Rect, bounds: Rect) {
 
   return constrained;
 }
+
+//this should replace the dist calculations in snapToNearest
+export function distance(
+  point1: { x: number; y: number },
+  point2: { x: number; y: number }
+) {
+  return Math.sqrt(
+    Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
+  );
+}
+
+export function angleBetweenPoints(
+  startPoint: { x: number; y: number },
+  endPoint: { x: number; y: number },
+  degrees = true
+) {
+  const deltaX = endPoint.x - startPoint.x;
+  const deltaY = endPoint.y - startPoint.y;
+  let radians = 0;
+
+  if (deltaX === 0) {
+    if (deltaY > 0) radians = 90;
+    if (deltaY < 0) radians = 270;
+    if (deltaY === 0) {
+      console.error(
+        `Can't find angle between identical points (${startPoint.x}, ${startPoint.y}) and (${endPoint.x}, ${endPoint.y})`
+      );
+      return 0;
+    }
+  }
+
+  radians = Math.atan(deltaY / deltaX);
+  if (deltaX < 0) radians += Math.PI;
+  return degrees ? (radians * 180) / Math.PI : radians;
+}
