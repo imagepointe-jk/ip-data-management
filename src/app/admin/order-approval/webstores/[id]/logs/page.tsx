@@ -39,7 +39,11 @@ export default async function Page({ params, searchParams }: Props) {
         createdAt: search.sortDirection === "asc" ? "asc" : "desc",
       },
     }),
-    prisma.webstoreLog.findMany(),
+    prisma.webstoreLog.findMany({
+      where: {
+        webstoreId,
+      },
+    }),
   ]);
 
   return (
