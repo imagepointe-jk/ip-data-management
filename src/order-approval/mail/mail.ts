@@ -180,13 +180,18 @@ export async function processFormattedText(
     if (!workflow)
       throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
     const firstRoleWithGivenEmail = workflow.webstore.roles.find(
-      (role) => !!role.users.find((user) => user.email === userEmail)
+      (role) =>
+        !!role.users.find(
+          (user) =>
+            user.email.toLocaleLowerCase() === userEmail.toLocaleLowerCase()
+        )
     );
     const userWithEmail = firstRoleWithGivenEmail?.users.find(
-      (user) => user.email === userEmail
+      (user) => user.email.toLocaleLowerCase() === userEmail.toLocaleLowerCase()
     );
     const userName =
-      userEmail === instance.purchaserEmail
+      userEmail.toLocaleLowerCase() ===
+      instance.purchaserEmail.toLocaleLowerCase()
         ? instance.purchaserName
         : userWithEmail?.name || "USER_NOT_FOUND";
     // const user = workflow.webstore.userRoles.find(
@@ -194,7 +199,8 @@ export async function processFormattedText(
     // )?.user;
     // if (!user) console.error(`User with email ${userEmail} not found.`);
     const accessCode = instance.accessCodes.find(
-      (code) => code.user.email === userEmail
+      (code) =>
+        code.user.email.toLocaleLowerCase() === userEmail.toLocaleLowerCase()
     );
     if (!accessCode)
       console.error(
