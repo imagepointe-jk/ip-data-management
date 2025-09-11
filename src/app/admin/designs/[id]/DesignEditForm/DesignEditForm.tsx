@@ -11,7 +11,8 @@ import { Color, DesignTag, DesignType } from "@prisma/client";
 import { useImmer } from "use-immer";
 import { MainSection } from "./MainSection";
 import { SecondarySection } from "./SecondarySection";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 
 type DesignDataFormProps = {
   existingDesign: DesignWithIncludes;
@@ -28,12 +29,19 @@ export function DesignEditForm({
   tags,
 }: DesignDataFormProps) {
   const [design, setDesign] = useImmer(existingDesign);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const router = useRouter();
 
   async function onClickSave() {
-    await updateDesign(design);
-    toast.changesSaved();
+    setLoading(true);
+    try {
+      await updateDesign(design);
+      toast.changesSaved();
+    } catch (error) {
+      console.error(error);
+      toast.toast("Error saving changes.", "error");
+    }
+    setLoading(false);
   }
 
   return (
@@ -49,7 +57,14 @@ export function DesignEditForm({
           colors={colors}
         />
       </div>
-      <button onClick={onClickSave}>Save Changes</button>
+
+      <ButtonWithLoading
+        style={{ width: "150px" }}
+        loading={loading}
+        onClick={onClickSave}
+      >
+        Save Changes
+      </ButtonWithLoading>
     </>
   );
 }
