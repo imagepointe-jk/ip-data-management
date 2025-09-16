@@ -1,12 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "../../../prisma/client";
-import { DesignWithIncludes } from "@/types/schema/designs";
+import { DesignDTO } from "@/types/dto/designs";
+import { prisma } from "@/prisma";
 
-export async function updateDesign(
-  design: Partial<DesignWithIncludes> & { id: number }
-) {
+export async function updateDesign(design: DesignDTO) {
   const {
     date,
     defaultBackgroundColorId,
@@ -18,7 +16,6 @@ export async function updateDesign(
     featured,
     id,
     imageUrl,
-    name,
     priority,
     status,
     variations,
@@ -57,7 +54,6 @@ export async function updateDesign(
         designTypeId,
         featured,
         imageUrl,
-        name,
         priority,
         status,
         designSubcategories: designSubcategories

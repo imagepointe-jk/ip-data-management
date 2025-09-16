@@ -1,23 +1,23 @@
 import styles from "@/styles/designs/DesignPage.module.css";
-import {
-  DesignCategoryWithIncludes,
-  DesignVariationWithIncludes,
-  DesignWithIncludes,
-} from "@/types/schema/designs";
-import { Color, DesignTag } from "@prisma/client";
 import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
 import { Categories } from "./Categories";
 import { Tags } from "./Tags";
+import {
+  CategoryDTO,
+  ColorDTO,
+  DesignDTO,
+  VariationDTO,
+} from "@/types/dto/designs";
 
 export const VARIATION_CARD_WIDTH = 770;
 type Props = {
   designTypeId: number;
-  variation: DesignVariationWithIncludes;
-  setDesign: Updater<DesignWithIncludes>;
-  colors: Color[];
-  categories: DesignCategoryWithIncludes[];
-  tags: DesignTag[];
+  variation: VariationDTO;
+  setDesign: Updater<DesignDTO>;
+  colors: ColorDTO[];
+  categories: CategoryDTO[];
+  tags: { id: number; name: string }[];
   onClickDelete: (id: number) => void;
 };
 export function DesignVariationCard({

@@ -1,11 +1,11 @@
 import styles from "@/styles/designs/DesignPage.module.css";
-import { DesignCategoryWithIncludes } from "@/types/schema/designs";
+import { CategoryDTO } from "@/types/dto/designs";
 import { useState } from "react";
 
 type Props = {
   designTypeId: number;
   selectedSubcategoryIds: number[];
-  categories: DesignCategoryWithIncludes[];
+  categories: CategoryDTO[];
   onClickSubcategory: (id: number) => void;
   scrollBoxClassName?: string;
 };

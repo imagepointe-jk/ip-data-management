@@ -2,25 +2,21 @@ import { createDesignVariation } from "@/actions/designs/create";
 import { deleteDesignVariation } from "@/actions/designs/delete";
 import { useToast } from "@/components/ToastProvider";
 import styles from "@/styles/designs/DesignPage.module.css";
-import {
-  DesignCategoryWithIncludes,
-  DesignWithIncludes,
-} from "@/types/schema/designs";
 import { clamp } from "@/utility/misc";
-import { Color, DesignTag } from "@prisma/client";
 import { useState } from "react";
 import { Updater } from "use-immer";
 import {
   DesignVariationCard,
   VARIATION_CARD_WIDTH,
 } from "./DesignVariationCard";
+import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
 
 type Props = {
-  design: DesignWithIncludes;
-  setDesign: Updater<DesignWithIncludes>;
-  tags: DesignTag[];
-  categories: DesignCategoryWithIncludes[];
-  colors: Color[];
+  design: DesignDTO;
+  setDesign: Updater<DesignDTO>;
+  tags: { id: number; name: string }[];
+  categories: CategoryDTO[];
+  colors: ColorDTO[];
 };
 export function DesignVariations({
   design,

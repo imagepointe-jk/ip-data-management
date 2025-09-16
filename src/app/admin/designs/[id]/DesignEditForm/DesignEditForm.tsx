@@ -3,23 +3,19 @@
 import { updateDesign } from "@/actions/designs/update";
 import { useToast } from "@/components/ToastProvider";
 import styles from "@/styles/designs/DesignPage.module.css";
-import {
-  DesignCategoryWithIncludes,
-  DesignWithIncludes,
-} from "@/types/schema/designs";
-import { Color, DesignTag, DesignType } from "@prisma/client";
 import { useImmer } from "use-immer";
 import { MainSection } from "./MainSection";
 import { SecondarySection } from "./SecondarySection";
 import { useState } from "react";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
 
 type DesignDataFormProps = {
-  existingDesign: DesignWithIncludes;
-  designTypes: DesignType[];
-  colors: Color[];
-  categories: DesignCategoryWithIncludes[];
-  tags: DesignTag[];
+  existingDesign: DesignDTO;
+  designTypes: { id: number; name: string }[];
+  colors: ColorDTO[];
+  categories: CategoryDTO[];
+  tags: { id: number; name: string }[];
 };
 export function DesignEditForm({
   existingDesign,

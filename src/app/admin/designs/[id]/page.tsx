@@ -2,9 +2,9 @@ import {
   getDesignCategoryHierarchy,
   getSingleDesign,
 } from "@/db/access/designs";
-import { prisma } from "../../../../../prisma/client";
 import { notFound } from "next/navigation";
 import { DesignEditForm } from "./DesignEditForm/DesignEditForm";
+import { prisma } from "@/prisma";
 
 type Props = {
   params: Promise<{

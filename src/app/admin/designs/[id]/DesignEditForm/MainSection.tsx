@@ -1,13 +1,12 @@
 import styles from "@/styles/designs/DesignPage.module.css";
-import { DesignWithIncludes } from "@/types/schema/designs";
-import { Color } from "@prisma/client";
 import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
+import { ColorDTO, DesignDTO } from "@/types/dto/designs";
 
 type Props = {
-  design: DesignWithIncludes;
-  setDesign: Updater<DesignWithIncludes>;
-  colors: Color[];
+  design: DesignDTO;
+  setDesign: Updater<DesignDTO>;
+  colors: ColorDTO[];
 };
 export function MainSection({ design, setDesign, colors }: Props) {
   function onChangeBackgroundColor(e: ChangeEvent<HTMLSelectElement>) {

@@ -1,22 +1,18 @@
 import styles from "@/styles/designs/DesignPage.module.css";
-import {
-  DesignCategoryWithIncludes,
-  DesignWithIncludes,
-} from "@/types/schema/designs";
 import { convertDateToDefaultInputValue } from "@/utility/misc";
-import { Color, DesignTag, DesignType } from "@prisma/client";
 import { Updater } from "use-immer";
 import { DesignVariations } from "./DesignVariations";
 import { Categories } from "./Categories";
 import { Tags } from "./Tags";
+import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
 
 type Props = {
-  design: DesignWithIncludes;
-  setDesign: Updater<DesignWithIncludes>;
-  designTypes: DesignType[];
-  categories: DesignCategoryWithIncludes[];
-  tags: DesignTag[];
-  colors: Color[];
+  design: DesignDTO;
+  setDesign: Updater<DesignDTO>;
+  designTypes: { id: number; name: string }[];
+  categories: CategoryDTO[];
+  tags: { id: number; name: string }[];
+  colors: ColorDTO[];
 };
 export function SecondarySection({
   design,

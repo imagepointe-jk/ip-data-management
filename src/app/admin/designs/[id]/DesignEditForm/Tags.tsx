@@ -1,10 +1,9 @@
 import styles from "@/styles/designs/DesignPage.module.css";
-import { DesignTag } from "@prisma/client";
 import { useState } from "react";
 
 type Props = {
   selectedTagIds: number[];
-  tags: DesignTag[];
+  tags: { id: number; name: string }[];
   onClickTag: (id: number) => void;
   scrollBoxClassName?: string;
 };

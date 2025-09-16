@@ -152,7 +152,7 @@ export default function ResultsTable({ designs }: Props) {
               initialChecked={design.status === "Published"}
               onChange={(checked) =>
                 updateDesign({
-                  id: design.id,
+                  ...design,
                   status: checked ? "Published" : "Draft",
                 })
               }
@@ -165,7 +165,7 @@ export default function ResultsTable({ designs }: Props) {
             <AsyncCheckbox
               initialChecked={design.featured}
               onChange={(checked) =>
-                updateDesign({ id: design.id, featured: checked })
+                updateDesign({ ...design, featured: checked })
               }
             />
           ),
