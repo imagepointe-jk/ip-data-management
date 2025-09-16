@@ -1,11 +1,11 @@
 import { deleteSubcategory } from "@/actions/designs/delete";
 import { useToast } from "@/components/ToastProvider";
-import { DesignCategoryWithIncludes } from "@/types/schema/designs";
+import { CategoryDTO } from "@/types/dto/designs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  categories: DesignCategoryWithIncludes[];
+  categories: CategoryDTO[];
 };
 export function SubcategoryDelete({ categories }: Props) {
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<

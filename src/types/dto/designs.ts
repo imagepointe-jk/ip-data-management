@@ -21,6 +21,7 @@ export type DesignDTO = {
   variations: VariationDTO[];
   imageUrl: string;
 };
+
 export type VariationDTO = {
   id: number;
   colorId: number;
@@ -35,10 +36,16 @@ export type VariationDTO = {
     id: number;
   }[];
 };
+
 export type ColorDTO = { id: number; name: string; hexCode: string };
+
 export type CategoryDTO = {
   id: number;
   designTypeId: number;
+  designType: {
+    id: number;
+    name: string;
+  };
   name: string;
   designSubcategories: {
     id: number;

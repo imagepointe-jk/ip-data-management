@@ -3,16 +3,15 @@
 import { createCategory, createSubcategory } from "@/actions/designs/create";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useToast } from "@/components/ToastProvider";
-import { DesignCategoryWithIncludes } from "@/types/schema/designs";
 import { findAllFormValues } from "@/utility/misc";
-import { DesignType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { SubcategoryDelete } from "./SubcategoryDelete";
+import { CategoryDTO } from "@/types/dto/designs";
 
 type Props = {
-  categories: DesignCategoryWithIncludes[];
-  designTypes: DesignType[];
+  categories: CategoryDTO[];
+  designTypes: { id: number; name: string }[];
 };
 export function CategoryEditor({ categories, designTypes }: Props) {
   const [creatingId, setCreatingId] = useState(null as number | null); //the id of the category for which we're currently waiting for subcategory creation to finish, if any.

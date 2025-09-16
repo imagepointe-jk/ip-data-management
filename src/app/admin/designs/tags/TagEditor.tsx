@@ -3,12 +3,11 @@
 import { createTag } from "@/actions/designs/create";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import GenericTable from "@/components/GenericTable";
-import { DesignTag } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 type Props = {
-  tags: (DesignTag & {
+  tags: ({ id: number; name: string } & {
     designIds: number[];
     designVariationIds: number[];
   })[];

@@ -1,14 +1,13 @@
 "use client";
 
-import { getDesignCategoryHierarchy } from "@/db/access/designs";
-import { UnwrapPromise } from "@/types/schema/misc";
+import { CategoryDTO } from "@/types/dto/designs";
 import { getTimeStampYearsAgo } from "@/utility/misc";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
 
 type Props = {
-  categories: UnwrapPromise<ReturnType<typeof getDesignCategoryHierarchy>>;
+  categories: CategoryDTO[];
 };
 export default function Filter({ categories }: Props) {
   const router = useRouter();

@@ -5,17 +5,16 @@ import Link from "next/link";
 import styles from "@/styles/designs/designs.module.css";
 import SortIcon from "@/components/SortIcon";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DesignWithIncludes } from "@/types/schema/designs";
 import { AsyncCheckbox } from "@/components/AsyncCheckbox";
 import { updateDesign } from "@/actions/designs/update";
-import { Design } from "@prisma/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { deleteDesign } from "@/actions/designs/delete";
 import { useToast } from "@/components/ToastProvider";
+import { DesignDTO } from "@/types/dto/designs";
 
 type Props = {
-  designs: DesignWithIncludes[];
+  designs: DesignDTO[];
 };
 export default function ResultsTable({ designs }: Props) {
   const searchParams = useSearchParams();
@@ -96,7 +95,7 @@ export default function ResultsTable({ designs }: Props) {
     router.refresh();
   }
 
-  async function onClickDeleteDesign(design: Design) {
+  async function onClickDeleteDesign(design: DesignDTO) {
     if (
       !confirm(`Are you sure you want to delete design ${design.designNumber}?`)
     )
