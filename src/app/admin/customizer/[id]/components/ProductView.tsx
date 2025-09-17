@@ -1,8 +1,3 @@
-import {
-  CustomProductDecorationLocationNumeric,
-  FullProductSettings,
-} from "@/db/access/customizer";
-import { CustomProductView } from "@prisma/client";
 import { Dispatch, SetStateAction, useState } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
@@ -12,20 +7,20 @@ import { deleteView } from "@/actions/customizer/delete";
 import { wrap } from "@/utility/misc";
 import { Updater } from "use-immer";
 import { createLocationFrameInlineStyles } from "@/customizer/utils/misc";
+import {
+  DecorationLocationDTO,
+  FullProductSettingsDTO,
+} from "@/types/dto/customizer";
 
 type ProductViewProps = {
   selectedVariationId: number | undefined;
-  views: (CustomProductView & {
-    locations: CustomProductDecorationLocationNumeric[];
-  })[];
+  views: { id: number; locations: DecorationLocationDTO[] }[];
   selectedView:
-    | (CustomProductView & {
-        locations: CustomProductDecorationLocationNumeric[];
-      })
+    | { id: number; locations: DecorationLocationDTO[]; imageUrl: string }
     | undefined;
   setViewId: Dispatch<SetStateAction<number | undefined>>;
   setLocationId: Dispatch<SetStateAction<number | undefined>>;
-  setSettings: Updater<FullProductSettings>;
+  setSettings: Updater<FullProductSettingsDTO>;
 };
 export function ProductView({
   selectedView,

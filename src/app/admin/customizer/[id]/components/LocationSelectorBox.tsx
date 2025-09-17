@@ -1,8 +1,7 @@
-import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 
 type Props = {
-  locations: CustomProductDecorationLocationNumeric[];
+  locations: { id: number; name: string }[];
   selectedLocationId: number | undefined;
   setSelectedLocationId: (id: number | undefined) => void;
 };

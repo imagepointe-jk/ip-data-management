@@ -8,10 +8,8 @@ import {
   cloneText,
   createProductVariationForState,
 } from "@/customizer/utils/misc";
-import {
-  CartState,
-  PopulatedProductSettingsSerializable,
-} from "@/types/schema/customizer";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
+import { CartState } from "@/types/schema/customizer";
 import { PayloadAction } from "@reduxjs/toolkit";
 
 export function setCartProducts(
@@ -25,7 +23,7 @@ export function addProductVariation(
   state: CartState,
   action: PayloadAction<{
     variationId: number;
-    targetProductData: PopulatedProductSettingsSerializable;
+    targetProductData: PopulatedProductSettings;
   }>
 ) {
   const { targetProductData, variationId } = action.payload;

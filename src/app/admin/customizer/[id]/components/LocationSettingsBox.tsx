@@ -1,7 +1,3 @@
-import {
-  CustomProductDecorationLocationNumeric,
-  FullProductSettings,
-} from "@/db/access/customizer";
 import { Updater } from "use-immer";
 
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
@@ -12,15 +8,19 @@ import { deleteLocation } from "@/actions/customizer/delete";
 import { ExpandedDialog } from "../ProductSettingsEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  DecorationLocationDTO,
+  FullProductSettingsDTO,
+} from "@/types/dto/customizer";
 
 type LocationSettingsBoxProps = {
-  location: CustomProductDecorationLocationNumeric | undefined;
+  location: DecorationLocationDTO | undefined;
   totalViewLocations: number;
   selectedLocationId: number | undefined;
   setSelectedLocationId: Dispatch<SetStateAction<number | undefined>>;
   selectedVariationId: number | undefined;
   selectedViewId: number | undefined;
-  setSettings: Updater<FullProductSettings>;
+  setSettings: Updater<FullProductSettingsDTO>;
   expanded: boolean;
   setExpandedDialog: Dispatch<SetStateAction<ExpandedDialog>>;
 };
@@ -38,7 +38,7 @@ export function LocationSettingsBox({
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [isDeletingLocation, setIsDeletingLocation] = useState(false);
   const [copiedLocationData, setCopiedLocationData] = useState(
-    null as CustomProductDecorationLocationNumeric | null
+    null as DecorationLocationDTO | null
   );
   const colorChoices = ["000000", "808080", "ffffff"];
 

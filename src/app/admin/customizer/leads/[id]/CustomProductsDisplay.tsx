@@ -1,9 +1,10 @@
 "use client";
 
 import styles from "@/styles/customizer/LeadSingleView.module.css";
-import { CartState, PopulatedProductSettings } from "@/types/schema/customizer";
+import { CartState } from "@/types/schema/customizer";
 import { useState } from "react";
 import { CustomProductView } from "./CustomProductView";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 //display all views of all products in the quote request
 type Props = {

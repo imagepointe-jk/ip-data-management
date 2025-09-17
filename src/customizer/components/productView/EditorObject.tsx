@@ -10,12 +10,12 @@ import {
 } from "@/customizer/redux/slices/editor";
 import { Image, Text } from "react-konva";
 import { EditorTextData, TransformArgsPx } from "@/types/schema/customizer";
-import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
 import {
   normalizedTransformToPixels,
   pixelTransformToNormalized,
 } from "@/customizer/utils/convert";
 import { snapToNearest } from "@/utility/geometry";
+import { DecorationLocationDTO } from "@/types/dto/customizer";
 
 type Props = {
   editorGuid: string;
@@ -28,7 +28,7 @@ type Props = {
   imageData?: {
     src: string;
   };
-  locations: CustomProductDecorationLocationNumeric[];
+  locations: DecorationLocationDTO[];
   setShowLocationFrames: (b: boolean) => void;
 };
 export function EditorObject({

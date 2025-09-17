@@ -1,11 +1,11 @@
 "use server";
 
-import { FullProductSettings } from "@/db/access/customizer";
-import { prisma } from "../../../prisma/client";
+import { prisma } from "@/prisma";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 import { CustomProductRequest } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export async function updateProductSettings(settings: FullProductSettings) {
+export async function updateProductSettings(settings: FullProductSettingsDTO) {
   const { published, wooCommerceId, order, variations } = settings;
 
   const allViews = settings.variations

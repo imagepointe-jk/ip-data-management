@@ -1,13 +1,13 @@
 import { createVariation } from "@/actions/customizer/create";
-import { FullProductSettings } from "@/db/access/customizer";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Updater } from "use-immer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 
 type SidebarProps = {
-  settings: FullProductSettings;
-  setSettings: Updater<FullProductSettings>;
+  settings: FullProductSettingsDTO;
+  setSettings: Updater<FullProductSettingsDTO>;
   selectedVariationId: number | undefined;
   setVariationId: Dispatch<SetStateAction<number | undefined>>;
   setViewId: Dispatch<SetStateAction<number | undefined>>;

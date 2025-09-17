@@ -1,25 +1,23 @@
 import { deleteVariation } from "@/actions/customizer/delete";
-import { FullProductSettings } from "@/db/access/customizer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
-import {
-  Color,
-  CustomProductSettingsVariation,
-  ProductSizeOptions,
-} from "@prisma/client";
+import { ColorDTO } from "@/types/dto/common";
+import { FullProductSettingsDTO, SizeOptionsDTO } from "@/types/dto/customizer";
 import { Dispatch, SetStateAction } from "react";
 import { Updater } from "use-immer";
 
 type Props = {
   selectedVariationId: number | undefined;
-  setSettings: Updater<FullProductSettings>;
+  setSettings: Updater<FullProductSettingsDTO>;
   variation:
-    | (CustomProductSettingsVariation & {
-        color: Color;
-        sizeOptions: ProductSizeOptions;
-      })
+    | {
+        id: number;
+        sizeOptions: SizeOptionsDTO;
+        color: ColorDTO;
+        order: number;
+      }
     | undefined;
-  colors: Color[];
-  settings: FullProductSettings;
+  colors: ColorDTO[];
+  settings: { variations: { id: number }[] };
   setVariationId: Dispatch<SetStateAction<number | undefined>>;
 };
 export function VariationSettings({
@@ -34,63 +32,63 @@ export function VariationSettings({
     {
       label: "S",
       defaultChecked: variation?.sizeOptions.sizeSmall,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.sizeSmall = state;
       },
     },
     {
       label: "M",
       defaultChecked: variation?.sizeOptions.sizeMedium,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.sizeMedium = state;
       },
     },
     {
       label: "L",
       defaultChecked: variation?.sizeOptions.sizeLarge,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.sizeLarge = state;
       },
     },
     {
       label: "XL",
       defaultChecked: variation?.sizeOptions.sizeXL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.sizeXL = state;
       },
     },
     {
       label: "2XL",
       defaultChecked: variation?.sizeOptions.size2XL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.size2XL = state;
       },
     },
     {
       label: "3XL",
       defaultChecked: variation?.sizeOptions.size3XL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.size3XL = state;
       },
     },
     {
       label: "4XL",
       defaultChecked: variation?.sizeOptions.size4XL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.size4XL = state;
       },
     },
     {
       label: "5XL",
       defaultChecked: variation?.sizeOptions.size5XL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.size5XL = state;
       },
     },
     {
       label: "6XL",
       defaultChecked: variation?.sizeOptions.size6XL,
-      updateOptionsFn: (state: boolean, options: ProductSizeOptions) => {
+      updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => {
         options.size6XL = state;
       },
     },
@@ -124,7 +122,7 @@ export function VariationSettings({
 
   function onChangeSizeOption(
     state: boolean,
-    updateOptionsFn: (state: boolean, options: ProductSizeOptions) => void
+    updateOptionsFn: (state: boolean, options: SizeOptionsDTO) => void
   ) {
     setSettings((draft) => {
       const variation = draft.variations.find(

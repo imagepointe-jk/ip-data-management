@@ -1,17 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { StoreType } from "../store";
-import {
-  CartState,
-  EditorDialog,
-  EditorModal,
-  PopulatedProductSettingsSerializable,
-} from "@/types/schema/customizer";
+import { EditorDialog, EditorModal } from "@/types/schema/customizer";
 import {
   findVariationInCart,
   findViewInCart,
   getAdjacentViewId,
 } from "@/customizer/utils/find";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type GlobalLoadingType = {
   loading: boolean;
@@ -98,7 +94,7 @@ export const editorSlice = createSlice({
     selectNextView: (
       state,
       action: PayloadAction<{
-        productData: PopulatedProductSettingsSerializable;
+        productData: PopulatedProductSettings;
       }>
     ) => {
       const { productData } = action.payload;
@@ -116,7 +112,7 @@ export const editorSlice = createSlice({
     selectPreviousView: (
       state,
       action: PayloadAction<{
-        productData: PopulatedProductSettingsSerializable;
+        productData: PopulatedProductSettings;
       }>
     ) => {
       const { productData } = action.payload;

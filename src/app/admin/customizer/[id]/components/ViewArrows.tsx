@@ -1,5 +1,4 @@
 import { wrap } from "@/utility/misc";
-import { CustomProductView } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,9 +6,10 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { ViewDTO } from "@/types/dto/customizer";
 
 type ViewArrowsProps = {
-  views: CustomProductView[];
+  views: ViewDTO[];
   selectedViewId: number | undefined;
   setViewId: Dispatch<SetStateAction<number | undefined>>;
 };

@@ -1,16 +1,16 @@
 import { updateProductSettings } from "@/actions/customizer/update";
-import { FullProductSettings } from "@/db/access/customizer";
 import { Dispatch, SetStateAction } from "react";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 
 type SaveAreaProps = {
   errors: string[];
   saving: boolean;
   setSaving: Dispatch<SetStateAction<boolean>>;
-  settingsState: FullProductSettings;
+  settingsState: FullProductSettingsDTO;
 };
 export function SaveArea({
   errors,

@@ -1,6 +1,7 @@
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 import {
   CartState,
-  PopulatedProductSettingsSerializable,
+  // PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { wrap } from "@/utility/misc";
 
@@ -42,7 +43,7 @@ export function findTextInCart(cart: CartState, guid: string) {
 }
 
 export function findLocationInProductData(
-  data: PopulatedProductSettingsSerializable,
+  data: PopulatedProductSettings,
   id: number
 ) {
   return data.variations
@@ -51,7 +52,7 @@ export function findLocationInProductData(
 }
 
 export function findViewInProductData(
-  data: PopulatedProductSettingsSerializable,
+  data: PopulatedProductSettings,
   id: number
 ) {
   return data.variations
@@ -76,7 +77,7 @@ function allTextsInCart(cart: CartState) {
 }
 
 export function getAdjacentViewId(
-  productData: PopulatedProductSettingsSerializable,
+  productData: PopulatedProductSettings,
   selectedVariationId: number,
   selectedViewId: number,
   direction: "previous" | "next"

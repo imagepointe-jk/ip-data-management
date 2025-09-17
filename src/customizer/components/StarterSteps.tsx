@@ -1,6 +1,5 @@
 import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 import stylesMain from "@/styles/customizer/CustomProductDesigner/main.module.css";
-import { PopulatedProductSettings } from "@/types/schema/customizer";
 import { useEffect, useState } from "react";
 import { SelectProductStep } from "./starterSteps/SelectProductStep";
 import { SelectVariationStep } from "./starterSteps/SelectVariationStep";
@@ -8,6 +7,7 @@ import { StepButtons } from "./starterSteps/StepButtons";
 import { WelcomeStep } from "./starterSteps/WelcomeStep";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type Props = {
   productData: PopulatedProductSettings[];

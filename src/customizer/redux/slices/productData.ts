@@ -1,7 +1,8 @@
-import { PopulatedProductSettingsSerializable } from "@/types/schema/customizer";
+// import { PopulatedProductSettingsSerializable } from "@/types/schema/customizer";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: { data: PopulatedProductSettingsSerializable[] | null } = {
+const initialState: { data: PopulatedProductSettings[] | null } = {
   data: null,
 };
 
@@ -11,7 +12,7 @@ export const productDataSlice = createSlice({
   reducers: {
     setProductData: (
       state,
-      action: PayloadAction<PopulatedProductSettingsSerializable[]>
+      action: PayloadAction<PopulatedProductSettings[]>
     ) => {
       state.data = action.payload;
     },

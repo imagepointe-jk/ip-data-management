@@ -1,5 +1,5 @@
 import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
-import { PopulatedProductSettings } from "@/types/schema/customizer";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type Props = {
   showSelectedProduct: boolean;

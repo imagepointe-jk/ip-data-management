@@ -1,5 +1,9 @@
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
-import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
+import {
+  DecorationLocationDTO,
+  PopulatedProductSettings,
+} from "@/types/dto/customizer";
+// import { CustomProductDecorationLocationNumeric } from "@/db/access/customizer";
 import {
   CartState,
   CartStateArtwork,
@@ -8,13 +12,13 @@ import {
   CartStateProductView,
   CartStateText,
   PlacedObject,
-  PopulatedProductSettings,
-  PopulatedProductSettingsSerializable,
+  // PopulatedProductSettings,
+  // PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { v4 as uuidv4 } from "uuid";
 
 export function createLocationFrameInlineStyles(
-  location: CustomProductDecorationLocationNumeric
+  location: DecorationLocationDTO
 ) {
   return {
     width: `${location.width * 100}%`,
@@ -197,7 +201,7 @@ function cloneObjectData(objectData: PlacedObject) {
 
 export function createProductVariationForState(
   variationId: number,
-  targetProductData: PopulatedProductSettingsSerializable
+  targetProductData: PopulatedProductSettings
 ) {
   const variationData = targetProductData.variations.find(
     (variation) => variation.id === variationId

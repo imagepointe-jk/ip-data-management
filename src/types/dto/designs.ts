@@ -1,3 +1,5 @@
+import { ColorDTO } from "./common";
+
 export type DesignDTO = {
   id: number;
   designTypeId: number;
@@ -36,8 +38,6 @@ export type VariationDTO = {
     id: number;
   }[];
 };
-
-export type ColorDTO = { id: number; name: string; hexCode: string };
 
 export type CategoryDTO = {
   id: number;
