@@ -3,12 +3,8 @@ import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
 import { Categories } from "./Categories";
 import { Tags } from "./Tags";
-import {
-  CategoryDTO,
-  ColorDTO,
-  DesignDTO,
-  VariationDTO,
-} from "@/types/dto/designs";
+import { CategoryDTO, DesignDTO, VariationDTO } from "@/types/dto/designs";
+import { ColorDTO } from "@/types/dto/common";
 
 export const VARIATION_CARD_WIDTH = 770;
 type Props = {

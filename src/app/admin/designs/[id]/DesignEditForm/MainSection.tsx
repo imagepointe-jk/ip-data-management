@@ -1,7 +1,8 @@
 import styles from "@/styles/designs/DesignPage.module.css";
 import { ChangeEvent } from "react";
 import { Updater } from "use-immer";
-import { ColorDTO, DesignDTO } from "@/types/dto/designs";
+import { DesignDTO } from "@/types/dto/designs";
+import { ColorDTO } from "@/types/dto/common";
 
 type Props = {
   design: DesignDTO;

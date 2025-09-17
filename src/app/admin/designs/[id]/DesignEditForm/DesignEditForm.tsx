@@ -8,7 +8,8 @@ import { MainSection } from "./MainSection";
 import { SecondarySection } from "./SecondarySection";
 import { useState } from "react";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
-import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
+import { CategoryDTO, DesignDTO } from "@/types/dto/designs";
+import { ColorDTO } from "@/types/dto/common";
 
 type DesignDataFormProps = {
   existingDesign: DesignDTO;

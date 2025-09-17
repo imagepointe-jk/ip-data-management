@@ -4,7 +4,8 @@ import { Updater } from "use-immer";
 import { DesignVariations } from "./DesignVariations";
 import { Categories } from "./Categories";
 import { Tags } from "./Tags";
-import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
+import { CategoryDTO, DesignDTO } from "@/types/dto/designs";
+import { ColorDTO } from "@/types/dto/common";
 
 type Props = {
   design: DesignDTO;

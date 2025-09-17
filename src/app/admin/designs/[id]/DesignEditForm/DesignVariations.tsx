@@ -9,7 +9,8 @@ import {
   DesignVariationCard,
   VARIATION_CARD_WIDTH,
 } from "./DesignVariationCard";
-import { CategoryDTO, ColorDTO, DesignDTO } from "@/types/dto/designs";
+import { CategoryDTO, DesignDTO } from "@/types/dto/designs";
+import { ColorDTO } from "@/types/dto/common";
 
 type Props = {
   design: DesignDTO;
