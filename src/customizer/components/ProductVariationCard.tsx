@@ -1,18 +1,12 @@
-import {
-  Color,
-  CustomProductSettingsVariation,
-  CustomProductView,
-} from "@prisma/client";
 import styles from "@/styles/customizer/CustomProductDesigner/productVariationCard.module.css";
 import { IMAGE_NOT_FOUND_URL } from "@/constants";
 import { useSelector } from "react-redux";
 import { StoreType } from "../redux/store";
 import { findVariationInCart } from "../utils/find";
+import { VariationDTO } from "@/types/dto/customizer";
 
 type Props = {
-  variation: CustomProductSettingsVariation & { color: Color } & {
-    views: CustomProductView[];
-  };
+  variation: VariationDTO;
   disabled?: boolean;
   title?: string;
   highlighted?: boolean;

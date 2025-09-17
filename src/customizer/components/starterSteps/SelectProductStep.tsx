@@ -1,4 +1,4 @@
-import { PopulatedProductSettings } from "@/types/schema/customizer";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 import { Card } from "./Card";
 import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 

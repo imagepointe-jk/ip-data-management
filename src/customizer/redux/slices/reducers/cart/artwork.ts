@@ -1,12 +1,10 @@
 import { findViewInCart, findViewInProductData } from "@/customizer/utils/find";
-import {
-  CartState,
-  PopulatedProductSettingsSerializable,
-} from "@/types/schema/customizer";
+import { CartState } from "@/types/schema/customizer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DesignWithIncludesSerializable } from "../../designData";
 import { snapToNearest } from "@/utility/geometry";
 import { createNewObjectData } from "./object";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type AddArtworkPayload = {
   addDesignPayload?: {
@@ -18,7 +16,7 @@ type AddArtworkPayload = {
     uploadedUrl: string;
   };
   targetViewId: number;
-  targetProductData: PopulatedProductSettingsSerializable;
+  targetProductData: PopulatedProductSettings;
   newGuid: string;
 };
 export function addDesign(

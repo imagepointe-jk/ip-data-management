@@ -1,11 +1,9 @@
-import {
-  FullProductSettings,
-  getFullProductSettings,
-} from "@/db/access/customizer";
+import { getFullProductSettings } from "@/db/access/customizer";
 import ProductSettingsEditor from "./ProductSettingsEditor";
 import { getProduct } from "@/fetch/woocommerce";
 import { parseWooCommerceProduct } from "@/types/validations/woo";
 import { getColors } from "@/db/access/misc";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 
 type Props = {
   params: Promise<{
@@ -35,7 +33,7 @@ export default async function ProductSettings(props: Props) {
   );
 }
 
-async function getProductBySettings(productSettings: FullProductSettings) {
+async function getProductBySettings(productSettings: FullProductSettingsDTO) {
   try {
     const productResponse = await getProduct(productSettings.wooCommerceId);
     const productJson = await productResponse.json();

@@ -7,15 +7,15 @@ import {
   CartState,
   EditorTextData,
   EditorTextStyle,
-  PopulatedProductSettingsSerializable,
 } from "@/types/schema/customizer";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createNewObjectData } from "./object";
 import { snapToNearest } from "@/utility/geometry";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type AddTextPayload = {
   targetViewId: number;
-  targetProductData: PopulatedProductSettingsSerializable;
+  targetProductData: PopulatedProductSettings;
   newGuid: string;
 };
 type EditTextPayload = Omit<EditorTextData, "text"> & {

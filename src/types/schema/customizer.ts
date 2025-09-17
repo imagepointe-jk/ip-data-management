@@ -1,7 +1,7 @@
-import {
-  CustomProductDecorationLocationNumeric,
-  FullProductSettings,
-} from "@/db/access/customizer";
+// import {
+//   CustomProductDecorationLocationNumeric,
+//   FullProductSettings,
+// } from "@/db/access/customizer";
 import {
   CustomProductSettingsVariation,
   CustomProductView,
@@ -186,43 +186,40 @@ export type EditorModal =
   | "feedback"
   | null;
 
-export type ViewWithIncludes = CustomProductView & {
-  locations: CustomProductDecorationLocationNumeric[];
-};
-export type VariationWithIncludes = CustomProductSettingsVariation & {
-  views: ViewWithIncludes[];
-};
-export type PopulatedProductSettings = FullProductSettings & {
-  product: { name: string; sku: string; weight: string } | undefined;
-};
-export type PopulatedProductSettingsSerializable = Omit<
-  FullProductSettings,
-  "createdAt" | "updatedAt"
-> & {
-  createdAt: string;
-  updatedAt: string;
-  product: { name: string; weight: string } | undefined;
-};
+// export type ViewWithIncludes = CustomProductView & {
+//   locations: CustomProductDecorationLocationNumeric[];
+// };
+// export type VariationWithIncludes = CustomProductSettingsVariation & {
+//   views: ViewWithIncludes[];
+// };
+// export type PopulatedProductSettingsSerializable = Omit<
+//   FullProductSettings,
+//   "createdAt" | "updatedAt"
+// > & {
+//   createdAt: string;
+//   updatedAt: string;
+//   product: { name: string; weight: string } | undefined;
+// };
 export type QuoteRequestData = z.infer<typeof quoteRequestSchema>;
-export type EditorContext = {
-  designResults: DesignResults;
-  designState: CartState;
-  selectedEditorGuid: string | null;
-  setSelectedEditorGuid: (guid: string | null) => void;
-  selectedVariation: CartStateProductVariation;
-  selectedView: CartStateProductView;
-  selectedLocation: CartStateProductLocation;
-  setSelectedLocationId: (id: number) => void;
-  dialogOpen: EditorDialog;
-  setDialogOpen: (dialog: EditorDialog) => void;
-  selectedProductData: PopulatedProductSettings;
-  deleteArtworkFromState: (guid: string) => void;
-  setArtworkTransform: (
-    guid: string,
-    transform: TransformArgsPxOptional
-  ) => void;
-  addDesign: (designId: number, variationId?: number) => PlacedObject;
-  addVariation: (variationId: number) => void;
-  removeVariation: (variationId: number) => void;
-};
+// export type EditorContext = {
+//   designResults: DesignResults;
+//   designState: CartState;
+//   selectedEditorGuid: string | null;
+//   setSelectedEditorGuid: (guid: string | null) => void;
+//   selectedVariation: CartStateProductVariation;
+//   selectedView: CartStateProductView;
+//   selectedLocation: CartStateProductLocation;
+//   setSelectedLocationId: (id: number) => void;
+//   dialogOpen: EditorDialog;
+//   setDialogOpen: (dialog: EditorDialog) => void;
+//   selectedProductData: PopulatedProductSettings;
+//   deleteArtworkFromState: (guid: string) => void;
+//   setArtworkTransform: (
+//     guid: string,
+//     transform: TransformArgsPxOptional
+//   ) => void;
+//   addDesign: (designId: number, variationId?: number) => PlacedObject;
+//   addVariation: (variationId: number) => void;
+//   removeVariation: (variationId: number) => void;
+// };
 export type GoogleFont = z.infer<typeof googleFontSchema>;

@@ -8,6 +8,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "../../../prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 
 export async function getProductSettings() {
   return prisma.customProductSettings.findMany({
@@ -55,24 +56,9 @@ export async function getProductSettingsWithIncludes(params?: {
   return data.map((item) => convertFullProductSettings(item));
 }
 
-export type CustomProductDecorationLocationNumeric = {
-  [K in keyof CustomProductDecorationLocation]: CustomProductDecorationLocation[K] extends Decimal
-    ? number
-    : CustomProductDecorationLocation[K];
-};
-
-export type FullProductSettings = CustomProductSettings & {
-  variations: (CustomProductSettingsVariation & { color: Color } & {
-    sizeOptions: ProductSizeOptions;
-  } & {
-    views: (CustomProductView & {
-      locations: CustomProductDecorationLocationNumeric[];
-    })[];
-  })[];
-};
 export async function getFullProductSettings(
   id: number
-): Promise<FullProductSettings | null> {
+): Promise<FullProductSettingsDTO | null> {
   const settings = await prisma.customProductSettings.findUnique({
     where: {
       id,
@@ -146,9 +132,12 @@ function convertFullProductSettings(
       sizeOptions: ProductSizeOptions;
     })[];
   }
-): FullProductSettings {
-  const converted: FullProductSettings = {
-    ...settings,
+): FullProductSettingsDTO {
+  const converted: FullProductSettingsDTO = {
+    id: settings.id,
+    order: settings.order,
+    published: settings.published,
+    wooCommerceId: settings.wooCommerceId,
     variations: settings.variations.map((variation) => ({
       ...variation,
       sizeOptions: variation.sizeOptions,

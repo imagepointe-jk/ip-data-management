@@ -16,12 +16,13 @@ import {
 } from "./redux/slices/editor";
 import { setDesignData } from "./redux/slices/designData";
 import { ActionCreators } from "redux-undo";
-import { PopulatedProductSettings } from "@/types/schema/customizer";
+// import { PopulatedProductSettings } from "@/types/schema/customizer";
 import {
   makeDesignResultsSerializable,
-  makeProductDataSerializable,
+  // makeProductDataSerializable,
 } from "./utils/convert";
 import Konva from "konva";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type EditorContextType = {
   updateViewRender: (viewId: number) => void;
@@ -86,10 +87,11 @@ export function EditorProvider({
       initialProduct,
       initialDesignState,
     } = createInitialState(productData, initialProductId, initialVariationId);
-    const serializableData = makeProductDataSerializable(productData);
+    // const serializableData = makeProductDataSerializable(productData);
     const serializableDesigns = makeDesignResultsSerializable(designs);
 
-    dispatch(setProductData(serializableData));
+    // dispatch(setProductData(serializableData));
+    dispatch(setProductData(productData));
     dispatch(
       setDesignData({
         designs: serializableDesigns,

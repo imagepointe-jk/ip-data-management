@@ -1,6 +1,5 @@
 "use client";
 
-import { FullProductSettings } from "@/db/access/customizer";
 import styles from "@/styles/customizer/CustomProductAdminEditor.module.css";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
@@ -9,14 +8,15 @@ import { ProductView } from "./components/ProductView";
 import { SaveArea } from "./components/SaveArea";
 import { Sidebar } from "./components/Sidebar";
 import { ViewArrows } from "./components/ViewArrows";
-import { Color } from "@prisma/client";
 import { VariationSettings } from "./components/VariationSettings";
 import { LocationSelectorBox } from "./components/LocationSelectorBox";
+import { ColorDTO } from "@/types/dto/common";
+import { FullProductSettingsDTO } from "@/types/dto/customizer";
 
 export type ExpandedDialog = null | "location";
 type Props = {
-  settings: FullProductSettings;
-  colors: Color[];
+  settings: FullProductSettingsDTO;
+  colors: ColorDTO[];
 };
 export default function ProductSettingsEditor({
   settings: initialSettings,

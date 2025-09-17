@@ -1,6 +1,6 @@
 import {
-  PopulatedProductSettings,
-  PopulatedProductSettingsSerializable,
+  // PopulatedProductSettings,
+  // PopulatedProductSettingsSerializable,
   TransformArgsPx,
   TransformArgsPxOptional,
 } from "@/types/schema/customizer";
@@ -9,20 +9,21 @@ import {
   DesignResultsSerializable,
   DesignWithIncludesSerializable,
 } from "../redux/slices/designData";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
-export function makeProductDataSerializable(
-  data: PopulatedProductSettings[]
-): PopulatedProductSettingsSerializable[] {
-  return data.map((item) => {
-    const newData: PopulatedProductSettingsSerializable = {
-      ...item,
-      createdAt: "",
-      updatedAt: "",
-      //the Date object in the original type causes problems with Redux, and it's not needed for the customizer
-    };
-    return newData;
-  });
-}
+// export function makeProductDataSerializable(
+//   data: PopulatedProductSettings[]
+// ): PopulatedProductSettingsSerializable[] {
+//   return data.map((item) => {
+//     const newData: PopulatedProductSettingsSerializable = {
+//       ...item,
+//       createdAt: "",
+//       updatedAt: "",
+//       //the Date object in the original type causes problems with Redux, and it's not needed for the customizer
+//     };
+//     return newData;
+//   });
+// }
 
 export function makeDesignResultsSerializable(
   data: DesignResults

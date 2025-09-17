@@ -1,7 +1,4 @@
-import {
-  CartStateProductVariation,
-  PopulatedProductSettingsSerializable,
-} from "@/types/schema/customizer";
+import { CartStateProductVariation } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
 import stylesForm from "@/styles/customizer/CustomProductDesigner/forms.module.css";
 import { RenderedProductView } from "../RenderedProductView";
@@ -21,9 +18,10 @@ import {
   setSelectedViewId,
   useEditorSelectors,
 } from "@/customizer/redux/slices/editor";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type Props = {
-  productData: PopulatedProductSettingsSerializable;
+  productData: PopulatedProductSettings;
   variationInState: CartStateProductVariation;
 };
 export function CartProductVariation({ variationInState, productData }: Props) {
@@ -119,7 +117,7 @@ export function CartProductVariation({ variationInState, productData }: Props) {
 }
 
 type CartProductVariationFormProps = {
-  productData: PopulatedProductSettingsSerializable;
+  productData: PopulatedProductSettings;
   variationInState: CartStateProductVariation;
 };
 function CartProductVariationForm({

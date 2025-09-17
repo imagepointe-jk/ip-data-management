@@ -1,6 +1,6 @@
-import { PopulatedProductSettings } from "@/types/schema/customizer";
 import styles from "@/styles/customizer/CustomProductDesigner/starterStep.module.css";
 import { Card } from "./Card";
+import { PopulatedProductSettings } from "@/types/dto/customizer";
 
 type Props = {
   productData: PopulatedProductSettings[];
