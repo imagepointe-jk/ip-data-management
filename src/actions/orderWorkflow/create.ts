@@ -6,11 +6,9 @@ import {
 } from "@/db/access/orderApproval";
 import { prisma } from "@/prisma";
 import {
-  WebstoreEditorData,
   WebstoreLogEvent,
   WebstoreLogSeverity,
 } from "@/types/schema/orderApproval";
-import { encrypt } from "@/utility/misc";
 import { revalidatePath } from "next/cache";
 
 export async function createWorkflow(webstoreId: number, name: string) {

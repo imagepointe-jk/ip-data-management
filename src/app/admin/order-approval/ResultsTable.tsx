@@ -1,13 +1,22 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
-import { getWorkflowsWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
-import { UnwrapPromise } from "@/types/schema/misc";
 import Link from "next/link";
 
 type Props = {
-  workflows: UnwrapPromise<ReturnType<typeof getWorkflowsWithIncludes>>;
+  workflows: {
+    id: number;
+    name: string;
+    webstore: {
+      id: number;
+      name: string;
+    };
+    instances: {
+      status: string;
+    }[];
+    steps: {}[];
+  }[];
 };
 export function ResultsTable({ workflows }: Props) {
   return (

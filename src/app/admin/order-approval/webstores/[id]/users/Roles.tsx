@@ -1,6 +1,5 @@
 "use client";
 
-import { WebstoreUserRole } from "@prisma/client";
 import { SingleRole } from "./SingleRole";
 import { useState } from "react";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
@@ -8,7 +7,10 @@ import { useRouter } from "next/navigation";
 import { createRole } from "@/actions/orderWorkflow/create";
 
 type Props = {
-  roles: WebstoreUserRole[];
+  roles: {
+    id: number;
+    name: string;
+  }[];
   webstoreId: number;
 };
 export function Roles({ roles, webstoreId }: Props) {

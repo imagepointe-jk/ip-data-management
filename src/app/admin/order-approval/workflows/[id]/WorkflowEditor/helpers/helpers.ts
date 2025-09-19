@@ -1,13 +1,15 @@
-import {
-  OrderWorkflowStep,
-  OrderWorkflowStepDisplay,
-  OrderWorkflowStepProceedListener,
-} from "@prisma/client";
 import { Line } from "../ConnectionLines";
 
-type StepWithExtras = OrderWorkflowStep & {
-  proceedListeners: OrderWorkflowStepProceedListener[];
-  display: OrderWorkflowStepDisplay | null;
+type StepWithExtras = {
+  order: number;
+  proceedImmediatelyTo: string | null;
+  proceedListeners: {
+    goto: string;
+  }[];
+  display: {
+    positionX: number;
+    positionY: number;
+  } | null;
 };
 const lineOffset = {
   x: 90,

@@ -1,20 +1,19 @@
 "use client";
 import { duplicateWorkflow } from "@/actions/orderWorkflow/create";
 import { useToast } from "@/components/ToastProvider";
-// import { getWorkflowsWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/schema/misc";
-import { Webstore } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  // workflows: UnwrapPromise<ReturnType<typeof getWorkflowsWithIncludes>>;
   workflows: {
     id: number;
     name: string;
   }[];
   webstores: {
-    data: Webstore;
+    data: {
+      id: number;
+      name: string;
+    };
     hasWorkflow: boolean;
   }[];
 };

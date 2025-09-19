@@ -1,11 +1,14 @@
-import { OrderWorkflowStep } from "@prisma/client";
+// import { OrderWorkflowStep } from "@prisma/client";
 import { useEditingContext } from "../WorkflowEditingContext";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Props = {
-  step: OrderWorkflowStep;
+  step: {
+    id: number;
+    name: string;
+  };
 };
 export function StepDragBar({ step }: Props) {
   const { syncedWithServer, deleteStep } = useEditingContext();

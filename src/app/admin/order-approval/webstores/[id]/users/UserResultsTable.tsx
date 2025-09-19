@@ -8,18 +8,22 @@ import {
 } from "@/actions/orderWorkflow/update";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
-import { getWebstoreWithIncludes } from "@/db/access/orderApproval";
-import { UnwrapPromise } from "@/types/schema/misc";
 import { deduplicateArray } from "@/utility/misc";
-import { OrderWorkflowUser } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  webstore: Exclude<
-    UnwrapPromise<ReturnType<typeof getWebstoreWithIncludes>>,
-    null
-  >;
+  webstore: {
+    roles: {
+      id: number;
+      name: string;
+      users: {
+        id: number;
+        name: string;
+        email: string;
+      }[];
+    }[];
+  };
 };
 export function UserResultsTable({ webstore }: Props) {
   const router = useRouter();
@@ -48,7 +52,7 @@ export function UserResultsTable({ webstore }: Props) {
     }
   }
 
-  async function onClickDeleteUser(user: OrderWorkflowUser) {
+  async function onClickDeleteUser(user: { id: number; name: string }) {
     if (!confirm(`Are you sure you want to delete the user ${user.name}?`))
       return;
 

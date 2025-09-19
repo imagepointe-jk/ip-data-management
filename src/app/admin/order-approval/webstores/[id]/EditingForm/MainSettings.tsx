@@ -1,4 +1,4 @@
-import { WebstoreEditorData } from "@/types/schema/orderApproval";
+import { WebstoreEditorData } from "@/types/dto/orderApproval";
 import { Updater } from "use-immer";
 
 type Props = {

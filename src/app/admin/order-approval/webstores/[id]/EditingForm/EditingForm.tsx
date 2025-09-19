@@ -2,12 +2,12 @@
 
 import { updateWebstore } from "@/actions/orderWorkflow/update";
 import { useToast } from "@/components/ToastProvider";
-import { WebstoreEditorData } from "@/types/schema/orderApproval";
 import { FormEvent, ReactNode, useState } from "react";
 import { useImmer } from "use-immer";
 import { CheckoutFields } from "./CheckoutFields";
 import { MainSettings } from "./MainSettings";
 import { ShippingSettings } from "./ShippingSettings";
+import { WebstoreEditorData } from "@/types/dto/orderApproval";
 
 type Props = {
   webstoreData: WebstoreEditorData;

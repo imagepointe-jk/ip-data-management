@@ -1,10 +1,10 @@
 import { orderWorkflowActionTypes } from "@/types/schema/orderApproval";
 import { makeStringTitleCase } from "@/utility/misc";
-import { OrderWorkflowStep } from "@prisma/client";
 import { useEditingContext } from "../../../WorkflowEditingContext";
+import { StepDTO } from "@/types/dto/orderApproval";
 
 type Props = {
-  step: OrderWorkflowStep;
+  step: StepDTO;
 };
 export function StepActionSettings({ step }: Props) {
   const { workflowUsers, updateWorkflowState } = useEditingContext();

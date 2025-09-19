@@ -1,11 +1,11 @@
 "use client";
 
 import { GenericTableExplorer } from "@/components/GenericTableExplorer/GenericTableExplorer";
-import { WebstoreLog } from "@prisma/client";
 import styles from "@/styles/logs/logs.module.css";
+import { WebstoreLogDTO } from "@/types/dto/orderApproval";
 
 type Props = {
-  logs: WebstoreLog[];
+  logs: WebstoreLogDTO[];
   totalLogs: number;
   pageSize: number;
 };

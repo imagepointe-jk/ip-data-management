@@ -17,7 +17,6 @@ export type ServerActionResult = {
   };
 };
 
-export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 export type NextSearchParams = Promise<{
   [key: string]: string | string[] | undefined;
 }>; //from https://nextjs.org/docs/app/guides/upgrading/version-15

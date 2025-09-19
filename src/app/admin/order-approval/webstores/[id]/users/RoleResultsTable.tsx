@@ -2,10 +2,11 @@
 
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import GenericTable from "@/components/GenericTable";
-import { WebstoreUserRole } from "@prisma/client";
 
 type Props = {
-  roles: WebstoreUserRole[];
+  roles: {
+    id: number;
+  }[];
 };
 export function RoleResultsTable({ roles }: Props) {
   return (

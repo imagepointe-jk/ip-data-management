@@ -1,16 +1,11 @@
-import {
-  OrderWorkflowStep,
-  OrderWorkflowStepProceedListener,
-} from "@prisma/client";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { EventListener } from "./EventListener";
 import { createEventListener } from "@/actions/orderWorkflow/create";
 import { useEditingContext } from "../../../WorkflowEditingContext";
+import { ProceedListenerDTO, StepDTO } from "@/types/dto/orderApproval";
 
 type Props = {
-  step: OrderWorkflowStep & {
-    proceedListeners: OrderWorkflowStepProceedListener[];
-  };
+  step: StepDTO & { proceedListeners: ProceedListenerDTO[] };
 };
 export function StepEndSettings({ step }: Props) {
   const { workflowState, updateWorkflowState, workflowUsers } =

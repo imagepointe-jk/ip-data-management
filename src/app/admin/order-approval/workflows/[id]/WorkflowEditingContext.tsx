@@ -4,22 +4,22 @@ import { deleteStep } from "@/actions/orderWorkflow/delete";
 import { getFullWorkflow } from "@/actions/orderWorkflow/misc";
 import { updateWorkflow } from "@/actions/orderWorkflow/update";
 import { useToast } from "@/components/ToastProvider";
-import {
-  // OrderWorkflowUserRole,
-  OrderWorkflowWithIncludes,
-} from "@/types/schema/orderApproval";
+import { WorkflowEditorData } from "@/types/dto/orderApproval";
 import { deduplicateArray } from "@/utility/misc";
-import { OrderWorkflowUser, WebstoreUserRole } from "@prisma/client";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { DraftFunction, useImmer } from "use-immer";
 
 type EditingContextType = {
-  workflowUsers: OrderWorkflowUser[];
-  workflowState: OrderWorkflowWithIncludes;
+  workflowUsers: {
+    id: number;
+    name: string;
+    email: string;
+  }[];
+  workflowState: WorkflowEditorData;
   selectedStepId: number | null;
   setSelectedStepId: (id: number | null) => void;
   updateWorkflowState: (
-    arg: OrderWorkflowWithIncludes | DraftFunction<OrderWorkflowWithIncludes>
+    arg: WorkflowEditorData | DraftFunction<WorkflowEditorData>
   ) => void;
   saveChanges: () => void;
   syncStateWithServer: () => Promise<void>;
@@ -38,7 +38,7 @@ export function useEditingContext() {
 
 type Props = {
   children: ReactNode;
-  workflow: OrderWorkflowWithIncludes;
+  workflow: WorkflowEditorData;
 };
 export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   const [workflowState, setWorkflowState] = useImmer(workflow);
@@ -54,7 +54,7 @@ export function WorkflowEditingContextProvider({ children, workflow }: Props) {
   //children are forced to use this wrapper for the default immer setstate function.
   //this way we can mark our state as "not synced with server" after normal state updates, but not after actually syncing with server.
   function updateWorkflowState(
-    arg: OrderWorkflowWithIncludes | DraftFunction<OrderWorkflowWithIncludes>
+    arg: WorkflowEditorData | DraftFunction<WorkflowEditorData>
   ) {
     setWorkflowState(arg);
     setSyncedWithServer(false);

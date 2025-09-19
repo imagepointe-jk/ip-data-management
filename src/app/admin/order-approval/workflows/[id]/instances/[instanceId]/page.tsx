@@ -6,7 +6,6 @@ import {
 import { ResultsTable } from "./ResultsTable";
 import Link from "next/link";
 import { InvoiceSender } from "./InvoiceSender";
-import { prisma } from "@/prisma";
 
 type Props = {
   params: Promise<{

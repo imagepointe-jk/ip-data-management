@@ -1,13 +1,4 @@
 import { z } from "zod";
-import { UnwrapPromise } from "./misc";
-import {
-  getWebstoreWithIncludes,
-  getWorkflowWithIncludes,
-} from "@/db/access/orderApproval";
-import { WebstoreCheckoutField } from "@prisma/client";
-
-// export const orderWorkflowUserRoles = ["approver", "purchaser"] as const;
-// const orderWorkflowUserRoleSchema = z.enum(orderWorkflowUserRoles);
 export const orderWorkflowActionTypes = [
   "email",
   "mark workflow approved",
@@ -79,7 +70,6 @@ const webstoreLogEvents = [
 ] as const;
 const webstoreLogEvent = z.enum(webstoreLogEvents);
 
-// export type OrderWorkflowUserRole = z.infer<typeof orderWorkflowUserRoleSchema>;
 export type OrderWorkflowActionType = z.infer<
   typeof orderWorkflowActionTypeSchema
 >;
@@ -89,35 +79,5 @@ export type OrderWorkflowEventType = z.infer<
 export type OrderApprovalServerData = z.infer<
   typeof orderApprovalServerDataSchema
 >;
-export type OrderWorkflowWithIncludes = Exclude<
-  UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>,
-  null
->;
-export type WebstoreEditorData = {
-  id: number;
-  name: string;
-  organizationName: string;
-  url: string;
-  salesPersonName: string;
-  salesPersonEmail: string;
-  otherSupportEmails: string | null;
-  orderUpdatedEmails: string | null;
-  reminderEmailTargets: string | null;
-  sendReminderEmails: boolean;
-  shippingEmailFilename: string;
-  checkoutFields: WebstoreCheckoutField[];
-  shippingSettings: {
-    allowApproverChangeMethod: boolean;
-    allowUpsToCanada: boolean;
-  } | null;
-  shippingMethods: {
-    id: number;
-  }[];
-  approverDashboardViewerEmail: string;
-  requirePinForApproval: boolean;
-  allowOrderHelpRequest: boolean;
-  autoCreateApprover: boolean;
-  shippingEmailDestOverride: string | null;
-};
 export type WebstoreLogSeverity = z.infer<typeof webstoreLogSeverity>;
 export type WebstoreLogEvent = z.infer<typeof webstoreLogEvent>;

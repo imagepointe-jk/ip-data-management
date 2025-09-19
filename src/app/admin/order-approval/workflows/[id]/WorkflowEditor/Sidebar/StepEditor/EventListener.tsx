@@ -2,12 +2,12 @@
 
 import { deleteEventListener } from "@/actions/orderWorkflow/delete";
 import { orderWorkflowEventTypes } from "@/types/schema/orderApproval";
-import { OrderWorkflowStepProceedListener } from "@prisma/client";
 import { useEditingContext } from "../../../WorkflowEditingContext";
+import { ProceedListenerDTO } from "@/types/dto/orderApproval";
 
 type Props = {
   stepId: number;
-  listener: OrderWorkflowStepProceedListener;
+  listener: ProceedListenerDTO;
 };
 export function EventListener({ stepId, listener }: Props) {
   const { workflowUsers, workflowState, updateWorkflowState } =

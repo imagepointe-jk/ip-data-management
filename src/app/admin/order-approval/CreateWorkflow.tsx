@@ -1,13 +1,15 @@
 "use client";
 
 import { createWorkflow } from "@/actions/orderWorkflow/create";
-import { Webstore } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
   webstores: {
-    data: Webstore;
+    data: {
+      id: number;
+      name: string;
+    };
     hasWorkflow: boolean;
   }[];
 };

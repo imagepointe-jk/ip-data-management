@@ -1,18 +1,18 @@
 "use client";
 
-import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
-import { restartWorkflow } from "@/actions/orderWorkflow/misc";
 import { deleteWorkflowInstance } from "@/actions/orderWorkflow/delete";
 import { GenericTableExplorer } from "@/components/GenericTableExplorer/GenericTableExplorer";
-import { OrderWorkflow, OrderWorkflowInstance } from "@prisma/client";
-// import { useState } from "react";
+
 import { InstanceRestartButton } from "./InstanceRestartButton";
+import { WorkflowInstanceDTO } from "@/types/dto/orderApproval";
 
 type Props = {
-  workflow: OrderWorkflow & { instances: OrderWorkflowInstance[] };
+  workflow: {
+    instances: WorkflowInstanceDTO[];
+  };
   pageSize: number;
   totalInstances: number;
 };

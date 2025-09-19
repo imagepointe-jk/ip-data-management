@@ -3,15 +3,14 @@
 import { deleteWebstore } from "@/actions/orderWorkflow/delete";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
-import { getWebstoresWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
-import { UnwrapPromise } from "@/types/schema/misc";
+import { WebstoreDataFull } from "@/types/dto/orderApproval";
 import { deduplicateArray } from "@/utility/misc";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  webstores: UnwrapPromise<ReturnType<typeof getWebstoresWithIncludes>>;
+  webstores: WebstoreDataFull[];
 };
 export function ResultsTable({ webstores }: Props) {
   const toast = useToast();

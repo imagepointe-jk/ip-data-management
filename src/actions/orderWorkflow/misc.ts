@@ -2,10 +2,7 @@
 
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { handleWorkflowEvent } from "@/order-approval/main";
-import {
-  getAccessCodeWithIncludes,
-  getWorkflowWithIncludes,
-} from "@/db/access/orderApproval";
+import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
 import { createHandlebarsEmailBody, sendEmail } from "@/utility/mail";
 import {
   createSupportEmail,
@@ -25,6 +22,7 @@ import { getDaysSinceDate } from "@/utility/misc";
 import { createLog } from "./create";
 import { env } from "@/env";
 import { prisma } from "@/prisma";
+import { WorkflowEditorData } from "@/types/dto/orderApproval";
 
 export async function receiveWorkflowEvent(
   accessCode: string,
@@ -191,8 +189,32 @@ export async function processFormattedTextAction(e: FormData) {
 
 //getting data via server action is easy, but not intended by Next.js team.
 //keep an eye on this in case it breaks in the future.
-export async function getFullWorkflow(id: number) {
-  return getWorkflowWithIncludes(id);
+export async function getFullWorkflow(
+  id: number
+): Promise<WorkflowEditorData | null> {
+  return prisma.orderWorkflow.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      webstore: {
+        include: {
+          roles: {
+            include: {
+              users: true,
+            },
+          },
+        },
+      },
+      steps: {
+        include: {
+          display: true,
+          proceedListeners: true,
+        },
+      },
+      instances: true,
+    },
+  });
 }
 
 export async function sendInvoiceEmail(

@@ -1,6 +1,5 @@
 "use server";
 
-import { getWorkflowWithIncludes } from "@/db/access/orderApproval";
 import {
   addMetaDataToOrder,
   OrderUpdateData,
@@ -9,14 +8,14 @@ import {
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { handleOrderUpdated } from "@/order-approval/main";
 import { prisma } from "@/prisma";
-import { UnwrapPromise } from "@/types/schema/misc";
-import { WebstoreEditorData } from "@/types/schema/orderApproval";
+import {
+  WebstoreEditorData,
+  WorkflowEditorData,
+} from "@/types/dto/orderApproval";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { encrypt } from "@/utility/misc";
 
-export async function updateWorkflow(
-  data: Exclude<UnwrapPromise<ReturnType<typeof getWorkflowWithIncludes>>, null>
-) {
+export async function updateWorkflow(data: WorkflowEditorData) {
   const proceedListeners = data.steps
     .map((step) => step.proceedListeners)
     .flat();

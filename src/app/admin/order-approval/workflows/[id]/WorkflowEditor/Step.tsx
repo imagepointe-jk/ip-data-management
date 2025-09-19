@@ -1,17 +1,16 @@
 import { DraggableDiv } from "@/components/DraggableDiv/DraggableDiv";
-import {
-  OrderWorkflowStep,
-  OrderWorkflowStepDisplay,
-  OrderWorkflowStepProceedListener,
-} from "@prisma/client";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import { useEditingContext } from "../WorkflowEditingContext";
 import { StepDragBar } from "./StepDragBar";
 
 type Props = {
-  step: OrderWorkflowStep & {
-    display: OrderWorkflowStepDisplay | null;
-    proceedListeners: OrderWorkflowStepProceedListener[];
+  step: {
+    id: number;
+    name: string;
+    display: {
+      positionX: number;
+      positionY: number;
+    } | null;
   };
 };
 export function Step({ step }: Props) {

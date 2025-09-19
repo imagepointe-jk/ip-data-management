@@ -3,12 +3,14 @@
 import { deleteRole } from "@/actions/orderWorkflow/delete";
 import { updateRole } from "@/actions/orderWorkflow/update";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
-import { WebstoreUserRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
-  role: WebstoreUserRole;
+  role: {
+    id: number;
+    name: string;
+  };
 };
 export function SingleRole({ role }: Props) {
   const [loading, setLoading] = useState(false);

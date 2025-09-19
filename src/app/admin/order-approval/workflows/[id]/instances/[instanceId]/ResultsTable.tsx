@@ -1,17 +1,21 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
-import { getWorkflowInstanceWithIncludes } from "@/db/access/orderApproval";
 import styles from "@/styles/orderApproval/orderApproval.module.css";
 import Link from "next/link";
 import { createApprovalFrontEndUrl } from "@/utility/url";
-import { UnwrapPromise } from "@/types/schema/misc";
 
 type Props = {
-  instance: Exclude<
-    UnwrapPromise<ReturnType<typeof getWorkflowInstanceWithIncludes>>,
-    null
-  >;
+  instance: {
+    id: number;
+    accessCodes: {
+      guid: string;
+      user: {
+        name: string;
+      };
+      simplePin: string;
+    }[];
+  };
   webstoreUrl: string;
 };
 export function ResultsTable({ instance, webstoreUrl }: Props) {
@@ -44,10 +48,6 @@ export function ResultsTable({ instance, webstoreUrl }: Props) {
           headerName: "PIN (this instance only)",
           createCell: (code) => code.simplePin,
         },
-        // {
-        //   headerName: "Role",
-        //   createCell: (code) => code.userRole,
-        // },
       ]}
       className={styles["basic-table"]}
     />
