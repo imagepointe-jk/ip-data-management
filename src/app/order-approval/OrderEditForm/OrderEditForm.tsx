@@ -128,7 +128,7 @@ export function OrderEditForm({
   return (
     <>
       <div className={styles["main"]}>
-        <h2>Order {order.id}</h2>
+        <h2>Order {order.number}</h2>
         <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
         <LineItems
           order={order}

@@ -9,8 +9,8 @@ export function OrderTotals({ order }: Props) {
 
   return (
     <div className={styles["main"]}>
-      <div>Subtotal: ${order.subtotal}</div>
-      <div>Total Tax: ${order.totalTax}</div>
+      <div>Item Total: ${order.subtotal}</div>
+      <div>Sales Tax: ${order.totalTax}</div>
       <div>
         <span className={styles["emph"]}>Total w/o Shipping:</span> $
         {totalNoShipping.toFixed(2)}

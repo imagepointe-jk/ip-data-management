@@ -72,6 +72,7 @@ export const wooCommerceFeeLineSchema = z.object({
 //WC returns a lot of order data. only include what's necessary in the schema.
 export const wooCommerceOrderDataSchema = z.object({
   id: z.number(),
+  number: z.string(),
   subtotal: z.string(), //created during validation by summing the pre-tax totals of each line item
   total: z.string(),
   totalTax: z.string(),

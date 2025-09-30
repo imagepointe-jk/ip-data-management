@@ -45,6 +45,7 @@ export function parseWooCommerceOrderJson(json: any) {
   json.subtotal = lineItemsParsed
     .reduce((accum, item) => accum + +item.total, 0)
     .toFixed(2);
+  json.number = json.number || "";
   json.dateCreated = new Date(json.date_created);
   json.shipping.firstName = json.shipping.first_name;
   json.shipping.lastName = json.shipping.last_name;
