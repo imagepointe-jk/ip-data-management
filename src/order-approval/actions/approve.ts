@@ -68,11 +68,7 @@ async function sendShippingEmail(
   workflowInstance: OrderWorkflowInstance
 ) {
   const shippingEmail = recipientOverride || env.IP_SHIPPING_EMAIL;
-  const shippingMessage = await createShippingEmail(workflowInstance.id);
+  const { body, subject } = await createShippingEmail(workflowInstance.id);
 
-  await sendEmail(
-    shippingEmail,
-    `Order ${workflowInstance.wooCommerceOrderId} Approved`,
-    shippingMessage
-  );
+  await sendEmail(shippingEmail, subject, body);
 }

@@ -158,7 +158,7 @@ export async function receiveOrderHelpForm(data: {
     webstore.salesPersonEmail,
     ...otherEmails,
   ];
-  const messageBody = await createSupportEmail(
+  const { body, subject } = await createSupportEmail(
     webstore,
     wooCommerceOrderId,
     user.name,
@@ -169,11 +169,7 @@ export async function receiveOrderHelpForm(data: {
   //no Promise.all because concurrent connections are throttled with our email service
   for (const address of targetAddresses) {
     try {
-      await sendEmail(
-        address,
-        `Support request for order ${foundCode.workflowInstance.wooCommerceOrderId}`,
-        messageBody
-      );
+      await sendEmail(address, subject, body);
     } catch (error) {
       console.error(`Error sending support request email to ${address}`, error);
     }
@@ -273,7 +269,7 @@ export async function sendInvoiceEmail(
 
   return sendEmail(
     recipientAddress,
-    `Invoice for Order ${wooCommerceOrderId}`,
+    `Invoice for Order ${parsedOrder.number}`,
     message
   );
 }
@@ -323,13 +319,39 @@ export async function sendReminderEmails() {
   });
 
   for (const workflow of workflowsWithOldInstances) {
+    console.log(`FOUND ${workflow.instances.length} INSTANCES`);
     if (!workflow.webstore.sendReminderEmails) continue;
 
     const oldInstances = workflow.instances.map((instance) => ({
-      id: instance.wooCommerceOrderId,
+      orderId: instance.wooCommerceOrderId,
+      number: "",
       createdAt: instance.createdAt.toLocaleDateString(),
       daysAgo: Math.floor(getDaysSinceDate(instance.createdAt)),
     }));
+    for (const instance of oldInstances) {
+      try {
+        const { key, secret } = decryptWebstoreData(workflow.webstore);
+        const orderResponse = await getOrder(
+          instance.orderId,
+          workflow.webstore.url,
+          key,
+          secret
+        );
+        if (!orderResponse.ok)
+          throw new Error(
+            `Failed to get WooCommerce order ${instance.orderId}`
+          );
+        else {
+          const orderJson = await orderResponse.json();
+          const parsedOrder = parseWooCommerceOrderJson(orderJson);
+          instance.number = parsedOrder.number;
+        }
+      } catch (error) {
+        console.error(error);
+        instance.number = "UNKNOWN";
+        continue;
+      }
+    }
     const message = createHandlebarsEmailBody(
       "src/order-approval/mail/outstandingInstances.hbs",
       {

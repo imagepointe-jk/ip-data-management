@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { WooCommerceOrder } from "./woocommerce";
 export const orderWorkflowActionTypes = [
   "email",
   "mark workflow approved",
@@ -81,3 +82,6 @@ export type OrderApprovalServerData = z.infer<
 >;
 export type WebstoreLogSeverity = z.infer<typeof webstoreLogSeverity>;
 export type WebstoreLogEvent = z.infer<typeof webstoreLogEvent>;
+export type OrderWorkflowEmailContext = {
+  order: WooCommerceOrder;
+};

@@ -31,6 +31,7 @@ type Replacer = {
   automatic: boolean; //if false, the admin user has to explicitly include the shortcode for the replacer to be used.
   shortcode?: string;
 };
+//TODO: These need to be refactored using the new EmailContext object
 export const replacers: Replacer[] = [
   {
     description: "Insert <br> for HTML",
@@ -127,10 +128,12 @@ export const replacers: Replacer[] = [
     fn: ({ text, webstore }) => text.replace(/\{store\}/, webstore.name),
   },
   {
-    description: "Order ID",
+    // we basically never need the database id to display in text form, so just treat it as the order number for this purpose
+    description: "Order Number (not the order's database ID)",
     shortcode: "{order-id}",
     automatic: false,
-    fn: ({ text, wcOrder }) => text.replace(/\{order-id\}/, `${wcOrder.id}`),
+    fn: ({ text, wcOrder }) =>
+      text.replace(/\{order-id\}/, `${wcOrder.number}`),
   },
   {
     description: "Reason given for order denial",
@@ -243,7 +246,9 @@ export async function processFormattedText(
 }
 
 //this email is specifically intended for notifying the shipping dept. upon order approval
-export async function createShippingEmail(instanceId: number) {
+export async function createShippingEmail(
+  instanceId: number
+): Promise<{ body: string; subject: string }> {
   try {
     const instance = await getWorkflowInstance(instanceId);
     if (!instance)
@@ -282,10 +287,16 @@ export async function createShippingEmail(instanceId: number) {
       approveMsg: instance.approvedComments,
       shippingMethod: parsed.shippingLines[0]?.method_title,
     });
-    return message;
+    return {
+      body: message,
+      subject: `Order ${parsed.number} Approved`,
+    };
   } catch (error) {
     console.error("Error creating shipping email", error);
-    return "EMAIL ERROR";
+    return {
+      body: "EMAIL ERROR",
+      subject: "EMAIL ERROR",
+    };
   }
 }
 
@@ -295,7 +306,7 @@ export async function createSupportEmail(
   fullUserName: string,
   userEmail: string,
   comments: string
-) {
+): Promise<{ body: string; subject: string }> {
   try {
     const { key, secret } = decryptWebstoreData(webstore);
     const orderResponse = await getOrder(orderId, webstore.url, key, secret);
@@ -319,10 +330,16 @@ export async function createSupportEmail(
       storeName: webstore.name,
       comments,
     });
-    return message;
+    return {
+      body: message,
+      subject: `Support request for order ${parsed.number}`,
+    };
   } catch (error) {
     console.error("Error creating support email", error);
-    return "EMAIL ERROR";
+    return {
+      body: "EMAIL ERROR",
+      subject: "EMAIL ERROR",
+    };
   }
 }
 
