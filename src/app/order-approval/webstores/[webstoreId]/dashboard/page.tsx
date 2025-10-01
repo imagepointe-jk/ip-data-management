@@ -1,46 +1,26 @@
 import styles from "@/styles/orderApproval/approverDashboard.module.css";
+import "@/styles/orderApproval/approverDashboard.css";
 import { OrderInstanceRow } from "./OrderInstanceRow";
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { prisma } from "@/prisma";
+import { PageNavigation } from "@/components/PageNavigation/PageNavigation";
+import { NextSearchParams } from "@/types/schema/misc";
 
 type Props = {
   params: Promise<{
     webstoreId: string;
   }>;
+  searchParams: NextSearchParams;
 };
 export default async function Page(props: Props) {
   const params = await props.params;
+  const search = await props.searchParams;
+  const page = isNaN(+`${search.page}`) ? 1 : +`${search.page}`;
   const webstore = await prisma.webstore.findUnique({
     where: {
       id: +params.webstoreId,
     },
     include: {
-      workflows: {
-        include: {
-          instances: {
-            include: {
-              accessCodes: {
-                include: {
-                  user: true,
-                },
-              },
-            },
-            orderBy: {
-              createdAt: "desc",
-            },
-            where: {
-              status: {
-                not: "finished",
-              },
-            },
-          },
-          steps: {
-            include: {
-              proceedListeners: true,
-            },
-          },
-        },
-      },
       checkoutFields: true,
       roles: {
         include: {
@@ -51,8 +31,47 @@ export default async function Page(props: Props) {
   });
   if (!webstore) return <>Webstore {params.webstoreId} could not be found.</>;
 
-  const workflow = webstore.workflows[0];
+  const workflow = await prisma.orderWorkflow.findFirst({
+    where: {
+      webstoreId: +params.webstoreId,
+    },
+    include: {
+      steps: {
+        include: {
+          proceedListeners: true,
+        },
+      },
+    },
+  });
   if (!workflow) return <>Webstore {params.webstoreId} has no workflows.</>;
+
+  const pageSize = 10;
+  const [instances, allInstances] = await prisma.$transaction([
+    prisma.orderWorkflowInstance.findMany({
+      where: {
+        parentWorkflowId: workflow.id,
+      },
+      include: {
+        accessCodes: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: pageSize,
+      skip: pageSize * (page - 1),
+    }),
+    prisma.orderWorkflowInstance.findMany({
+      where: {
+        parentWorkflowId: workflow.id,
+      },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(allInstances.length / pageSize);
 
   return (
     <IframeHelperProvider>
@@ -72,7 +91,7 @@ export default async function Page(props: Props) {
             <div className={`${styles["header"]} ${styles["column-4"]}`}></div>
           </div>
           <div className={styles["rows-container"]}>
-            {workflow.instances.map((instance) => (
+            {instances.map((instance) => (
               <OrderInstanceRow
                 key={instance.id}
                 webstore={webstore}
@@ -83,12 +102,16 @@ export default async function Page(props: Props) {
               />
             ))}
           </div>
-          {workflow.instances.length === 0 && (
+          {instances.length === 0 && (
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               No orders waiting for approval.
             </div>
           )}
         </div>
+        <div>
+          Viewing page {page} of {totalPages}
+        </div>
+        <PageNavigation totalPages={totalPages} />
       </div>
     </IframeHelperProvider>
   );

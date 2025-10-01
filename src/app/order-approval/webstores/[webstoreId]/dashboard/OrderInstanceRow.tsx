@@ -43,14 +43,12 @@ export function OrderInstanceRow({
 }: Props) {
   const [order, setOrder] = useState<WooCommerceOrder | null>(null);
   const [expanded, setExpanded] = useState(false);
-  const [expandedOnce, setExpandedOnce] = useState(false);
-  const [statusText, setStatusText] = useState("");
-  const [waitingOnUser, setWaitingOnUser] = useState<WaitingOnUser>();
   const dashboardViewerAccessCode = instance.accessCodes.find(
     (code) =>
       code.user.email.toLocaleLowerCase() ===
       webstore.approverDashboardViewerEmail.toLocaleLowerCase()
   )?.guid;
+  const { statusText, waitingOnUser } = resolveStatusData();
   const waitingOnDashboardViewer =
     waitingOnUser &&
     waitingOnUser.email.toLocaleLowerCase() ===
@@ -65,7 +63,7 @@ export function OrderInstanceRow({
       );
       if (!accessCodeWithViewerEmail)
         throw new Error(
-          "No access code found belonging to a user with the specified dashboard-viewing email"
+          `Error getting order data for order ID ${instance.wooCommerceOrderId}: No access code found belonging to a user with the specified dashboard-viewing email '${webstore.approverDashboardViewerEmail}'`
         );
 
       const orderResponse = await getOrderApprovalOrder(
@@ -79,7 +77,6 @@ export function OrderInstanceRow({
       const parsed = parseWooCommerceOrderJson(json);
       setOrder(parsed);
     } catch (error) {
-      setStatusText("Workflow error.");
       console.error(error);
     }
   }
@@ -96,58 +93,58 @@ export function OrderInstanceRow({
     );
   }
 
-  async function resolveStatus() {
+  function resolveStatusData(): {
+    statusText: string;
+    waitingOnUser?: WaitingOnUser;
+  } {
     try {
+      if (order === null) return { statusText: "" };
+
+      if (instance.status === "finished") {
+        if (instance.approvedByUserEmail !== null)
+          return { statusText: "Approved" };
+        else return { statusText: "Denied" };
+      }
+
       const step = steps.find((step) => step.order === instance.currentStep);
       if (!step)
         throw new Error(
-          `Step with order value ${instance.currentStep} not found`
+          `Step with ordering value ${instance.currentStep} not found`
         );
 
       const firstProceedListener = step.proceedListeners[0];
       if (!firstProceedListener) {
         //this should almost never appear since the user is unlikely to access the dashboard while a non-waiting step is executing
-        setStatusText("Executing step (check back later)");
-        return;
+        return { statusText: "Executing step (check back later)" };
       }
 
-      //if an explicit email address, look for the user's name in the webstore roles
+      //if the from value is not "approver", we assume it's an explicit email address; use the email to look for the user in the webstore roles
       if (firstProceedListener.from !== "approver") {
         const userWithEmail = findUserInRoles(firstProceedListener.from);
-        setWaitingOnUser(userWithEmail);
-        setStatusText(`Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`);
-        return;
+        return {
+          statusText: `Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`,
+          waitingOnUser: userWithEmail,
+        };
       }
 
-      if (!order) {
-        //if we get here, we need to fetch the order to display the approver name.
-        //start the fetch process; we'll come back once the order is retrieved.
-        getOrderData();
-        return;
-      }
-
-      //if the "from" value is "approver", pull the email address from the WooCommerce order, THEN find the name in the webstore roles
+      //if we get here, the from value is "approver". pull the approver's email address from the WooCommerce order, THEN find the name in the webstore roles
       const approverEmail = order.metaData.find(
         (meta) => meta.key === "approver"
       )?.value;
       const userWithEmail = findUserInRoles(`${approverEmail}`);
-      setWaitingOnUser(userWithEmail);
-      setStatusText(`Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`);
+      return {
+        statusText: `Waiting on ${userWithEmail?.name || "USER_NOT_FOUND"}`,
+        waitingOnUser: userWithEmail,
+      };
     } catch (error) {
       console.error(error);
-      setStatusText("Workflow error.");
+      return { statusText: "Workflow error." };
     }
   }
 
   useEffect(() => {
-    resolveStatus();
-  }, [order]);
-
-  useEffect(() => {
-    if (expandedOnce || !expanded) return;
-    setExpandedOnce(true);
     getOrderData();
-  }, [expanded, expandedOnce]);
+  }, []);
 
   return (
     <div
@@ -156,7 +153,12 @@ export function OrderInstanceRow({
       }`}
     >
       <div className={styles["fake-table-row-main"]}>
-        <div className={styles["column-1"]}>{instance.wooCommerceOrderId}</div>
+        <div className={styles["column-1"]}>
+          {order === null && (
+            <LoadingIndicator className={styles["status-loading-indicator"]} />
+          )}
+          {order !== null && <>{order.number}</>}
+        </div>
         <div className={styles["column-2"]}>
           {instance.createdAt.toLocaleString()}
         </div>

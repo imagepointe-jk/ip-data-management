@@ -1,0 +1,10 @@
+.link-as-button {
+  padding: 10px;
+  background-color: lightgray;
+  border-radius: 5px;
+}
+
+.link-as-button.current {
+  background-color: black;
+  color: white;
+}
