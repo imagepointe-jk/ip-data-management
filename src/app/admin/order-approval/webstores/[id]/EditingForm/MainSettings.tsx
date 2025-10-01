@@ -132,6 +132,20 @@ export function MainSettings({
         />
       </div>
       <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={webstoreState.notifyUpdaterOnOrderUpdate}
+            onChange={(e) =>
+              setWebstoreState((draft) => {
+                draft.notifyUpdaterOnOrderUpdate = e.target.checked;
+              })
+            }
+          />
+          Notify updater when order is updated
+        </label>
+      </div>
+      <div>
         <label className="input-label">
           Reminder email addresses (separate with {";"})
         </label>

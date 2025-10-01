@@ -18,6 +18,7 @@ export type WebstoreEditorData = {
   salesPersonEmail: string;
   otherSupportEmails: string | null;
   orderUpdatedEmails: string | null;
+  notifyUpdaterOnOrderUpdate: boolean;
   reminderEmailTargets: string | null;
   sendReminderEmails: boolean;
   shippingEmailFilename: string;

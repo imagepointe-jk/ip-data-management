@@ -175,7 +175,8 @@ export async function handleOrderUpdated(
     ? webstore.orderUpdatedEmails.split(";")
     : [];
   orderUpdatedEmails.push(foundCode.workflowInstance.purchaserEmail);
-  orderUpdatedEmails.push(foundCode.user.email);
+  if (webstore.notifyUpdaterOnOrderUpdate)
+    orderUpdatedEmails.push(foundCode.user.email);
 
   const message = await createOrderUpdatedEmail(order, webstore.name);
 

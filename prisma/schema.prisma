@@ -206,6 +206,7 @@ model Webstore {
   salesPersonEmail             String                    @default("None")
   otherSupportEmails           String? //when a customer submits a help form, the email will also go to all of these addresses
   orderUpdatedEmails           String?
+  notifyUpdaterOnOrderUpdate   Boolean                   @default(true) //whether to send confirmation email to the person updating an order using the approval form. highly specific setting that should probably be replaced with something more comprehensive.
   customOrderApprovedEmail     String?
   useCustomOrderApprovedEmail  Boolean                   @default(false)
   reminderEmailTargets         String? //semicolon-separated list of email addresses to send reminder emails to about outstanding orders 
