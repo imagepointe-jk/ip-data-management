@@ -2,7 +2,7 @@
 import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import styles from "@/styles/orderApproval/new/approve.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavButtons } from "../NavButtons";
 
 type Props = {
@@ -31,6 +31,11 @@ export function ApproveForm({ requirePin }: Props) {
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    //request parent window to scroll to top
+    window.parent.postMessage({ type: "ip-iframe-scrolltop" }, "*");
+  }, []);
 
   return (
     <div className={styles["main"]}>
