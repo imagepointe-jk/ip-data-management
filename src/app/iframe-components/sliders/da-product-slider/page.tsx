@@ -17,6 +17,7 @@ const HEATHER_MILITARY_GREEN = "#818f6c";
 const CHARCOAL = "#5c5c5c";
 const RED = "#cd2527";
 const WHITE = "#f3f5f7";
+const SAND = "#d19e6c";
 const HEATHER_CHARCOAL = "#a7a7a7";
 const SAFETY_ORANGE = "#f36523";
 const SAFETY_YELLOW = "#cddd2a";
@@ -119,6 +120,56 @@ const products: Product[] = [
       "https://www.imagepointe.com/shop/dignity-apparel-products/union-made-ladies-performance-polo/",
     subtext: "5.4 oz, 100% moisture-wicking polyester",
     colors: [ONYX, CARBON, NAVY, RED, STORM],
+  },
+  {
+    id: "DAH003",
+    name: "9oz Hooded Pullover Sweatshirt",
+    imageUrl:
+      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/apparel/dignity-apparel-9-oz-hooded-pullover-sweatshirt/",
+    subtext: "80/20 cotton/poly blend",
+    colors: [BLACK, PURPLE, NAVY, SAND, SAFETY_YELLOW, HEATHER_CHARCOAL, RED],
+  },
+  {
+    id: "DAZ003",
+    name: "9oz Hooded Full-Zip Sweatshirt",
+    imageUrl:
+      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/apparel/dignity-apparel-9-oz-zip-hoodie/",
+    subtext: "80/20 cotton/poly blend",
+    colors: [BLACK, PURPLE, NAVY, SAFETY_YELLOW, HEATHER_CHARCOAL, RED],
+  },
+  {
+    id: "DAQZ003",
+    name: "Quarter-Zip Fleece Pullover",
+    imageUrl:
+      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/apparel/jackets-outerwear/dignity-apparel-union-made-quarter-zip-fleece-pullover/",
+    subtext: "Cotton/poly blend",
+    colors: [BLACK, NAVY, HEATHER_CHARCOAL, RED],
+  },
+  {
+    id: "DALST002",
+    name: "Premium Long Sleeve Tee",
+    imageUrl:
+      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/dignity-apparel-products/dignity-premium-long-sleeve-tee/",
+    subtext: "6 oz, 100% ringspun cotton",
+    colors: [BLACK, NAVY, HEATHER_CHARCOAL, PURPLE],
+  },
+  {
+    id: "DALST004",
+    name: "Safety Long Sleeve Tee",
+    imageUrl:
+      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/dignity-apparel-products/dignity-safety-long-sleeve-tee/",
+    subtext: "5.8 oz, 50/50 cotton/poly",
+    colors: [SAFETY_ORANGE, SAFETY_YELLOW],
   },
 ];
 
