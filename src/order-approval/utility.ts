@@ -2,6 +2,7 @@ import {
   OrderWorkflowInstance,
   OrderWorkflowStep,
   OrderWorkflowStepProceedListener,
+  Webstore,
 } from "@prisma/client";
 import { decryptWebstoreData } from "./encryption";
 import { getOrder } from "@/fetch/woocommerce";
@@ -98,4 +99,18 @@ export async function createWorkflowInstanceLog(
 
   const webstoreId = workflowInstance?.parentWorkflow.webstoreId || -1; //if instance is not found, -1 will cause an error in createLog that will be caught there
   return createLog(webstoreId, text, severity, event);
+}
+
+export async function getParsedWebstoreOrder(
+  webstore: Webstore,
+  orderId: number
+) {
+  const { key, secret } = decryptWebstoreData(webstore);
+  const orderResponse = await getOrder(orderId, webstore.url, key, secret);
+  if (!orderResponse.ok)
+    throw new Error(
+      `Received a ${orderResponse.status} response code while retrieving the order`
+    );
+  const json = await orderResponse.json();
+  return parseWooCommerceOrderJson(json);
 }

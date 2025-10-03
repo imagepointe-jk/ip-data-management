@@ -15,10 +15,9 @@ import {
 import { env } from "@/env";
 import { sendEmail } from "@/utility/mail";
 import { decryptWebstoreData } from "./encryption";
-import { getOrder, setOrderStatus } from "@/fetch/woocommerce";
+import { setOrderStatus } from "@/fetch/woocommerce";
 import { handleCurrentStep } from "./main";
 import { deduplicateArray } from "@/utility/misc";
-import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import {
   createLog,
   createOrConnectWebstoreUser,
@@ -30,6 +29,7 @@ import {
   Webstore,
   WebstoreUserRole,
 } from "@prisma/client";
+import { getParsedWebstoreOrder } from "./utility";
 
 //#region Main
 type StartWorkflowParams = {
@@ -127,7 +127,7 @@ async function handleAutoApproverCreation(webstore: Webstore, orderId: number) {
   if (!webstore.autoCreateApprover) return;
 
   //webstore setting is true, so take a look at the approver email on the order
-  const order = await getParsedOrder(webstore, orderId);
+  const order = await getParsedWebstoreOrder(webstore, orderId);
   const approverEmail = order.metaData.find(
     (meta) => meta.key === "approver"
   )?.value;
@@ -167,7 +167,7 @@ async function createInstanceOfFirstWorkflow(
 }
 
 async function resolvePurchaserData(webstore: Webstore, orderId: number) {
-  const parsed = await getParsedOrder(webstore, orderId);
+  const parsed = await getParsedWebstoreOrder(webstore, orderId);
 
   const purchaserEmail =
     parsed.metaData.find((meta) => meta.key === "purchaser_email")?.value ||
@@ -230,14 +230,4 @@ async function setOrderOnHold(
   }
 }
 
-async function getParsedOrder(webstore: Webstore, orderId: number) {
-  const { key, secret } = decryptWebstoreData(webstore);
-  const orderResponse = await getOrder(orderId, webstore.url, key, secret);
-  if (!orderResponse.ok)
-    throw new Error(
-      `Received a ${orderResponse.status} response code while retrieving the order`
-    );
-  const json = await orderResponse.json();
-  return parseWooCommerceOrderJson(json);
-}
 //#endregion
