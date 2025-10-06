@@ -123,7 +123,7 @@ export function sendIssuesSheet(
   );
 }
 
-export function createHandlebarsEmailBody(templatePath: string, context?: any) {
+export function runHandlebarsTemplate(templatePath: string, context?: any) {
   const templateSource = fs.readFileSync(
     path.resolve(process.cwd(), templatePath),
     "utf-8"

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { WooCommerceOrder } from "./woocommerce";
+
 export const orderWorkflowActionTypes = [
   "email",
   "mark workflow approved",
@@ -84,4 +85,47 @@ export type WebstoreLogSeverity = z.infer<typeof webstoreLogSeverity>;
 export type WebstoreLogEvent = z.infer<typeof webstoreLogEvent>;
 export type OrderWorkflowEmailContext = {
   order: WooCommerceOrder;
+  instance: {
+    id: number;
+    purchaserEmail: string;
+    purchaserName: string;
+    deniedReason: string | null;
+    deniedByUser: { name: string } | null;
+    approvedByUser: { name: string } | null;
+    approvedComments: string | null;
+    accessCodes: {
+      user: {
+        email: string;
+      };
+    }[];
+  };
+  workflow: {
+    id: number;
+    webstore: {
+      name: string;
+      url: string;
+      shippingEmailFilename: string;
+      otherSupportEmails: string | null;
+      salesPersonEmail: string;
+      roles: {
+        users: {
+          name: string;
+          email: string;
+        }[];
+      }[];
+      checkoutFields: {
+        name: string;
+        label: string;
+      }[];
+    };
+  };
+  targetPrimary: string;
+  userName: string;
+  accessCode:
+    | {
+        guid: string;
+        simplePin: string;
+      }
+    | undefined;
+  approvedByPin: string;
 };

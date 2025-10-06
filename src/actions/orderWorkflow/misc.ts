@@ -2,15 +2,12 @@
 
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { handleWorkflowEvent } from "@/order-approval/main";
-import { getAccessCodeWithIncludes } from "@/db/access/orderApproval";
-import { createHandlebarsEmailBody, sendEmail } from "@/utility/mail";
+import { runHandlebarsTemplate, sendEmail } from "@/utility/mail";
 import {
+  createEmailContext,
   createSupportEmail,
   processFormattedText,
 } from "@/order-approval/mail/mail";
-import fs from "fs";
-import handlebars from "handlebars";
-import path from "path";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { getOrder } from "@/fetch/woocommerce";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
@@ -136,35 +133,36 @@ export async function receiveOrderHelpForm(data: {
       }.`
     );
 
-  const foundCode = await getAccessCodeWithIncludes(`${code}`);
+  const foundCode = await prisma.orderWorkflowAccessCode.findFirst({
+    where: {
+      guid: code,
+    },
+    include: {
+      user: true,
+    },
+  });
   if (!foundCode)
     throw new Error(
       `An order help form was submitted for access code ${code}, but that code was not found in the database.`
     );
-  const {
-    workflowInstance: {
-      parentWorkflow: { webstore },
-      wooCommerceOrderId,
-    },
-    user,
-  } = foundCode;
+
+  const context = await createEmailContext(
+    foundCode.instanceId,
+    foundCode.user.email
+  );
 
   const webstoresEmail = env.IP_WEBSTORES_EMAIL;
   if (!webstoresEmail) throw new Error("Missing webstores email");
 
-  const otherEmails = webstore.otherSupportEmails?.split(";") || [];
+  const otherEmails =
+    context.workflow.webstore.otherSupportEmails?.split(";") || [];
   const targetAddresses = [
     webstoresEmail,
-    webstore.salesPersonEmail,
+    context.workflow.webstore.salesPersonEmail,
     ...otherEmails,
   ];
-  const { body, subject } = await createSupportEmail(
-    webstore,
-    wooCommerceOrderId,
-    user.name,
-    user.email,
-    `${comments}`
-  );
+
+  const { body, subject } = createSupportEmail(context, comments);
 
   //no Promise.all because concurrent connections are throttled with our email service
   for (const address of targetAddresses) {
@@ -177,10 +175,11 @@ export async function receiveOrderHelpForm(data: {
 }
 
 export async function processFormattedTextAction(e: FormData) {
-  const id = +`${e.get("id")}`;
-  const email = `${e.get("email")}`;
+  const instanceId = +`${e.get("id")}`;
+  const targetEmail = `${e.get("email")}`;
   const text = (e.get("text") || "").toString();
-  return processFormattedText(text, id, email);
+  const context = await createEmailContext(instanceId, targetEmail);
+  return processFormattedText(text, context);
 }
 
 //getting data via server action is easy, but not intended by Next.js team.
@@ -217,59 +216,24 @@ export async function sendInvoiceEmail(
   workflowInstanceId: number,
   recipientAddress: string
 ) {
-  const instance = await prisma.orderWorkflowInstance.findUnique({
-    where: {
-      id: workflowInstanceId,
-    },
-    include: {
-      parentWorkflow: {
-        include: {
-          webstore: true,
-        },
-      },
-      approvedByUser: {
-        include: {
-          accessCodes: true,
-        },
-      },
-    },
-  });
-  if (!instance)
-    throw new Error(`Workflow instance ${workflowInstanceId} not found.`);
-
-  const approvedByUserName = instance.approvedByUser?.name || "USER_NOT_FOUND";
-  const approvedByPin =
-    instance.approvedByUser?.accessCodes.find(
-      (code) => code.instanceId === workflowInstanceId
-    )?.simplePin || "PIN_NOT_FOUND";
-
-  const { wooCommerceOrderId, parentWorkflow } = instance;
-  const { key, secret } = decryptWebstoreData(parentWorkflow.webstore);
-  const orderResponse = await getOrder(
-    wooCommerceOrderId,
-    parentWorkflow.webstore.url,
-    key,
-    secret
-  );
-  if (!orderResponse.ok)
-    throw new Error(`Failed to get WooCommerce order ${wooCommerceOrderId}`);
-  const orderJson = await orderResponse.json();
-  const parsedOrder = parseWooCommerceOrderJson(orderJson);
-
-  const templateSource = fs.readFileSync(
-    path.resolve(process.cwd(), "src/order-approval/mail/invoiceEmail.hbs"),
-    "utf-8"
-  );
-  const template = handlebars.compile(templateSource);
-  const message = template({
-    ...parsedOrder,
-    approvedByUserName,
+  const {
+    order,
+    instance: { approvedByUser },
     approvedByPin,
-  });
+  } = await createEmailContext(workflowInstanceId, recipientAddress);
+
+  const message = runHandlebarsTemplate(
+    "src/order-approval/mail/invoiceEmail.hbs",
+    {
+      ...order,
+      approvedByUserName: approvedByUser,
+      approvedByPin,
+    }
+  );
 
   return sendEmail(
     recipientAddress,
-    `Invoice for Order ${parsedOrder.number}`,
+    `Invoice for Order ${order.number}`,
     message
   );
 }
@@ -319,7 +283,6 @@ export async function sendReminderEmails() {
   });
 
   for (const workflow of workflowsWithOldInstances) {
-    console.log(`FOUND ${workflow.instances.length} INSTANCES`);
     if (!workflow.webstore.sendReminderEmails) continue;
 
     const oldInstances = workflow.instances.map((instance) => ({
@@ -352,7 +315,7 @@ export async function sendReminderEmails() {
         continue;
       }
     }
-    const message = createHandlebarsEmailBody(
+    const message = runHandlebarsTemplate(
       "src/order-approval/mail/outstandingInstances.hbs",
       {
         webstoreName: workflow.webstore.name,
