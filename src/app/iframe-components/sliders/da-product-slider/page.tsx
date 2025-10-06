@@ -125,7 +125,7 @@ const products: Product[] = [
     id: "DAH003",
     name: "9oz Hooded Pullover Sweatshirt",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+      "https://imagepointe.com/wp-content/uploads/2025/10/DAH003_Red_Alexis_1817_1200px.jpg",
     productUrl:
       "https://imagepointe.com/shop/apparel/dignity-apparel-9-oz-hooded-pullover-sweatshirt/",
     subtext: "80/20 cotton/poly blend",
@@ -135,7 +135,7 @@ const products: Product[] = [
     id: "DAZ003",
     name: "9oz Hooded Full-Zip Sweatshirt",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+      "https://imagepointe.com/wp-content/uploads/2025/10/DAZ003_SafetyGreen_Larry_Ironworkers_1200px.jpg",
     productUrl:
       "https://imagepointe.com/shop/apparel/dignity-apparel-9-oz-zip-hoodie/",
     subtext: "80/20 cotton/poly blend",
@@ -145,7 +145,7 @@ const products: Product[] = [
     id: "DAQZ003",
     name: "Quarter-Zip Fleece Pullover",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+      "https://imagepointe.com/wp-content/uploads/2025/10/DAQZ003_Navy_Loren_IAM_1200px.jpg",
     productUrl:
       "https://imagepointe.com/shop/apparel/jackets-outerwear/dignity-apparel-union-made-quarter-zip-fleece-pullover/",
     subtext: "Cotton/poly blend",
@@ -155,7 +155,7 @@ const products: Product[] = [
     id: "DALST002",
     name: "Premium Long Sleeve Tee",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+      "https://imagepointe.com/wp-content/uploads/2025/10/DALST002_Black_Jim_1818_1200px.jpg",
     productUrl:
       "https://imagepointe.com/shop/dignity-apparel-products/dignity-premium-long-sleeve-tee/",
     subtext: "6 oz, 100% ringspun cotton",
@@ -165,7 +165,7 @@ const products: Product[] = [
     id: "DALST004",
     name: "Safety Long Sleeve Tee",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04554-DAP001-Dani2-1200px.jpg",
+      "https://imagepointe.com/wp-content/uploads/2025/10/DALS004-SafetyOrange_Gloria_IUOE_1200px.jpg",
     productUrl:
       "https://imagepointe.com/shop/dignity-apparel-products/dignity-safety-long-sleeve-tee/",
     subtext: "5.8 oz, 50/50 cotton/poly",
