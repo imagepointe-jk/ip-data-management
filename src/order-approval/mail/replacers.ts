@@ -25,10 +25,18 @@ export function insertOrderDetails({
       label: field.label,
       value: getCheckoutFieldValue(field.name, order) || "N/A",
     }));
+    const feeLinesSubtotal = order.feeLines.reduce(
+      (accum, item) => accum + +item.total,
+      0
+    );
+    const totalNoShipping =
+      +order.subtotal + feeLinesSubtotal + +order.totalTax;
+
     const output = runHandlebarsTemplate(
       "src/order-approval/mail/orderDetails.hbs",
       {
         ...order,
+        totalNoShipping,
         checkoutValues,
         shippingMethod: order.shippingLines[0]?.method_title,
       }

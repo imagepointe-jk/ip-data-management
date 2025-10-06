@@ -67,6 +67,7 @@ export const wooCommerceFeeLineSchema = z.object({
   id: z.number(),
   name: z.string(),
   total: z.string(),
+  total_tax: z.string(),
 });
 
 //WC returns a lot of order data. only include what's necessary in the schema.
