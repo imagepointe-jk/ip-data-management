@@ -3,7 +3,7 @@ import { OrderWorkflowInstance } from "@prisma/client";
 import { decryptWebstoreData } from "../encryption";
 import { setOrderStatus } from "@/fetch/woocommerce";
 import { createLog } from "@/actions/orderWorkflow/create";
-import { createWorkflowInstanceLog } from "../utility";
+import { createWorkflowInstanceLog } from "../utility/server";
 
 export async function doCancelOrderAction(
   workflowInstance: OrderWorkflowInstance

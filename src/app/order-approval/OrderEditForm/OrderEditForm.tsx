@@ -4,7 +4,7 @@ import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
 import { LineItems } from "./LineItems";
 import { OrderTotals } from "./OrderTotals";
-import { DraftFunction, useImmer } from "use-immer";
+import { useImmer } from "use-immer";
 import { useEffect, useState } from "react";
 import { ShippingInfo } from "./ShippingInfo";
 import { AdditionalInfo } from "./AdditionalInfo";
@@ -14,13 +14,13 @@ import { Overlays } from "./Overlays";
 import { HelpForm } from "./HelpForm";
 import { NavButtons } from "../NavButtons";
 import { updateOrderAction } from "@/actions/orderWorkflow/update";
-import { createUpdateData } from "./helpers/order";
 import {
   getRatedShippingMethods,
   RatedShippingMethod,
   reviseOrderAfterShippingRates,
 } from "./helpers/shipping";
 import { BeforeSubmitArea } from "./BeforeSubmitArea";
+import { wasOrderStateModified } from "./helpers/order";
 
 export type MetaData = {
   key: string;
@@ -43,30 +43,18 @@ export function OrderEditForm({
   shippingMethods,
   allowHelpRequest,
 }: Props) {
-  const [order, sO] = useImmer(initialOrder); //"sO" = setOrder; should only be called from the modifyOrder wrapper
-  const [stateModified, setStateModified] = useState(false); //allows us to mark the order state as "modified" to remind the user that they've made changes
+  const [order, setOrder] = useImmer(initialOrder);
+  const [staleOrder, setStaleOrder] = useState(initialOrder); //only updated when the order gets updated in the database; used to diff and determine if the user has changed anything
   //to add metadata that isn't already in the WC order, WC requires us to make a separate POST request
   //keep track of anything we're going to add here
-  const [metaDataToAdd, sMDTA] = useState<MetaData[]>([]); //sMDTA = setMetaDataToAdd; should only be called from the modifyMetaDataToAdd wrapper
+  const [metaDataToAdd, setMetaDataToAdd] = useState<MetaData[]>([]);
   const [status, setStatus] = useState<OrderEditFormStatus>("loading");
   const [removeLineItemIds, setRemoveLineItemIds] = useState([] as number[]); //list of line item IDs to remove from the woocommerce order when "save changes" is clicked
   const [helpMode, setHelpMode] = useState(false);
   const [ratedShippingMethods, setRatedShippingMethods] = useState<
     RatedShippingMethod[]
   >([]);
-
-  //force all order state modifications to go through this wrapper; this ensures that all updates mark the order state as "modified"
-  function modifyOrder(
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) {
-    sO(arg);
-    setStateModified(true);
-  }
-
-  function modifyMetaDataToAdd(metaData: MetaData[]) {
-    sMDTA(metaData);
-    setStateModified(true);
-  }
+  const stateModified = wasOrderStateModified(staleOrder, order, metaDataToAdd);
 
   async function saveOrder() {
     setStatus("loading");
@@ -93,16 +81,18 @@ export function OrderEditForm({
       start = Date.now();
       const updatedOrder = await updateOrderAction(
         storeUrl,
-        createUpdateData(revisedOrder, removeLineItemIds),
+        staleOrder,
+        revisedOrder,
+        removeLineItemIds,
         metaDataToAdd,
         userEmail
       );
 
       console.log(`Order updated in ${Date.now() - start} ms.`);
       setStatus("idle");
-      modifyOrder(updatedOrder);
-      modifyMetaDataToAdd([]);
-      setStateModified(false);
+      setOrder(updatedOrder);
+      setStaleOrder(updatedOrder);
+      setMetaDataToAdd([]);
       setRemoveLineItemIds([]);
     } catch (error) {
       console.error(error);
@@ -132,24 +122,24 @@ export function OrderEditForm({
         <div>Placed on {order.dateCreated.toLocaleDateString()}</div>
         <LineItems
           order={order}
-          modifyOrder={modifyOrder}
+          setOrder={setOrder}
           removeLineItemIds={removeLineItemIds}
           setRemoveLineItemIds={setRemoveLineItemIds}
         />
         <div className={styles["fields-and-totals-flex"]}>
-          <ShippingInfo order={order} modifyOrder={modifyOrder} />
+          <ShippingInfo order={order} setOrder={setOrder} />
           <OrderTotals order={order} />
         </div>
         <AdditionalInfo
           order={order}
           checkoutFields={checkoutFields}
           metaDataToAdd={metaDataToAdd}
-          modifyOrder={modifyOrder}
-          modifyMetaDataToAdd={modifyMetaDataToAdd}
+          setOrder={setOrder}
+          setMetaDataToAdd={setMetaDataToAdd}
         />
         <BeforeSubmitArea
           order={order}
-          modifyOrder={modifyOrder}
+          setOrder={setOrder}
           ratedShippingMethods={ratedShippingMethods}
         />
         <SubmitArea
@@ -163,9 +153,6 @@ export function OrderEditForm({
           onClickSave={saveOrder}
           setHelpMode={setHelpMode}
           setStatus={setStatus}
-          setStateModified={setStateModified}
-          modifyOrder={modifyOrder}
-          modifyMetaDataToAdd={modifyMetaDataToAdd}
         />
         {helpMode && <HelpForm setHelpMode={setHelpMode} />}
         <Overlays status={status} setStatus={setStatus} />

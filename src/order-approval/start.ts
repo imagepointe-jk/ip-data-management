@@ -29,7 +29,7 @@ import {
   Webstore,
   WebstoreUserRole,
 } from "@prisma/client";
-import { getParsedWebstoreOrder } from "./utility";
+import { getParsedWebstoreOrder } from "./utility/server";
 
 //#region Main
 type StartWorkflowParams = {

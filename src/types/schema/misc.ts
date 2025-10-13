@@ -20,3 +20,5 @@ export type ServerActionResult = {
 export type NextSearchParams = Promise<{
   [key: string]: string | string[] | undefined;
 }>; //from https://nextjs.org/docs/app/guides/upgrading/version-15
+
+export type DiffStatus = "changed" | "unchanged";

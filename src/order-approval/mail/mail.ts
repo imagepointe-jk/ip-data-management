@@ -16,7 +16,7 @@ import {
   insertStoreName,
   insertUserName,
 } from "./replacers";
-import { getParsedWebstoreOrder } from "../utility";
+import { getParsedWebstoreOrder } from "../utility/server";
 import { runHandlebarsTemplate } from "@/utility/mail";
 import {
   getWorkflowInstanceWithIncludes,

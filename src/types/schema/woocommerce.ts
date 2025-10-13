@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DiffStatus } from "./misc";
 
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
@@ -131,4 +132,28 @@ export type WooCommerceASIProductUpdateData = {
       price: string;
     };
   };
+};
+export type WooCommerceOrderDiff = {
+  lineItems: {
+    id: number;
+    quantity: DiffStatus;
+  }[];
+  customerNote: DiffStatus;
+  shipping: {
+    firstName: DiffStatus;
+    lastName: DiffStatus;
+    company: DiffStatus;
+    phone: DiffStatus;
+    address1: DiffStatus;
+    address2: DiffStatus;
+    city: DiffStatus;
+    state: DiffStatus;
+    postcode: DiffStatus;
+    country: DiffStatus;
+  };
+  shippingMethod: DiffStatus;
+  metaData: {
+    key: string;
+    value: DiffStatus;
+  }[];
 };

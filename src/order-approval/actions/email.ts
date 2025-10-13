@@ -2,7 +2,7 @@ import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
 import {
   createWorkflowInstanceLog,
   resolveDynamicUserIdentifier,
-} from "../utility";
+} from "../utility/server";
 import { createEmailContext, processFormattedText } from "../mail/mail";
 import { sendEmail } from "@/utility/mail";
 

@@ -4,11 +4,9 @@ import { DraftFunction } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
 };
-export function ShippingInfo({ order, modifyOrder }: Props) {
+export function ShippingInfo({ order, setOrder }: Props) {
   return (
     <FieldsSection
       heading="Shipping"
@@ -19,7 +17,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.firstName,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.firstName = value;
             }),
         },
@@ -29,7 +27,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.lastName,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.lastName = value;
             }),
         },
@@ -39,7 +37,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.address1,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.address1 = value;
             }),
         },
@@ -49,7 +47,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.address2,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.address2 = value;
             }),
         },
@@ -59,7 +57,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.company,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.company = value;
             }),
         },
@@ -69,7 +67,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.phone,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.phone = value;
             }),
         },
@@ -79,7 +77,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.city,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.city = value;
             }),
         },
@@ -89,7 +87,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.state,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.state = value;
             }),
         },
@@ -99,7 +97,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
           type: "text",
           value: order.shipping.postcode,
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.postcode = value;
             }),
         },
@@ -119,7 +117,7 @@ export function ShippingInfo({ order, modifyOrder }: Props) {
             },
           ],
           onChange: (value) =>
-            modifyOrder((draft) => {
+            setOrder((draft) => {
               draft.shipping.country = value;
             }),
         },

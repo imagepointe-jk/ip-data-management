@@ -10,14 +10,12 @@ import { DraftFunction } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
   ratedShippingMethods: RatedShippingMethod[];
 };
 export function ShippingMethods({
   order,
-  modifyOrder,
+  setOrder,
   ratedShippingMethods,
 }: Props) {
   const selectedMethod = order.shippingLines[0]?.method_title || "";
@@ -30,7 +28,7 @@ export function ShippingMethods({
   );
 
   function onChangeMethod(method: RatedShippingMethod) {
-    modifyOrder((draft) => {
+    setOrder((draft) => {
       const shippingLine = draft.shippingLines[0];
       if (!shippingLine) return;
       shippingLine.method_title = cleanShippingMethodName(method.name);

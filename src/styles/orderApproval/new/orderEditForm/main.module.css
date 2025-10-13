@@ -37,6 +37,11 @@
   border-radius: 10px;
 }
 
+.button-primary:disabled {
+  background-color: #8db1cf;
+  cursor: initial;
+}
+
 .info-circle-warning {
   color: #e78200;
 }

@@ -15,9 +15,6 @@ type Props = {
   onClickSave: () => void;
   setHelpMode: (helpMode: boolean) => void;
   setStatus: (status: OrderEditFormStatus) => void;
-  setStateModified: (modified: boolean) => void;
-  modifyOrder: (order: WooCommerceOrder) => void;
-  modifyMetaDataToAdd: (metaData: MetaData[]) => void;
 };
 export function SubmitArea({
   stateModified,
@@ -28,7 +25,12 @@ export function SubmitArea({
 }: Props) {
   return (
     <div className={styles["submit-row"]}>
-      <button className={styles["button-primary"]} onClick={onClickSave}>
+      <button
+        className={styles["button-primary"]}
+        onClick={onClickSave}
+        title={!stateModified ? "There are no changes to save." : undefined}
+        disabled={!stateModified}
+      >
         Save All Changes
       </button>
       {(stateModified || removeLineItemIds.length > 0) && (

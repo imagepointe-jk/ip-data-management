@@ -8,14 +8,12 @@ import { DraftFunction } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
   ratedShippingMethods: RatedShippingMethod[];
 };
 export function BeforeSubmitArea({
   order,
-  modifyOrder,
+  setOrder,
   ratedShippingMethods,
 }: Props) {
   return (
@@ -23,7 +21,7 @@ export function BeforeSubmitArea({
       <div className={styles["before-submit-area-flex"]}>
         <ShippingMethods
           order={order}
-          modifyOrder={modifyOrder}
+          setOrder={setOrder}
           ratedShippingMethods={ratedShippingMethods}
         />
         <div className={styles["info-box"]}>

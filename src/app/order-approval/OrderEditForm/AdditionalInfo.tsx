@@ -8,17 +8,15 @@ type Props = {
   order: WooCommerceOrder;
   checkoutFields: WebstoreCheckoutField[];
   metaDataToAdd: MetaData[];
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
-  modifyMetaDataToAdd: (newMetaDataToAdd: MetaData[]) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
+  setMetaDataToAdd: (newMetaDataToAdd: MetaData[]) => void;
 };
 export function AdditionalInfo({
   order,
   checkoutFields,
   metaDataToAdd,
-  modifyOrder,
-  modifyMetaDataToAdd,
+  setOrder,
+  setMetaDataToAdd,
 }: Props) {
   function getFieldValue(fieldName: string) {
     //customer_note is not in the WC metadata like other custom checkout fields,
@@ -43,7 +41,7 @@ export function AdditionalInfo({
   function onChangeField(key: string, value: string) {
     //handle comments field differently since WooCommerce doesn't put it in the metadata
     if (key === "order_comments") {
-      modifyOrder((draft) => {
+      setOrder((draft) => {
         if (draft) draft.customerNote = value;
       });
       return;
@@ -52,7 +50,7 @@ export function AdditionalInfo({
     //if a metadata with the given key already exists, edit it directly and then exit
     const metaDataExists = order.metaData.find((meta) => meta.key === key);
     if (metaDataExists) {
-      modifyOrder((draft) => {
+      setOrder((draft) => {
         if (!draft) return;
 
         const metaDataMatch = draft.metaData.find((meta) => meta.key === key);
@@ -72,17 +70,17 @@ export function AdditionalInfo({
       if (!value) {
         //if the user erased the value, we want to forget about this particular additional metadata
         //so it won't be included in the POST to add additional metadata
-        modifyMetaDataToAdd(metaDataToAdd.filter((meta) => meta.key !== key));
+        setMetaDataToAdd(metaDataToAdd.filter((meta) => meta.key !== key));
       } else {
         //but if there is a value, update the existing additional metadata
         const newAdditionalMetaData = metaDataToAdd.map((meta) =>
           meta.key === key ? { key, value } : meta
         );
-        modifyMetaDataToAdd(newAdditionalMetaData);
+        setMetaDataToAdd(newAdditionalMetaData);
       }
     } else {
       //the incoming key does NOT already exist in what we're going to add, so add it now
-      modifyMetaDataToAdd([...metaDataToAdd, { key, value }]);
+      setMetaDataToAdd([...metaDataToAdd, { key, value }]);
     }
   }
 

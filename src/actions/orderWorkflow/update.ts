@@ -1,17 +1,15 @@
 "use server";
 
-import {
-  addMetaDataToOrder,
-  OrderUpdateData,
-  updateOrder,
-} from "@/fetch/woocommerce";
+import { addMetaDataToOrder, updateOrder } from "@/fetch/woocommerce";
 import { decryptWebstoreData } from "@/order-approval/encryption";
 import { handleOrderUpdated } from "@/order-approval/main";
+import { createUpdateData } from "@/order-approval/utility/server";
 import { prisma } from "@/prisma";
 import {
   WebstoreEditorData,
   WorkflowEditorData,
 } from "@/types/dto/orderApproval";
+import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { encrypt } from "@/utility/misc";
 
@@ -187,10 +185,13 @@ export async function setUserEmail(id: number, email: string) {
 
 export async function updateOrderAction(
   storeUrl: string,
-  updateData: OrderUpdateData,
+  initialOrder: WooCommerceOrder,
+  updatedOrder: WooCommerceOrder,
+  removeLineItemIds: number[],
   metaDataToAdd: { key: string; value: string }[],
   userEmail: string //the email of the user initiating the update action
 ) {
+  const updateData = createUpdateData(updatedOrder, removeLineItemIds);
   const webstore = await prisma.webstore.findUnique({
     where: {
       url: storeUrl,
@@ -221,7 +222,12 @@ export async function updateOrderAction(
     );
   const updateJson = await updateResponse.json();
   const parsed = parseWooCommerceOrderJson(updateJson);
-  handleOrderUpdated(parsed, storeUrl, userEmail);
+  handleOrderUpdated({
+    order: parsed,
+    updateData: { initialOrder, updatedOrder, metaDataAdded: metaDataToAdd },
+    storeUrl,
+    userEmail,
+  });
 
   return parsed;
 }

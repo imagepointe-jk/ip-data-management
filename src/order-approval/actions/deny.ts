@@ -1,6 +1,6 @@
 import { setWorkflowInstanceStatus } from "@/db/access/orderApproval";
 import { OrderWorkflowInstance } from "@prisma/client";
-import { createWorkflowInstanceLog } from "../utility";
+import { createWorkflowInstanceLog } from "../utility/server";
 
 export async function doWorkflowDeniedAction(
   workflowInstance: OrderWorkflowInstance

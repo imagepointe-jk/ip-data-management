@@ -14,8 +14,9 @@ import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { sendEmail } from "@/utility/mail";
 import { OrderWorkflowInstance } from "@prisma/client";
 import { createOrderUpdatedEmail } from "./mail/mail";
-import { matchProceedListenerToEvent } from "./utility";
+import { matchProceedListenerToEvent } from "./utility/server";
 import { doStepAction } from "./actions/main";
+import { shouldSendOrderUpdatedEmails } from "./utility/global";
 
 //! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
@@ -154,11 +155,26 @@ async function proceedToNextStepOrFinish(
   }
 }
 
-export async function handleOrderUpdated(
-  order: WooCommerceOrder,
-  storeUrl: string,
-  userEmail: string
-) {
+export async function handleOrderUpdated(params: {
+  order: WooCommerceOrder;
+  updateData: {
+    initialOrder: WooCommerceOrder;
+    updatedOrder: WooCommerceOrder;
+    metaDataAdded: { key: string; value: string }[];
+  };
+  storeUrl: string;
+  userEmail: string;
+}) {
+  const {
+    order,
+    storeUrl,
+    userEmail,
+    updateData: { initialOrder, metaDataAdded, updatedOrder },
+  } = params;
+
+  if (!shouldSendOrderUpdatedEmails(initialOrder, updatedOrder, metaDataAdded))
+    return;
+
   const webstore = await getWebstore(storeUrl);
   if (!webstore) throw new Error(`No webstore with url ${storeUrl}`);
 

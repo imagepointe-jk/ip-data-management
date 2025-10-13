@@ -5,15 +5,13 @@ import { DraftFunction } from "use-immer";
 
 type Props = {
   order: WooCommerceOrder;
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
   removeLineItemIds: number[];
   setRemoveLineItemIds: (ids: number[]) => void;
 };
 export function LineItems({
   order,
-  modifyOrder,
+  setOrder,
   removeLineItemIds,
   setRemoveLineItemIds,
 }: Props) {
@@ -49,7 +47,7 @@ export function LineItems({
           key={item.id}
           order={order}
           lineItem={item}
-          modifyOrder={modifyOrder}
+          setOrder={setOrder}
           removeLineItemIds={removeLineItemIds}
           setRemoveLineItemIds={setRemoveLineItemIds}
         />

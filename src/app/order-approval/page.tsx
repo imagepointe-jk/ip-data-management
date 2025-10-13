@@ -12,7 +12,7 @@ import {
   OrderWorkflowStepProceedListener,
 } from "@prisma/client";
 import { deduplicateArray } from "@/utility/misc";
-import { resolveDynamicUserIdentifier } from "@/order-approval/utility";
+import { resolveDynamicUserIdentifier } from "@/order-approval/utility/server";
 
 type Props = {
   searchParams: NextSearchParams;

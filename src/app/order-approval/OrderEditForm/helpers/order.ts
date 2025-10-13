@@ -1,28 +1,30 @@
+import { createOrderDiff } from "@/order-approval/utility/global";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 
-export function createUpdateData(
-  order: WooCommerceOrder,
-  removeLineItemIds: number[]
+export function wasOrderStateModified(
+  staleOrder: WooCommerceOrder,
+  newOrder: WooCommerceOrder,
+  metaDataToAdd: { key: string; value: string }[]
 ) {
-  //woocommerce API requires us to set quantity to 0 for any line items we want to delete
-  //set quantity 0 as needed, but leave the rest of the line items unchanged
-  const lineItemsWithDeletions = order.lineItems.map((lineItem) => ({
-    ...lineItem,
-    quantity: removeLineItemIds.includes(lineItem.id) ? 0 : lineItem.quantity,
-  }));
+  if (metaDataToAdd.length > 0) return true;
 
-  return {
-    id: order.id,
-    customer_note: order.customerNote,
-    line_items: lineItemsWithDeletions,
-    meta_data: order.metaData,
-    shipping: {
-      ...order.shipping,
-      first_name: order.shipping.firstName,
-      last_name: order.shipping.lastName,
-      address_1: order.shipping.address1,
-      address_2: order.shipping.address2,
-    },
-    shipping_lines: order.shippingLines,
-  };
+  const diff = createOrderDiff(staleOrder, newOrder, metaDataToAdd);
+
+  //check basic properties
+  if (diff.customerNote === "changed") return true;
+  if (diff.shippingMethod === "changed") return true;
+
+  //check metadata
+  if (!!diff.metaData.find((item) => item.value === "changed")) return true;
+
+  //check all shipping properties
+  let key: keyof typeof diff.shipping;
+  for (key in diff.shipping) {
+    if (diff.shipping[key] === "changed") return true;
+  }
+
+  //check line items for changed quantities
+  if (!!diff.lineItems.find((item) => item.quantity === "changed")) return true;
+
+  return false;
 }

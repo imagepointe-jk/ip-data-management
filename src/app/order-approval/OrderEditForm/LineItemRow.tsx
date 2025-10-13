@@ -13,16 +13,14 @@ type Props = {
     price: number;
     total: string;
   };
-  modifyOrder: (
-    arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>
-  ) => void;
+  setOrder: (arg: WooCommerceOrder | DraftFunction<WooCommerceOrder>) => void;
   removeLineItemIds: number[];
   setRemoveLineItemIds: (ids: number[]) => void;
 };
 export function LineItemRow({
   order,
   lineItem,
-  modifyOrder,
+  setOrder,
   removeLineItemIds,
   setRemoveLineItemIds,
 }: Props) {
@@ -34,7 +32,7 @@ export function LineItemRow({
     const newValue = +value;
     if (isNaN(newValue) || newValue < 1) return;
 
-    modifyOrder((draft) => {
+    setOrder((draft) => {
       const lineItem = draft.lineItems.find((item) => item.id === id);
       if (!lineItem) {
         console.error(`Line item with id ${id} not found`);
