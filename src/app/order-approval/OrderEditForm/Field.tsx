@@ -1,6 +1,6 @@
 import { HTMLInputTypeAttribute } from "react";
-import styles from "@/styles/orderApproval/new/orderEditForm/fieldsSection.module.css";
-import stylesMain from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/fieldsSection.module.css";
+import stylesMain from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 
 export type FieldType = {
   id: string;

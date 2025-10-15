@@ -1,5 +1,5 @@
 import { OrderEditFormStatus } from "./OrderEditForm";
-import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 
 type Props = {
   status: OrderEditFormStatus;

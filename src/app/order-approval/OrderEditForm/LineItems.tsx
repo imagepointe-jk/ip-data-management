@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/new/orderEditForm/lineItems.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/lineItems.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { LineItemRow } from "./LineItemRow";
 import { DraftFunction } from "use-immer";

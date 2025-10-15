@@ -1,6 +1,5 @@
-// import { OrderWorkflowStep } from "@prisma/client";
 import { useEditingContext } from "../WorkflowEditingContext";
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/workflowEditor.module.css";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

@@ -99,37 +99,3 @@
   margin-top: 10px;
   font-size: 0.8rem;
 }
-
-.nav-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
-}
-
-.nav-buttons button {
-  color: white;
-  text-decoration: none;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.125rem;
-  cursor: pointer;
-}
-
-.approve-button {
-  background-color: green;
-}
-
-.approve-button.disabled {
-  cursor: initial;
-  background-color: rgb(146, 202, 146);
-}
-
-.review-button {
-  background-color: #006ac6;
-}
-
-.deny-button {
-  background-color: red;
-}

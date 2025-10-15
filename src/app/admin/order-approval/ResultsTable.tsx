@@ -1,7 +1,7 @@
 "use client";
 
 import GenericTable from "@/components/GenericTable";
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/main.module.css";
 import Link from "next/link";
 
 type Props = {

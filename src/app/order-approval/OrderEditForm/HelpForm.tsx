@@ -1,8 +1,8 @@
 import { receiveOrderHelpForm } from "@/actions/orderWorkflow/misc";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
 import { CONTACT_US_URL } from "@/constants";
-import styles from "@/styles/orderApproval/new/orderEditForm/helpForm.module.css";
-import stylesMain from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/helpForm.module.css";
+import stylesMain from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 import {
   faCheckCircle,
   faChevronLeft,

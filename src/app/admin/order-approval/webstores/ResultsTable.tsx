@@ -3,7 +3,7 @@
 import { deleteWebstore } from "@/actions/orderWorkflow/delete";
 import GenericTable from "@/components/GenericTable";
 import { useToast } from "@/components/ToastProvider";
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/main.module.css";
 import { WebstoreDataFull } from "@/types/dto/orderApproval";
 import { deduplicateArray } from "@/utility/misc";
 import Link from "next/link";

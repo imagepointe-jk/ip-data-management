@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/new/orderEditForm/shipping.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/shipping.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import {
   cleanShippingMethodName,

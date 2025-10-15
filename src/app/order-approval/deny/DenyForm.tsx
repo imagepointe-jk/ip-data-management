@@ -1,7 +1,7 @@
 "use client";
 import { receiveWorkflowEvent } from "@/actions/orderWorkflow/misc";
 import { ButtonWithLoading } from "@/components/ButtonWithLoading";
-import styles from "@/styles/orderApproval/new/deny.module.css";
+import styles from "@/styles/orderApproval/approverArea/deny.module.css";
 import { useEffect, useState } from "react";
 import { NavButtons } from "../NavButtons";
 

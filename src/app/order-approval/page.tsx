@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/new/page.module.css";
+import styles from "@/styles/orderApproval/approverArea/main.module.css";
 import { parseWooCommerceOrderJson } from "@/types/validations/woo";
 import { NextSearchParams } from "@/types/schema/misc";
 import { prisma } from "@/prisma";

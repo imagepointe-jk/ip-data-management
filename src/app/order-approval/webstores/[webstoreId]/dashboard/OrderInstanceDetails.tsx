@@ -1,5 +1,5 @@
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
-import styles from "@/styles/orderApproval/approverDashboard.module.css";
+import styles from "@/styles/orderApproval/approverDashboard/main.module.css";
 import { OrderWorkflowInstance, WebstoreCheckoutField } from "@prisma/client";
 
 type Props = {

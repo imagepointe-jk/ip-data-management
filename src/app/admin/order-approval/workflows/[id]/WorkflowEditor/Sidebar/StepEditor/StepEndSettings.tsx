@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/workflowEditor.module.css";
 import { EventListener } from "./EventListener";
 import { createEventListener } from "@/actions/orderWorkflow/create";
 import { useEditingContext } from "../../../WorkflowEditingContext";

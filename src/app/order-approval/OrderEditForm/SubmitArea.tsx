@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

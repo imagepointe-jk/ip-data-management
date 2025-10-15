@@ -1,5 +1,5 @@
 import { DraggableDiv } from "@/components/DraggableDiv/DraggableDiv";
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/workflowEditor.module.css";
 import { useEditingContext } from "../WorkflowEditingContext";
 import { StepDragBar } from "./StepDragBar";
 

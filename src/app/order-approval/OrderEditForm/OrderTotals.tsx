@@ -1,5 +1,5 @@
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
-import styles from "@/styles/orderApproval/new/orderEditForm/orderTotals.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/orderTotals.module.css";
 
 type Props = {
   order: WooCommerceOrder;

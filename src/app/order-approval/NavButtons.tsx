@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/main.module.css";
 import { useRouter } from "next/navigation";
 
 type Props = {

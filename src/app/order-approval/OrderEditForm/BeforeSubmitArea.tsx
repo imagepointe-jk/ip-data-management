@@ -1,7 +1,7 @@
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { RatedShippingMethod } from "./helpers/shipping";
 import { ShippingMethods } from "./ShippingMethods";
-import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { DraftFunction } from "use-immer";

@@ -1,4 +1,4 @@
-import styles from "@/styles/orderApproval/new/orderEditForm/fieldsSection.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/fieldsSection.module.css";
 import { Field, FieldType } from "./Field";
 
 type Props = {

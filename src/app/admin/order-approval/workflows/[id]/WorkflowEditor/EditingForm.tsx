@@ -1,7 +1,7 @@
 "use client";
 
 import { createStep } from "@/actions/orderWorkflow/create";
-import styles from "@/styles/orderApproval/orderApproval.module.css";
+import styles from "@/styles/orderApproval/admin/workflowEditor.module.css";
 import Link from "next/link";
 import { ChangeEvent } from "react";
 import { useEditingContext } from "../WorkflowEditingContext";

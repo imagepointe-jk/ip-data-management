@@ -1,7 +1,7 @@
 "use client";
 
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
-import styles from "@/styles/orderApproval/new/orderEditForm/main.module.css";
+import styles from "@/styles/orderApproval/approverArea/orderEditForm/main.module.css";
 import { LineItems } from "./LineItems";
 import { OrderTotals } from "./OrderTotals";
 import { useImmer } from "use-immer";

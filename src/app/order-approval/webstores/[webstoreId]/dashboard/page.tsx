@@ -1,5 +1,5 @@
-import styles from "@/styles/orderApproval/approverDashboard.module.css";
-import "@/styles/orderApproval/approverDashboard.css";
+import styles from "@/styles/orderApproval/approverDashboard/main.module.css";
+import "@/styles/orderApproval/approverDashboard/main.css";
 import { OrderInstanceRow } from "./OrderInstanceRow";
 import { IframeHelperProvider } from "@/components/IframeHelper/IframeHelperProvider";
 import { prisma } from "@/prisma";
