@@ -259,7 +259,8 @@ model OrderWorkflow {
   name       String
   webstoreId Int
   webstore   Webstore                @relation(fields: [webstoreId], references: [id])
-  steps      OrderWorkflowStep[]
+  steps      OrderWorkflowStep[]     @relation("AllSteps")
+  firstStep  OrderWorkflowStep?      @relation("FirstStep")
   instances  OrderWorkflowInstance[]
 }
 
@@ -294,7 +295,9 @@ model OrderWorkflowStep {
   proceedImmediatelyTo String? //if defined, will proceed to the specified step without waiting for events
   proceedListeners     OrderWorkflowStepProceedListener[]
   workflowId           Int
-  workflow             OrderWorkflow                      @relation(fields: [workflowId], references: [id])
+  workflow             OrderWorkflow                      @relation("AllSteps", fields: [workflowId], references: [id])
+  firstStepInId        Int?                               @unique
+  firstStepIn          OrderWorkflow?                     @relation("FirstStep", fields: [firstStepInId], references: [id])
   displayId            Int?
   display              OrderWorkflowStepDisplay?
 }

@@ -220,6 +220,7 @@ export async function getWorkflowWithIncludes(id: number) {
           checkoutFields: true,
         },
       },
+      firstStep: true,
     },
   });
 }

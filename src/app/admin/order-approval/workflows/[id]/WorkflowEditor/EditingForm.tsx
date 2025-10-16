@@ -39,6 +39,14 @@ export function EditingForm() {
     });
   }
 
+  function onChangeFirstStep(id: number) {
+    updateWorkflowState((draft) => {
+      const step = draft.steps.find((step) => step.id === id);
+      if (!step) return;
+      draft.firstStep = step;
+    });
+  }
+
   return (
     <div className="vert-flex-group" style={{ position: "relative" }}>
       <Link href={`${workflowState.id}/instances`}>
@@ -55,6 +63,22 @@ export function EditingForm() {
           className="input-major"
         />
       </h2>
+      <div>
+        First Step (currently unused):{" "}
+        <select
+          onChange={(e) => onChangeFirstStep(+e.target.value)}
+          value={workflowState.firstStep?.id}
+        >
+          {[
+            <option key={0}></option>,
+            ...workflowState.steps.map((step) => (
+              <option key={step.id} value={step.id}>
+                {step.name}
+              </option>
+            )),
+          ]}
+        </select>
+      </div>
       <div className={styles["steps-workspace"]}>
         <ConnectionLines lines={createConnectionLines(workflowState.steps)} />
         {sorted.map((step) => (

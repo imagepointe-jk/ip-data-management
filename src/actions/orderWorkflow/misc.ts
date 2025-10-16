@@ -208,6 +208,7 @@ export async function getFullWorkflow(
         },
       },
       instances: true,
+      firstStep: true,
     },
   });
 }

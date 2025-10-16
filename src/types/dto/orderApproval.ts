@@ -107,6 +107,7 @@ export type WorkflowEditorData = {
     } | null;
     proceedListeners: ProceedListenerDTO[];
   })[];
+  firstStep: StepDTO | null;
   instances: {}[];
 };
 

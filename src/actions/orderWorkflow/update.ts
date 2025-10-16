@@ -25,6 +25,13 @@ export async function updateWorkflow(data: WorkflowEditorData) {
       },
       data: {
         name: data.name,
+        firstStep: data.firstStep
+          ? {
+              connect: {
+                id: data.firstStep?.id,
+              },
+            }
+          : undefined,
       },
     }),
     ...data.steps.map((step) =>
