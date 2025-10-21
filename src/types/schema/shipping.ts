@@ -56,6 +56,7 @@ export const upsRateRequestSchema = z.object({
     }),
   }),
 });
+export const upsBatchRateRequestSchema = z.array(upsRateRequestSchema);
 export const upsRateResponseSchema = z.object({
   RateResponse: z.object({
     RatedShipment: z.object({

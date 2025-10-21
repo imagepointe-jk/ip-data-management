@@ -1,4 +1,5 @@
 import {
+  upsBatchRateRequestSchema,
   upsRateRequestSchema,
   upsRateResponseSchema,
   uspsDomesticPriceRequestSchema,
@@ -8,6 +9,10 @@ import {
 
 export function validateUpsRateRequest(json: any) {
   return upsRateRequestSchema.parse(json);
+}
+
+export function validateUpsBatchRateRequest(json: any) {
+  return upsBatchRateRequestSchema.parse(json);
 }
 
 export function validateUpsRateResponse(json: any) {
