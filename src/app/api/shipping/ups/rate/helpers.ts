@@ -27,6 +27,7 @@ export async function parseUpsError(response: Response): Promise<AppError> {
   }
 }
 
+//UPS errors we consider safe to allow the client to see. if an error isn't found in this list, it won't be shown to the client.
 const upsErrors: { code: string; message: string }[] = [
   {
     code: "111217",
@@ -34,11 +35,12 @@ const upsErrors: { code: string; message: string }[] = [
   },
   {
     code: "111100",
-    message: "Service not available for the given location(s)",
+    message: "The requested service is invalid from the selected origin",
   },
   {
     code: "111210",
-    message: "Service not available for the given location(s)",
+    message:
+      "The requested service is unavailable between the selected locations",
   },
   {
     code: "111580",
@@ -59,5 +61,10 @@ const upsErrors: { code: string; message: string }[] = [
   {
     code: "111215",
     message: "Service not available for residential destinations",
+  },
+  {
+    code: "120052",
+    message:
+      "Shipper's UPS Account is not enabled for the requested UPS Ground Saver service",
   },
 ];
