@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
         return {
           statusCode: OK,
           message: null,
+          service: item.RateRequest.Shipment.Service,
           data: json,
         };
       } catch (error) {
@@ -34,12 +35,14 @@ export async function POST(request: NextRequest) {
           return {
             statusCode: error.statusCode,
             message: error.clientMessage,
+            service: item.RateRequest.Shipment.Service,
             data: null,
           };
         } else {
           return {
             statusCode: INTERNAL_SERVER_ERROR,
             message: "There was an unknown issue requesting a rate from UPS.",
+            service: item.RateRequest.Shipment.Service,
             data: null,
           };
         }
