@@ -43,16 +43,18 @@ export const upsRateRequestSchema = z.object({
         Description: z.string(),
       }),
       NumOfPieces: z.string(),
-      Package: z.object({
-        PackagingType: z.object({
-          Code: z.string(),
-          Description: z.string(),
-        }),
-        PackageWeight: z.object({
-          UnitOfMeasurement: unitOfMeasurementSchema,
-          Weight: z.string(),
-        }),
-      }),
+      Package: z.array(
+        z.object({
+          PackagingType: z.object({
+            Code: z.string(),
+            Description: z.string(),
+          }),
+          PackageWeight: z.object({
+            UnitOfMeasurement: unitOfMeasurementSchema,
+            Weight: z.string(),
+          }),
+        })
+      ),
     }),
   }),
 });

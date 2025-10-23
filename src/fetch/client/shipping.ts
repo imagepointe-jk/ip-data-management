@@ -47,19 +47,21 @@ export async function getUpsRate(params: UpsRateParams) {
         },
         ShipTo: params.shipTo,
         NumOfPieces: "1",
-        Package: {
-          PackagingType: {
-            Code: "02",
-            Description: "Packaging",
-          },
-          PackageWeight: {
-            UnitOfMeasurement: {
-              Code: "LBS",
-              Description: "Pounds",
+        Package: [
+          {
+            PackagingType: {
+              Code: "02",
+              Description: "Packaging",
             },
-            Weight: `${params.weight}`,
+            PackageWeight: {
+              UnitOfMeasurement: {
+                Code: "LBS",
+                Description: "Pounds",
+              },
+              Weight: `${params.weight}`,
+            },
           },
-        },
+        ],
         PaymentDetails: {
           ShipmentCharge: {
             Type: "01",
