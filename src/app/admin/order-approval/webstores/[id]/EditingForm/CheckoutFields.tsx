@@ -2,7 +2,7 @@ import { createWebstoreCheckoutField } from "@/actions/orderWorkflow/create";
 import { deleteCheckoutField } from "@/actions/orderWorkflow/delete";
 import GenericTable from "@/components/GenericTable";
 import { Updater } from "use-immer";
-import styles from "@/styles/orderApproval/webstoreEditForm.module.css";
+import styles from "@/styles/orderApproval/admin/webstoreEditForm.module.css";
 import { WebstoreEditorData } from "@/types/dto/orderApproval";
 
 const checkoutFieldTypes = [
