@@ -34,6 +34,7 @@ type Props = {
   checkoutFields: WebstoreCheckoutField[];
   shippingMethods: WebstoreShippingMethod[];
   allowHelpRequest: boolean;
+  allowUpsShippingToCanada?: boolean;
 };
 export function OrderEditForm({
   order: initialOrder,
@@ -42,6 +43,7 @@ export function OrderEditForm({
   checkoutFields,
   shippingMethods,
   allowHelpRequest,
+  allowUpsShippingToCanada,
 }: Props) {
   const [order, setOrder] = useImmer(initialOrder);
   const [staleOrder, setStaleOrder] = useState(initialOrder); //only updated when the order gets updated in the database; used to diff and determine if the user has changed anything
@@ -66,7 +68,10 @@ export function OrderEditForm({
       );
       const newRatedMethods = await getRatedShippingMethods(
         order,
-        shippingMethods
+        shippingMethods,
+        {
+          allowUpsShippingToCanada,
+        }
       );
       setRatedShippingMethods(newRatedMethods);
       console.log(`Shipping rates retrieved in ${Date.now() - start} ms.`);
@@ -106,7 +111,10 @@ export function OrderEditForm({
       console.log("Getting initial shipping rates...");
       const newRatedMethods = await getRatedShippingMethods(
         order,
-        shippingMethods
+        shippingMethods,
+        {
+          allowUpsShippingToCanada,
+        }
       );
       setRatedShippingMethods(newRatedMethods);
       setStatus("idle");
