@@ -46,30 +46,8 @@ export async function getUpsRate(params: UpsRateParams) {
           },
         },
         ShipTo: params.shipTo,
-        NumOfPieces: "1",
-        Package: [
-          {
-            PackagingType: {
-              Code: "02",
-              Description: "Packaging",
-            },
-            PackageWeight: {
-              UnitOfMeasurement: {
-                Code: "LBS",
-                Description: "Pounds",
-              },
-              Weight: `${params.weight}`,
-            },
-          },
-        ],
-        PaymentDetails: {
-          ShipmentCharge: {
-            Type: "01",
-            BillShipper: {
-              AccountNumber: "Not Yet Set",
-            },
-          },
-        },
+        NumOfPieces: "1", //inaccurate but it doesn't seem to matter
+        Package: generateUpsPackages(params.weight),
         Service: {
           Code: params.service.code,
           Description: params.service.description,
@@ -82,6 +60,45 @@ export async function getUpsRate(params: UpsRateParams) {
     body: JSON.stringify(request),
   };
   return fetch(`${baseUrl}/api/shipping/ups/rate`, requestOptions);
+}
+
+function generateUpsPackages(weight: number) {
+  const weightPerPackage = 45;
+  let remainingWeight = weight;
+  const packages: {
+    PackagingType: {
+      Code: string;
+      Description: string;
+    };
+    PackageWeight: {
+      UnitOfMeasurement: {
+        Code: string;
+        Description: string;
+      };
+      Weight: string;
+    };
+  }[] = [];
+  while (remainingWeight > 0) {
+    const thisWeight =
+      remainingWeight > weightPerPackage ? weightPerPackage : remainingWeight;
+    packages.push({
+      PackagingType: {
+        Code: "02",
+        Description: "Packaging",
+      },
+      PackageWeight: {
+        UnitOfMeasurement: {
+          Code: "LBS",
+          Description: "Pounds",
+        },
+        Weight: `${thisWeight}`,
+      },
+    });
+
+    remainingWeight -= thisWeight;
+  }
+
+  return packages;
 }
 
 type UspsPriceParams = {

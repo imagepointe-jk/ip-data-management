@@ -30,14 +30,16 @@ export const upsRateRequestSchema = z.object({
         Name: z.string(),
         Address: addressSchema,
       }),
-      PaymentDetails: z.object({
-        ShipmentCharge: z.object({
-          Type: z.string(),
-          BillShipper: z.object({
-            AccountNumber: z.string(),
+      PaymentDetails: z
+        .object({
+          ShipmentCharge: z.object({
+            Type: z.string(),
+            BillShipper: z.object({
+              AccountNumber: z.string(),
+            }),
           }),
-        }),
-      }),
+        })
+        .optional(), //PaymentDetails only required for retrieving negotiated rates
       Service: z.object({
         Code: z.string(),
         Description: z.string(),

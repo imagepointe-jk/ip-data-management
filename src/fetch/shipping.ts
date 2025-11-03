@@ -111,12 +111,13 @@ async function getUspsAccessToken() {
 
 export async function getUpsRate(request: UpsRateRequest) {
   const { access_token } = await getUpsAccessToken();
-  const billingNumber = upsBillingAccountNumber();
+  // const billingNumber = upsBillingAccountNumber();
   //the billing number is omitted in the front end fetch request for security;
   //fill it in using environment variables here
-  request.RateRequest.Shipment.Shipper.ShipperNumber = billingNumber;
-  request.RateRequest.Shipment.PaymentDetails.ShipmentCharge.BillShipper.AccountNumber =
-    billingNumber;
+  //this is only needed for negotiated rates; omit it to get retail rates
+  // request.RateRequest.Shipment.Shipper.ShipperNumber = billingNumber;
+  // request.RateRequest.Shipment.PaymentDetails.ShipmentCharge.BillShipper.AccountNumber =
+  //   billingNumber;
 
   const headers = new Headers({
     "Content-Type": "application/json",

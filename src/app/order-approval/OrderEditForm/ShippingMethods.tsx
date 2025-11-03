@@ -59,6 +59,7 @@ export function ShippingMethods({
               disabled={!valid}
             />
             <span dangerouslySetInnerHTML={{ __html: method.name }}></span>
+            <span>{` ($${method.total})`}</span>
           </label>
         );
       })}
