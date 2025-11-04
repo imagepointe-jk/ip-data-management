@@ -13,6 +13,7 @@ function parseWooCommerceLineItem(lineItem: any) {
   const quantity = lineItem.quantity;
   const total = lineItem.total;
   const totalTax = lineItem.total_tax;
+  const productWeight = lineItem.product_weight;
 
   return wooCommerceLineItemSchema.parse({
     id: lineItem.id,
@@ -20,6 +21,7 @@ function parseWooCommerceLineItem(lineItem: any) {
     quantity,
     total,
     totalTax,
+    productWeight,
     price: lineItem.price,
     productId: lineItem.product_id,
   });

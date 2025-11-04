@@ -161,18 +161,12 @@ export async function getRatedShippingMethods(
     allowUpsShippingToCanada?: boolean;
   }
 ) {
-  //currently we aren't showing actual rates due to concerns about accuracy. we only want to check availability of different methods.
-  //using a placeholder weight value for now just to satisfy the API requirements.
-  // const totalWeight = products.reduce((accum, product) => {
-  //   const matchingLineItem = order.lineItems.find(
-  //     (item) => item.productId === product.id
-  //   );
-  //   const thisWeight = matchingLineItem
-  //     ? matchingLineItem.quantity * +product.weight
-  //     : 0;
-  //   return accum + thisWeight;
-  // }, 0);
-  const totalWeight = 5;
+  const totalWeight = order.lineItems.reduce((accum, item) => {
+    const weight = isNaN(+`${item.productWeight}`)
+      ? 0
+      : +`${item.productWeight}`;
+    return accum + weight * item.quantity;
+  }, 0);
 
   const permittedShippingMethods = allShippingMethods.filter((method) => {
     if (special?.allowUpsShippingToCanada) return method;

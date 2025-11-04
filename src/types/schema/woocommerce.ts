@@ -60,6 +60,7 @@ export const wooCommerceLineItemSchema = z.object({
   quantity: z.number(),
   total: z.string(),
   totalTax: z.string(),
+  productWeight: z.string().nullable(),
   price: z.number(),
   productId: z.number(),
 });
