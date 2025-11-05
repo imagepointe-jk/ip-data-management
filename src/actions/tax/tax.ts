@@ -1,6 +1,7 @@
 "use server";
 
 import { AppError } from "@/error";
+import { validateTaxImportData } from "@/types/validations/tax";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
 
@@ -18,5 +19,7 @@ export async function uploadTaxData(formData: FormData) {
   const arrayBuffer = await file.arrayBuffer();
   const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Data");
   const json = sheetToJson(sheet);
-  console.log(json);
+  const validated = validateTaxImportData(json);
+
+  console.log(validated.map((row) => row.City));
 }
