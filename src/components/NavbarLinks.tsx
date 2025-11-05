@@ -87,6 +87,9 @@ export default function NavbarLinks() {
             <li>
               <Link href="/admin/colors">Colors</Link>
             </li>
+            <li>
+              <Link href="/admin/tax">Taxes</Link>
+            </li>
           </ul>
         )}
       </li>
