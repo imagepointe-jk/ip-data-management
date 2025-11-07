@@ -30,17 +30,32 @@ export function UploadForm() {
   return (
     <form
       className="content-frame vert-flex-group"
-      style={{ marginTop: "20px", width: "600px" }}
+      style={{ marginTop: "20px", width: "800px" }}
       onSubmit={onSubmit}
     >
       <h3>Upload Import Spreadsheet</h3>
+      <label htmlFor="url">
+        Store URL
+        <input type="text" name="url" id="url" style={{ width: "500px" }} />
+      </label>
+      <label htmlFor="key">
+        Store Key
+        <input type="text" name="key" id="key" style={{ width: "500px" }} />
+      </label>
+      <label htmlFor="secret">
+        Store Secret
+        <input
+          type="text"
+          name="secret"
+          id="secret"
+          style={{ width: "500px" }}
+        />
+      </label>
       <label htmlFor="file">
         <input type="file" name="file" id="file" />
       </label>
       <div>
-        {status !== "loading" && status !== "success" && (
-          <button type="submit">Upload</button>
-        )}
+        {status !== "loading" && <button type="submit">Upload</button>}
         {status === "loading" && <div>Loading...</div>}
         {status === "error" && (
           <div style={{ color: "red" }}>
