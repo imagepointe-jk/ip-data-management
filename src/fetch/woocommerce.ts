@@ -356,7 +356,7 @@ export async function getTaxRates(params: {
   let jsonArray: any[] = [];
   for (let i = 0; true; i++) {
     if (i > TEMP_SAFETY_MAX) break;
-    console.log(`request ${i}`);
+    console.log(`retrieval request ${i}`);
 
     const url = `${storeUrl}/wp-json/wc/v3/taxes?page=${i + 1}&per_page=100`;
     try {
@@ -416,4 +416,34 @@ export async function createTaxRate(params: {
   };
 
   return fetch(`${storeUrl}/wp-json/wc/v3/taxes`, requestOptions);
+}
+
+export async function updateTaxRateBatch(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+  updates: { existingId: number; data: TaxImportRow }[];
+}) {
+  const { storeKey, storeSecret, storeUrl, updates } = params;
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const raw = JSON.stringify({
+    update: updates.map((item) => ({
+      id: item.existingId,
+      rate: item.data.Rate.toFixed(4),
+    })),
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/taxes/batch`, requestOptions);
 }

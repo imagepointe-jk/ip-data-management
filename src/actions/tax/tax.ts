@@ -1,12 +1,17 @@
 "use server";
 
 import { AppError } from "@/error";
-import { createTaxRate, getTaxRates } from "@/fetch/woocommerce";
+import {
+  createTaxRate,
+  getTaxRates,
+  updateTaxRateBatch,
+} from "@/fetch/woocommerce";
 import { TaxImportRow, WooTaxRow } from "@/types/schema/tax";
 import {
   validateTaxImportData,
   validateWooTaxRows,
 } from "@/types/validations/tax";
+import { batchArray } from "@/utility/misc";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "@/utility/statusCodes";
 
@@ -66,8 +71,60 @@ export async function uploadTaxData(formData: FormData) {
       }
     });
 
+  console.log(`Sending ${createRequests.length} create requests`);
   const createResponses = await Promise.all(createRequests);
-  console.log(createResponses);
+
+  const batchedRowsToUpdate = batchArray(rowsToUpdate, 2);
+  const batchUpdateRequests: Promise<{
+    statusCode: number;
+    message?: string;
+    results: { existingId: number; success: boolean; message?: string }[];
+  }>[] = batchedRowsToUpdate.map(async (batch) => {
+    try {
+      const response = await updateTaxRateBatch({
+        storeUrl,
+        storeKey,
+        storeSecret,
+        updates: batch,
+      });
+      if (!response.ok) {
+        return {
+          statusCode: response.status,
+          message: "Unknown error.",
+          results: [],
+        };
+      }
+      const json = await response.json();
+      const updateResult = json.update;
+      if (!Array.isArray(updateResult)) {
+        return {
+          statusCode: INTERNAL_SERVER_ERROR,
+          message: "Unknown error.",
+          results: [],
+        };
+      }
+      return {
+        statusCode: OK,
+        results: updateResult.map((item) => ({
+          existingId: item.id,
+          success: item.error !== undefined,
+        })),
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        statusCode: INTERNAL_SERVER_ERROR,
+        message: "Unknown error.",
+        results: [],
+      };
+    }
+  });
+  console.log(
+    `Sending ${batchUpdateRequests.length} batch update requests with ${rowsToUpdate.length} total updates`
+  );
+
+  const batchUpdateResponses = await Promise.all(batchUpdateRequests);
+  console.log("DONE");
 }
 
 function chooseTaxImportOperations(
@@ -78,6 +135,7 @@ function chooseTaxImportOperations(
   const rowsToUpdate: { existingId: number; data: TaxImportRow }[] = [];
 
   for (const importRow of importRows) {
+    //TODO: This needs to correctly detect an existing match. Right now it only matches by zip, but there's at least one edge case where multiple Woo rows have the same zip but different cities.
     const existingRow = existingRows.find(
       (existing) => existing.postcode === `${importRow.Zip}`
     );
