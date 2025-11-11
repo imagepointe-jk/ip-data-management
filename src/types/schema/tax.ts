@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-const taxImportRowSchema = z.object({
+const classOptions = ["standard", "clothing"] as const;
+export const taxImportRowSchema = z.object({
   State: z.string(),
-  Zip: z.number(),
+  Zip: z.string(),
   City: z.string(),
   Rate: z.number(),
   TaxName: z.string(),
-  Class: z.string(),
+  Class: z.enum(classOptions),
 });
-export const taxImportTableSchema = z.array(taxImportRowSchema);
 
 export const wooTaxRowSchema = z.object({
   id: z.number(),
@@ -22,3 +22,10 @@ export const wooTaxRowSchema = z.object({
 
 export type TaxImportRow = z.infer<typeof taxImportRowSchema>;
 export type WooTaxRow = z.infer<typeof wooTaxRowSchema>;
+export type TaxImportRowResult = {
+  existingId?: number;
+  statusCode?: number;
+  success: boolean;
+  message?: string;
+  operation: "create" | "update";
+} & TaxImportRow;

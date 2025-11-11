@@ -422,7 +422,7 @@ export async function updateTaxRateBatch(params: {
   storeUrl: string;
   storeKey: string;
   storeSecret: string;
-  updates: { existingId: number; data: TaxImportRow }[];
+  updates: (TaxImportRow & { existingId: number })[];
 }) {
   const { storeKey, storeSecret, storeUrl, updates } = params;
   const headers = new Headers();
@@ -435,7 +435,7 @@ export async function updateTaxRateBatch(params: {
   const raw = JSON.stringify({
     update: updates.map((item) => ({
       id: item.existingId,
-      rate: item.data.Rate.toFixed(4),
+      rate: item.Rate.toFixed(4),
     })),
   });
 

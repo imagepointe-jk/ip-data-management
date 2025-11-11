@@ -6,13 +6,22 @@ import {
   getTaxRates,
   updateTaxRateBatch,
 } from "@/fetch/woocommerce";
-import { TaxImportRow, WooTaxRow } from "@/types/schema/tax";
+import {
+  TaxImportRow,
+  TaxImportRowResult,
+  WooTaxRow,
+} from "@/types/schema/tax";
 import {
   validateTaxImportData,
   validateWooTaxRows,
 } from "@/types/validations/tax";
+import { sendEmail } from "@/utility/mail";
 import { batchArray } from "@/utility/misc";
-import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
+import {
+  dataToSheetBuffer,
+  getSheetFromBuffer,
+  sheetToJson,
+} from "@/utility/spreadsheet";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "@/utility/statusCodes";
 
 export async function uploadTaxData(formData: FormData) {
@@ -57,8 +66,15 @@ async function doSync(params: {
     parsedExistingRows
   );
 
-  const createRequests: Promise<{ statusCode: number; message?: string }>[] =
-    rowsToCreate.map(async (row) => {
+  const createRequests: Promise<TaxImportRowResult>[] = rowsToCreate.map(
+    async (row) => {
+      //initialize default result
+      const result: TaxImportRowResult = {
+        success: false,
+        ...row,
+        operation: "create",
+      };
+
       try {
         const response = await createTaxRate({
           storeUrl,
@@ -66,20 +82,27 @@ async function doSync(params: {
           storeSecret,
           row,
         });
+
         if (!response.ok) {
-          return {
-            statusCode: response.status,
-            message: "Unknown error.",
-          };
+          result.statusCode = response.status;
+          result.message = "Unknown error.";
+          return result;
         }
-        return {
-          statusCode: OK,
-        };
+
+        result.statusCode = OK;
+        result.success = true;
+
+        return result;
       } catch (error) {
         console.error(error);
-        return { statusCode: INTERNAL_SERVER_ERROR, message: "Unknown error." };
+
+        result.statusCode = INTERNAL_SERVER_ERROR;
+        result.message = `${error}`;
+
+        return result;
       }
-    });
+    }
+  );
 
   console.log(`Sending ${createRequests.length} create requests`);
   const createResponses = await Promise.all(createRequests);
@@ -88,7 +111,7 @@ async function doSync(params: {
   const batchUpdateRequests: Promise<{
     statusCode: number;
     message?: string;
-    results: { existingId: number; success: boolean; message?: string }[];
+    results: TaxImportRowResult[];
   }>[] = batchedRowsToUpdate.map(async (batch) => {
     try {
       const response = await updateTaxRateBatch({
@@ -115,10 +138,19 @@ async function doSync(params: {
       }
       return {
         statusCode: OK,
-        results: updateResult.map((item) => ({
-          existingId: item.id,
-          success: item.error !== undefined,
-        })),
+        results: updateResult.map((itemFromUpdateResults, i) => {
+          const itemFromBatch = batch[i]!; //it appears that WC sends the batch update results back in the same order the batch was sent in
+          const result: TaxImportRowResult = {
+            ...itemFromBatch,
+            success: itemFromUpdateResults.error === undefined,
+            operation: "update",
+            message:
+              itemFromUpdateResults.error !== undefined
+                ? `Failed to update existing record: ${itemFromUpdateResults.error.message}`
+                : undefined,
+          };
+          return result;
+        }),
       };
     } catch (error) {
       console.error(error);
@@ -134,7 +166,17 @@ async function doSync(params: {
   );
 
   const batchUpdateResponses = await Promise.all(batchUpdateRequests);
+  const unbatchedResults = unbatchUpdateResults(batchUpdateResponses);
+  const createAndUpdateResults = [...createResponses, ...unbatchedResults];
   console.log("DONE");
+
+  const sheetBuffer = dataToSheetBuffer(createAndUpdateResults, "DA Searches");
+  sendEmail(
+    "josh.klope@imagepointe.com",
+    "Tax Import Results",
+    "The results are attached",
+    [{ content: sheetBuffer, filename: "tax import results.xlsx" }]
+  );
 }
 
 function chooseTaxImportOperations(
@@ -142,7 +184,7 @@ function chooseTaxImportOperations(
   existingRows: WooTaxRow[]
 ) {
   const rowsToCreate: TaxImportRow[] = [];
-  const rowsToUpdate: { existingId: number; data: TaxImportRow }[] = [];
+  const rowsToUpdate: (TaxImportRow & { existingId: number })[] = [];
 
   for (const importRow of importRows) {
     //TODO: This needs to correctly detect an existing match. Right now it only matches by zip, but there's at least one edge case where multiple Woo rows have the same zip but different cities.
@@ -150,9 +192,25 @@ function chooseTaxImportOperations(
       (existing) => existing.postcode === `${importRow.Zip}`
     );
     if (existingRow)
-      rowsToUpdate.push({ existingId: existingRow.id, data: importRow });
+      rowsToUpdate.push({ existingId: existingRow.id, ...importRow });
     else rowsToCreate.push(importRow);
   }
 
   return { rowsToCreate, rowsToUpdate };
+}
+
+function unbatchUpdateResults(
+  responses: {
+    statusCode: number;
+    message?: string;
+    results: TaxImportRowResult[];
+  }[]
+): TaxImportRowResult[] {
+  let unbatched: TaxImportRowResult[] = [];
+
+  for (const response of responses) {
+    unbatched = [...unbatched, ...response.results];
+  }
+
+  return unbatched;
 }
