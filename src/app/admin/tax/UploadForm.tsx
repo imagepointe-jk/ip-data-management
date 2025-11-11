@@ -18,7 +18,7 @@ export function UploadForm() {
 
     setStatus("loading");
     try {
-      const result = await uploadTaxData(formData);
+      await uploadTaxData(formData);
       setStatus("success");
       toast.toast("Data uploaded. Import process started.", "success");
     } catch (error) {

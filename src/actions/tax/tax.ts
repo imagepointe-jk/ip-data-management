@@ -35,6 +35,16 @@ export async function uploadTaxData(formData: FormData) {
   const storeKey = `${formData.get("key")}`;
   const storeSecret = `${formData.get("secret")}`;
 
+  doSync({ parsedImportRows, storeKey, storeSecret, storeUrl });
+}
+
+async function doSync(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+  parsedImportRows: TaxImportRow[];
+}) {
+  const { storeKey, storeSecret, storeUrl, parsedImportRows } = params;
   const existingRates = await getTaxRates({
     storeUrl,
     storeKey,
