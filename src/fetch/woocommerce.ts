@@ -352,10 +352,8 @@ export async function getTaxRates(params: {
     headers,
   };
 
-  let TEMP_SAFETY_MAX = 10;
   let jsonArray: any[] = [];
   for (let i = 0; true; i++) {
-    if (i > TEMP_SAFETY_MAX) break;
     console.log(`retrieval request ${i}`);
 
     const url = `${storeUrl}/wp-json/wc/v3/taxes?page=${i + 1}&per_page=100`;
@@ -370,7 +368,14 @@ export async function getTaxRates(params: {
         });
       const json = await response.json();
       if (Array.isArray(json)) {
+        if (json.length === 0) break;
         jsonArray = jsonArray.concat(json);
+      } else {
+        throw new AppError({
+          type: "Unknown",
+          clientMessage: "The tax rate retrieval response was not an array.",
+          serverMessage: "The tax rate retrieval response was not an array.",
+        });
       }
     } catch (error) {
       throw new AppError({

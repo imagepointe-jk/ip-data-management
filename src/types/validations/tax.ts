@@ -20,6 +20,8 @@ export function validateTaxImportData(json: any) {
         clamp(zipCodeLength - `${item.Zip}`.length, 0, Number.MAX_SAFE_INTEGER)
       ) + `${item.Zip}`;
 
+    item.City = `${item.City}`.toLocaleUpperCase();
+
     return taxImportRowSchema.parse(item);
   });
 

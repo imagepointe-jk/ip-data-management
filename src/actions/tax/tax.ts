@@ -170,7 +170,10 @@ async function doSync(params: {
   const createAndUpdateResults = [...createResponses, ...unbatchedResults];
   console.log("DONE");
 
-  const sheetBuffer = dataToSheetBuffer(createAndUpdateResults, "DA Searches");
+  const sheetBuffer = dataToSheetBuffer(
+    createAndUpdateResults,
+    "tax import results"
+  );
   sendEmail(
     "josh.klope@imagepointe.com",
     "Tax Import Results",
@@ -213,4 +216,31 @@ function unbatchUpdateResults(
   }
 
   return unbatched;
+}
+
+export async function exportTaxData(formData: FormData) {
+  const storeUrl = `${formData.get("url")}`;
+  const storeKey = `${formData.get("key")}`;
+  const storeSecret = `${formData.get("secret")}`;
+  const targetEmail = `${formData.get("email")}`;
+
+  doExport({ storeKey, storeSecret, storeUrl, targetEmail });
+}
+
+async function doExport(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+  targetEmail: string;
+}) {
+  const { storeKey, storeSecret, storeUrl, targetEmail } = params;
+  const rates = await getTaxRates({
+    storeUrl,
+    storeKey,
+    storeSecret,
+  });
+  const sheetBuffer = dataToSheetBuffer(rates, "rates");
+  sendEmail(targetEmail, "Tax Rates", "The tax rates are attached", [
+    { content: sheetBuffer, filename: "tax rates.xlsx" },
+  ]);
 }
