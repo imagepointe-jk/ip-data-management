@@ -53,6 +53,7 @@ async function doSync(params: {
   storeSecret: string;
   parsedImportRows: TaxImportRow[];
 }) {
+  const BATCH_SIZE = 5;
   const { storeKey, storeSecret, storeUrl, parsedImportRows } = params;
   const existingRates = await getTaxRates({
     storeUrl,
@@ -66,8 +67,15 @@ async function doSync(params: {
     parsedExistingRows
   );
 
-  const createRequests: Promise<TaxImportRowResult>[] = rowsToCreate.map(
-    async (row) => {
+  const batchedCreateRows = batchArray(rowsToCreate, BATCH_SIZE);
+  let createResults: TaxImportRowResult[] = [];
+
+  for (let i = 0; i < batchedCreateRows.length; i++) {
+    const batch = batchedCreateRows[i];
+    if (!batch) continue;
+
+    console.log(`start create batch ${i}`);
+    const requests: Promise<TaxImportRowResult>[] = batch.map(async (row) => {
       //initialize default result
       const result: TaxImportRowResult = {
         success: false,
@@ -101,13 +109,15 @@ async function doSync(params: {
 
         return result;
       }
-    }
-  );
+    });
 
-  console.log(`Sending ${createRequests.length} create requests`);
-  const createResponses = await Promise.all(createRequests);
+    const start = Date.now();
+    const thisBatchResults = await Promise.all(requests);
+    console.log(`done in ${Date.now() - start} ms`);
+    createResults = [...createResults, ...thisBatchResults];
+  }
 
-  const batchedRowsToUpdate = batchArray(rowsToUpdate, 2);
+  const batchedRowsToUpdate = batchArray(rowsToUpdate, BATCH_SIZE);
   const batchUpdateRequests: Promise<{
     statusCode: number;
     message?: string;
@@ -167,7 +177,7 @@ async function doSync(params: {
 
   const batchUpdateResponses = await Promise.all(batchUpdateRequests);
   const unbatchedResults = unbatchUpdateResults(batchUpdateResponses);
-  const createAndUpdateResults = [...createResponses, ...unbatchedResults];
+  const createAndUpdateResults = [...createResults, ...unbatchedResults];
   console.log("DONE");
 
   const sheetBuffer = dataToSheetBuffer(
