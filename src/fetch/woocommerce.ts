@@ -411,7 +411,7 @@ export async function createTaxRate(params: {
     rate: row.Rate.toFixed(4),
     name: row.TaxName,
     class: row.Class.toLocaleLowerCase(),
-    shipping: false,
+    shipping: true,
   });
 
   const requestOptions = {
