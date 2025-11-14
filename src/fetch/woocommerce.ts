@@ -1,9 +1,12 @@
 import { env } from "@/env";
+import { AppError } from "@/error";
+import { TaxImportRow } from "@/types/schema/tax";
 import {
   WooCommerceASIProductUpdateData,
   WooCommerceProduct,
 } from "@/types/schema/woocommerce";
 import { parseWooCommerceProduct } from "@/types/validations/woo";
+import { BAD_REQUEST } from "@/utility/statusCodes";
 
 const standardCredentials = () => {
   const apiKey = process.env.WOOCOMMERCE_MAIN_API_KEY;
@@ -329,4 +332,123 @@ export async function searchIPProducts(search: string) {
       },
     }
   );
+}
+
+export async function getTaxRates(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+}) {
+  const { storeKey, storeSecret, storeUrl } = params;
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const requestOptions = {
+    method: "GET",
+    headers,
+  };
+
+  let jsonArray: any[] = [];
+  for (let i = 0; true; i++) {
+    console.log(`retrieval request ${i}`);
+
+    const url = `${storeUrl}/wp-json/wc/v3/taxes?page=${i + 1}&per_page=100`;
+    try {
+      const response = await fetch(url, requestOptions);
+      if (!response.ok)
+        throw new AppError({
+          type: "Client Request",
+          clientMessage: `Failed to fetch tax rates with URL ${url}. Status code ${response.status}.`,
+          serverMessage: `Failed to fetch tax rates with URL ${url}. Status code ${response.status}.`,
+          statusCode: BAD_REQUEST,
+        });
+      const json = await response.json();
+      if (Array.isArray(json)) {
+        if (json.length === 0) break;
+        jsonArray = jsonArray.concat(json);
+      } else {
+        throw new AppError({
+          type: "Unknown",
+          clientMessage: "The tax rate retrieval response was not an array.",
+          serverMessage: "The tax rate retrieval response was not an array.",
+        });
+      }
+    } catch (error) {
+      throw new AppError({
+        type: "Unknown",
+        clientMessage: `${error}`,
+        serverMessage: `${error}`,
+      });
+    }
+  }
+
+  return jsonArray;
+}
+
+export async function createTaxRate(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+  row: TaxImportRow;
+}) {
+  const { storeKey, storeSecret, storeUrl, row } = params;
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const raw = JSON.stringify({
+    country: "US",
+    state: row.State.toLocaleUpperCase(),
+    postcode: `${row.Zip}`,
+    city: row.City.toLocaleUpperCase(),
+    rate: row.Rate.toFixed(4),
+    name: row.TaxName,
+    class: row.Class.toLocaleLowerCase(),
+    shipping: true,
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/taxes`, requestOptions);
+}
+
+export async function updateTaxRateBatch(params: {
+  storeUrl: string;
+  storeKey: string;
+  storeSecret: string;
+  updates: (TaxImportRow & { existingId: number })[];
+}) {
+  const { storeKey, storeSecret, storeUrl, updates } = params;
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append(
+    "Authorization",
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+  );
+
+  const raw = JSON.stringify({
+    update: updates.map((item) => ({
+      id: item.existingId,
+      rate: item.Rate.toFixed(4),
+    })),
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: headers,
+    body: raw,
+  };
+
+  return fetch(`${storeUrl}/wp-json/wc/v3/taxes/batch`, requestOptions);
 }

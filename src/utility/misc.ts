@@ -333,3 +333,21 @@ export function wrapArray<T>(arr: T[], shift: number): T[] {
   // Positive shift moves elements from front to back (left shift)
   return [...arr.slice(normalizedShift), ...arr.slice(0, normalizedShift)];
 }
+
+//Returns a new array with the initial array divided up into batches of the given size
+export function batchArray<T>(array: T[], itemsPerBatch: number) {
+  const batches: T[][] = [];
+  let curBatch: T[] = [];
+
+  for (let i = 0; i < array.length; i++) {
+    const item = array[i];
+    if (!item) continue;
+    curBatch.push(item);
+    if ((i + 1) % itemsPerBatch === 0 || i === array.length - 1) {
+      batches.push(curBatch);
+      curBatch = [];
+    }
+  }
+
+  return batches;
+}
