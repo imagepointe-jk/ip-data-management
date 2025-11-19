@@ -21,6 +21,7 @@ export function ShippingSettings({
         draft.shippingSettings = {
           allowApproverChangeMethod: val,
           allowUpsToCanada: false,
+          upsAccountNumber: null,
         };
       } else {
         draft.shippingSettings.allowApproverChangeMethod = val;
@@ -34,9 +35,24 @@ export function ShippingSettings({
         draft.shippingSettings = {
           allowUpsToCanada: val,
           allowApproverChangeMethod: false,
+          upsAccountNumber: null,
         };
       } else {
         draft.shippingSettings.allowUpsToCanada = val;
+      }
+    });
+  }
+
+  function onChangeUpsAccountNumber(val: string) {
+    setWebstoreState((draft) => {
+      if (!draft.shippingSettings) {
+        draft.shippingSettings = {
+          allowUpsToCanada: false,
+          allowApproverChangeMethod: false,
+          upsAccountNumber: val,
+        };
+      } else {
+        draft.shippingSettings.upsAccountNumber = val;
       }
     });
   }
@@ -70,6 +86,16 @@ export function ShippingSettings({
           Allow approver to change method
         </label>
       </div> */}
+      <div>
+        <label className="input-label">UPS Account Number</label>
+        <input
+          type="text"
+          name="ups-account-number"
+          id="ups-account-number"
+          value={webstoreState.shippingSettings?.upsAccountNumber || ""}
+          onChange={(e) => onChangeUpsAccountNumber(e.target.value)}
+        />
+      </div>
       <div>
         <label htmlFor="allow-ups-to-canada">
           <input

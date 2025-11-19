@@ -33,12 +33,6 @@ const uspsCredentials = () => {
   return { key, secret };
 };
 
-const upsBillingAccountNumber = () => {
-  const number = process.env.UPS_BILLING_ACCOUNT_NUMBER;
-  if (!number) throw new Error("Missing UPS billing account number");
-  return number;
-};
-
 async function getUpsAccessToken() {
   if (upsSat !== undefined) {
     const expiresAt = +upsSat.issued_at + +upsSat.expires_in * 1000;

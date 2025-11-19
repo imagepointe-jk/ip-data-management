@@ -16,6 +16,7 @@ type UpsRateParams = {
     code: string;
     description: string;
   };
+  accountNumber: string | null;
 };
 export async function getUpsRate(params: UpsRateParams) {
   const request: UpsRateRequest = {
@@ -55,6 +56,19 @@ export async function getUpsRate(params: UpsRateParams) {
       },
     },
   };
+
+  if (params.accountNumber) {
+    request.RateRequest.Shipment.Shipper.ShipperNumber = params.accountNumber;
+    request.RateRequest.Shipment.PaymentDetails = {
+      ShipmentCharge: {
+        Type: "01",
+        BillShipper: {
+          AccountNumber: params.accountNumber,
+        },
+      },
+    };
+  }
+
   const requestOptions = {
     method: "POST",
     body: JSON.stringify(request),

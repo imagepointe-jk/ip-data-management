@@ -229,6 +229,7 @@ model WebstoreShippingSettings {
   id                        Int      @id @default(autoincrement())
   allowApproverChangeMethod Boolean
   allowUpsToCanada          Boolean
+  upsAccountNumber          String?
   webstoreId                Int      @unique
   webstore                  Webstore @relation(fields: [webstoreId], references: [id], onDelete: Cascade)
 }

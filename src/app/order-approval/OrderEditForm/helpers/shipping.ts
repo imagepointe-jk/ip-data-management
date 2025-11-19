@@ -49,6 +49,7 @@ type ShippingRateParams = {
   countryCode: string;
   postalCode: string;
   stateCode: string;
+  upsAccountNumber: string | null;
 };
 async function rateShippingMethod(
   params: ShippingRateParams
@@ -70,6 +71,7 @@ async function getParsedUpsRate(params: ShippingRateParams) {
     stateCode,
     totalWeight,
     method,
+    upsAccountNumber,
   } = params;
 
   const ratingResponse = await getUpsRate({
@@ -88,6 +90,7 @@ async function getParsedUpsRate(params: ShippingRateParams) {
       },
     },
     weight: totalWeight,
+    accountNumber: upsAccountNumber,
   });
   if (!ratingResponse.ok) {
     try {
@@ -156,6 +159,7 @@ async function getParsedUspsRate(params: ShippingRateParams) {
 export async function getRatedShippingMethods(
   order: WooCommerceOrder,
   allShippingMethods: WebstoreShippingMethod[],
+  upsAccountNumber: string | null,
   special?: {
     //highly specific settings for edge cases
     allowUpsShippingToCanada?: boolean;
@@ -200,6 +204,7 @@ export async function getRatedShippingMethods(
         countryCode: country,
         method,
         totalWeight,
+        upsAccountNumber,
       })
     )
   );

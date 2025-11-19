@@ -26,6 +26,7 @@ export type WebstoreEditorData = {
   shippingSettings: {
     allowApproverChangeMethod: boolean;
     allowUpsToCanada: boolean;
+    upsAccountNumber: string | null;
   } | null;
   shippingMethods: {
     id: number;

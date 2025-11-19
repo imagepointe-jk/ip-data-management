@@ -158,6 +158,7 @@ export async function updateWebstore(
         allowApproverChangeMethod:
           shippingSettings?.allowApproverChangeMethod || false,
         allowUpsToCanada: shippingSettings?.allowUpsToCanada || false,
+        upsAccountNumber: shippingSettings?.upsAccountNumber,
       },
     }),
     ...checkoutFields.map((field) =>

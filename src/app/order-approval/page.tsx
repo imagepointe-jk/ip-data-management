@@ -107,6 +107,7 @@ export default async function Page({ searchParams }: Props) {
           foundAccessCode.workflowInstance.parentWorkflow.webstore
             .checkoutFields
         }
+        upsAccountNumber={webstore.shippingSettings?.upsAccountNumber || null}
         allowUpsShippingToCanada={webstore.shippingSettings?.allowUpsToCanada}
       />
       <div className={styles["nav-buttons"]}>

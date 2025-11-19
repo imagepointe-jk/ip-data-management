@@ -35,6 +35,7 @@ type Props = {
   shippingMethods: WebstoreShippingMethod[];
   allowHelpRequest: boolean;
   allowUpsShippingToCanada?: boolean;
+  upsAccountNumber: string | null;
 };
 export function OrderEditForm({
   order: initialOrder,
@@ -44,6 +45,7 @@ export function OrderEditForm({
   shippingMethods,
   allowHelpRequest,
   allowUpsShippingToCanada,
+  upsAccountNumber,
 }: Props) {
   const [order, setOrder] = useImmer(initialOrder);
   const [staleOrder, setStaleOrder] = useState(initialOrder); //only updated when the order gets updated in the database; used to diff and determine if the user has changed anything
@@ -69,6 +71,7 @@ export function OrderEditForm({
       const newRatedMethods = await getRatedShippingMethods(
         order,
         shippingMethods,
+        upsAccountNumber,
         {
           allowUpsShippingToCanada,
         }
@@ -112,6 +115,7 @@ export function OrderEditForm({
       const newRatedMethods = await getRatedShippingMethods(
         order,
         shippingMethods,
+        upsAccountNumber,
         {
           allowUpsShippingToCanada,
         }
