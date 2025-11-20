@@ -47,10 +47,10 @@ export async function startOrderWorkflow(params: StartWorkflowParams) {
     sendEmail(
       env.DEVELOPER_EMAIL,
       "Error starting workflow",
-      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId}. This was the error: ${error}`
+      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId} after a webhook coming from ${params.webhookSource}. This was the error: ${error}`
     );
     console.error(
-      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId}.`
+      `An error occurred while trying to start a workflow instance for WooCommerce order ${params.orderId} after a webhook coming from ${params.webhookSource}.`
     );
     if (error instanceof Error) throw error;
     else throw new Error("Unknown error while starting the workflow instance.");
