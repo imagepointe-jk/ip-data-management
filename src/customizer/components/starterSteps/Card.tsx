@@ -6,10 +6,12 @@ type Props = {
   onClick: () => void;
   imageSrc: string | undefined;
   text: string | undefined;
+  id?: string;
 };
-export function Card({ isSelected, imageSrc, text, onClick }: Props) {
+export function Card({ id, isSelected, imageSrc, text, onClick }: Props) {
   return (
     <div
+      id={id}
       className={`${styles["card"]} ${
         isSelected ? styles["card-clicked"] : ""
       }`}

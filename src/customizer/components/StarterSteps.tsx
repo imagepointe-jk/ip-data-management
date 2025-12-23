@@ -75,6 +75,10 @@ export function StarterSteps({
     onCompleteSteps(productId, variationId);
   }
 
+  useEffect(() => {
+    setStepIndex(initialProductId === null ? 0 : 1);
+  }, [initialProductId]);
+
   return (
     <div className={stylesMain["main"]}>
       <div className={styles["progress-container"]}>

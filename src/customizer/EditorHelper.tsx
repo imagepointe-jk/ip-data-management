@@ -36,8 +36,16 @@ export default function EditorHelper({
     if (search === "") return;
 
     const params = new URLSearchParams(search);
-    const id = params.get("id");
-    if (!isNaN(+`${id}`)) setInitialProductId(+`${id}`);
+    const idParam = params.get("id");
+    const id = +`${idParam}`;
+    if (isNaN(id)) return;
+
+    const matchingProduct = productData.find(
+      (item) => item.wooCommerceId === id
+    );
+    if (!matchingProduct) return; //if the id found in the search params is invalid, ignore it
+
+    setInitialProductId(id);
   }, [search]);
 
   if (initialProductId === null || initialVariationId === null)
