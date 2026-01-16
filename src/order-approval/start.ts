@@ -65,13 +65,17 @@ export async function startWorkflowInstanceFromBeginning(id: number) {
     throw new Error(`Workflow ${instance.parentWorkflowId} not found.`);
 
   //find the first step
-  const sortedSteps = [...workflow.steps];
-  sortedSteps.sort((a, b) => a.order - b.order);
-  const lowestStep = sortedSteps[0];
-  const lowestStepOrder = lowestStep ? lowestStep.order : 0;
+  // workflow.firstStep?.id
+  // const sortedSteps = [...workflow.steps];
+  // sortedSteps.sort((a, b) => a.order - b.order);
+  // const lowestStep = sortedSteps[0];
+  // const lowestStepOrder = lowestStep ? lowestStep.order : 0;
 
   //update data
-  await setWorkflowInstanceCurrentStep(instance.id, lowestStepOrder);
+  await setWorkflowInstanceCurrentStep(
+    instance.id,
+    workflow.firstStep?.id || 0
+  );
   await setWorkflowInstanceStatus(instance.id, "waiting");
   await setWorkflowInstanceDeniedData(instance.id, null, null);
   await setWorkflowInstanceApprovedData(instance.id, null, null);

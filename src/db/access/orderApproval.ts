@@ -228,37 +228,57 @@ export async function getWorkflowWithIncludes(id: number) {
 export async function getWorkflowInstanceCurrentStep(
   workflowInstanceId: number
 ) {
-  const instance = await getWorkflowInstance(workflowInstanceId);
+  const instance = await prisma.orderWorkflowInstance.findUnique({
+    where: {
+      id: workflowInstanceId,
+    },
+    include: {
+      activeStep: {
+        include: {
+          proceedListeners: true,
+        },
+      },
+    },
+  });
   if (!instance)
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
-  const workflowWithSteps = await getWorkflowWithIncludes(
-    instance.parentWorkflowId
-  );
-  if (!workflowWithSteps)
-    throw new Error(`No parent workflow found for ${workflowInstanceId}`);
+  return instance.activeStep;
+  // const instance = await getWorkflowInstance(workflowInstanceId);
+  // if (!instance)
+  //   throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
-  const currentStep = workflowWithSteps.steps.find(
-    (step) => step.order === instance.currentStep
-  );
-  if (!currentStep)
-    throw new Error(
-      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
-    );
+  // const workflowWithSteps = await getWorkflowWithIncludes(
+  //   instance.parentWorkflowId
+  // );
+  // if (!workflowWithSteps)
+  //   throw new Error(`No parent workflow found for ${workflowInstanceId}`);
 
-  return currentStep;
+  // const currentStep = workflowWithSteps.steps.find(
+  //   (step) => step.order === instance.currentStep
+  // );
+  // if (!currentStep)
+  //   throw new Error(
+  //     `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
+  //   );
+
+  // return currentStep;
 }
 
 export async function setWorkflowInstanceCurrentStep(
-  id: number,
-  value: number
+  instanceId: number,
+  stepId: number
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
-      id,
+      id: instanceId,
     },
     data: {
-      currentStep: value,
+      activeStep: {
+        connect: {
+          id: stepId,
+        },
+      },
     },
   });
 }

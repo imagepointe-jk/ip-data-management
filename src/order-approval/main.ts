@@ -12,26 +12,37 @@ import {
 import { OrderWorkflowEventType } from "@/types/schema/orderApproval";
 import { WooCommerceOrder } from "@/types/schema/woocommerce";
 import { sendEmail } from "@/utility/mail";
-import { OrderWorkflowInstance } from "@prisma/client";
+import { OrderWorkflowInstance, OrderWorkflowStep } from "@prisma/client";
 import { createOrderUpdatedEmail } from "./mail/mail";
 import { matchProceedListenerToEvent } from "./utility/server";
 import { doStepAction } from "./actions/main";
 import { shouldSendOrderUpdatedEmails } from "./utility/global";
 
-//! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
-//! There should be a check in place for this somewhere.
+//! This function is RECURSIVE and assumes there will be no circularity in the workflow step sequence.
 export async function handleCurrentStep(
   workflowInstance: OrderWorkflowInstance
 ) {
+  console.log("handle current step");
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstance.id);
-  await doStepAction(currentStep, workflowInstance);
-
-  if (currentStep.proceedImmediatelyTo !== null) {
-    handleWorkflowProceed(
-      workflowInstance.id,
-      currentStep.proceedImmediatelyTo
+  if (!currentStep)
+    throw new Error(
+      `Workflow instance ${workflowInstance.id} has no current step`
     );
+
+  await doStepAction(currentStep, workflowInstance);
+  if (currentStep.proceedImmediatelyToStepId !== null) {
+    await setWorkflowInstanceCurrentStep(
+      workflowInstance.id,
+      currentStep.proceedImmediatelyToStepId
+    );
+    handleCurrentStep(workflowInstance);
   }
+  // if (currentStep.proceedImmediatelyTo !== null) {
+  //   handleWorkflowProceed(
+  //     workflowInstance.id,
+  //     currentStep.proceedImmediatelyTo
+  //   );
+  // }
 }
 
 export async function handleWorkflowEvent(
@@ -52,6 +63,11 @@ export async function handleWorkflowEvent(
 
   //check the current step's event listeners to see if any match the type and source of what was just received
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstanceId);
+  if (currentStep == null)
+    throw new Error(
+      `No current step for workflow instance ${workflowInstanceId}`
+    );
+
   const matchingListener = await matchProceedListenerToEvent(
     currentStep,
     workflowInstance,
@@ -65,7 +81,16 @@ export async function handleWorkflowEvent(
       source,
       message
     );
-    handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
+    if (matchingListener.goToStepId == null)
+      throw new Error(
+        `Received event of type '${type}' from ${source}, but the matching listener had no target step`
+      );
+
+    await setWorkflowInstanceCurrentStep(
+      workflowInstance.id,
+      matchingListener.goToStepId
+    );
+    handleCurrentStep(workflowInstance);
   } else {
     throw new Error(
       `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`
@@ -97,63 +122,75 @@ async function handleWorkflowEventDataBeforeProceeding(
   }
 }
 
-async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
-  const workflowInstance = await getWorkflowInstance(workflowInstanceId);
-  if (!workflowInstance)
-    throw new Error(`Workflow instance ${workflowInstanceId} not found`);
+// async function handleWorkflowProceed(
+//   currentStep: OrderWorkflowStep,
+//   workflowInstance: OrderWorkflowInstance
+// ) {
+// const workflowInstance = await getWorkflowInstance(workflowInstanceId);
+// if (!workflowInstance)
+//   throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
-  if (goto === "next") {
-    await proceedToNextStepOrFinish(workflowInstance);
-    // const parentWorkflow = await getWorkflowWithIncludes(
-    //   workflowInstance.parentWorkflowId
-    // );
-    // if (!parentWorkflow)
-    //   throw new Error(`No parent workflow found for ${workflowInstance.id}`);
-    // const nextStep = parentWorkflow.steps.find(
-    //   (step) => step.order > workflowInstance.currentStep
-    // );
+// if (currentStep.proceedImmediatelyToStepId !== null) {
+//   await setWorkflowInstanceCurrentStep(
+//     workflowInstance.id,
+//     currentStep.proceedImmediatelyToStepId
+//   );
+//   handleCurrentStep(workflowInstance);
+// } else {
+//   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+// }
+// if (goto === "next") {
+//   await proceedToNextStepOrFinish(workflowInstance);
+// const parentWorkflow = await getWorkflowWithIncludes(
+//   workflowInstance.parentWorkflowId
+// );
+// if (!parentWorkflow)
+//   throw new Error(`No parent workflow found for ${workflowInstance.id}`);
+// const nextStep = parentWorkflow.steps.find(
+//   (step) => step.order > workflowInstance.currentStep
+// );
 
-    // if (!nextStep) {
-    //   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
-    // } else {
-    //   await setWorkflowInstanceCurrentStep(
-    //     workflowInstance.id,
-    //     workflowInstance.currentStep + 1
-    //   );
-    //   handleCurrentStep(workflowInstance);
-    // }
-  } else if (!isNaN(+goto)) {
-    await setWorkflowInstanceCurrentStep(workflowInstance.id, +goto);
-    handleCurrentStep(workflowInstance);
-  } else {
-    throw new Error(
-      `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
-    );
-  }
-}
+// if (!nextStep) {
+//   await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+// } else {
+//   await setWorkflowInstanceCurrentStep(
+//     workflowInstance.id,
+//     workflowInstance.currentStep + 1
+//   );
+//   handleCurrentStep(workflowInstance);
+// }
+// } else if (!isNaN(+goto)) {
+//   await setWorkflowInstanceCurrentStep(workflowInstance.id, +goto);
+//   handleCurrentStep(workflowInstance);
+// } else {
+//   throw new Error(
+//     `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
+//   );
+// }
+// }
 
-async function proceedToNextStepOrFinish(
-  workflowInstance: OrderWorkflowInstance
-) {
-  const parentWorkflow = await getWorkflowWithIncludes(
-    workflowInstance.parentWorkflowId
-  );
-  if (!parentWorkflow)
-    throw new Error(`No parent workflow found for ${workflowInstance.id}`);
-  const nextStep = parentWorkflow.steps.find(
-    (step) => step.order > workflowInstance.currentStep
-  );
+// async function proceedToNextStepOrFinish(
+//   workflowInstance: OrderWorkflowInstance
+// ) {
+//   const parentWorkflow = await getWorkflowWithIncludes(
+//     workflowInstance.parentWorkflowId
+//   );
+//   if (!parentWorkflow)
+//     throw new Error(`No parent workflow found for ${workflowInstance.id}`);
+//   const nextStep = parentWorkflow.steps.find(
+//     (step) => step.order > workflowInstance.currentStep
+//   );
 
-  if (!nextStep) {
-    await setWorkflowInstanceStatus(workflowInstance.id, "finished");
-  } else {
-    await setWorkflowInstanceCurrentStep(
-      workflowInstance.id,
-      workflowInstance.currentStep + 1
-    );
-    handleCurrentStep(workflowInstance);
-  }
-}
+//   if (!nextStep) {
+//     await setWorkflowInstanceStatus(workflowInstance.id, "finished");
+//   } else {
+//     await setWorkflowInstanceCurrentStep(
+//       workflowInstance.id,
+//       workflowInstance.currentStep + 1
+//     );
+//     handleCurrentStep(workflowInstance);
+//   }
+// }
 
 export async function handleOrderUpdated(params: {
   order: WooCommerceOrder;

@@ -285,22 +285,27 @@ model WebstoreUserRole {
 }
 
 model OrderWorkflowStep {
-  id                   Int                                @id @default(autoincrement())
-  name                 String
-  order                Int
-  actionTarget         String?
-  otherActionTargets   String? //any emails sent to actionTarget will also be sent to these
-  actionType           String
-  actionSubject        String?
-  actionMessage        String?
-  proceedImmediatelyTo String? //if defined, will proceed to the specified step without waiting for events
-  proceedListeners     OrderWorkflowStepProceedListener[]
-  workflowId           Int
-  workflow             OrderWorkflow                      @relation("AllSteps", fields: [workflowId], references: [id])
-  firstStepInId        Int?                               @unique
-  firstStepIn          OrderWorkflow?                     @relation("FirstStep", fields: [firstStepInId], references: [id])
-  displayId            Int?
-  display              OrderWorkflowStepDisplay?
+  id                          Int                                @id @default(autoincrement())
+  name                        String
+  order                       Int
+  actionTarget                String?
+  otherActionTargets          String? //any emails sent to actionTarget will also be sent to these
+  actionType                  String
+  actionSubject               String?
+  actionMessage               String?
+  proceedImmediatelyTo        String? //if defined, will proceed to the specified step without waiting for events
+  proceedImmediatelyToStepId  Int?
+  proceedImmediatelyToStep    OrderWorkflowStep?                 @relation("StepNext", fields: [proceedImmediatelyToStepId], references: [id])
+  proceedListeners            OrderWorkflowStepProceedListener[] @relation("StepListeners")
+  workflowId                  Int
+  workflow                    OrderWorkflow                      @relation("AllSteps", fields: [workflowId], references: [id])
+  firstStepInId               Int?                               @unique
+  firstStepIn                 OrderWorkflow?                     @relation("FirstStep", fields: [firstStepInId], references: [id])
+  displayId                   Int?
+  display                     OrderWorkflowStepDisplay?
+  prevSteps                   OrderWorkflowStep[]                @relation("StepNext")
+  cameFromListeners           OrderWorkflowStepProceedListener[] @relation("ListenersToStep")
+  instancesWithThisStepActive OrderWorkflowInstance[]            @relation("InstancesWithStepActive")
 }
 
 //data for visualizing workflow steps in admin area
@@ -314,15 +319,17 @@ model OrderWorkflowStepDisplay {
 
 //when an event is received, it's checked against the current step's ProceedListeners.
 //if one is found matching in "type" and "from", the workflow will try to proceed to
-//whatever is specified by "goto" (usually a stringified step index or something like "next")
+//the step specified by goToStep (if not null)
 model OrderWorkflowStepProceedListener {
-  id     Int               @id() @default(autoincrement())
-  name   String
-  type   String
-  from   String
-  goto   String
-  stepId Int
-  step   OrderWorkflowStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  id         Int                @id() @default(autoincrement())
+  name       String
+  type       String
+  from       String
+  goto       String
+  goToStepId Int?
+  goToStep   OrderWorkflowStep? @relation("ListenersToStep", fields: [goToStepId], references: [id])
+  stepId     Int
+  step       OrderWorkflowStep  @relation("StepListeners", fields: [stepId], references: [id], onDelete: Cascade)
 }
 
 model OrderWorkflowInstance {
@@ -332,6 +339,8 @@ model OrderWorkflowInstance {
   purchaserEmail      String                    @default("No Email")
   purchaserName       String                    @default("No Name")
   currentStep         Int                       @default(0) //if "status" is not "finished", this is the current step we're waiting on (and therefore listening for events on)
+  activeStepId        Int?
+  activeStep          OrderWorkflowStep?        @relation("InstancesWithStepActive", fields: [activeStepId], references: [id])
   deniedReason        String?
   approvedComments    String?
   accessCodes         OrderWorkflowAccessCode[]
