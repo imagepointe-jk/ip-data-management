@@ -26,10 +26,10 @@ export function StarterSteps({
   const variationStep = stepIndex === 2;
   const finishStep = stepIndex === 3;
   const [clickedProductId, setClickedProductId] = useState(
-    null as number | null
+    null as number | null,
   );
   const [clickedVariationId, setClickedVariationId] = useState(
-    null as number | null
+    null as number | null,
   );
 
   const allowContinue =
@@ -76,7 +76,7 @@ export function StarterSteps({
   }
 
   useEffect(() => {
-    setStepIndex(initialProductId === null ? 0 : 1);
+    setStepIndex(initialProductId === null ? 0 : 2);
   }, [initialProductId]);
 
   return (
