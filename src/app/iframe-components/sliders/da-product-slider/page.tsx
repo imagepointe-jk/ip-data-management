@@ -173,7 +173,7 @@ const products: Product[] = [
   },
   {
     id: "DAC003",
-    name: "Dignity Apparel Union-Made Crewneck Sweatshirt",
+    name: "Crewneck Sweatshirt",
     imageUrl:
       "https://imagepointe.com/wp-content/uploads/2025/08/DAC003_Aiden_Black_IUPAT3-1.jpg",
     productUrl:
