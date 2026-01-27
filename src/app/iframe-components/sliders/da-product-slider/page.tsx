@@ -171,6 +171,16 @@ const products: Product[] = [
     subtext: "5.8 oz, 50/50 cotton/poly",
     colors: [SAFETY_ORANGE, SAFETY_YELLOW],
   },
+  {
+    id: "DAC003",
+    name: "Dignity Apparel Union-Made Crewneck Sweatshirt",
+    imageUrl:
+      "https://imagepointe.com/wp-content/uploads/2025/08/DAC003_Aiden_Black_IUPAT3-1.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/apparel/dignity-apparel-union-made-crewneck-sweatshirt/",
+    subtext: "9 oz, 80/20 cotton/poly",
+    colors: [BLACK, NAVY, PURPLE, HEATHER_CHARCOAL, RED, SAFETY_YELLOW],
+  },
 ];
 
 function Page() {
@@ -181,13 +191,13 @@ function Page() {
     : products.map((product) => product.id); //get all skus given by search params; include all if param not present
   const filteredProducts = products.filter((product) =>
     skus.find(
-      (sku) => sku.toLocaleLowerCase() === product.id.toLocaleLowerCase()
-    )
+      (sku) => sku.toLocaleLowerCase() === product.id.toLocaleLowerCase(),
+    ),
   );
   const sortedProducts = sortByIdOrder(
     filteredProducts,
     skus,
-    (product) => product.id
+    (product) => product.id,
   );
 
   return (
