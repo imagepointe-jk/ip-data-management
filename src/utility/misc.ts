@@ -11,7 +11,7 @@ export function makeStringTitleCase(str: string) {
     .split(" ")
     .map(
       (word) =>
-        `${word[0]?.toUpperCase()}${word.substring(1).toLocaleLowerCase()}`
+        `${word[0]?.toUpperCase()}${word.substring(1).toLocaleLowerCase()}`,
     )
     .join(" ");
 }
@@ -51,7 +51,7 @@ export function waitForMs(ms: number) {
 
 export function findInAnyArray<T>(
   arrays: T[][],
-  predicate: (value: T, index: number, obj: T[]) => boolean
+  predicate: (value: T, index: number, obj: T[]) => boolean,
 ): T | undefined {
   let all: T[] = [];
   for (const arr of arrays) {
@@ -138,7 +138,7 @@ export function getDaysSinceDate(date: Date) {
 
 export function findAllFormValues(
   formData: FormData,
-  testFn: (fieldName: string, fieldValue: FormDataEntryValue) => boolean
+  testFn: (fieldName: string, fieldValue: FormDataEntryValue) => boolean,
 ) {
   const entries: { fieldName: string; fieldValue: FormDataEntryValue }[] = [];
   for (const entry of formData.entries()) {
@@ -152,7 +152,7 @@ export function findAllFormValues(
 export function getArrayPage<T>(
   array: T[],
   pageNumber: number,
-  countPerPage: number
+  countPerPage: number,
 ) {
   const startIndex = countPerPage * (pageNumber - 1);
   return array.slice(startIndex, startIndex + countPerPage);
@@ -167,7 +167,7 @@ export function encrypt(text: string) {
   const cipher = crypto.createCipheriv(
     "aes-256-gcm",
     Buffer.from(key, "base64"),
-    Buffer.from(iv, "base64")
+    Buffer.from(iv, "base64"),
   );
   let ciphertext = cipher.update(text, "utf8", "base64");
   ciphertext += cipher.final("base64");
@@ -184,7 +184,7 @@ export function decrypt(encrypted: string, iv: string, tag: string) {
   const decipher = crypto.createDecipheriv(
     "aes-256-gcm",
     Buffer.from(key, "base64"),
-    Buffer.from(iv, "base64")
+    Buffer.from(iv, "base64"),
   );
 
   decipher.setAuthTag(Buffer.from(tag, "base64"));
@@ -204,7 +204,7 @@ export function wrap(value: number, min: number, max: number) {
 export function clamp(value: number, min: number, max: number) {
   if (max < min)
     console.error(
-      `WARNING: clamp called with invalid values (min ${min}, max ${max})`
+      `WARNING: clamp called with invalid values (min ${min}, max ${max})`,
     );
   if (value < min) return min;
   if (value > max) return max;
@@ -213,7 +213,7 @@ export function clamp(value: number, min: number, max: number) {
 
 export function forceClientDownload(
   urlOrBlob: Blob | string,
-  downloadName: string
+  downloadName: string,
 ) {
   const url =
     urlOrBlob instanceof Blob ? URL.createObjectURL(urlOrBlob) : urlOrBlob;
@@ -248,7 +248,7 @@ export function checkEnvVariable(value: string | undefined, isClient = false) {
 //only use when cryptographic randomness is not needed
 export function createRandomDigitString(digits: number) {
   return Array.from({ length: digits }, () =>
-    Math.floor(Math.random() * 10)
+    Math.floor(Math.random() * 10),
   ).join("");
 }
 
@@ -256,7 +256,7 @@ export function createRandomDigitString(digits: number) {
 //treats the rect as if it is centered within the bounds.
 export function getConfinedRectDimensions(
   rect: { width: number; height: number },
-  bounds: { width: number; height: number }
+  bounds: { width: number; height: number },
 ) {
   if (rect.width <= bounds.width && rect.height <= bounds.height) return rect; //the rect already fits, so don't bother
 
@@ -280,7 +280,7 @@ export function getConfinedRectDimensions(
 //provided an array of items and a way to get a unique ID per item, returns a new array without any items that have the same ID. useful for deduplicating arrays of objects.
 export function deduplicateArray<T>(
   arr: T[],
-  getStringifiedObjectId: (obj: T) => string
+  getStringifiedObjectId: (obj: T) => string,
 ) {
   const deduplicated: T[] = [];
   const seenIds: string[] = [];
@@ -299,7 +299,7 @@ export function deduplicateArray<T>(
 export function sortByIdOrder<T>(
   firstArray: T[],
   idsArray: string[],
-  getId: (item: T) => string
+  getId: (item: T) => string,
 ): T[] {
   const idToIndexMap = new Map<string, number>();
 
@@ -350,4 +350,12 @@ export function batchArray<T>(array: T[], itemsPerBatch: number) {
   }
 
   return batches;
+}
+
+//makes all the keys of an object lowercase. retains all values.
+//e.g. {Foo: 7, BAR: 42} becomes {foo: 7, bar: 42}
+export function normalizeObjectKeys(obj: Object) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [k.toLocaleLowerCase(), v]),
+  );
 }

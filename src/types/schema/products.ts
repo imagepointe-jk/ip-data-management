@@ -8,4 +8,11 @@ const asiProductImportSchema = z.object({
   priceBreaks: z.array(z.object({ quantity: z.string(), price: z.string() })),
 });
 
+export const generalProductImportSchema = z.object({
+  id: z.number().optional(),
+  sku: z.string().optional(),
+  stock: z.number().optional(),
+  parent: z.string().optional(),
+});
+
 export type ASIProductImportData = z.infer<typeof asiProductImportSchema>;

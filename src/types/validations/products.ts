@@ -1,6 +1,11 @@
 import { getSheetCellValue } from "@/utility/spreadsheet";
 import { WorkSheet } from "xlsx";
-import { ASIProductImportData } from "../schema/products";
+import {
+  ASIProductImportData,
+  generalProductImportSchema,
+} from "../schema/products";
+import { z } from "zod";
+import { normalizeObjectKeys } from "@/utility/misc";
 
 const MAX_EMPTY_SKU_CELLS = 100; //if we find this many empty cells in a row in the SKU column, assume that we have found all product entries in the spreadsheet
 const ASI_SKU_COLUMN = 2;
@@ -45,23 +50,23 @@ export function validateASIProducts(sheet: WorkSheet) {
 //called when a SKU has been found; pull values from the area near the SKU based on predetermined spreadsheet formatting/structure
 function pullLocalProductValues(
   rowNumber: number,
-  sheet: WorkSheet
+  sheet: WorkSheet,
 ): ASIProductImportData {
   const sku = `${getSheetCellValue(ASI_SKU_COLUMN, rowNumber, sheet)}`;
   const vendorName = `${getSheetCellValue(
     ASI_PRIMARY_DATA_COLUMN,
     rowNumber + ASI_VENDOR_NAME_ROW_OFFSET,
-    sheet
+    sheet,
   )}`;
   const vendorSku = `${getSheetCellValue(
     ASI_PRIMARY_DATA_COLUMN,
     rowNumber + ASI_VENDOR_SKU_ROW_OFFSET,
-    sheet
+    sheet,
   )}`;
   const description = `${getSheetCellValue(
     ASI_PRIMARY_DATA_COLUMN,
     rowNumber + ASI_DESCRIPTION_ROW_OFFSET,
-    sheet
+    sheet,
   )}`;
   const priceBreaks: { quantity: string; price: string }[] = [];
 
@@ -73,12 +78,12 @@ function pullLocalProductValues(
     const quantity = getSheetCellValue(
       i,
       rowNumber + ASI_PRICING_TABLE_ROW_OFFSET,
-      sheet
+      sheet,
     );
     const price = getSheetCellValue(
       i,
       rowNumber + ASI_PRICING_TABLE_ROW_OFFSET + 1,
-      sheet
+      sheet,
     );
 
     if (!quantity || !price) break;
@@ -90,4 +95,12 @@ function pullLocalProductValues(
   }
 
   return { sku, vendorName, vendorSku, description, priceBreaks };
+}
+
+export function validateGeneralProductSheet(json: any) {
+  if (!Array.isArray(json)) throw new Error("Not an array");
+
+  return json.map((row) =>
+    generalProductImportSchema.parse(normalizeObjectKeys(row)),
+  );
 }

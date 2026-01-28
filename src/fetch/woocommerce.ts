@@ -22,7 +22,7 @@ const standardHeaders = () => {
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${credentials.apiKey}:${credentials.apiSecret}`)}`
+    `Basic ${btoa(`${credentials.apiKey}:${credentials.apiSecret}`)}`,
   );
   return headers;
 };
@@ -31,7 +31,7 @@ export async function getProductsMultiple(
   ids: number[],
   storeUrl = "https://www.imagepointe.com",
   key?: string,
-  secret?: string
+  secret?: string,
 ) {
   const responses = await Promise.all(
     ids.map(async (id) => {
@@ -39,7 +39,7 @@ export async function getProductsMultiple(
         const response = await getProduct(id, storeUrl, key, secret);
         if (!response.ok) {
           throw new Error(
-            `Status ${response.status} while getting product id ${id}`
+            `Status ${response.status} while getting product id ${id}`,
           );
         }
         const json = await response.json();
@@ -48,7 +48,7 @@ export async function getProductsMultiple(
         console.error(`Error getting WooCommerce product: ${error}`);
         return null;
       }
-    })
+    }),
   );
 
   const nonNull: WooCommerceProduct[] = [];
@@ -65,7 +65,7 @@ export async function getProduct(
   id: number,
   storeUrl = "https://www.imagepointe.com",
   key?: string,
-  secret?: string
+  secret?: string,
 ) {
   const headers = standardHeaders();
   if (key && secret) {
@@ -84,13 +84,13 @@ export async function getOrder(
   id: number,
   storeUrl: string,
   storeKey: string,
-  storeSecret: string
+  storeSecret: string,
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
   headers.append("Cache-Control", "no-store");
 
@@ -126,13 +126,13 @@ export async function updateOrder(
   storeUrl: string,
   storeKey: string,
   storeSecret: string,
-  data: OrderUpdateData
+  data: OrderUpdateData,
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const requestOptions = {
@@ -149,13 +149,13 @@ export async function addMetaDataToOrder(
   storeUrl: string,
   storeKey: string,
   storeSecret: string,
-  data: { key: string; value: string }[]
+  data: { key: string; value: string }[],
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const requestOptions = {
@@ -174,13 +174,13 @@ export async function setOrderStatus(
   storeUrl: string,
   storeKey: string,
   storeSecret: string,
-  status: "on-hold" | "processing" | "cancelled"
+  status: "on-hold" | "processing" | "cancelled",
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const requestOptions = {
@@ -239,7 +239,7 @@ export async function getDAProductsGQL() {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${btoa(
-        `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`
+        `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`,
       )}`,
     },
     body: JSON.stringify({
@@ -252,7 +252,7 @@ export async function updateDAProductVariationStock(
   productId: number,
   variationId: number,
   stockQuantity: number,
-  price: number
+  price: number,
 ) {
   return fetch(
     `${env.DA_WOOCOMMERCE_STORE_URL}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
@@ -265,16 +265,16 @@ export async function updateDAProductVariationStock(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Basic ${btoa(
-          `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`
+          `${env.DA_WP_APPLICATION_USERNAME}:${env.DA_WP_APPLICATION_PASSWORD}`,
         )}`,
       },
-    }
+    },
   );
 }
 
 export async function updateIPProduct(
   id: number,
-  data: WooCommerceASIProductUpdateData
+  data: WooCommerceASIProductUpdateData,
 ) {
   const { priceBreaks } = data;
   const meta_data: { key: string; value: string }[] = [];
@@ -313,7 +313,7 @@ export async function updateIPProduct(
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${btoa(
-        `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`
+        `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`,
       )}`,
     },
     body: JSON.stringify(body),
@@ -327,10 +327,10 @@ export async function searchIPProducts(search: string) {
       method: "GET",
       headers: {
         Authorization: `Basic ${btoa(
-          `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`
+          `${env.IP_WP_APPLICATION_USERNAME}:${env.IP_WP_APPLICATION_PASSWORD}`,
         )}`,
       },
-    }
+    },
   );
 }
 
@@ -344,7 +344,7 @@ export async function getTaxRates(params: {
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const requestOptions = {
@@ -400,7 +400,7 @@ export async function createTaxRate(params: {
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const raw = JSON.stringify({
@@ -434,7 +434,7 @@ export async function updateTaxRateBatch(params: {
   headers.append("Content-Type", "application/json");
   headers.append(
     "Authorization",
-    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`
+    `Basic ${btoa(`${storeKey}:${storeSecret}`)}`,
   );
 
   const raw = JSON.stringify({

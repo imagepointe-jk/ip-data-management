@@ -74,8 +74,8 @@ export default function NavbarLinks() {
       </li>
       <li>
         <Link
-          href="/admin/products"
-          className={path.startsWith("/admin/products") ? "current" : ""}
+          href="/admin/products/asi"
+          className={path.startsWith("/admin/products/asi") ? "current" : ""}
         >
           Products
         </Link>

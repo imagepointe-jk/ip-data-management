@@ -1,7 +1,7 @@
 //seed with real data from the design library, sampled on 7-8-24.
 
+import { getSourceJson } from "@/utility/spreadsheet/serverOnly";
 import { prisma } from "../prisma/client";
-import { getSourceJson } from "../src/utility/spreadsheet";
 
 const data = getSourceJson("./seed/Design Data 7-8-24.xlsx");
 
@@ -92,7 +92,7 @@ async function createDesignSubcategories() {
     } catch (error) {
       console.error(
         `Failed to create subcategory ${subcat.Name} with parent category ${subcat["Parent Category"]}`,
-        error
+        error,
       );
       continue;
     }
@@ -116,7 +116,7 @@ async function createDesigns() {
     } catch (error) {
       console.error(
         `Failed to create design ${design["Design Number"]} with background color ${design["Default Background Color"]}`,
-        error
+        error,
       );
     }
   }
@@ -135,7 +135,7 @@ async function createDesigns() {
     } catch (error) {
       console.error(
         `Failed to create design ${design["Design Number"]} with background color ${design["Default Background Color"]}`,
-        error
+        error,
       );
     }
   }

@@ -4,7 +4,7 @@ import { startSync } from "@/actions/products/products";
 import { useToast } from "@/components/ToastProvider";
 import { FormEvent, useState } from "react";
 
-export function UploadForm() {
+export function ASIProductUploadForm() {
   const [loading, setLoading] = useState(false);
   const [complete, setComplete] = useState(false);
   const toast = useToast();

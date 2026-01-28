@@ -1,4 +1,3 @@
-import fs from "fs";
 import * as xlsx from "xlsx";
 import { WorkBook, WorkSheet } from "xlsx";
 
@@ -6,30 +5,10 @@ export type Obj = {
   [key: string]: any;
 };
 
-type DataFromWorkbook = {
-  [key: string]: Obj[];
-};
-
-export function getSourceJson(path: string) {
-  try {
-    const file = fs.readFileSync(path);
-    const workbook = xlsx.read(file, { type: "buffer" });
-    const data: DataFromWorkbook = {};
-    for (const sheetName of workbook.SheetNames) {
-      data[`${sheetName}`] = xlsx.utils.sheet_to_json(
-        workbook.Sheets[sheetName]!
-      );
-    }
-
-    return data;
-  } catch (error) {
-    console.error("ERROR PARSING SOURCE", error);
-  }
-}
-
-export function getSheetFromBuffer(buffer: Buffer, sheetName: string) {
+export function getSheetFromBuffer(buffer: Buffer, sheetName?: string) {
   const workbook = xlsx.read(buffer, { type: "buffer" });
-  const sheet = workbook.Sheets[sheetName];
+  const sheetNameToUse = sheetName || `${workbook.SheetNames[0]}`;
+  const sheet = workbook.Sheets[sheetNameToUse];
   if (!sheet) throw new Error(`Sheet ${sheetName} not found in the workbook.`);
   return sheet;
 }
@@ -57,7 +36,7 @@ export function jsonToSheet(data: Obj[]) {
 export function getSheetCellValue(
   colNum: number,
   rowNum: number,
-  sheet: WorkSheet
+  sheet: WorkSheet,
 ) {
   const colLabel = numberToColumnLetterLabel(colNum);
   const cellLabel = `${colLabel}${rowNum}`;
@@ -87,7 +66,7 @@ export function getSheetRawCells(
       to: number;
     };
   },
-  sheet: WorkSheet
+  sheet: WorkSheet,
 ): any[][] {
   const rows: any[][] = [];
 
