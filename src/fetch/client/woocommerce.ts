@@ -38,8 +38,8 @@ export async function updateProductVariation(params: {
   } = params;
 
   const bodyData: { [key: string]: number | string } = {};
-  if (stockQuantity) bodyData.stock_quantity = stockQuantity;
-  if (price) bodyData.regular_price = `${price}`;
+  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
+  if (price !== undefined) bodyData.regular_price = `${price}`;
 
   return fetch(
     `${storeUrl}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
@@ -66,8 +66,8 @@ export async function updateProduct(params: {
     params;
 
   const bodyData: { [key: string]: number | string } = {};
-  if (stockQuantity) bodyData.stock_quantity = stockQuantity;
-  if (price) bodyData.regular_price = `${price}`;
+  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
+  if (price !== undefined) bodyData.regular_price = `${price}`;
 
   return fetch(`${storeUrl}/wp-json/wc/v3/products/${productId}`, {
     method: "POST",
