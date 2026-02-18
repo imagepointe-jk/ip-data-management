@@ -42,6 +42,21 @@ export function GeneralProductUploadForm() {
     }
   }
 
+  function clearForm() {
+    const url = document.getElementById("url");
+    const key = document.getElementById("key");
+    const secret = document.getElementById("secret");
+    const file = document.getElementById("file");
+
+    (url as HTMLInputElement).value = "";
+    (key as HTMLInputElement).value = "";
+    (secret as HTMLInputElement).value = "";
+    (file as HTMLInputElement).value = "";
+
+    setPendingSyncRows([]);
+    setProcessedRows([]);
+  }
+
   return (
     <form
       className="content-frame vert-flex-group"
@@ -67,6 +82,11 @@ export function GeneralProductUploadForm() {
       <div>
         <button type="submit">{submitButtonText}</button>
       </div>
+      <div>
+        <button type="button" onClick={clearForm}>
+          Reset
+        </button>
+      </div>
       {processedRows.length === 0 && pendingSyncRows.length > 0 && (
         <div>
           {pendingSyncRows.length} pending sync rows.{" "}
@@ -81,20 +101,37 @@ export function GeneralProductUploadForm() {
               {processedRows.length} of {nonErrorRows.length} rows processed...
             </>
           )}
-          {processedRows.length === nonErrorRows.length && <>Sync complete.</>}
+          {processedRows.length === nonErrorRows.length && (
+            <>
+              Sync complete.{" "}
+              {processedRows.filter((item) => item.success).length} successful
+              updates. {processedRows.filter((item) => !item.success).length}{" "}
+              errors.
+            </>
+          )}
         </div>
       )}
-      {processedRows.map((row) => (
-        <div
-          key={row.id}
-          style={{
-            color: !row.success ? "red" : undefined,
-            fontWeight: !row.success ? "600" : undefined,
-          }}
-        >
-          Result for product {row.sku} (ID {row.id}): {row.message}
-        </div>
-      ))}
+      <div
+        style={{
+          border: "1px solid black",
+          overflow: "auto",
+          height: "175px",
+          fontFamily: "monospace",
+          padding: "10px",
+        }}
+      >
+        {processedRows.map((row) => (
+          <div
+            key={row.id}
+            style={{
+              color: !row.success ? "red" : undefined,
+              fontWeight: !row.success ? "600" : undefined,
+            }}
+          >
+            Result for product {row.sku} (ID {row.id}): {row.message}
+          </div>
+        ))}
+      </div>
     </form>
   );
 }
