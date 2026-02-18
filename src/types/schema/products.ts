@@ -12,6 +12,7 @@ export const generalProductImportSchema = z.object({
   id: z.number().optional(),
   sku: z.string().optional(),
   stock: z.number().optional(),
+  published: z.boolean().optional(),
   parent: z.string().optional(),
 });
 

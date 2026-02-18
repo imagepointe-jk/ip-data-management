@@ -100,7 +100,15 @@ function pullLocalProductValues(
 export function validateGeneralProductSheet(json: any) {
   if (!Array.isArray(json)) throw new Error("Not an array");
 
-  return json.map((row) =>
-    generalProductImportSchema.parse(normalizeObjectKeys(row)),
-  );
+  return json.map((row) => {
+    const normalized = normalizeObjectKeys(row);
+    normalized.published =
+      normalized.published === "y"
+        ? true
+        : normalized.published === "n"
+          ? false
+          : undefined;
+
+    return generalProductImportSchema.parse(normalized);
+  });
 }

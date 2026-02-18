@@ -16,6 +16,7 @@ export type PendingSyncRow = {
     parentId?: number;
     sku?: string;
     stock?: number;
+    published?: boolean;
   };
 };
 export type SyncRowResult = {
@@ -25,7 +26,9 @@ export type SyncRowResult = {
   message: string;
 };
 
-export async function createPendingSyncRows(formData: FormData) {
+export async function createPendingSyncRows(
+  formData: FormData,
+): Promise<PendingSyncRow[]> {
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     throw new AppError({
@@ -61,6 +64,7 @@ export async function createPendingSyncRows(formData: FormData) {
           sku: item.sku,
           parentId: matchingParent?.id,
           stock: item.stock,
+          published: item.published,
         };
         return row;
       }
@@ -94,6 +98,7 @@ export async function syncRow(params: {
         productId: row.data.parentId,
         variationId: row.data.id,
         stockQuantity: row.data.stock,
+        published: row.data.published,
       })
     : await updateProduct({
         storeUrl: url,
@@ -101,6 +106,7 @@ export async function syncRow(params: {
         apiSecret: secret,
         productId: row.data.id,
         stockQuantity: row.data.stock,
+        published: row.data.published,
       });
 
   if (!response.ok)

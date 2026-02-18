@@ -26,12 +26,14 @@ export async function updateProductVariation(params: {
   variationId: number;
   stockQuantity?: number;
   price?: number;
+  published?: boolean;
 }) {
   const {
     productId,
     variationId,
     price,
     stockQuantity,
+    published,
     apiKey,
     apiSecret,
     storeUrl,
@@ -40,6 +42,8 @@ export async function updateProductVariation(params: {
   const bodyData: { [key: string]: number | string } = {};
   if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
   if (price !== undefined) bodyData.regular_price = `${price}`;
+  if (published !== undefined)
+    bodyData.status = published ? "publish" : "private";
 
   return fetch(
     `${storeUrl}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
@@ -61,13 +65,23 @@ export async function updateProduct(params: {
   productId: number;
   stockQuantity?: number;
   price?: number;
+  published?: boolean;
 }) {
-  const { productId, price, stockQuantity, apiKey, apiSecret, storeUrl } =
-    params;
+  const {
+    productId,
+    price,
+    stockQuantity,
+    published,
+    apiKey,
+    apiSecret,
+    storeUrl,
+  } = params;
 
   const bodyData: { [key: string]: number | string } = {};
   if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
   if (price !== undefined) bodyData.regular_price = `${price}`;
+  if (published !== undefined)
+    bodyData.status = published ? "publish" : "draft";
 
   return fetch(`${storeUrl}/wp-json/wc/v3/products/${productId}`, {
     method: "POST",
