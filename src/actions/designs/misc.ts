@@ -5,13 +5,13 @@ import {
   getSheetFromBuffer,
   sheetToJson,
 } from "@/utility/spreadsheet";
-import { prisma } from "../../../prisma/client";
 import { sendEmail } from "@/utility/mail";
 import {
-  DesignDataImportRow,
+  DesignImportDTO,
   DesignDataInterchangeRow,
 } from "@/types/schema/designs";
 import { validateDesignDataImportSheet } from "@/types/validations/designs";
+import { prisma } from "@/prisma";
 
 export async function exportAndSend(email: string) {
   const designs = await prisma.design.findMany({
@@ -91,5 +91,27 @@ export async function exportAndSend(email: string) {
 }
 
 export async function importDesigns(formData: FormData) {
-  //insert new logic here
+  const input = formData.get("sheet");
+  if (!(input instanceof Blob)) throw new Error("Invalid file");
+
+  const arrayBuffer = await input.arrayBuffer();
+  const sheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "Designs");
+  const json = sheetToJson(sheet);
+  const parsed = validateDesignDataImportSheet(json);
+  const withIDs: (Omit<DesignImportDTO, "id"> & { id: number })[] = parsed
+    .filter((design) => design.id !== undefined)
+    .map((design) => ({ ...design, id: +design.id! }));
+
+  await prisma.$transaction(
+    withIDs.map((design) =>
+      prisma.design.update({
+        where: {
+          id: design.id,
+        },
+        data: {
+          priority: design.priority,
+        },
+      }),
+    ),
+  );
 }

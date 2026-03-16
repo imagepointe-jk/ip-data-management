@@ -1,6 +1,6 @@
-import { findAllFormValues } from "@/utility/misc";
+import { findAllFormValues, normalizeObjectKeys } from "@/utility/misc";
 import {
-  designDataImportRowSchema,
+  designImportDTOSchema,
   designFormDataSchema,
   quoteRequestSchema,
 } from "../schema/designs";
@@ -96,10 +96,11 @@ export function validateQuoteRequest(json: any) {
 }
 export function validateDesignDataImportSheet(data: any) {
   if (!Array.isArray(data)) throw new Error("Input was not an array");
-  const prevalidated = data.map((row) => ({
-    ...row,
-    "Design Number": `${row["Design Number"]}`,
-  }));
+  const prevalidated = data.map((row) => {
+    const normalized = normalizeObjectKeys(row);
+    normalized.designNumber = `${normalized["design number"]}`;
+    return normalized;
+  });
 
-  return z.array(designDataImportRowSchema).parse(prevalidated);
+  return z.array(designImportDTOSchema).parse(prevalidated);
 }

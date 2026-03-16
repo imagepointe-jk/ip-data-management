@@ -51,6 +51,7 @@ export const quoteRequestSchema = z.object({
   items: z.array(quoteRequestItemSchema),
 });
 
+//i think this was supposed to be a DTO
 export const designDataInterchangeRowSchema = z.object({
   ID: z.number(),
   Name: z.string().nullable().optional(),
@@ -72,9 +73,10 @@ export const designDataInterchangeRowSchema = z.object({
   Priority: z.number().optional(),
 });
 
-export const designDataImportRowSchema = z.object({
-  ["Design Number"]: z.string(),
-  Priority: z.number().optional(),
+export const designImportDTOSchema = z.object({
+  id: z.number().optional(),
+  designNumber: z.string().optional(),
+  priority: z.number().optional(),
 });
 
 export const sortingTypes = ["Design Number", "Priority", "Date"] as const;
@@ -129,4 +131,4 @@ export type DesignDataInterchangeRow = z.infer<
   typeof designDataInterchangeRowSchema
 >;
 
-export type DesignDataImportRow = z.infer<typeof designDataImportRowSchema>;
+export type DesignImportDTO = z.infer<typeof designImportDTOSchema>;
