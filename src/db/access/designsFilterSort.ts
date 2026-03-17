@@ -162,7 +162,7 @@ function defaultSortFn(
     return designA.featured ? -1 : 1;
   } else {
     if (designA.priority === designB.priority) {
-      return designA.designNumber < designB.designNumber ? 1 : -1;
+      return designA.date < designB.date ? 1 : -1;
     } else {
       return designA.priority < designB.priority ? 1 : -1;
     }
