@@ -90,6 +90,9 @@ export default function NavbarLinks() {
             <li>
               <Link href="/admin/tax">Taxes</Link>
             </li>
+            <li>
+              <Link href="/admin/orders/import">Orders</Link>
+            </li>
           </ul>
         )}
       </li>
