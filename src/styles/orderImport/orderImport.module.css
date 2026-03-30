@@ -1,0 +1,38 @@
+.expandable-headline {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.expandable-headline:hover {
+  background-color: rgb(187, 187, 187);
+}
+
+.validation-notice {
+  border-radius: 100px;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.data-ok {
+  background-color: green;
+}
+
+.data-missing {
+  background-color: orange;
+}
+
+.pending-upload-info-frames-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pending-upload-info-frame {
+  padding: 10px;
+}
+
+.pending-upload-container td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
