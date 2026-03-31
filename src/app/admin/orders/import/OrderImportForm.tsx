@@ -1,58 +1,76 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import {
-  checkOrderValidationStatus,
-  createPendingOrderUploads,
-} from "./orderImport";
 import { PendingOrderUploadDisplay } from "./PendingOrderUploadDisplay";
-import { OrderImportDTO } from "@/types/schema/orders";
+import {
+  createPendingOrderUploadData,
+  PendingOrderUploadData,
+} from "./orderImport";
 
 export function OrderImportForm() {
-  const [pendingUploads, setPendingUploads] = useState<OrderImportDTO[]>([]);
-  const [previewPressed, setPreviewPressed] = useState(false);
-  const issueCount = pendingUploads.filter(
-    (item) => checkOrderValidationStatus(item) === "missing",
+  const [pendingUploadData, setPendingUploadData] =
+    useState<PendingOrderUploadData>();
+  const [previewStatus, setPreviewStatus] = useState<
+    "idle" | "loading" | "done"
+  >("idle");
+  const [previewError, setPreviewError] = useState("");
+  const issueCount = pendingUploadData?.validationStatuses.filter(
+    (item) => item.overallStatus !== "ok",
   ).length;
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function createImportPreview(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const pendingOrderUploads = await createPendingOrderUploads(formData);
-    setPendingUploads(pendingOrderUploads);
+    setPreviewStatus("loading");
+    try {
+      const pendingData = await createPendingOrderUploadData(formData);
+      setPendingUploadData(pendingData);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error.";
+      setPreviewError(message);
+    }
 
-    setPreviewPressed(true);
+    setPreviewStatus("done");
+  }
+
+  async function uploadData(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
   }
 
   return (
     <form
       className="content-frame vert-flex-group"
       style={{ marginTop: "20px", width: "600px" }}
-      onSubmit={onSubmit}
+      onSubmit={previewStatus === "idle" ? createImportPreview : uploadData}
     >
       <h3>Upload Import Spreadsheet</h3>
       <label htmlFor="url">
         Store URL
-        <input type="text" name="url" id="url" />
+        <input type="text" name="url" id="url" required />
       </label>
       <label htmlFor="key">
         API Key
-        <input type="text" name="key" id="key" />
+        <input type="text" name="key" id="key" required />
       </label>
       <label htmlFor="secret">
         API Secret
-        <input type="text" name="secret" id="secret" />
+        <input type="text" name="secret" id="secret" required />
       </label>
       <label htmlFor="file">
         <input type="file" name="file" id="file" required />
       </label>
-      {previewPressed && (
+      {previewStatus === "loading" && <div>Creating import preview...</div>}
+      {previewStatus === "done" && pendingUploadData !== undefined && (
         <div>
-          {pendingUploads.length} pending uploads. Initial checks found{" "}
-          {issueCount} issue(s).
+          {previewError && `Error creating preview: ${previewError}`}
+          {!previewError &&
+            `${pendingUploadData.pendingUploads.length} pending uploads. Initial checks found ${issueCount} issue(s).`}
         </div>
       )}
       <div
@@ -63,12 +81,30 @@ export function OrderImportForm() {
           padding: "10px",
         }}
       >
-        {pendingUploads.map((item) => (
-          <PendingOrderUploadDisplay key={item.id} pendingUpload={item} />
-        ))}
+        {!pendingUploadData ? (
+          <></>
+        ) : (
+          pendingUploadData.pendingUploads.map((item) => (
+            <PendingOrderUploadDisplay
+              key={item.id}
+              pendingUpload={item}
+              ok={
+                pendingUploadData.validationStatuses.find(
+                  (status) => status.id === item.id,
+                )?.overallStatus === "ok"
+              }
+            />
+          ))
+        )}
       </div>
       <div>
-        <button type="submit">Preview Import</button>
+        <button type="submit">
+          {previewStatus === "idle"
+            ? "Preview Import"
+            : previewStatus === "loading"
+              ? "Please wait..."
+              : "Upload"}
+        </button>
       </div>
     </form>
   );

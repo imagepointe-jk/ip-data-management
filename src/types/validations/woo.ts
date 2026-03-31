@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   wooCommerceDAProductSchema,
   wooCommerceDAProductVariationSchema,
@@ -34,10 +35,10 @@ export function parseWooCommerceOrderJson(json: any) {
     throw new Error();
   }
   const lineItemsParsed = lineItemsUnparsed.map((item) =>
-    parseWooCommerceLineItem(item)
+    parseWooCommerceLineItem(item),
   );
   const metaDataWithStringValues = (json.meta_data as any[]).filter(
-    (meta) => typeof meta.value === "string"
+    (meta) => typeof meta.value === "string",
   ); //values can be strings, objects, or arrays; just focus on strings for now
 
   json.lineItems = lineItemsParsed;
@@ -63,7 +64,27 @@ export function parseWooCommerceOrderJson(json: any) {
 export function parseWooCommerceProduct(json: any) {
   if (!json.images) json.images = [];
 
+  const variations = json.variations;
+  if (Array.isArray(variations)) {
+    if (typeof variations[0] === "number") {
+      //if it's just an array of variation IDs, replace it with a placeholder array that preserves the IDs and will still satisfy the schema
+      json.variations = variations.map((item) => ({
+        id: item,
+        sku: "not retrieved",
+        stock_quantity: 0,
+      }));
+    }
+  }
+
   return wooCommerceProductSchema.parse(json);
+}
+
+export function parseWooCommerceProductsMultiple(json: any) {
+  if (!Array.isArray(json)) {
+    throw new Error("Provided json is not an array");
+  }
+
+  return z.array(wooCommerceProductSchema).parse(json);
 }
 
 export function parseWooCommerceDAProductsResponse(json: any) {
@@ -98,7 +119,7 @@ export function parseWooCommerceDAProductsResponse(json: any) {
               name: variation.name || "NO NAME",
               sku: variation.sku,
               stockQuantity: variation.stockQuantity || 0,
-            })
+            }),
           ),
     });
   });

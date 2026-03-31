@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { checkOrderValidationStatus } from "./orderImport";
 import styles from "@/styles/orderImport/orderImport.module.css";
 import { ValidatedData } from "./ValidatedData";
 import { OrderImportDTO } from "@/types/schema/orders";
 
 type Props = {
   pendingUpload: OrderImportDTO;
+  ok: boolean;
 };
-export function PendingOrderUploadDisplay({ pendingUpload }: Props) {
+export function PendingOrderUploadDisplay({ pendingUpload, ok }: Props) {
   const { billing, shipping, lineItems, couponCode, customerNote } =
     pendingUpload;
   const [expanded, setExpanded] = useState(false);
-  const validationStatus = checkOrderValidationStatus(pendingUpload);
 
   return (
     <div
@@ -25,9 +24,9 @@ export function PendingOrderUploadDisplay({ pendingUpload }: Props) {
         Order for {billing.firstName || "NO_FIRST_NAME"}{" "}
         {billing.lastName || "NO_LAST_NAME"}
         <span
-          className={`${styles["validation-notice"]} ${styles[validationStatus === "ok" ? "data-ok" : "data-missing"]}`}
+          className={`${styles["validation-notice"]} ${styles[ok ? "data-ok" : "data-missing"]}`}
         >
-          {validationStatus === "ok" ? "ok" : "data missing"}
+          {ok ? "ok" : "data missing"}
         </span>
       </div>
       {expanded && (

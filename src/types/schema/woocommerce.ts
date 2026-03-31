@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { DiffStatus } from "./misc";
 
+const wooCommerceProductVariationSchema = z.object({
+  id: z.number(),
+  sku: z.string().nullable(),
+  stock_quantity: z.number().nullable(),
+});
+
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -10,9 +16,10 @@ export const wooCommerceProductSchema = z.object({
     z.object({
       src: z.string(),
       alt: z.string(),
-    })
+    }),
   ),
   permalink: z.string(),
+  variations: z.array(wooCommerceProductVariationSchema),
 });
 
 export const wooCommerceDAProductVariationSchema = z.object({
@@ -33,7 +40,7 @@ export const wooCommerceDAProductSchema = z.object({
     z.object({
       name: z.string(),
       terms: z.array(z.object({ slug: z.string() })),
-    })
+    }),
   ),
   variations: z.array(wooCommerceDAProductVariationSchema),
 });
@@ -100,10 +107,10 @@ export const wooCommerceOrderDataSchema = z.object({
     z.object({
       id: z.number(),
       method_title: z.string(),
-    })
+    }),
   ),
   metaData: z.array(
-    z.object({ id: z.number(), key: z.string(), value: z.string() })
+    z.object({ id: z.number(), key: z.string(), value: z.string() }),
   ),
 });
 

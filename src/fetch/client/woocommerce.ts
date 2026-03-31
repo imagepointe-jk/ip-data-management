@@ -92,3 +92,21 @@ export async function updateProduct(params: {
     },
   });
 }
+
+export async function getAllProducts(
+  storeUrl: string,
+  key: string,
+  secret: string,
+  includeVariations = true,
+) {
+  return fetch(
+    `${storeUrl}/wp-json/wc/v3/products${includeVariations ? "?include_variations=true" : ""}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${btoa(`${key}:${secret}`)}`,
+      },
+    },
+  );
+}
