@@ -1,5 +1,5 @@
 import { AppError } from "@/error";
-// import { getAllProducts } from "@/fetch/client/woocommerce";
+import { getAllProducts } from "@/fetch/client/woocommerce";
 import { OrderImportDTO } from "@/types/schema/orders";
 import { WooCommerceProduct } from "@/types/schema/woocommerce";
 import { validateOrderImportSheet } from "@/types/validations/orders";
@@ -19,7 +19,6 @@ export type OrderImportValidationStatus = {
     city: ValidationStatus;
     state: ValidationStatus;
     zip: ValidationStatus;
-    method: ValidationStatus;
   };
   billing: {
     firstName: ValidationStatus;
@@ -39,15 +38,20 @@ export type PendingOrderUploadData = {
   pendingUploads: OrderImportDTO[];
   validationStatuses: OrderImportValidationStatus[];
 };
+export type UploadResult = {
+  payload: OrderImportDTO;
+  message: string;
+  ok: boolean;
+};
 
 export async function createPendingOrderUploadData(
   formData: FormData,
 ): Promise<PendingOrderUploadData> {
   //get data from the form
   const file = formData.get("file");
-  // const url = `${formData.get("url")}`;
-  // const key = `${formData.get("key")}`;
-  // const secret = `${formData.get("secret")}`;
+  const url = `${formData.get("url")}`;
+  const key = `${formData.get("key")}`;
+  const secret = `${formData.get("secret")}`;
   if (!(file instanceof File) || file.size === 0) {
     throw new AppError({
       type: "Client Request",
@@ -71,14 +75,15 @@ export async function createPendingOrderUploadData(
   const parsedOrders = validateOrderImportSheet(ordersJson, lineItemsJson);
 
   //get products to check against the ones in the import sheet
-  // const response = await getAllProducts(url, key, secret);
-  // const json = await response.json();
-  // if (!response.ok) {
-  //   throw new Error(
-  //     `Response code ${response.status} while retrieving product data from the store. Message from the server: ${json.message || "(no message found"}`,
-  //   );
-  // }
-  // const parsedProducts = parseWooCommerceProductsMultiple(json);
+  const response = await getAllProducts(url, key, secret);
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(
+      `Response code ${response.status} while retrieving product data from the store. Message from the server: ${json.message || "(no message found"}`,
+    );
+  }
+  const parsedProducts = parseWooCommerceProductsMultiple(json);
+  populateProductIds(parsedOrders, parsedProducts);
 
   //create a validation status for each order
   const orderValidationStatuses = parsedOrders.map((order) =>
@@ -90,6 +95,46 @@ export async function createPendingOrderUploadData(
     pendingUploads: parsedOrders,
     validationStatuses: orderValidationStatuses,
   };
+}
+
+function populateProductIds(
+  pendingOrders: OrderImportDTO[],
+  existingProducts: WooCommerceProduct[],
+) {
+  for (const order of pendingOrders) {
+    for (const lineItem of order.lineItems) {
+      //are there any products where their main SKU matches the line item's SKU? (this should only happen if the line item is a non-variation product)
+      const matchingProduct = existingProducts.find(
+        (product) =>
+          product.sku.toLocaleLowerCase() === lineItem.sku?.toLocaleLowerCase(),
+      );
+      if (matchingProduct) {
+        lineItem.productId = matchingProduct.id;
+        continue;
+      }
+
+      //if we get here, it's either nonexistent or a variation product; try to use SKU to find a product ID and a variation ID
+      const productWithMatchingVariation = existingProducts.find(
+        (product) =>
+          !!product.variations.find(
+            (variation) =>
+              variation.sku?.toLocaleLowerCase() ===
+              lineItem.sku?.toLocaleLowerCase(),
+          ),
+      );
+      if (!productWithMatchingVariation) continue;
+
+      lineItem.productId = productWithMatchingVariation.id;
+      const matchingVariation = productWithMatchingVariation.variations.find(
+        (variation) =>
+          variation.sku?.toLocaleLowerCase() ===
+          lineItem.sku?.toLocaleLowerCase(),
+      );
+      if (!matchingVariation) continue;
+
+      lineItem.variationId = matchingVariation.id;
+    }
+  }
 }
 
 export function checkOrderValidationStatus(
@@ -127,7 +172,7 @@ export function checkOrderValidationStatus(
     validationStatus: ValidationStatus;
   }[] = pendingOrder.lineItems.map((lineItem) => ({
     sku: `${lineItem.sku}`,
-    validationStatus: "ok",
+    validationStatus: lineItem.productId === undefined ? "missing" : "ok",
   })); //ran out of time; do proper line item validation at some point
 
   //validate the order fields, and include the validated line items
@@ -141,7 +186,6 @@ export function checkOrderValidationStatus(
       city: pendingOrder.shipping.city ? "ok" : "missing",
       state: pendingOrder.shipping.state ? "ok" : "missing",
       zip: pendingOrder.shipping.zip ? "ok" : "missing",
-      method: pendingOrder.shipping.method ? "ok" : "missing",
     },
     billing: {
       firstName: pendingOrder.billing.firstName ? "ok" : "missing",
@@ -156,6 +200,8 @@ export function checkOrderValidationStatus(
   };
 
   //decide the overall status
+  if (pendingOrder.lineItems.length === 0)
+    orderValidationStatus.overallStatus = "missing";
   for (const [_, value] of Object.entries(orderValidationStatus.shipping)) {
     if (value !== "ok") orderValidationStatus.overallStatus = "missing";
   }

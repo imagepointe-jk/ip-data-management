@@ -5,7 +5,9 @@ import { PendingOrderUploadDisplay } from "./PendingOrderUploadDisplay";
 import {
   createPendingOrderUploadData,
   PendingOrderUploadData,
+  UploadResult,
 } from "./orderImport";
+import { createOrder } from "@/fetch/client/woocommerce";
 
 export function OrderImportForm() {
   const [pendingUploadData, setPendingUploadData] =
@@ -14,6 +16,10 @@ export function OrderImportForm() {
     "idle" | "loading" | "done"
   >("idle");
   const [previewError, setPreviewError] = useState("");
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "loading" | "done">(
+    "idle",
+  );
+  const [uploadResults, setUploadResults] = useState<UploadResult[]>([]);
   const issueCount = pendingUploadData?.validationStatuses.filter(
     (item) => item.overallStatus !== "ok",
   ).length;
@@ -29,6 +35,7 @@ export function OrderImportForm() {
       const pendingData = await createPendingOrderUploadData(formData);
       setPendingUploadData(pendingData);
     } catch (error) {
+      console.log(error);
       const message = error instanceof Error ? error.message : "Unknown error.";
       setPreviewError(message);
     }
@@ -38,9 +45,39 @@ export function OrderImportForm() {
 
   async function uploadData(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!pendingUploadData) return;
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+
+    const url = `${formData.get("url")}`;
+    const key = `${formData.get("key")}`;
+    const secret = `${formData.get("secret")}`;
+
+    setUploadStatus("loading");
+    for (const item of pendingUploadData.pendingUploads) {
+      try {
+        const response = await createOrder(url, key, secret, item);
+        const json = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            `Status code ${response.status}. Message from the server: ${json.message || "(no message found)"}`,
+          );
+        }
+        setUploadResults((prev) => [
+          ...prev,
+          { payload: item, message: "Upload successful.", ok: true },
+        ]);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error.";
+        setUploadResults((prev) => [
+          ...prev,
+          { payload: item, message, ok: false },
+        ]);
+      }
+    }
+    setUploadStatus("done");
   }
 
   return (
@@ -66,11 +103,24 @@ export function OrderImportForm() {
         <input type="file" name="file" id="file" required />
       </label>
       {previewStatus === "loading" && <div>Creating import preview...</div>}
-      {previewStatus === "done" && pendingUploadData !== undefined && (
+      {previewStatus === "done" && uploadStatus === "idle" && (
         <div>
           {previewError && `Error creating preview: ${previewError}`}
           {!previewError &&
-            `${pendingUploadData.pendingUploads.length} pending uploads. Initial checks found ${issueCount} issue(s).`}
+            pendingUploadData !== undefined &&
+            `${pendingUploadData.pendingUploads.length} pending uploads. Initial checks found ${issueCount} order(s) with issue(s).`}
+        </div>
+      )}
+      {uploadStatus === "loading" && (
+        <div>
+          Processing order {uploadResults.length + 1} of{" "}
+          {pendingUploadData?.pendingUploads.length}...
+        </div>
+      )}
+      {uploadStatus === "done" && (
+        <div>
+          Upload complete. {uploadResults.filter((result) => !result.ok).length}{" "}
+          issue(s).
         </div>
       )}
       <div
@@ -81,31 +131,40 @@ export function OrderImportForm() {
           padding: "10px",
         }}
       >
-        {!pendingUploadData ? (
-          <></>
-        ) : (
-          pendingUploadData.pendingUploads.map((item) => (
-            <PendingOrderUploadDisplay
-              key={item.id}
-              pendingUpload={item}
-              ok={
-                pendingUploadData.validationStatuses.find(
+        {pendingUploadData && uploadStatus === "idle" && (
+          <>
+            {pendingUploadData.pendingUploads.map((item) => (
+              <PendingOrderUploadDisplay
+                key={item.id}
+                pendingUpload={item}
+                validationStatus={pendingUploadData.validationStatuses.find(
                   (status) => status.id === item.id,
-                )?.overallStatus === "ok"
-              }
-            />
-          ))
+                )}
+              />
+            ))}
+          </>
+        )}
+        {(uploadStatus === "loading" || uploadStatus === "done") && (
+          <>
+            {uploadResults.map((result) => (
+              <div key={result.payload.id} style={{ fontFamily: "monospace" }}>
+                {`Result for order ${result.payload.id}: ${result.message}`}
+              </div>
+            ))}
+          </>
         )}
       </div>
-      <div>
-        <button type="submit">
-          {previewStatus === "idle"
-            ? "Preview Import"
-            : previewStatus === "loading"
-              ? "Please wait..."
-              : "Upload"}
-        </button>
-      </div>
+      {uploadStatus !== "done" && (
+        <div>
+          <button type="submit">
+            {previewStatus === "idle"
+              ? "Preview Import"
+              : previewStatus === "loading"
+                ? "Please wait..."
+                : "Upload"}
+          </button>
+        </div>
+      )}
     </form>
   );
 }

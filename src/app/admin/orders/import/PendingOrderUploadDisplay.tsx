@@ -2,12 +2,17 @@ import { useState } from "react";
 import styles from "@/styles/orderImport/orderImport.module.css";
 import { ValidatedData } from "./ValidatedData";
 import { OrderImportDTO } from "@/types/schema/orders";
+import { OrderImportValidationStatus } from "./orderImport";
 
 type Props = {
   pendingUpload: OrderImportDTO;
-  ok: boolean;
+  // ok: boolean;
+  validationStatus?: OrderImportValidationStatus;
 };
-export function PendingOrderUploadDisplay({ pendingUpload, ok }: Props) {
+export function PendingOrderUploadDisplay({
+  pendingUpload,
+  validationStatus,
+}: Props) {
   const { billing, shipping, lineItems, couponCode, customerNote } =
     pendingUpload;
   const [expanded, setExpanded] = useState(false);
@@ -24,9 +29,9 @@ export function PendingOrderUploadDisplay({ pendingUpload, ok }: Props) {
         Order for {billing.firstName || "NO_FIRST_NAME"}{" "}
         {billing.lastName || "NO_LAST_NAME"}
         <span
-          className={`${styles["validation-notice"]} ${styles[ok ? "data-ok" : "data-missing"]}`}
+          className={`${styles["validation-notice"]} ${styles[validationStatus?.overallStatus === "ok" ? "data-ok" : "data-missing"]}`}
         >
-          {ok ? "ok" : "data missing"}
+          {validationStatus?.overallStatus === "ok" ? "ok" : "data missing"}
         </span>
       </div>
       {expanded && (
@@ -56,9 +61,9 @@ export function PendingOrderUploadDisplay({ pendingUpload, ok }: Props) {
               <div>
                 Country: <ValidatedData value={shipping.country} />
               </div>
-              <div>
+              {/* <div>
                 Method ID: <ValidatedData value={shipping.method} />
-              </div>
+              </div> */}
             </div>
             <div className={styles["pending-upload-info-frame"]}>
               <div style={{ fontWeight: "bold" }}>Billing Information</div>
@@ -102,13 +107,32 @@ export function PendingOrderUploadDisplay({ pendingUpload, ok }: Props) {
               <tr>
                 <th style={{ width: "100px" }}>SKU</th>
                 <th>Quantity</th>
+                <th>Product ID</th>
+                <th>Variation ID</th>
+                <th>{""}</th>
               </tr>
             </thead>
             <tbody>
-              {lineItems.map((item) => (
-                <tr key={item.sku}>
-                  <td>{item.sku}</td>
-                  <td>{item.quantity}</td>
+              {lineItems.map((lineItem) => (
+                <tr key={lineItem.sku}>
+                  <td>{lineItem.sku}</td>
+                  <td>{lineItem.quantity}</td>
+                  <td>{lineItem.productId}</td>
+                  <td>{lineItem.variationId}</td>
+                  <td>
+                    {/* Show the warning message if there's any corresponding issue found for this line item in the status object */}
+                    {!!validationStatus?.lineItems.find(
+                      (lineItemStatus) =>
+                        lineItemStatus.sku === lineItem.sku &&
+                        lineItemStatus.validationStatus !== "ok",
+                    ) && (
+                      <span
+                        className={`${styles["validation-notice"]} ${styles["data-missing"]}`}
+                      >
+                        not found
+                      </span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

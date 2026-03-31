@@ -27,6 +27,8 @@ export const orderImportSchema = z.object({
   }),
   lineItems: z.array(
     z.object({
+      productId: z.number().optional(),
+      variationId: z.number().optional(),
       sku: z.string().optional(),
       quantity: z.number().optional(),
     }),
