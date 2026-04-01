@@ -66,6 +66,7 @@ export async function updateProduct(params: {
   stockQuantity?: number;
   price?: number;
   published?: boolean;
+  sortOrder?: number;
 }) {
   const {
     productId,
@@ -75,6 +76,7 @@ export async function updateProduct(params: {
     apiKey,
     apiSecret,
     storeUrl,
+    sortOrder,
   } = params;
 
   const bodyData: { [key: string]: number | string } = {};
@@ -82,6 +84,7 @@ export async function updateProduct(params: {
   if (price !== undefined) bodyData.regular_price = `${price}`;
   if (published !== undefined)
     bodyData.status = published ? "publish" : "draft";
+  if (sortOrder !== undefined) bodyData.menu_order = sortOrder;
 
   return fetch(`${storeUrl}/wp-json/wc/v3/products/${productId}`, {
     method: "POST",

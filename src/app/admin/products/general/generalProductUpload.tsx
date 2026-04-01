@@ -17,6 +17,7 @@ export type PendingSyncRow = {
     sku?: string;
     stock?: number;
     published?: boolean;
+    sortOrder?: number;
   };
 };
 export type SyncRowResult = {
@@ -65,6 +66,7 @@ export async function createPendingSyncRows(
           parentId: matchingParent?.id,
           stock: item.stock,
           published: item.published,
+          sortOrder: item.order,
         };
         return row;
       }
@@ -107,6 +109,7 @@ export async function syncRow(params: {
         productId: row.data.id,
         stockQuantity: row.data.stock,
         published: row.data.published,
+        sortOrder: row.data.sortOrder,
       });
 
   if (!response.ok)

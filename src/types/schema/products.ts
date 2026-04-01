@@ -13,6 +13,7 @@ export const generalProductImportSchema = z.object({
   sku: z.string().optional(),
   stock: z.number().optional(),
   published: z.boolean().optional(),
+  order: z.number().optional(),
   parent: z.string().optional(),
 });
 
