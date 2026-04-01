@@ -105,7 +105,7 @@ const products: Product[] = [
     id: "DAP003",
     name: "Men's Performance Polo",
     imageUrl:
-      "https://www.imagepointe.com/wp-content/uploads/2024/02/DSC04447-DAP001Carbon-Tyrone-1200px-1.jpg",
+      "https://imagepointe.com/wp-content/uploads/2026/04/IMG_9064_DAP003_Navy_Brad_Web1200px.jpg",
     productUrl:
       "https://www.imagepointe.com/shop/dignity-apparel-products/union-made-mens-polo/",
     subtext: "5.4 oz, 100% moisture-wicking polyester",
@@ -180,6 +180,45 @@ const products: Product[] = [
       "https://imagepointe.com/shop/apparel/dignity-apparel-union-made-crewneck-sweatshirt/",
     subtext: "9 oz, 80/20 cotton/poly",
     colors: [BLACK, NAVY, PURPLE, HEATHER_CHARCOAL, RED, SAFETY_YELLOW],
+  },
+  {
+    id: "DAHTRI003",
+    name: "Triblend Classic Hood",
+    imageUrl:
+      "https://imagepointe.com/wp-content/uploads/2026/03/DAHTRI003_StormGrey_Mike.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-classic-hood/",
+    subtext: "4.5 oz, poly/cotton/modal blend",
+    colors: [STORM_GREY_HEATHER, BLACK],
+  },
+  {
+    id: "DAHLSTRI003",
+    name: "Triblend Sport Hooded Long Sleeve",
+    imageUrl:
+      "https://imagepointe.com/wp-content/uploads/2026/03/DAHLSTRI003_Black_Larry.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-sport-hooded-long-sleeve/",
+    subtext: "4.5 oz, poly/cotton/modal blend",
+    colors: [STORM_GREY_HEATHER, BLACK],
+  },
+  {
+    id: "DAZTRI003",
+    name: "Triblend Full-Zip Hood",
+    imageUrl:
+      "https://imagepointe.com/wp-content/uploads/2026/03/DAZTRI003_Black_Clarissa2.jpg",
+    productUrl:
+      "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-full-zip-hood/",
+    subtext: "4.5 oz, poly/cotton/modal blend",
+    colors: [STORM_GREY_HEATHER, BLACK],
+  },
+  {
+    id: "DAWSS001",
+    name: "Ladies' Tunic",
+    imageUrl:
+      "https://imagepointe.com/wp-content/uploads/2024/03/DSC04270-DAWSS001-Black-Margaret-Design135-1200px.jpg",
+    productUrl: "https://imagepointe.com/shop/apparel/union-made-ladies-tunic/",
+    subtext: "100% fine jersey cotton",
+    colors: [BLACK, CHARCOAL, PURPLE],
   },
 ];
 
