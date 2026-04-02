@@ -21,6 +21,16 @@ export function CartModal() {
   const { firstName, lastName, email, company, local, phone, comments } =
     useSelector((store: StoreType) => store.cart.present.contactInfo);
 
+  function gtmNotify() {
+    //@ts-expect-error TypeScript doesn't recognize GTM's dataLayer
+    const dataLayer = window.dataLayer;
+    if (dataLayer === undefined) {
+      console.error("GTM dataLayer not found");
+      return;
+    }
+    dataLayer.push({ event: "ip_visualizer_quote_request" });
+  }
+
   async function onClickSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitting) return;
@@ -40,6 +50,7 @@ export function CartModal() {
       });
       await response.json();
       setStep("success");
+      gtmNotify();
     } catch (error) {
       console.error(error);
       setError(true);
