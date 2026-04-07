@@ -11,24 +11,22 @@ import { submitQuoteRequest } from "@/fetch/client/customizer";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { CartReviewStep } from "./CartReviewStep";
 import { CartSuccessStep } from "./CartSuccessStep";
+import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 
 export function CartModal() {
   const [step, setStep] = useState("review" as "review" | "quote" | "success");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
+  const {
+    parentWindow: { pushGtmEvent },
+  } = useIframe();
   const cart = useSelector((store: StoreType) => store.cart.present);
   const { firstName, lastName, email, company, local, phone, comments } =
     useSelector((store: StoreType) => store.cart.present.contactInfo);
 
   function gtmNotify() {
-    //@ts-expect-error TypeScript doesn't recognize GTM's dataLayer
-    const dataLayer = window.parent.dataLayer;
-    if (dataLayer === undefined) {
-      console.error("GTM dataLayer not found");
-      return;
-    }
-    dataLayer.push({ event: "ip_visualizer_quote_request" });
+    pushGtmEvent("ip_visualizer_quote_request");
   }
 
   async function onClickSubmit(e: FormEvent<HTMLFormElement>) {
