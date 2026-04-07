@@ -23,7 +23,7 @@ export function CartModal() {
 
   function gtmNotify() {
     //@ts-expect-error TypeScript doesn't recognize GTM's dataLayer
-    const dataLayer = window.dataLayer;
+    const dataLayer = window.parent.dataLayer;
     if (dataLayer === undefined) {
       console.error("GTM dataLayer not found");
       return;
