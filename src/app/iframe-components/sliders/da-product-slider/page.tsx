@@ -185,7 +185,7 @@ const products: Product[] = [
     id: "DAHTRI003",
     name: "Triblend Classic Hood",
     imageUrl:
-      "https://imagepointe.com/wp-content/uploads/2026/03/DAHTRI003_StormGrey_Mike.jpg",
+      "https://imagepointe.com/wp-content/uploads/2026/04/DAHTRI003_StormGrey_Mike_New.jpg",
     productUrl:
       "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-classic-hood/",
     subtext: "4.5 oz, poly/cotton/modal blend",
@@ -195,7 +195,7 @@ const products: Product[] = [
     id: "DAHLSTRI003",
     name: "Triblend Sport Hooded Long Sleeve",
     imageUrl:
-      "https://imagepointe.com/wp-content/uploads/2026/03/DAHLSTRI003_Black_Larry.jpg",
+      "https://imagepointe.com/wp-content/uploads/2026/04/DAHLSTRI003_Black_Larry_New.jpg",
     productUrl:
       "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-sport-hooded-long-sleeve/",
     subtext: "4.5 oz, poly/cotton/modal blend",
@@ -205,7 +205,7 @@ const products: Product[] = [
     id: "DAZTRI003",
     name: "Triblend Full-Zip Hood",
     imageUrl:
-      "https://imagepointe.com/wp-content/uploads/2026/03/DAZTRI003_Black_Clarissa2.jpg",
+      "https://imagepointe.com/wp-content/uploads/2026/04/DAZTRI003_Black_Clarissa2_New.jpg",
     productUrl:
       "https://imagepointe.com/shop/dignity-apparel-products/dignity-apparel-triblend-full-zip-hood/",
     subtext: "4.5 oz, poly/cotton/modal blend",

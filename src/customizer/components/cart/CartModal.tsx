@@ -11,15 +11,23 @@ import { submitQuoteRequest } from "@/fetch/client/customizer";
 import { LoadingIndicator } from "@/components/LoadingIndicator";
 import { CartReviewStep } from "./CartReviewStep";
 import { CartSuccessStep } from "./CartSuccessStep";
+import { useIframe } from "@/components/IframeHelper/IframeHelperProvider";
 
 export function CartModal() {
   const [step, setStep] = useState("review" as "review" | "quote" | "success");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
+  const {
+    parentWindow: { pushGtmEvent },
+  } = useIframe();
   const cart = useSelector((store: StoreType) => store.cart.present);
   const { firstName, lastName, email, company, local, phone, comments } =
     useSelector((store: StoreType) => store.cart.present.contactInfo);
+
+  function gtmNotify() {
+    pushGtmEvent("ip_visualizer_quote_request");
+  }
 
   async function onClickSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,6 +48,7 @@ export function CartModal() {
       });
       await response.json();
       setStep("success");
+      gtmNotify();
     } catch (error) {
       console.error(error);
       setError(true);
