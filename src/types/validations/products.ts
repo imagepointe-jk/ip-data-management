@@ -2,7 +2,7 @@ import { getSheetCellValue } from "@/utility/spreadsheet";
 import { WorkSheet } from "xlsx";
 import {
   ASIProductImportData,
-  generalProductImportSchema,
+  // generalProductImportSchema,
 } from "../schema/products";
 import { z } from "zod";
 import { normalizeObjectKeys } from "@/utility/misc";
@@ -97,18 +97,18 @@ function pullLocalProductValues(
   return { sku, vendorName, vendorSku, description, priceBreaks };
 }
 
-export function validateGeneralProductSheet(json: any) {
-  if (!Array.isArray(json)) throw new Error("Not an array");
+// export function validateGeneralProductSheet(json: any) {
+//   if (!Array.isArray(json)) throw new Error("Not an array");
 
-  return json.map((row) => {
-    const normalized = normalizeObjectKeys(row);
-    normalized.published =
-      normalized.published === "y"
-        ? true
-        : normalized.published === "n"
-          ? false
-          : undefined;
+//   return json.map((row) => {
+//     const normalized = normalizeObjectKeys(row);
+//     normalized.published =
+//       normalized.published === "y"
+//         ? true
+//         : normalized.published === "n"
+//           ? false
+//           : undefined;
 
-    return generalProductImportSchema.parse(normalized);
-  });
-}
+//     return generalProductImportSchema.parse(normalized);
+//   });
+// }

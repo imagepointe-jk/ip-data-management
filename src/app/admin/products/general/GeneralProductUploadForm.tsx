@@ -2,16 +2,22 @@
 
 import { FormEvent, useState } from "react";
 import {
-  createPendingSyncRows,
-  PendingSyncRow,
+  createProductSyncRows,
+  ProductSyncRow,
   syncRow,
-  SyncRowResult,
+  ProductSyncRowResult,
 } from "./generalProductUpload";
+import { ProductUploadDisplay } from "./ProductUploadDisplay";
+import styles from "@/styles/productImport/productImport.module.css";
+import { ProductSyncRowDisplay } from "./ProductSyncRowDisplay";
 
 export function GeneralProductUploadForm() {
-  const [pendingSyncRows, setPendingSyncRows] = useState<PendingSyncRow[]>([]);
-  const [processedRows, setProcessedRows] = useState<SyncRowResult[]>([]);
-  const nonErrorRows = pendingSyncRows.filter(
+  const [productSyncRows, setProductSyncRows] = useState<ProductSyncRow[]>([]);
+  const [processedRows, setProcessedRows] = useState<ProductSyncRowResult[]>(
+    [],
+  );
+  const [expandedRowIds, setExpandedRowIds] = useState<string[]>([]);
+  const nonErrorRows = productSyncRows.filter(
     (item) => item.error === undefined,
   );
   const submitButtonText =
@@ -23,10 +29,10 @@ export function GeneralProductUploadForm() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    if (pendingSyncRows.length === 0) {
+    if (productSyncRows.length === 0) {
       try {
-        const rows = await createPendingSyncRows(formData);
-        setPendingSyncRows(rows);
+        const rows = await createProductSyncRows(formData);
+        setProductSyncRows(rows);
       } catch (error) {
         console.error(error);
       }
@@ -53,14 +59,28 @@ export function GeneralProductUploadForm() {
     (secret as HTMLInputElement).value = "";
     (file as HTMLInputElement).value = "";
 
-    setPendingSyncRows([]);
+    setProductSyncRows([]);
     setProcessedRows([]);
+  }
+
+  function onClickRowHeadline(id: string) {
+    setExpandedRowIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((existingId) => existingId !== id);
+      }
+
+      return [...prev, id];
+    });
+  }
+
+  function setAllExpandedStates(expanded: boolean) {
+    setExpandedRowIds(expanded ? productSyncRows.map((row) => row.rowId) : []);
   }
 
   return (
     <form
       className="content-frame vert-flex-group"
-      style={{ marginTop: "20px", width: "600px" }}
+      style={{ marginTop: "20px", width: "900px" }}
       onSubmit={onSubmit}
     >
       <h3>Upload Import Spreadsheet</h3>
@@ -87,14 +107,63 @@ export function GeneralProductUploadForm() {
           Reset
         </button>
       </div>
-      {processedRows.length === 0 && pendingSyncRows.length > 0 && (
+      <div className={styles["sync-status-bar"]}>
+        <div>lorem ipsum dolor sit amet</div>
+        {/* <div className={styles["expand-buttons-container"]}>
+          <button onClick={() => setAllExpandedStates(true)} type="button">
+            expand all
+          </button>
+          <button onClick={() => setAllExpandedStates(false)} type="button">
+            collapse all
+          </button>
+        </div> */}
+      </div>
+      <div>
+        <div className={styles["fake-table-header-row"]}>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-1"]}`}
+          >
+            ID
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-2"]}`}
+          >
+            SKU
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-3"]}`}
+          >
+            Published
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-4"]}`}
+          >
+            Stock
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-5"]}`}
+          >
+            Order
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-6"]}`}
+          >
+            Parent ID
+          </div>
+          <div
+            className={`${styles["fake-table-header-cell"]} ${styles["column-7"]}`}
+          >
+            Status
+          </div>
+        </div>
+        {/* {processedRows.length === 0 && productSyncRows.length > 0 && (
         <div>
-          {pendingSyncRows.length} pending sync rows.{" "}
-          {pendingSyncRows.filter((item) => item.error !== undefined).length}{" "}
+          {productSyncRows.length} pending sync rows.{" "}
+          {productSyncRows.filter((item) => item.error !== undefined).length}{" "}
           error(s).
         </div>
-      )}
-      {processedRows.length > 0 && (
+      )} */}
+        {/* {processedRows.length > 0 && (
         <div>
           {processedRows.length < nonErrorRows.length && (
             <>
@@ -110,17 +179,17 @@ export function GeneralProductUploadForm() {
             </>
           )}
         </div>
-      )}
-      <div
-        style={{
-          border: "1px solid black",
-          overflow: "auto",
-          height: "175px",
-          fontFamily: "monospace",
-          padding: "10px",
-        }}
-      >
-        {processedRows.map((row) => (
+      )} */}
+        <div className={styles["item-scroll-container"]}>
+          {productSyncRows.map((row) => (
+            <ProductSyncRowDisplay
+              key={row.rowId}
+              row={row}
+              // expanded={expandedRowIds.includes(row.rowId)}
+              // onClick={onClickRowHeadline}
+            />
+          ))}
+          {/* {processedRows.map((row) => (
           <div
             key={row.id}
             style={{
@@ -130,7 +199,187 @@ export function GeneralProductUploadForm() {
           >
             Result for product {row.sku} (ID {row.id}): {row.message}
           </div>
-        ))}
+        ))} */}
+        </div>
+        <div className={styles["sync-table-container"]}>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>SKU</th>
+                <th>Published</th>
+                <th>Stock</th>
+                <th>Order</th>
+                <th>Parent ID</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+              <tr>
+                <td>1234</td>
+                <td>AS1234</td>
+                <td>true</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>1234</td>
+                <td>ready</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </form>
   );
