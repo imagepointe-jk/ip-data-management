@@ -1,8 +1,7 @@
 export type LeadSyncRow = {
   rowId: string;
-  error?: {
-    message: string;
-  };
+  status: "ready" | "processing" | "invalid" | "error" | "done";
+  resultMessage?: string;
   data?: {
     contactId: number;
     companyId?: number;

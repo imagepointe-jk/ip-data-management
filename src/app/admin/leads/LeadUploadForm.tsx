@@ -4,14 +4,25 @@ import { FormEvent, useState } from "react";
 import styles from "@/styles/leadImport/leadImport.module.css";
 import { createLeadSyncRows, syncRow } from "./leadUpload";
 import { LeadSyncRow } from "./types";
+import { useImmer } from "use-immer";
+import { LeadUploadRow } from "./LeadUploadRow";
 
 //TODO: Because syncing/uploading from a spreadsheet is such a common need, this form should be genericized and reused as much as possible
 export function LeadUploadForm() {
-  const [leadSyncRows, setLeadSyncRows] = useState<LeadSyncRow[]>([]);
-  const nonErrorRows = leadSyncRows.filter((item) => item.error === undefined);
-  const parsedDataReady = leadSyncRows.length > 0;
-  const anyGoodRows = nonErrorRows.length > 0;
-  const submitButtonText = anyGoodRows ? "Import Now" : "Preview Import";
+  const [leadSyncRows, setLeadSyncRows] = useImmer<LeadSyncRow[]>([]);
+  const [processingIndex, setProcessingIndex] = useState(-1); //the index of leadSyncRows we're currently processing (-1 before processing starts)
+
+  const errorRows = leadSyncRows.filter((item) => item.status === "error");
+  const readyRows = leadSyncRows.filter((item) => item.status === "ready");
+  const invalidRows = leadSyncRows.filter((item) => item.status === "invalid");
+  const rowsParsed = leadSyncRows.length > 0;
+  const submitButtonText = rowsParsed ? "Import Now" : "Preview Import";
+
+  const idleState = leadSyncRows.length === 0;
+  const readyState = processingIndex === -1;
+  const uploadingState =
+    processingIndex > -1 && processingIndex < leadSyncRows.length - 1;
+  const doneState = processingIndex === leadSyncRows.length - 1;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -19,24 +30,49 @@ export function LeadUploadForm() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    if (!parsedDataReady) {
+    if (!rowsParsed) {
       try {
         const rows = await createLeadSyncRows(formData);
         setLeadSyncRows(rows);
       } catch (error) {
         console.error(error);
       }
-    } else if (anyGoodRows) {
-      for (const row of nonErrorRows) {
+    } else {
+      for (let i = 0; i < leadSyncRows.length; i++) {
+        const row = leadSyncRows[i];
+        setProcessingIndex(i);
+        if (!row || row.status === "invalid") continue;
+
         try {
+          updateExistingSyncRow(row.rowId, "processing");
+
           const result = await syncRow(row);
-          console.log(result.message);
-          console.log("done");
+
+          if (result.success) {
+            updateExistingSyncRow(row.rowId, "done");
+          } else {
+            updateExistingSyncRow(row.rowId, "error", result.message);
+          }
         } catch (error) {
+          updateExistingSyncRow(row.rowId, "error", `${error}`);
           continue;
         }
       }
     }
+  }
+
+  function updateExistingSyncRow(
+    rowId: string,
+    status: "ready" | "processing" | "error" | "done",
+    message?: string,
+  ) {
+    setLeadSyncRows((prev) => {
+      const prevRow = prev.find((item) => item.rowId === rowId);
+      if (prevRow) {
+        prevRow.status = status;
+        prevRow.resultMessage = message ? message : undefined;
+      }
+    });
   }
 
   function clearForm() {
@@ -45,6 +81,7 @@ export function LeadUploadForm() {
     (file as HTMLInputElement).value = "";
 
     setLeadSyncRows([]);
+    setProcessingIndex(-1);
   }
 
   return (
@@ -65,9 +102,30 @@ export function LeadUploadForm() {
           Reset
         </button>
       </div>
-      <div className={styles["sync-status-bar"]}>
-        <div>lorem ipsum dolor sit amet</div>
-      </div>
+      {!idleState && (
+        <>
+          <div className={styles["sync-status-bar"]}>
+            {readyState && (
+              <>
+                {readyRows.length} of {leadSyncRows.length} rows ready for
+                import.
+              </>
+            )}
+            {uploadingState && (
+              <>
+                Processing row {processingIndex + 1} of {leadSyncRows.length}...
+              </>
+            )}
+            {doneState && (
+              <>
+                Finished processing {leadSyncRows.length - invalidRows.length}{" "}
+                of {leadSyncRows.length} row(s). {errorRows.length} total upload
+                error(s). {invalidRows.length} row(s) skipped.
+              </>
+            )}
+          </div>
+        </>
+      )}
       <div>
         <div className={styles["sync-table-container"]}>
           <table>
@@ -84,27 +142,13 @@ export function LeadUploadForm() {
                 <th className={styles["column-integration-notes"]}>
                   Int. Notes
                 </th>
-                <th>Status</th>
-                <th>System Message</th>
+                <th className={styles["column-status"]}>Status</th>
+                <th className={styles["column-message"]}>System Message</th>
               </tr>
             </thead>
             <tbody>
               {leadSyncRows.map((row) => (
-                <tr key={row.rowId}>
-                  <td>{row.data?.contactId || ""}</td>
-                  <td>{row.data?.companyId || ""}</td>
-                  <td>{row.data?.name || ""}</td>
-                  <td>
-                    {row.data?.daLead !== undefined ? `${row.data.daLead}` : ""}
-                  </td>
-                  <td>{row.data?.leadType || ""}</td>
-                  <td>{row.data?.ownerId || ""}</td>
-                  <td>{row.data?.stage || ""}</td>
-                  <td>{row.data?.noteBody || ""}</td>
-                  <td>{row.data?.integrationActivityNotes || ""}</td>
-                  <td>{row.error ? "ERROR" : "ready"}</td>
-                  <td>{row.error?.message || ""}</td>
-                </tr>
+                <LeadUploadRow key={row.rowId} row={row} />
               ))}
             </tbody>
           </table>

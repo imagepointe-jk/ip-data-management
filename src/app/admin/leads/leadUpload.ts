@@ -35,9 +35,8 @@ function validateLeadSheet(json: any): LeadSyncRow[] {
     if (isNaN(contactId)) {
       return {
         rowId,
-        error: {
-          message: `Invalid Contact ID at index ${i}`,
-        },
+        status: "invalid",
+        resultMessage: `Invalid Contact ID at index ${i}`,
       };
     }
 
@@ -48,9 +47,8 @@ function validateLeadSheet(json: any): LeadSyncRow[] {
     if (!nameVal) {
       return {
         rowId,
-        error: {
-          message: `Missing lead name at index ${i}`,
-        },
+        status: "invalid",
+        resultMessage: `Missing lead name at index ${i}`,
       };
     }
 
@@ -63,9 +61,8 @@ function validateLeadSheet(json: any): LeadSyncRow[] {
     if (!ownerId) {
       return {
         rowId,
-        error: {
-          message: `Invalid owner ID at index ${i}`,
-        },
+        status: "invalid",
+        resultMessage: `Invalid owner ID at index ${i}`,
       };
     }
 
@@ -82,6 +79,7 @@ function validateLeadSheet(json: any): LeadSyncRow[] {
         stage,
         noteBody,
       },
+      status: "ready",
     };
 
     return parsedItem;

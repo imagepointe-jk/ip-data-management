@@ -43,3 +43,28 @@
 .column-integration-notes {
   width: 100px;
 }
+
+.column-status {
+  width: 90px;
+}
+
+.column-message {
+  width: 200px;
+}
+
+.upload-error,
+.upload-done {
+  font-weight: bold;
+  color: white;
+  border-radius: 100px;
+  padding: 5px;
+  display: inline-block;
+}
+
+.upload-error {
+  background-color: red;
+}
+
+.upload-done {
+  background-color: #00cb00;
+}
