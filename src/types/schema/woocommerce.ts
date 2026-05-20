@@ -10,7 +10,7 @@ export const wooCommerceProductSchema = z.object({
     z.object({
       src: z.string(),
       alt: z.string(),
-    })
+    }),
   ),
   permalink: z.string(),
 });
@@ -33,7 +33,7 @@ export const wooCommerceDAProductSchema = z.object({
     z.object({
       name: z.string(),
       terms: z.array(z.object({ slug: z.string() })),
-    })
+    }),
   ),
   variations: z.array(wooCommerceDAProductVariationSchema),
 });
@@ -100,10 +100,10 @@ export const wooCommerceOrderDataSchema = z.object({
     z.object({
       id: z.number(),
       method_title: z.string(),
-    })
+    }),
   ),
   metaData: z.array(
-    z.object({ id: z.number(), key: z.string(), value: z.string() })
+    z.object({ id: z.number(), key: z.string(), value: z.string() }),
   ),
 });
 
@@ -139,6 +139,7 @@ export type WooCommerceOrderDiff = {
     id: number;
     quantity: DiffStatus;
   }[];
+  lineItemsCount: DiffStatus;
   customerNote: DiffStatus;
   shipping: {
     firstName: DiffStatus;

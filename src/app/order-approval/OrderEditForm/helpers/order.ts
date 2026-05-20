@@ -4,11 +4,17 @@ import { WooCommerceOrder } from "@/types/schema/woocommerce";
 export function wasOrderStateModified(
   staleOrder: WooCommerceOrder,
   newOrder: WooCommerceOrder,
-  metaDataToAdd: { key: string; value: string }[]
+  metaDataToAdd: { key: string; value: string }[],
+  lineItemIdsToRemove: number[],
 ) {
-  if (metaDataToAdd.length > 0) return true;
+  if (metaDataToAdd.length > 0 || lineItemIdsToRemove.length > 0) return true;
 
-  const diff = createOrderDiff(staleOrder, newOrder, metaDataToAdd);
+  const diff = createOrderDiff(
+    staleOrder,
+    newOrder,
+    metaDataToAdd,
+    lineItemIdsToRemove,
+  );
 
   //check basic properties
   if (diff.customerNote === "changed") return true;

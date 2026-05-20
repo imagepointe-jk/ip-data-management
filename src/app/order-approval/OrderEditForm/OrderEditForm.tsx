@@ -58,7 +58,12 @@ export function OrderEditForm({
   const [ratedShippingMethods, setRatedShippingMethods] = useState<
     RatedShippingMethod[]
   >([]);
-  const stateModified = wasOrderStateModified(staleOrder, order, metaDataToAdd);
+  const stateModified = wasOrderStateModified(
+    staleOrder,
+    order,
+    metaDataToAdd,
+    removeLineItemIds,
+  );
 
   async function saveOrder() {
     setStatus("loading");
@@ -66,7 +71,7 @@ export function OrderEditForm({
       //first get updated methods based on any changed shipping info
       let start = Date.now();
       console.log(
-        "Getting updated shipping rates based on current shipping info..."
+        "Getting updated shipping rates based on current shipping info...",
       );
       const newRatedMethods = await getRatedShippingMethods(
         order,
@@ -74,7 +79,7 @@ export function OrderEditForm({
         upsAccountNumber,
         {
           allowUpsShippingToCanada,
-        }
+        },
       );
       setRatedShippingMethods(newRatedMethods);
       console.log(`Shipping rates retrieved in ${Date.now() - start} ms.`);
@@ -82,7 +87,7 @@ export function OrderEditForm({
       //we might need to edit what the user has selected (e.g. if the changed shipping address makes the selected shipping method invalid)
       const revisedOrder = reviseOrderAfterShippingRates(
         order,
-        newRatedMethods
+        newRatedMethods,
       );
 
       console.log("Updating order data...");
@@ -93,7 +98,7 @@ export function OrderEditForm({
         revisedOrder,
         removeLineItemIds,
         metaDataToAdd,
-        userEmail
+        userEmail,
       );
 
       console.log(`Order updated in ${Date.now() - start} ms.`);
@@ -118,7 +123,7 @@ export function OrderEditForm({
         upsAccountNumber,
         {
           allowUpsShippingToCanada,
-        }
+        },
       );
       setRatedShippingMethods(newRatedMethods);
       setStatus("idle");

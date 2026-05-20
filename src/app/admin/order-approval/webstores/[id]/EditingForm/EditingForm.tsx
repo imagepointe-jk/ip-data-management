@@ -32,7 +32,11 @@ export function EditingForm({
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    await updateWebstore(webstoreState);
+    await updateWebstore({
+      ...webstoreState,
+      changeApiKey: apiKey,
+      changeApiSecret: apiSecret,
+    });
     toast.changesSaved();
   }
 

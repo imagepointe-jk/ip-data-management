@@ -61,7 +61,7 @@ export async function updateWorkflow(data: WorkflowEditorData) {
             },
           },
         },
-      })
+      }),
     ),
     ...proceedListeners.map((listener) =>
       prisma.orderWorkflowStepProceedListener.update({
@@ -69,13 +69,16 @@ export async function updateWorkflow(data: WorkflowEditorData) {
           id: listener.id,
         },
         data: listener,
-      })
+      }),
     ),
   ]);
 }
 
 export async function updateWebstore(
-  data: WebstoreEditorData & { changeApiKey?: string; changeApiSecret?: string }
+  data: WebstoreEditorData & {
+    changeApiKey?: string;
+    changeApiSecret?: string;
+  },
 ) {
   const {
     id,
@@ -175,7 +178,7 @@ export async function updateWebstore(
           order: field.order,
           style: field.style,
         },
-      })
+      }),
     ),
   ]);
 }
@@ -197,7 +200,7 @@ export async function updateOrderAction(
   updatedOrder: WooCommerceOrder,
   removeLineItemIds: number[],
   metaDataToAdd: { key: string; value: string }[],
-  userEmail: string //the email of the user initiating the update action
+  userEmail: string, //the email of the user initiating the update action
 ) {
   const updateData = createUpdateData(updatedOrder, removeLineItemIds);
   const webstore = await prisma.webstore.findUnique({
@@ -215,24 +218,29 @@ export async function updateOrderAction(
       storeUrl,
       key,
       secret,
-      metaDataToAdd
+      metaDataToAdd,
     );
     if (!addMetaDataResponse.ok)
       throw new Error(
-        `API response code ${addMetaDataResponse.status} when trying to add metadata to order ${updateData.id} for store ${storeUrl}`
+        `API response code ${addMetaDataResponse.status} when trying to add metadata to order ${updateData.id} for store ${storeUrl}`,
       );
   }
 
   const updateResponse = await updateOrder(storeUrl, key, secret, updateData);
   if (!updateResponse.ok)
     throw new Error(
-      `API response code ${updateResponse.status} when trying to update order ${updateData.id} for store ${storeUrl}`
+      `API response code ${updateResponse.status} when trying to update order ${updateData.id} for store ${storeUrl}`,
     );
   const updateJson = await updateResponse.json();
   const parsed = parseWooCommerceOrderJson(updateJson);
   handleOrderUpdated({
     order: parsed,
-    updateData: { initialOrder, updatedOrder, metaDataAdded: metaDataToAdd },
+    updateData: {
+      initialOrder,
+      updatedOrder,
+      metaDataAdded: metaDataToAdd,
+      lineItemIdsRemoved: removeLineItemIds,
+    },
     storeUrl,
     userEmail,
   });
