@@ -137,8 +137,30 @@ export async function createWorkflowInstance(
   workflowId: number,
   purchaserEmail: string,
   purchaserName: string,
-  wooCommerceOrderId: number
+  wooCommerceOrderId: number,
 ) {
+  const existingInstanceForWCOrder =
+    await prisma.orderWorkflowInstance.findFirst({
+      where: {
+        AND: [
+          {
+            wooCommerceOrderId,
+          },
+          {
+            parentWorkflowId: workflowId,
+          },
+        ],
+      },
+    });
+
+  if (existingInstanceForWCOrder) {
+    //wooCommerceOrderId can't be unique at the database level because of separate WC databases and possible unintended order ID collisions.
+    //but we still want to prevent two instances for the same order from ever being created. so block that here instead.
+    throw new Error(
+      `Can't create a new instance for WooCommerce order ID ${wooCommerceOrderId} under workflow ID ${workflowId} because an instance for that order already exists.`,
+    );
+  }
+
   return prisma.orderWorkflowInstance.create({
     data: {
       wooCommerceOrderId,
@@ -168,13 +190,13 @@ export async function getWorkflowInstance(id: number) {
   });
 }
 
-export async function getWorkflowInstanceByOrderId(orderId: number) {
-  return prisma.orderWorkflowInstance.findUnique({
-    where: {
-      wooCommerceOrderId: orderId,
-    },
-  });
-}
+// export async function getWorkflowInstanceByOrderId(orderId: number) {
+//   return prisma.orderWorkflowInstance.findUnique({
+//     where: {
+//       wooCommerceOrderId: orderId,
+//     },
+//   });
+// }
 
 export async function getWorkflowInstanceWithIncludes(id: number) {
   return prisma.orderWorkflowInstance.findUnique({
@@ -226,24 +248,24 @@ export async function getWorkflowWithIncludes(id: number) {
 }
 
 export async function getWorkflowInstanceCurrentStep(
-  workflowInstanceId: number
+  workflowInstanceId: number,
 ) {
   const instance = await getWorkflowInstance(workflowInstanceId);
   if (!instance)
     throw new Error(`Workflow instance ${workflowInstanceId} not found`);
 
   const workflowWithSteps = await getWorkflowWithIncludes(
-    instance.parentWorkflowId
+    instance.parentWorkflowId,
   );
   if (!workflowWithSteps)
     throw new Error(`No parent workflow found for ${workflowInstanceId}`);
 
   const currentStep = workflowWithSteps.steps.find(
-    (step) => step.order === instance.currentStep
+    (step) => step.order === instance.currentStep,
   );
   if (!currentStep)
     throw new Error(
-      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`
+      `Current step is out-of-bounds on workflow instance ${workflowInstanceId}.`,
     );
 
   return currentStep;
@@ -251,7 +273,7 @@ export async function getWorkflowInstanceCurrentStep(
 
 export async function setWorkflowInstanceCurrentStep(
   id: number,
-  value: number
+  value: number,
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
@@ -266,7 +288,7 @@ export async function setWorkflowInstanceCurrentStep(
 export async function createAccessCode(
   workflowInstanceId: number,
   userId: number,
-  userRole: string
+  userRole: string,
 ) {
   return prisma.orderWorkflowAccessCode.create({
     data: {
@@ -313,7 +335,7 @@ export async function getAccessCodeWithIncludes(accessCode: string) {
 
 export async function getAccessCodeWithIncludesByOrderAndEmail(
   orderId: number,
-  userEmail: string
+  userEmail: string,
 ) {
   return prisma.orderWorkflowAccessCode.findFirst({
     where: {
@@ -336,7 +358,7 @@ export async function getAccessCodeWithIncludesByOrderAndEmail(
 
 export async function setWorkflowInstanceStatus(
   id: number,
-  status: "waiting" | "finished"
+  status: "waiting" | "finished",
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
@@ -351,7 +373,7 @@ export async function setWorkflowInstanceStatus(
 export async function setWorkflowInstanceDeniedData(
   id: number,
   reason: string | null,
-  deniedByUserEmail: string | null
+  deniedByUserEmail: string | null,
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
@@ -367,7 +389,7 @@ export async function setWorkflowInstanceDeniedData(
 export async function setWorkflowInstanceApprovedData(
   id: number,
   comments: string | null,
-  approvedByUserEmail: string | null
+  approvedByUserEmail: string | null,
 ) {
   return prisma.orderWorkflowInstance.update({
     where: {
@@ -395,7 +417,7 @@ export async function createWebstore(
   data: Omit<Webstore, "id">,
   allowApproverChangeMethod: boolean,
   allowUpsToCanada: boolean,
-  shippingMethodIds: number[]
+  shippingMethodIds: number[],
 ) {
   // const {apiKey, apiKeyEncryptIv, apiKeyEncryptTag, apiSecret, apiSecretEncryptIv, apiSecretEncryptTag, name, organizationName, url} = data;
 
@@ -422,7 +444,7 @@ export async function createWebstore(
 
 export async function getWorkflowStepByNumber(
   workflowId: number,
-  stepNumber: number
+  stepNumber: number,
 ) {
   return await prisma.orderWorkflowStep.findFirst({
     where: {

@@ -146,6 +146,7 @@ export type WooCommerceOrderDiff = {
     id: number;
     quantity: DiffStatus;
   }[];
+  lineItemsCount: DiffStatus;
   customerNote: DiffStatus;
   shipping: {
     firstName: DiffStatus;

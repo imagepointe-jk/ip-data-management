@@ -27,10 +27,13 @@ export function insertOrderDetails({
     }));
     const feeLinesSubtotal = order.feeLines.reduce(
       (accum, item) => accum + +item.total,
-      0
+      0,
     );
-    const totalNoShipping =
-      +order.subtotal + feeLinesSubtotal + +order.totalTax;
+    const totalNoShipping = (
+      +order.subtotal +
+      feeLinesSubtotal +
+      +order.totalTax
+    ).toFixed(2);
 
     const output = runHandlebarsTemplate(
       "src/order-approval/mail/orderDetails.hbs",
@@ -39,7 +42,7 @@ export function insertOrderDetails({
         totalNoShipping,
         checkoutValues,
         shippingMethod: order.shippingLines[0]?.method_title,
-      }
+      },
     );
     return output;
   });
@@ -61,8 +64,8 @@ export function insertApproveLink({
     `<a href="${createApprovalFrontEndUrl(
       webstore.url,
       accessCode?.guid || "NO_ACCESS_CODE_FOUND",
-      "approve"
-    )}">Approve</a>`
+      "approve",
+    )}">Approve</a>`,
   );
 }
 
@@ -78,8 +81,8 @@ export function insertDenyLink({
     `<a href="${createApprovalFrontEndUrl(
       webstore.url,
       accessCode?.guid || "NO_ACCESS_CODE_FOUND",
-      "deny"
-    )}">Deny</a>`
+      "deny",
+    )}">Deny</a>`,
   );
 }
 
@@ -94,8 +97,8 @@ export function insertEditLink({
     /\{edit\}/gi,
     `<a href="${createApprovalFrontEndUrl(
       webstore.url,
-      accessCode?.guid || "NO_ACCESS_CODE_FOUND"
-    )}">Review Order</a>`
+      accessCode?.guid || "NO_ACCESS_CODE_FOUND",
+    )}">Review Order</a>`,
   );
 }
 
@@ -108,7 +111,7 @@ export function insertOrderAdminLink({
 }: Params) {
   return text.replace(
     /\{order-wc\}/,
-    `<a href="${webstore.url}/wp-admin/post.php?post=${order.id}&action=edit">View Order</a>`
+    `<a href="${webstore.url}/wp-admin/post.php?post=${order.id}&action=edit">View Order</a>`,
   );
 }
 
@@ -128,7 +131,7 @@ export function insertOrderNumber({ text, context: { order } }: Params) {
 export function insertDenyReason({ text, context: { instance } }: Params) {
   return text.replace(
     /\{deny-reason\}/,
-    `${instance.deniedReason || "(no denial reason)"}`
+    `${instance.deniedReason || "(no denial reason)"}`,
   );
 }
 
@@ -153,7 +156,7 @@ export function insertApprovedUser({
 }: Params) {
   return text.replace(
     /\{approve-user\}/,
-    approvedByUser?.name || "USER_NOT_FOUND"
+    approvedByUser?.name || "USER_NOT_FOUND",
   );
 }
 
@@ -171,7 +174,7 @@ function getCheckoutFieldValue(fieldName: string, order: WooCommerceOrder) {
     return order.customerNote;
 
   const matchingMetaData = order.metaData.find(
-    (meta) => meta.key === fieldName
+    (meta) => meta.key === fieldName,
   );
   return matchingMetaData?.value;
 }

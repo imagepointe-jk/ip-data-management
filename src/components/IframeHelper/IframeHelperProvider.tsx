@@ -24,6 +24,7 @@ const messageTypes = {
     navigationRequest: "ip-iframe-navigation-request",
     heightChangeRequest: "ip-iframe-height-change-request",
     refreshRequest: "ip-iframe-refresh-request",
+    gtmEvent: "ip-gtm-event",
   },
   incoming: {
     urlResponse: "ip-iframe-response-url",
@@ -37,6 +38,7 @@ type IframeHelperContext = {
     requestHeightChange: (newHeight: number) => void;
     requestRefresh: () => void;
     setSearchParam: (name: string, value: string | null) => void;
+    pushGtmEvent: (eventName: string) => void;
   };
   loading: boolean;
 };
@@ -67,14 +69,14 @@ export function IframeHelperProvider({
   minHeight,
 }: Props) {
   const [parentWindowData, setParentWindowData] = useState(
-    null as ParentWindowData | null
+    null as ParentWindowData | null,
   );
   const [loading, setLoading] = useState(true);
 
   function onParentWindowResponse(e: any) {
     if (
       ["react-devtools-content-script", "react-devtools-bridge"].includes(
-        e.data.source
+        e.data.source,
       )
     )
       return; //ignore messages from devtools
@@ -147,6 +149,10 @@ export function IframeHelperProvider({
     setSearch(search.toString());
   }
 
+  function pushGtmEvent(eventName: string) {
+    postMessage({ type: messageTypes.outgoing.gtmEvent, eventName });
+  }
+
   useEffect(() => {
     updateIframeHeight(window.innerWidth);
 
@@ -170,6 +176,7 @@ export function IframeHelperProvider({
           requestHeightChange,
           setSearchParam,
           requestRefresh,
+          pushGtmEvent,
         },
         loading,
       }}
