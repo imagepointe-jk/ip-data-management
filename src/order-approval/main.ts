@@ -21,7 +21,7 @@ import { shouldSendOrderUpdatedEmails } from "./utility/global";
 //! This function is indirectly recursive via "handleWorkflowProceed" and assumes there will be no circularity in the workflow step sequence.
 //! There should be a check in place for this somewhere.
 export async function handleCurrentStep(
-  workflowInstance: OrderWorkflowInstance
+  workflowInstance: OrderWorkflowInstance,
 ) {
   const currentStep = await getWorkflowInstanceCurrentStep(workflowInstance.id);
   await doStepAction(currentStep, workflowInstance);
@@ -29,7 +29,7 @@ export async function handleCurrentStep(
   if (currentStep.proceedImmediatelyTo !== null) {
     handleWorkflowProceed(
       workflowInstance.id,
-      currentStep.proceedImmediatelyTo
+      currentStep.proceedImmediatelyTo,
     );
   }
 }
@@ -38,7 +38,7 @@ export async function handleWorkflowEvent(
   workflowInstanceId: number,
   type: OrderWorkflowEventType,
   source: string,
-  message: string | null
+  message: string | null,
 ) {
   const workflowInstance = await getWorkflowInstance(workflowInstanceId);
   if (!workflowInstance)
@@ -46,7 +46,7 @@ export async function handleWorkflowEvent(
 
   if (workflowInstance.status === "finished") {
     throw new Error(
-      `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished.`
+      `Received event for workflow instance ${workflowInstanceId}, but that workflow is already finished.`,
     );
   }
 
@@ -56,19 +56,19 @@ export async function handleWorkflowEvent(
     currentStep,
     workflowInstance,
     source,
-    type
+    type,
   );
   if (matchingListener) {
     await handleWorkflowEventDataBeforeProceeding(
       workflowInstanceId,
       type,
       source,
-      message
+      message,
     );
     handleWorkflowProceed(workflowInstanceId, matchingListener.goto);
   } else {
     throw new Error(
-      `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`
+      `The workflow instance ${workflowInstanceId} received an unhandled event of type ${type} from ${source}.`,
     );
   }
 }
@@ -79,20 +79,20 @@ async function handleWorkflowEventDataBeforeProceeding(
   workflowInstanceId: number,
   type: string,
   source: string,
-  message: string | null
+  message: string | null,
 ) {
   if (type === "deny") {
     await setWorkflowInstanceDeniedData(
       workflowInstanceId,
       message || "(NO REASON GIVEN. This is a bug.)",
-      source
+      source,
     );
   }
   if (type === "approve") {
     await setWorkflowInstanceApprovedData(
       workflowInstanceId,
       message || null,
-      source
+      source,
     );
   }
 }
@@ -127,21 +127,21 @@ async function handleWorkflowProceed(workflowInstanceId: number, goto: string) {
     handleCurrentStep(workflowInstance);
   } else {
     throw new Error(
-      `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`
+      `Invalid goto value "${goto}" attempted in workflow instance ${workflowInstance.id}`,
     );
   }
 }
 
 async function proceedToNextStepOrFinish(
-  workflowInstance: OrderWorkflowInstance
+  workflowInstance: OrderWorkflowInstance,
 ) {
   const parentWorkflow = await getWorkflowWithIncludes(
-    workflowInstance.parentWorkflowId
+    workflowInstance.parentWorkflowId,
   );
   if (!parentWorkflow)
     throw new Error(`No parent workflow found for ${workflowInstance.id}`);
   const nextStep = parentWorkflow.steps.find(
-    (step) => step.order > workflowInstance.currentStep
+    (step) => step.order > workflowInstance.currentStep,
   );
 
   if (!nextStep) {
@@ -149,7 +149,7 @@ async function proceedToNextStepOrFinish(
   } else {
     await setWorkflowInstanceCurrentStep(
       workflowInstance.id,
-      workflowInstance.currentStep + 1
+      workflowInstance.currentStep + 1,
     );
     handleCurrentStep(workflowInstance);
   }
@@ -161,6 +161,7 @@ export async function handleOrderUpdated(params: {
     initialOrder: WooCommerceOrder;
     updatedOrder: WooCommerceOrder;
     metaDataAdded: { key: string; value: string }[];
+    lineItemIdsRemoved: number[];
   };
   storeUrl: string;
   userEmail: string;
@@ -169,10 +170,22 @@ export async function handleOrderUpdated(params: {
     order,
     storeUrl,
     userEmail,
-    updateData: { initialOrder, metaDataAdded, updatedOrder },
+    updateData: {
+      initialOrder,
+      metaDataAdded,
+      updatedOrder,
+      lineItemIdsRemoved,
+    },
   } = params;
 
-  if (!shouldSendOrderUpdatedEmails(initialOrder, updatedOrder, metaDataAdded))
+  if (
+    !shouldSendOrderUpdatedEmails(
+      initialOrder,
+      updatedOrder,
+      metaDataAdded,
+      lineItemIdsRemoved,
+    )
+  )
     return;
 
   const webstore = await getWebstore(storeUrl);
@@ -180,11 +193,11 @@ export async function handleOrderUpdated(params: {
 
   const foundCode = await getAccessCodeWithIncludesByOrderAndEmail(
     order.id,
-    userEmail
+    userEmail,
   );
   if (!foundCode)
     throw new Error(
-      `No access code found with user email ${userEmail} and order id ${order.id}`
+      `No access code found with user email ${userEmail} and order id ${order.id}`,
     );
 
   const orderUpdatedEmails = webstore.orderUpdatedEmails
@@ -197,6 +210,8 @@ export async function handleOrderUpdated(params: {
   const message = await createOrderUpdatedEmail(order, webstore.name);
 
   for (const email of orderUpdatedEmails) {
-    await sendEmail(email, `ORDER #${order.number} CHANGED`, message);
+    try {
+      await sendEmail(email, `ORDER #${order.number} CHANGED`, message);
+    } catch (error) {}
   }
 }
