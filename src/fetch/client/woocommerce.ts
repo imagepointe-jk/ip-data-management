@@ -133,8 +133,8 @@ export async function createOrder(
     email: billing.email,
   };
 
-  if (billing.addressLine2) body.address_2 = data.billing.addressLine2;
-  if (billing.phone) body.phone = data.billing.phone;
+  if (billing.addressLine2) body.billing.address_2 = data.billing.addressLine2;
+  if (billing.phone) body.billing.phone = data.billing.phone;
 
   body.shipping = {
     first_name: shipping.firstName,
