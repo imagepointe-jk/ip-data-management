@@ -18,6 +18,8 @@ export const env = {
     process.env.IP_PRODUCT_SYNC_NOTIFICATION_EMAIL!,
   CUSTOMIZER_FEEDBACK_DEST_EMAIL: process.env.CUSTOMIZER_FEEDBACK_DEST_EMAIL!,
   IP_WEBSTORES_EMAIL: process.env.IP_WEBSTORES_EMAIL,
+  HUBSPOT_INTEGRATION_ACCESS_TOKEN:
+    process.env.HUBSPOT_INTEGRATION_ACCESS_TOKEN!,
 };
 
 for (const [key, value] of Object.entries(env)) {

@@ -6,8 +6,9 @@ import { ServerActionResult } from "@/types/schema/misc";
 import { validateHubSpotSyncFormData } from "@/types/validations/hubspot";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "@/utility/statusCodes";
 
+//TODO: all of this is old and should be moved into the hubspot folder or removed
 export async function startSync(
-  formData: FormData
+  formData: FormData,
 ): Promise<ServerActionResult> {
   try {
     const userEmail = formData.get("userEmail");
