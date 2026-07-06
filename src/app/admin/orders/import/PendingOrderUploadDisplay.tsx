@@ -109,6 +109,7 @@ export function PendingOrderUploadDisplay({
                 <th>Quantity</th>
                 <th>Product ID</th>
                 <th>Variation ID</th>
+                <th style={{ width: "100px" }}>Name</th>
                 <th>{""}</th>
               </tr>
             </thead>
@@ -119,6 +120,7 @@ export function PendingOrderUploadDisplay({
                   <td>{lineItem.quantity}</td>
                   <td>{lineItem.productId}</td>
                   <td>{lineItem.variationId}</td>
+                  <td style={{ fontSize: "12px" }}>{lineItem.name}</td>
                   <td>
                     {/* Show the warning message if there's any corresponding issue found for this line item in the status object */}
                     {!!validationStatus?.lineItems.find(

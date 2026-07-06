@@ -109,6 +109,7 @@ function populateProductIds(
           product.sku.toLocaleLowerCase() === lineItem.sku?.toLocaleLowerCase(),
       );
       if (matchingProduct) {
+        lineItem.name = matchingProduct.name;
         lineItem.productId = matchingProduct.id;
         continue;
       }
@@ -125,6 +126,7 @@ function populateProductIds(
       if (!productWithMatchingVariation) continue;
 
       lineItem.productId = productWithMatchingVariation.id;
+      lineItem.name = `${productWithMatchingVariation.name} (variation)`;
       const matchingVariation = productWithMatchingVariation.variations.find(
         (variation) =>
           variation.sku?.toLocaleLowerCase() ===

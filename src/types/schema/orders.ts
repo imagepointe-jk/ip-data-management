@@ -31,6 +31,7 @@ export const orderImportSchema = z.object({
       variationId: z.number().optional(),
       sku: z.string().optional(),
       quantity: z.number().optional(),
+      name: z.string().optional(),
     }),
   ),
   customerNote: z.string().optional(),
