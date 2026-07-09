@@ -5,7 +5,10 @@ import { inspect } from "util";
 export async function POST(request: NextRequest) {
   try {
     const json = await request.json();
-    console.log(inspect(json, true, null));
+    const variations = json.variation_details;
+    if (!Array.isArray(variations)) throw new Error();
+    console.log("FOUND VARIATIONS");
+    console.log(inspect(variations, true, null));
   } catch (error) {
     console.log("Unable to parse json");
   }
