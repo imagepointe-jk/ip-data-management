@@ -1,84 +1,30 @@
 "use client";
 
-import SyncTable, { SyncRowData } from "@/components/SyncTable/SyncTable";
-import { FormEvent } from "react";
+import SyncTable from "@/components/SyncTable/SyncTable";
+import { FormEvent, useState } from "react";
 import {
   createProductSyncRows,
-  getAllProducts,
   ProductSyncRow,
+  syncRow,
 } from "./generalProductUploadNEW";
 import { useImmer } from "use-immer";
 
-// const testData: {
-//   syncRowData: SyncRowData;
-//   data: {
-//     sku: string;
-//     name: string;
-//     description: string;
-//     regularPrice: string;
-//     costOfGood: string;
-//   };
-// }[] = [
-//   {
-//     syncRowData: {
-//       rowId: "1",
-//       status: "ready",
-//     },
-//     data: {
-//       sku: "AS1234",
-//       name: "Test",
-//       description:
-//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, illum magni animi soluta nam eligendi quaerat doloribus quidem. Quod excepturi inventore id atque ipsum aut modi tempore quidem eos at.",
-//       costOfGood: "12.34",
-//       regularPrice: "12.34",
-//     },
-//   },
-//   {
-//     syncRowData: {
-//       rowId: "2",
-//       status: "processing",
-//     },
-//     data: {
-//       sku: "AS1234",
-//       name: "Test",
-//       description:
-//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, illum magni animi soluta nam eligendi quaerat doloribus quidem. Quod excepturi inventore id atque ipsum aut modi tempore quidem eos at.",
-//       costOfGood: "12.34",
-//       regularPrice: "12.34",
-//     },
-//   },
-//   {
-//     syncRowData: {
-//       rowId: "3",
-//       status: "error",
-//     },
-//     data: {
-//       sku: "AS1234",
-//       name: "Test",
-//       description:
-//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, illum magni animi soluta nam eligendi quaerat doloribus quidem. Quod excepturi inventore id atque ipsum aut modi tempore quidem eos at.",
-//       costOfGood: "12.34",
-//       regularPrice: "12.34",
-//     },
-//   },
-//   {
-//     syncRowData: {
-//       rowId: "4",
-//       status: "done",
-//     },
-//     data: {
-//       sku: "AS1234",
-//       name: "Test",
-//       description:
-//         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, illum magni animi soluta nam eligendi quaerat doloribus quidem. Quod excepturi inventore id atque ipsum aut modi tempore quidem eos at.",
-//       costOfGood: "12.34",
-//       regularPrice: "12.34",
-//     },
-//   },
-// ];
-
 export function GeneralProductUploadFormNEW() {
   const [syncRows, setSyncRows] = useImmer<ProductSyncRow[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<
+    "ready" | "processing" | "done"
+  >("ready");
+  const syncRowsReady = syncRows.length > 0;
+  const validRows = syncRows.filter(
+    (item) => item.syncRowData.status !== "invalid",
+  );
+  const processedRows = syncRows.filter(
+    (item) =>
+      item.syncRowData.status === "done" || item.syncRowData.status === "error",
+  );
+  const errorRows = syncRows.filter(
+    (item) => item.syncRowData.status === "error",
+  );
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -86,16 +32,51 @@ export function GeneralProductUploadFormNEW() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const rows = await createProductSyncRows(formData);
-    setSyncRows(rows);
+    if (!syncRowsReady) {
+      const rows = await createProductSyncRows(formData);
+      setSyncRows(rows);
+    } else {
+      const url = `${formData.get("url")}`;
+      const key = `${formData.get("key")}`;
+      const secret = `${formData.get("secret")}`;
 
-    const url = `${formData.get("url")}`;
-    const key = `${formData.get("key")}`;
-    const secret = `${formData.get("secret")}`;
+      setUploadStatus("processing");
 
-    // const response = await getAllProducts(url, key, secret, true);
-    // const json = await response.json();
-    // console.log(json);
+      for (const row of syncRows) {
+        const { rowId, status } = row.syncRowData;
+        if (status === "invalid" || status === "error") continue;
+
+        try {
+          updateExistingSyncRow(rowId, "processing");
+
+          const result = await syncRow({ url, key, secret, row });
+
+          if (!result.success) {
+            updateExistingSyncRow(rowId, "error", result.message);
+          } else {
+            updateExistingSyncRow(rowId, "done");
+          }
+        } catch (error) {
+          updateExistingSyncRow(rowId, "error", "there was an error");
+        }
+      }
+
+      setUploadStatus("done");
+    }
+  }
+
+  function updateExistingSyncRow(
+    rowId: string,
+    status: "ready" | "processing" | "error" | "done",
+    message?: string,
+  ) {
+    setSyncRows((prev) => {
+      const prevRow = prev.find((item) => item.syncRowData.rowId === rowId);
+      if (prevRow) {
+        prevRow.syncRowData.status = status;
+        prevRow.syncRowData.resultMessage = message ? message : undefined;
+      }
+    });
   }
 
   function clearForm() {
@@ -110,6 +91,7 @@ export function GeneralProductUploadFormNEW() {
     (file as HTMLInputElement).value = "";
 
     setSyncRows([]);
+    setUploadStatus("ready");
   }
 
   return (
@@ -135,13 +117,27 @@ export function GeneralProductUploadFormNEW() {
         <input type="file" name="file" id="file" required />
       </label>
       <div>
-        <button type="submit">Preview Import</button>
+        <button type="submit">
+          {syncRowsReady ? "Upload" : "Preview Import"}
+        </button>
       </div>
       <div>
         <button type="button" onClick={clearForm}>
           Reset
         </button>
       </div>
+      {uploadStatus === "processing" && (
+        <div>
+          Processing row {processedRows.length} out of {validRows.length} valid
+          rows. {errorRows.length} error(s) so far.
+        </div>
+      )}
+      {uploadStatus === "done" && (
+        <div>
+          Processed {processedRows.length} out of {validRows.length} valid rows.{" "}
+          {errorRows.length} error(s).
+        </div>
+      )}
       <SyncTable
         dataset={syncRows}
         columns={[

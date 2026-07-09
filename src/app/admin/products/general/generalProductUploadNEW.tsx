@@ -1,5 +1,9 @@
 import { SyncRowData } from "@/components/SyncTable/SyncTable";
 import { AppError } from "@/error";
+import {
+  updateProduct,
+  updateProductVariation,
+} from "@/fetch/client/woocommerce";
 import { normalizeObjectKeys } from "@/utility/misc";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
@@ -15,6 +19,13 @@ export type ProductSyncRow = {
     published?: boolean;
     sortOrder?: number;
   };
+};
+type ProductSyncRowResult = {
+  rowId: string;
+  id: number;
+  sku: string;
+  success: boolean;
+  message: string;
 };
 
 export async function createProductSyncRows(
@@ -46,7 +57,7 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
     const result: ProductSyncRow = {
       syncRowData: {
         rowId,
-        status: "error",
+        status: "invalid",
       },
     };
 
@@ -124,21 +135,78 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
   return parsed;
 }
 
-//this is here temporarily to avoid merge conflicts in src/app/fetch/client/woocommerce.ts
-export async function getAllProducts(
-  storeUrl: string,
-  key: string,
-  secret: string,
-  includeVariations = true,
-) {
-  return fetch(
-    `${storeUrl}/wp-json/wc/v3/products?per_page=100${includeVariations ? "&include_variations=true" : ""}`, //100 is max per page; we may need to do multiple requests for large stores
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${btoa(`${key}:${secret}`)}`,
-      },
-    },
-  );
+export async function syncRow(params: {
+  url: string;
+  key: string;
+  secret: string;
+  row: ProductSyncRow;
+}): Promise<ProductSyncRowResult> {
+  const {
+    key,
+    row: { syncRowData, data },
+    secret,
+    url,
+  } = params;
+  const result: ProductSyncRowResult = {
+    id: 0,
+    message: "No data",
+    rowId: syncRowData.rowId,
+    success: false,
+    sku: "<NO SKU>",
+  };
+
+  if (!data) return result;
+
+  const { parentId, id, stock, published, sortOrder, sku } = data;
+  result.id = id;
+  if (sku) result.sku = sku;
+  const isVariation = parentId !== undefined;
+
+  const response = isVariation
+    ? await updateProductVariation({
+        storeUrl: url,
+        apiKey: key,
+        apiSecret: secret,
+        productId: parentId,
+        variationId: id,
+        stockQuantity: stock,
+        published,
+      })
+    : await updateProduct({
+        storeUrl: url,
+        apiKey: key,
+        apiSecret: secret,
+        productId: id,
+        stockQuantity: stock,
+        published,
+        sortOrder,
+      });
+
+  if (!response.ok) {
+    result.message = `The API returned a ${response.status} status`;
+  } else {
+    result.message = "";
+    result.success = true;
+  }
+
+  return result;
 }
+
+//this is here temporarily to avoid merge conflicts in src/app/fetch/client/woocommerce.ts
+// export async function getAllProducts(
+//   storeUrl: string,
+//   key: string,
+//   secret: string,
+//   includeVariations = true,
+// ) {
+//   return fetch(
+//     `${storeUrl}/wp-json/wc/v3/products?per_page=100${includeVariations ? "&include_variations=true" : ""}`, //100 is max per page; we may need to do multiple requests for large stores
+//     {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Basic ${btoa(`${key}:${secret}`)}`,
+//       },
+//     },
+//   );
+// }
