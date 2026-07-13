@@ -62,77 +62,118 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
     };
 
     const normalized = normalizeObjectKeys(item);
-    const id = +`${normalized.id}`;
-    if (isNaN(id)) {
-      result.syncRowData.resultMessage = `Invalid ID at index ${i}`;
-      return result;
+    try {
+      const id = validateId(normalized, i);
+      const sortOrder = validateSortOrder(normalized, i);
+      const stock = validateStock(normalized, i);
+      const published = validatePublishedStatus(normalized, i);
+      const parentId = validateParentId(normalized, i, json);
+      const sku =
+        normalized.sku !== undefined ? `${normalized.sku}` : undefined;
+
+      result.syncRowData.status = "ready";
+      result.data = {
+        id,
+        sku,
+        sortOrder,
+        published,
+        stock,
+        parentId,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        result.syncRowData.resultMessage = error.message;
+      } else {
+        result.syncRowData.resultMessage = "UNKNOWN VALIDATION ERROR";
+      }
     }
-
-    const sortOrder =
-      normalized.order !== undefined ? +`${normalized.order}` : undefined;
-    if (sortOrder !== undefined && isNaN(sortOrder)) {
-      result.syncRowData.resultMessage = `Invalid "order" value at index ${i}`;
-      return result;
-    }
-
-    const stock =
-      normalized.stock !== undefined ? +`${normalized.stock}` : undefined;
-    if (stock !== undefined && isNaN(stock)) {
-      result.syncRowData.resultMessage = `Invalid "stock" value at index ${i}`;
-      return result;
-    }
-
-    const published =
-      normalized.published === undefined
-        ? undefined
-        : normalized.published === "y"
-          ? true
-          : false;
-    if (
-      normalized.published !== undefined &&
-      !["y", "n"].includes(normalized.published)
-    ) {
-      result.syncRowData.resultMessage = `Invalid "published" value at index ${i}`;
-      return result;
-    }
-
-    const parent =
-      normalized.parent !== undefined
-        ? json.find((otherItem) => {
-            const otherNormalized = normalizeObjectKeys(otherItem);
-            return otherNormalized.sku === normalized.parent;
-          })
-        : undefined;
-
-    if (normalized.parent !== undefined && parent === undefined) {
-      result.syncRowData.resultMessage = `Unable to find parent of variation at index ${i}`;
-      return result;
-    }
-
-    //if we get here, either there was no value provided for parent or a parent was found
-    const parentId =
-      parent !== undefined ? +`${normalizeObjectKeys(parent).id}` : undefined;
-    if (parentId !== undefined && isNaN(parentId)) {
-      result.syncRowData.resultMessage = `Parent of variation at index ${i} has invalid ID`;
-      return result;
-    }
-
-    const sku = normalized.sku !== undefined ? `${normalized.sku}` : undefined;
-
-    result.syncRowData.status = "ready";
-    result.data = {
-      id,
-      sku,
-      sortOrder,
-      published,
-      stock,
-      parentId,
-    };
 
     return result;
   });
 
   return parsed;
+}
+
+function validateId(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  const id = +`${normalizedInputObject.id}`;
+  if (isNaN(id)) throw new Error(`Invalid ID at index ${rowIndex}`);
+
+  return id;
+}
+
+function validateSortOrder(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  const sortOrder =
+    normalizedInputObject.order !== undefined
+      ? +`${normalizedInputObject.order}`
+      : undefined;
+  if (sortOrder !== undefined && isNaN(sortOrder))
+    throw new Error(`Invalid "order" value at index ${rowIndex}`);
+
+  return sortOrder;
+}
+
+function validateStock(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  const stock =
+    normalizedInputObject.stock !== undefined
+      ? +`${normalizedInputObject.stock}`
+      : undefined;
+  if (stock !== undefined && isNaN(stock))
+    throw new Error(`Invalid "stock" value at index ${rowIndex}`);
+
+  return stock;
+}
+
+function validatePublishedStatus(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  const published =
+    normalizedInputObject.published === undefined
+      ? undefined
+      : normalizedInputObject.published === "y"
+        ? true
+        : false;
+  if (
+    normalizedInputObject.published !== undefined &&
+    !["y", "n"].includes(normalizedInputObject.published)
+  )
+    throw new Error(`Invalid "published" value at index ${rowIndex}`);
+
+  return published;
+}
+
+function validateParentId(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+  fullSheetJson: any[],
+) {
+  const parent =
+    normalizedInputObject.parent !== undefined
+      ? fullSheetJson.find((otherItem) => {
+          const otherNormalized = normalizeObjectKeys(otherItem);
+          return otherNormalized.sku === normalizedInputObject.parent;
+        })
+      : undefined;
+
+  if (normalizedInputObject.parent !== undefined && parent === undefined)
+    throw new Error(`Unable to find parent of variation at index ${rowIndex}`);
+
+  //if we get here, either there was no value provided for parent or a parent was found
+  const parentId =
+    parent !== undefined ? +`${normalizeObjectKeys(parent).id}` : undefined;
+  if (parentId !== undefined && isNaN(parentId))
+    throw new Error(`Parent of variation at index ${rowIndex} has invalid ID`);
+
+  return parentId;
 }
 
 export async function syncRow(params: {
