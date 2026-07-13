@@ -1,27 +1,30 @@
 "use client";
 
+import SyncTable from "@/components/SyncTable/SyncTable";
 import { FormEvent, useState } from "react";
 import {
   createProductSyncRows,
   ProductSyncRow,
   syncRow,
-  ProductSyncRowResult,
 } from "./generalProductUpload";
-import { ProductUploadDisplay } from "./ProductUploadDisplay";
-import styles from "@/styles/productImport/productImport.module.css";
-import { ProductSyncRowDisplay } from "./ProductSyncRowDisplay";
+import { useImmer } from "use-immer";
 
 export function GeneralProductUploadForm() {
-  const [productSyncRows, setProductSyncRows] = useState<ProductSyncRow[]>([]);
-  const [processedRows, setProcessedRows] = useState<ProductSyncRowResult[]>(
-    [],
+  const [syncRows, setSyncRows] = useImmer<ProductSyncRow[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<
+    "ready" | "processing" | "done"
+  >("ready");
+  const syncRowsReady = syncRows.length > 0;
+  const validRows = syncRows.filter(
+    (item) => item.syncRowData.status !== "invalid",
   );
-  const [expandedRowIds, setExpandedRowIds] = useState<string[]>([]);
-  const nonErrorRows = productSyncRows.filter(
-    (item) => item.error === undefined,
+  const processedRows = syncRows.filter(
+    (item) =>
+      item.syncRowData.status === "done" || item.syncRowData.status === "error",
   );
-  const submitButtonText =
-    nonErrorRows.length > 0 ? "Import Now" : "Preview Import";
+  const errorRows = syncRows.filter(
+    (item) => item.syncRowData.status === "error",
+  );
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,23 +32,55 @@ export function GeneralProductUploadForm() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    if (productSyncRows.length === 0) {
-      try {
-        const rows = await createProductSyncRows(formData);
-        setProductSyncRows(rows);
-      } catch (error) {
-        console.error(error);
-      }
-    } else if (nonErrorRows.length > 0) {
-      const url = `${formData.get("url")}`;
-      const key = `${formData.get("key")}`;
-      const secret = `${formData.get("secret")}`;
+    if (!syncRowsReady) {
+      const rows = await createProductSyncRows(formData);
+      setSyncRows(rows);
+    } else {
+      doSync(formData);
+    }
+  }
 
-      for (const row of nonErrorRows) {
+  async function doSync(formData: FormData) {
+    const url = `${formData.get("url")}`;
+    const key = `${formData.get("key")}`;
+    const secret = `${formData.get("secret")}`;
+
+    setUploadStatus("processing");
+
+    for (const row of syncRows) {
+      const { rowId, status } = row.syncRowData;
+      if (status === "invalid" || status === "error") continue;
+
+      try {
+        updateExistingSyncRow(rowId, "processing");
+
         const result = await syncRow({ url, key, secret, row });
-        setProcessedRows((prev) => [...prev, result]);
+
+        if (!result.success) {
+          updateExistingSyncRow(rowId, "error", result.message);
+        } else {
+          updateExistingSyncRow(rowId, "done");
+        }
+      } catch (error) {
+        updateExistingSyncRow(rowId, "error", "there was an error");
       }
     }
+
+    setUploadStatus("done");
+  }
+
+  function updateExistingSyncRow(
+    rowId: string,
+    status: "ready" | "processing" | "error" | "done",
+    message?: string,
+  ) {
+    setSyncRows((prev) => {
+      const prevRow = prev.find((item) => item.syncRowData.rowId === rowId);
+      if (prevRow) {
+        prevRow.syncRowData.status = status;
+        prevRow.syncRowData.resultMessage = message ? message : undefined;
+      }
+    });
   }
 
   function clearForm() {
@@ -59,28 +94,14 @@ export function GeneralProductUploadForm() {
     (secret as HTMLInputElement).value = "";
     (file as HTMLInputElement).value = "";
 
-    setProductSyncRows([]);
-    setProcessedRows([]);
-  }
-
-  function onClickRowHeadline(id: string) {
-    setExpandedRowIds((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((existingId) => existingId !== id);
-      }
-
-      return [...prev, id];
-    });
-  }
-
-  function setAllExpandedStates(expanded: boolean) {
-    setExpandedRowIds(expanded ? productSyncRows.map((row) => row.rowId) : []);
+    setSyncRows([]);
+    setUploadStatus("ready");
   }
 
   return (
     <form
       className="content-frame vert-flex-group"
-      style={{ marginTop: "20px", width: "900px" }}
+      style={{ marginTop: "20px", width: "1400px" }}
       onSubmit={onSubmit}
     >
       <h3>Upload Import Spreadsheet</h3>
@@ -100,287 +121,52 @@ export function GeneralProductUploadForm() {
         <input type="file" name="file" id="file" required />
       </label>
       <div>
-        <button type="submit">{submitButtonText}</button>
+        <button type="submit">
+          {syncRowsReady ? "Upload" : "Preview Import"}
+        </button>
       </div>
       <div>
         <button type="button" onClick={clearForm}>
           Reset
         </button>
       </div>
-      <div className={styles["sync-status-bar"]}>
-        <div>lorem ipsum dolor sit amet</div>
-        {/* <div className={styles["expand-buttons-container"]}>
-          <button onClick={() => setAllExpandedStates(true)} type="button">
-            expand all
-          </button>
-          <button onClick={() => setAllExpandedStates(false)} type="button">
-            collapse all
-          </button>
-        </div> */}
-      </div>
-      <div>
-        <div className={styles["fake-table-header-row"]}>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-1"]}`}
-          >
-            ID
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-2"]}`}
-          >
-            SKU
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-3"]}`}
-          >
-            Published
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-4"]}`}
-          >
-            Stock
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-5"]}`}
-          >
-            Order
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-6"]}`}
-          >
-            Parent ID
-          </div>
-          <div
-            className={`${styles["fake-table-header-cell"]} ${styles["column-7"]}`}
-          >
-            Status
-          </div>
-        </div>
-        {/* {processedRows.length === 0 && productSyncRows.length > 0 && (
+      {uploadStatus === "processing" && (
         <div>
-          {productSyncRows.length} pending sync rows.{" "}
-          {productSyncRows.filter((item) => item.error !== undefined).length}{" "}
-          error(s).
+          Processing row {processedRows.length} out of {validRows.length} valid
+          rows. {errorRows.length} error(s) so far.
         </div>
-      )} */}
-        {/* {processedRows.length > 0 && (
+      )}
+      {uploadStatus === "done" && (
         <div>
-          {processedRows.length < nonErrorRows.length && (
-            <>
-              {processedRows.length} of {nonErrorRows.length} rows processed...
-            </>
-          )}
-          {processedRows.length === nonErrorRows.length && (
-            <>
-              Sync complete.{" "}
-              {processedRows.filter((item) => item.success).length} successful
-              updates. {processedRows.filter((item) => !item.success).length}{" "}
-              errors.
-            </>
-          )}
+          Processed {processedRows.length} out of {validRows.length} valid rows.{" "}
+          {errorRows.length} error(s).
         </div>
-      )} */}
-        <div className={styles["item-scroll-container"]}>
-          {productSyncRows.map((row) => (
-            <ProductSyncRowDisplay
-              key={row.rowId}
-              row={row}
-              // expanded={expandedRowIds.includes(row.rowId)}
-              // onClick={onClickRowHeadline}
-            />
-          ))}
-          {/* {processedRows.map((row) => (
-          <div
-            key={row.id}
-            style={{
-              color: !row.success ? "red" : undefined,
-              fontWeight: !row.success ? "600" : undefined,
-            }}
-          >
-            Result for product {row.sku} (ID {row.id}): {row.message}
-          </div>
-        ))} */}
-        </div>
-        <div className={styles["sync-table-container"]}>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>SKU</th>
-                <th>Published</th>
-                <th>Stock</th>
-                <th>Order</th>
-                <th>Parent ID</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-              <tr>
-                <td>1234</td>
-                <td>AS1234</td>
-                <td>true</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>1234</td>
-                <td>ready</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
+      <SyncTable
+        dataset={syncRows}
+        columns={[
+          {
+            createCell: (item) => item.data?.sku,
+            headerName: "SKU",
+          },
+          {
+            createCell: (item) => item.data?.published,
+            headerName: "Published",
+          },
+          {
+            createCell: (item) => item.data?.sku,
+            headerName: "SKU",
+          },
+          {
+            createCell: (item) => item.data?.sortOrder,
+            headerName: "Sort Order",
+          },
+          {
+            createCell: (item) => item.data?.stock,
+            headerName: "Stock",
+          },
+        ]}
+      />
     </form>
   );
 }

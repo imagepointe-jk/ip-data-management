@@ -1,11 +1,10 @@
-import { GeneralProductUploadForm } from "../general/GeneralProductUploadForm";
-import { GeneralProductUploadFormNEW } from "./GeneralProductUploadFormNEW";
+import { GeneralProductUploadForm } from "./GeneralProductUploadForm";
 
 export default function Page() {
   return (
     <>
       <h1>General Product Sync</h1>
-      <GeneralProductUploadFormNEW />
+      <GeneralProductUploadForm />
     </>
   );
 }
