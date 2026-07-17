@@ -1,4 +1,5 @@
 import { SyncRowData } from "@/components/SyncTable/SyncTable";
+import { validateSyncRowOperation } from "@/components/SyncTable/validation";
 import { AppError } from "@/error";
 import {
   updateProduct,
@@ -70,8 +71,10 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
       const parentId = validateParentId(normalized, i, json);
       const sku =
         normalized.sku !== undefined ? `${normalized.sku}` : undefined;
+      const operation = validateSyncRowOperation(normalized, i);
 
       result.syncRowData.status = "ready";
+      result.syncRowData.operation = operation;
       result.data = {
         id,
         sku,

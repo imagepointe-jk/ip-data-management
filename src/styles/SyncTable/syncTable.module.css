@@ -47,3 +47,7 @@
 .upload-done {
   background-color: #00cb00;
 }
+
+.column-small {
+  width: 70px;
+}

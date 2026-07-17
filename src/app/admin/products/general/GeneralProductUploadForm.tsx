@@ -8,6 +8,7 @@ import {
   syncRow,
 } from "./generalProductUpload";
 import { useImmer } from "use-immer";
+import styles from "@/styles/productImport/productImport.module.css";
 
 export function GeneralProductUploadForm() {
   const [syncRows, setSyncRows] = useImmer<ProductSyncRow[]>([]);
@@ -160,10 +161,12 @@ export function GeneralProductUploadForm() {
           {
             createCell: (item) => item.data?.sortOrder,
             headerName: "Sort Order",
+            className: styles["column-small"],
           },
           {
             createCell: (item) => item.data?.stock,
             headerName: "Stock",
+            className: styles["column-small"],
           },
         ]}
       />

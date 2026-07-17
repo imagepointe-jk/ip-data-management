@@ -7,6 +7,7 @@ import { LoadingIndicator } from "../LoadingIndicator";
 export type SyncRowData = {
   rowId: string;
   status: "ready" | "processing" | "invalid" | "error" | "done";
+  operation?: "create" | "update";
   resultMessage?: string;
 };
 type HasSyncRowData = {
@@ -50,6 +51,12 @@ export default function SyncTable<T extends HasSyncRowData>({
           )}
         </>
       ),
+      className: styles["column-small"],
+    },
+    {
+      headerName: "Operation",
+      createCell: (data) => data.syncRowData.operation?.toLocaleUpperCase(),
+      className: styles["column-small"],
     },
     {
       headerName: "System Message",
