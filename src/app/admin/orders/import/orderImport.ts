@@ -6,6 +6,7 @@ import { validateOrderImportSheet } from "@/types/validations/orders";
 import { parseWooCommerceProductsMultiple } from "@/types/validations/woo";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
+import { getProductQuantity } from "@/utility/woocommerce";
 
 //TODO: line item validation has been skipped due to time constraints; come back to do this properly when possible
 type ValidationStatus = "ok" | "missing";
@@ -37,6 +38,7 @@ export type OrderImportValidationStatus = {
 export type PendingOrderUploadData = {
   pendingUploads: OrderImportDTO[];
   validationStatuses: OrderImportValidationStatus[];
+  warnings: string[];
 };
 export type UploadResult = {
   payload: OrderImportDTO;
@@ -94,7 +96,42 @@ export async function createPendingOrderUploadData(
   return {
     pendingUploads: parsedOrders,
     validationStatuses: orderValidationStatuses,
+    warnings: generateImportWarnings(parsedOrders, parsedProducts),
   };
+}
+
+function generateImportWarnings(
+  orders: OrderImportDTO[],
+  products: WooCommerceProduct[],
+) {
+  const warnings: string[] = [];
+  //the sum of all line item quantities for each SKU represented in the import (e.g. "SHIRT1234 has a total of 123 units requested in this import")
+  //this allows us to check if there's sufficient stock of each SKU in WooCommerce to accommodate all line items in the import
+  const totalsRequestedForSKUs = new Map<string, number>();
+
+  for (const order of orders) {
+    for (const lineItem of order.lineItems) {
+      const { sku, quantity } = lineItem;
+      if (!sku || !quantity) continue;
+
+      const currentTotal = totalsRequestedForSKUs.get(sku) || 0;
+      const newTotal = currentTotal + quantity;
+      totalsRequestedForSKUs.set(sku, newTotal);
+    }
+  }
+
+  for (const pair of totalsRequestedForSKUs) {
+    const sku = pair[0];
+    const totalRequested = pair[1];
+    const quantityOnStore = getProductQuantity(sku, products);
+    if (quantityOnStore < totalRequested) {
+      warnings.push(
+        `WARNING: Insufficient stock. A total of ${totalRequested} of ${sku} are requested by this import, but the stock on the store is only ${quantityOnStore}`,
+      );
+    }
+  }
+
+  return warnings;
 }
 
 function populateProductIds(

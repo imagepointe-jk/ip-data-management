@@ -12,6 +12,7 @@ export const wooCommerceProductSchema = z.object({
   name: z.string(),
   sku: z.string(),
   weight: z.string(),
+  stock_quantity: z.number().nullable(),
   images: z.array(
     z.object({
       src: z.string(),

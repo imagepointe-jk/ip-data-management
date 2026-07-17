@@ -8,6 +8,7 @@ import {
   UploadResult,
 } from "./orderImport";
 import { createOrder } from "@/fetch/client/woocommerce";
+import styles from "@/styles/orderImport/orderImport.module.css";
 
 export function OrderImportForm() {
   const [pendingUploadData, setPendingUploadData] =
@@ -111,6 +112,11 @@ export function OrderImportForm() {
             `${pendingUploadData.pendingUploads.length} pending uploads. Initial checks found ${issueCount} order(s) with issue(s).`}
         </div>
       )}
+      {pendingUploadData?.warnings.map((warning, i) => (
+        <div key={i} className={styles["warning"]}>
+          {warning}
+        </div>
+      ))}
       {uploadStatus === "loading" && (
         <div>
           Processing order {uploadResults.length + 1} of{" "}

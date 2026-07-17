@@ -71,7 +71,7 @@ export function parseWooCommerceProduct(json: any) {
       json.variations = variations.map((item) => ({
         id: item,
         sku: "not retrieved",
-        stock_quantity: 0,
+        stock_quantity: null,
       }));
     }
   }
