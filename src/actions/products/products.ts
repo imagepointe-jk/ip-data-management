@@ -6,7 +6,7 @@ import { searchIPProducts, updateIPProduct } from "@/fetch/woocommerce";
 import { ASIProductImportData } from "@/types/schema/products";
 import { validateASIProducts } from "@/types/validations/products";
 import { getSheetFromBuffer } from "@/utility/spreadsheet";
-import { BAD_REQUEST } from "@/utility/statusCodes";
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "@/utility/statusCodes";
 import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
@@ -39,7 +39,7 @@ async function runSync(data: ASIProductImportData[]) {
     env.IP_PRODUCT_SYNC_NOTIFICATION_EMAIL,
     startTime,
     endTime,
-    syncResults
+    syncResults,
   );
 }
 
@@ -53,12 +53,12 @@ async function syncRows(productData: ASIProductImportData[]) {
     const data = productData[i]!;
     try {
       console.log(
-        `Syncing SKU ${data.sku} (${i + 1} of ${productData.length})...`
+        `Syncing SKU ${data.sku} (${i + 1} of ${productData.length})...`,
       );
       const searchResponse = await searchIPProducts(data.sku);
       if (!searchResponse.ok)
         throw new Error(
-          `Search for the product returned a ${searchResponse.status} status`
+          `Search for the product returned a ${searchResponse.status} status`,
         );
 
       const searchJson = await searchResponse.json();
@@ -67,11 +67,11 @@ async function syncRows(productData: ASIProductImportData[]) {
 
       const matchingResult = searchJson.find(
         (item) =>
-          `${item.sku}`.toLocaleLowerCase() === data.sku.toLocaleLowerCase()
+          `${item.sku}`.toLocaleLowerCase() === data.sku.toLocaleLowerCase(),
       );
       if (!matchingResult)
         throw new Error(
-          `Couldn't find product with SKU ${data.sku} in the database`
+          `Couldn't find product with SKU ${data.sku} in the database`,
         );
 
       const startTime = Date.now();
@@ -89,7 +89,7 @@ async function syncRows(productData: ASIProductImportData[]) {
       syncTimes.push(syncResponseMs);
       if (!updateResponse.ok)
         throw new Error(
-          `The update request returned a ${updateResponse.status} status`
+          `The update request returned a ${updateResponse.status} status`,
         );
 
       successCount++;
@@ -134,13 +134,13 @@ function sendResultsEmail(
       average: number;
     };
     syncErrors: { sku: string; error: string }[];
-  }
+  },
 ) {
   let emailBody = "";
   try {
     const templateSource = fs.readFileSync(
       path.resolve(process.cwd(), "src/actions/products/syncResultsEmail.hbs"),
-      "utf-8"
+      "utf-8",
     );
     const template = handlebars.compile(templateSource);
     emailBody = template({
@@ -159,4 +159,109 @@ function sendResultsEmail(
     emailBody = "FAILED TO GENERATE EMAIL BODY";
   }
   return sendEmail(recipientAddress, "IP Product Sync", emailBody);
+}
+
+export async function updateProductVariation(params: {
+  storeUrl: string;
+  apiKey: string;
+  apiSecret: string;
+  productId: number;
+  variationId: number;
+  stockQuantity?: number;
+  price?: number;
+  published?: boolean;
+}): Promise<{ ok: boolean; status: number }> {
+  const {
+    productId,
+    variationId,
+    price,
+    stockQuantity,
+    published,
+    apiKey,
+    apiSecret,
+    storeUrl,
+  } = params;
+
+  const bodyData: { [key: string]: number | string } = {};
+  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
+  if (price !== undefined) bodyData.regular_price = `${price}`;
+  if (published !== undefined)
+    bodyData.status = published ? "publish" : "private";
+
+  try {
+    const response = await fetch(
+      `${storeUrl}/wp-json/wc/v3/products/${productId}/variations/${variationId}`,
+      {
+        method: "POST",
+        body: JSON.stringify(bodyData),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+        },
+      },
+    );
+
+    return {
+      ok: response.ok,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: INTERNAL_SERVER_ERROR,
+    };
+  }
+}
+
+export async function updateProduct(params: {
+  storeUrl: string;
+  apiKey: string;
+  apiSecret: string;
+  productId: number;
+  stockQuantity?: number;
+  price?: number;
+  published?: boolean;
+  sortOrder?: number;
+}): Promise<{ ok: boolean; status: number }> {
+  const {
+    productId,
+    price,
+    stockQuantity,
+    published,
+    apiKey,
+    apiSecret,
+    storeUrl,
+    sortOrder,
+  } = params;
+
+  const bodyData: { [key: string]: number | string } = {};
+  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
+  if (price !== undefined) bodyData.regular_price = `${price}`;
+  if (published !== undefined)
+    bodyData.status = published ? "publish" : "draft";
+  if (sortOrder !== undefined) bodyData.menu_order = sortOrder;
+
+  try {
+    const response = await fetch(
+      `${storeUrl}/wp-json/wc/v3/products/${productId}`,
+      {
+        method: "POST",
+        body: JSON.stringify(bodyData),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+        },
+      },
+    );
+
+    return {
+      ok: response.ok,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: INTERNAL_SERVER_ERROR,
+    };
+  }
 }

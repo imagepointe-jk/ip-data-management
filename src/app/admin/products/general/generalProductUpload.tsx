@@ -1,10 +1,10 @@
-import { SyncRowData } from "@/components/SyncTable/SyncTable";
-import { validateSyncRowOperation } from "@/components/SyncTable/validation";
-import { AppError } from "@/error";
 import {
   updateProduct,
   updateProductVariation,
-} from "@/fetch/client/woocommerce";
+} from "@/actions/products/products";
+import { SyncRowData } from "@/components/SyncTable/SyncTable";
+import { validateSyncRowOperation } from "@/components/SyncTable/validation";
+import { AppError } from "@/error";
 import { normalizeObjectKeys } from "@/utility/misc";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
