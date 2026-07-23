@@ -13,8 +13,14 @@ export function PendingOrderUploadDisplay({
   pendingUpload,
   validationStatus,
 }: Props) {
-  const { billing, shipping, lineItems, couponCode, customerNote } =
-    pendingUpload;
+  const {
+    billing,
+    shipping,
+    lineItems,
+    couponCode,
+    customerNote,
+    handlingFeeAmount,
+  } = pendingUpload;
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -99,6 +105,10 @@ export function PendingOrderUploadDisplay({
               <div>Coupon Code: {couponCode || "(n/a)"}</div>
               <div>
                 Customer Note: {customerNote ? `"${customerNote}"` : "(n/a)"}
+              </div>
+              <div>
+                Handling Fee Amount:{" "}
+                {handlingFeeAmount ? `$${handlingFeeAmount}` : "(n/a)"}
               </div>
             </div>
           </div>

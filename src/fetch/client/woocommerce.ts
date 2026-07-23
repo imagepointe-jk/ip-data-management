@@ -120,7 +120,14 @@ export async function createOrder(
   data: OrderImportDTO,
 ) {
   const body: any = {};
-  const { billing, shipping, lineItems, customerNote, couponCode } = data;
+  const {
+    billing,
+    shipping,
+    lineItems,
+    customerNote,
+    couponCode,
+    handlingFeeAmount,
+  } = data;
 
   body.billing = {
     first_name: billing.firstName,
@@ -172,6 +179,15 @@ export async function createOrder(
 
   if (customerNote) body.customer_note = customerNote;
   body.status = "processing"; //hardcoded for now
+
+  const metadata: { key: string; value: string }[] = [];
+  if (handlingFeeAmount) {
+    metadata.push({
+      key: "hidden_handling_fee_amount",
+      value: `${handlingFeeAmount}`,
+    });
+  }
+  if (metadata.length > 0) body.meta_data = metadata;
 
   return fetch(`${storeUrl}/wp-json/wc/v3/orders`, {
     method: "POST",

@@ -36,6 +36,7 @@ export const orderImportSchema = z.object({
   ),
   customerNote: z.string().optional(),
   couponCode: z.string().optional(),
+  handlingFeeAmount: z.number().optional(),
 });
 
 export type OrderImportDTO = z.infer<typeof orderImportSchema>;
