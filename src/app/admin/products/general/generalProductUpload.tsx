@@ -1,4 +1,5 @@
 import {
+  createProduct,
   updateProduct,
   updateProductVariation,
 } from "@/actions/products/products";
@@ -9,16 +10,27 @@ import { normalizeObjectKeys } from "@/utility/misc";
 import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
 import { v4 as uuidv4 } from "uuid";
+import {
+  validateId,
+  validateParentId,
+  validateProductType,
+  validatePublishedStatus,
+  validateSku,
+  validateSortOrder,
+  validateStock,
+} from "./validation";
 
 export type ProductSyncRow = {
   syncRowData: SyncRowData;
   data?: {
     id: number;
     parentId?: number;
+    name?: string;
     sku?: string;
     stock?: number;
     published?: boolean;
     sortOrder?: number;
+    type?: string;
   };
 };
 type ProductSyncRowResult = {
@@ -64,24 +76,28 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
 
     const normalized = normalizeObjectKeys(item);
     try {
-      const id = validateId(normalized, i);
+      const operation = validateSyncRowOperation(normalized, i);
+      const id = validateId(normalized, operation, i);
       const sortOrder = validateSortOrder(normalized, i);
       const stock = validateStock(normalized, i);
       const published = validatePublishedStatus(normalized, i);
       const parentId = validateParentId(normalized, i, json);
-      const sku =
-        normalized.sku !== undefined ? `${normalized.sku}` : undefined;
-      const operation = validateSyncRowOperation(normalized, i);
+      const sku = validateSku(normalized, operation, i);
+      const name =
+        normalized.name === undefined ? undefined : `${normalized.name}`;
+      const type = validateProductType(normalized, i);
 
       result.syncRowData.status = "ready";
       result.syncRowData.operation = operation;
       result.data = {
         id,
         sku,
+        name,
         sortOrder,
         published,
         stock,
         parentId,
+        type,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -95,88 +111,6 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
   });
 
   return parsed;
-}
-
-function validateId(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-) {
-  const id = +`${normalizedInputObject.id}`;
-  if (isNaN(id)) throw new Error(`Invalid ID at index ${rowIndex}`);
-
-  return id;
-}
-
-function validateSortOrder(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-) {
-  const sortOrder =
-    normalizedInputObject.order !== undefined
-      ? +`${normalizedInputObject.order}`
-      : undefined;
-  if (sortOrder !== undefined && isNaN(sortOrder))
-    throw new Error(`Invalid "order" value at index ${rowIndex}`);
-
-  return sortOrder;
-}
-
-function validateStock(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-) {
-  const stock =
-    normalizedInputObject.stock !== undefined
-      ? +`${normalizedInputObject.stock}`
-      : undefined;
-  if (stock !== undefined && isNaN(stock))
-    throw new Error(`Invalid "stock" value at index ${rowIndex}`);
-
-  return stock;
-}
-
-function validatePublishedStatus(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-) {
-  const published =
-    normalizedInputObject.published === undefined
-      ? undefined
-      : normalizedInputObject.published === "y"
-        ? true
-        : false;
-  if (
-    normalizedInputObject.published !== undefined &&
-    !["y", "n"].includes(normalizedInputObject.published)
-  )
-    throw new Error(`Invalid "published" value at index ${rowIndex}`);
-
-  return published;
-}
-
-function validateParentId(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-  fullSheetJson: any[],
-) {
-  const parent =
-    normalizedInputObject.parent !== undefined
-      ? fullSheetJson.find((otherItem) => {
-          const otherNormalized = normalizeObjectKeys(otherItem);
-          return otherNormalized.sku === normalizedInputObject.parent;
-        })
-      : undefined;
-
-  if (normalizedInputObject.parent !== undefined && parent === undefined)
-    throw new Error(`Unable to find parent of variation at index ${rowIndex}`);
-
-  //if we get here, either there was no value provided for parent or a parent was found
-  const parentId =
-    parent !== undefined ? +`${normalizeObjectKeys(parent).id}` : undefined;
-  if (parentId !== undefined && isNaN(parentId))
-    throw new Error(`Parent of variation at index ${rowIndex} has invalid ID`);
-
-  return parentId;
 }
 
 export async function syncRow(params: {
@@ -201,36 +135,52 @@ export async function syncRow(params: {
 
   if (!data) return result;
 
-  const { parentId, id, stock, published, sortOrder, sku } = data;
+  const { parentId, id, stock, published, sortOrder, sku, name, type } = data;
   result.id = id;
   if (sku) result.sku = sku;
   const isVariation = parentId !== undefined;
 
-  const response = isVariation
-    ? await updateProductVariation({
-        storeUrl: url,
-        apiKey: key,
-        apiSecret: secret,
-        productId: parentId,
-        variationId: id,
-        stockQuantity: stock,
-        published,
-      })
-    : await updateProduct({
-        storeUrl: url,
-        apiKey: key,
-        apiSecret: secret,
-        productId: id,
-        stockQuantity: stock,
-        published,
-        sortOrder,
-      });
-
-  if (!response.ok) {
-    result.message = `The API returned a ${response.status} status`;
+  if (syncRowData.operation == "create") {
+    const response = await createProduct({
+      storeUrl: url,
+      apiKey: key,
+      apiSecret: secret,
+      sku: `${sku}`,
+      name,
+      type,
+    });
+    if (!response.ok) {
+      result.message = `The API returned a ${response.status} status`;
+    } else {
+      result.message = "";
+      result.success = true;
+    }
   } else {
-    result.message = "";
-    result.success = true;
+    const response = isVariation
+      ? await updateProductVariation({
+          storeUrl: url,
+          apiKey: key,
+          apiSecret: secret,
+          productId: parentId,
+          variationId: id,
+          stockQuantity: stock,
+          published,
+        })
+      : await updateProduct({
+          storeUrl: url,
+          apiKey: key,
+          apiSecret: secret,
+          productId: id,
+          stockQuantity: stock,
+          published,
+          sortOrder,
+        });
+    if (!response.ok) {
+      result.message = `The API returned a ${response.status} status`;
+    } else {
+      result.message = "";
+      result.success = true;
+    }
   }
 
   return result;

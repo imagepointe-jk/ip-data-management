@@ -265,3 +265,51 @@ export async function updateProduct(params: {
     };
   }
 }
+
+export async function createProduct(params: {
+  storeUrl: string;
+  apiKey: string;
+  apiSecret: string;
+  name?: string;
+  sku: string;
+  type?: string;
+}): Promise<{ ok: boolean; status: number; message?: string }> {
+  const { apiKey, apiSecret, storeUrl, sku, type, name } = params;
+
+  const body = {
+    name: name || "New Product",
+    sku,
+    type: type || "simple",
+  };
+
+  try {
+    const response = await fetch(`${storeUrl}/wp-json/wc/v3/products`, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+      },
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        status: response.status,
+        message: json.message || "No error message found",
+      };
+    }
+
+    return {
+      ok: true,
+      status: OK,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: INTERNAL_SERVER_ERROR,
+    };
+  }
+}

@@ -4,10 +4,11 @@ import { CSSProperties, ReactNode } from "react";
 import styles from "@/styles/SyncTable/syncTable.module.css";
 import { LoadingIndicator } from "../LoadingIndicator";
 
+export type SyncRowOperation = "create" | "update";
 export type SyncRowData = {
   rowId: string;
   status: "ready" | "processing" | "invalid" | "error" | "done";
-  operation?: "create" | "update";
+  operation?: SyncRowOperation;
   resultMessage?: string;
 };
 type HasSyncRowData = {
