@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       comments,
       local,
       phone,
+      state,
     } = quoteRequest;
 
     //first create the quote request in the database using empty cart data
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
       company,
       local: local || null,
       phone: phone || null,
+      state,
       comments: comments || null,
       cartJson: "no cart data yet",
     });

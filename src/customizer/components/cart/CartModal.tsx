@@ -22,7 +22,7 @@ export function CartModal() {
     parentWindow: { pushGtmEvent },
   } = useIframe();
   const cart = useSelector((store: StoreType) => store.cart.present);
-  const { firstName, lastName, email, company, local, phone, comments } =
+  const { firstName, lastName, email, company, local, phone, state, comments } =
     useSelector((store: StoreType) => store.cart.present.contactInfo);
 
   function gtmNotify() {
@@ -43,6 +43,7 @@ export function CartModal() {
         company,
         local,
         phone,
+        state,
         comments,
         cart,
       });

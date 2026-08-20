@@ -170,6 +170,7 @@ model CustomProductRequest {
   company   String
   local     String?
   phone     String?
+  state     String?
   comments  String?
   cartJson  String
   createdAt DateTime @default(now())

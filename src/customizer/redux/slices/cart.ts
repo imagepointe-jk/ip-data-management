@@ -16,6 +16,7 @@ import {
   setLastName as setLastNameFn,
   setLocal as setLocalFn,
   setPhone as setPhoneFn,
+  setState as setStateFn,
 } from "@/customizer/redux/slices/reducers/cart/cart";
 import {
   addText as addTextFn,
@@ -33,6 +34,7 @@ const initialState: CartState = {
     company: "",
     local: "",
     phone: "",
+    state: "",
     comments: "",
   },
 };
@@ -59,6 +61,7 @@ export const cartSlice = createSlice({
     setCompany: setCompanyFn,
     setLocal: setLocalFn,
     setPhone: setPhoneFn,
+    setState: setStateFn,
     setComments: setCommentsFn,
   },
 });
@@ -83,4 +86,5 @@ export const {
   setLastName,
   setLocal,
   setPhone,
+  setState,
 } = cartSlice.actions;

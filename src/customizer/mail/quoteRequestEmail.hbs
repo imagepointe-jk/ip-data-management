@@ -16,6 +16,7 @@
       <li>Company: {{company}}</li>
       <li>Local: {{#if local}}{{local}}{{else}}(n/a){{/if}}</li>
       <li>Phone: {{#if phone}}{{phone}}{{else}}(n/a){{/if}}</li>
+      <li>State: {{#if state}}{{state}}{{else}}(n/a){{/if}}</li>
       <li>Comments: {{#if comments}}{{comments}}{{else}}(n/a){{/if}}</li>
       <li>Design Numbers: {{designNames}}</li>
     </ul>
@@ -52,25 +53,25 @@
                 <td
                   style="border: 1px solid black; padding: 8px; text-align: right;"
                 >2XL:
-                  {{quantities.2xl}}</td>
+                  {{quantities.[2xl]}}</td>
                 <td
                   style="border: 1px solid black; padding: 8px; text-align: right;"
                 >3XL:
-                  {{quantities.3xl}}</td>
+                  {{quantities.[3xl]}}</td>
               </tr>
               <tr>
                 <td
                   style="border: 1px solid black; padding: 8px; text-align: right;"
                 >4XL:
-                  {{quantities.4xl}}</td>
+                  {{quantities.[4xl]}}</td>
                 <td
                   style="border: 1px solid black; padding: 8px; text-align: right;"
                 >5XL:
-                  {{quantities.5xl}}</td>
+                  {{quantities.[5xl]}}</td>
                 <td
                   style="border: 1px solid black; padding: 8px; text-align: right;"
                 >6XL:
-                  {{quantities.6xl}}</td>
+                  {{quantities.[6xl]}}</td>
               </tr>
             </table>
             {{#each views}}

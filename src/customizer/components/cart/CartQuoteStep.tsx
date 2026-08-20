@@ -8,6 +8,7 @@ import {
   setLastName,
   setLocal,
   setPhone,
+  setState,
 } from "@/customizer/redux/slices/cart";
 import { StoreType } from "@/customizer/redux/store";
 import styles from "@/styles/customizer/CustomProductDesigner/cart.module.css";
@@ -22,7 +23,7 @@ type Props = {
 };
 export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
   const dispatch = useDispatch();
-  const { firstName, lastName, email, company, local, phone, comments } =
+  const { firstName, lastName, email, company, local, phone, state, comments } =
     useSelector((store: StoreType) => store.cart.present.contactInfo);
 
   return (
@@ -109,6 +110,20 @@ export function CartQuoteStep({ showError, onClickBack, submitting }: Props) {
             id="phone"
             value={phone}
             onChange={(e) => dispatch(setPhone(e.target.value))}
+          />
+        </div>
+        <div>
+          <label htmlFor="state" className={stylesForm["input-label"]}>
+            State/Region
+          </label>
+          <input
+            type="text"
+            name="state"
+            className={stylesForm["form-input"]}
+            id="state"
+            value={state}
+            onChange={(e) => dispatch(setState(e.target.value))}
+            required
           />
         </div>
         <div className={styles["comments-container"]}>
