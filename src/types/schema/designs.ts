@@ -47,6 +47,7 @@ export const quoteRequestSchema = z.object({
   email: z.string().email(),
   phone: z.number(),
   union: z.string(),
+  state: z.string(),
   comments: z.string(),
   items: z.array(quoteRequestItemSchema),
 });

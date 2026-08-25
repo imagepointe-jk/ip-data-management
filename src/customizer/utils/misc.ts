@@ -18,7 +18,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 export function createLocationFrameInlineStyles(
-  location: DecorationLocationDTO
+  location: DecorationLocationDTO,
 ) {
   return {
     width: `${location.width * 100}%`,
@@ -32,18 +32,18 @@ export function createLocationFrameInlineStyles(
 export function createInitialState(
   products: PopulatedProductSettings[],
   initialProductId: number,
-  initialVariationId: number
+  initialVariationId: number,
 ) {
   //this becomes the first product added to the user's cart
   //currently this just picks the first one from our customizer db
   //will eventually need to be whatever id was specified in the URL
   const initialProduct = products.find(
-    (product) => product.wooCommerceId === initialProductId
+    (product) => product.wooCommerceId === initialProductId,
   );
   if (!initialProduct) throw new Error("No initial product");
 
   const initialVariation = initialProduct.variations.find(
-    (variation) => variation.id === initialVariationId
+    (variation) => variation.id === initialVariationId,
   );
   if (!initialVariation) throw new Error("No initial variation");
 
@@ -118,6 +118,7 @@ export function createInitialState(
       company: "",
       local: "",
       phone: "",
+      state: "",
       comments: "",
     },
   };
@@ -139,7 +140,7 @@ export function countCartItems(cart: CartState) {
 //counts the total texts, artworks, etc. on a variation.
 //if 0, the variation has no design.
 export function countVariationDesignObjects(
-  variation: CartStateProductVariation & { views: CartStateProductView[] }
+  variation: CartStateProductVariation & { views: CartStateProductView[] },
 ) {
   let sum = 0;
   for (const view of variation.views) {
@@ -201,10 +202,10 @@ function cloneObjectData(objectData: PlacedObject) {
 
 export function createProductVariationForState(
   variationId: number,
-  targetProductData: PopulatedProductSettings
+  targetProductData: PopulatedProductSettings,
 ) {
   const variationData = targetProductData.variations.find(
-    (variation) => variation.id === variationId
+    (variation) => variation.id === variationId,
   );
   if (!variationData) throw new Error(`Variation id ${variationId} not found`);
 

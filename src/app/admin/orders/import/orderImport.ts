@@ -1,0 +1,256 @@
+import { AppError } from "@/error";
+import { getAllProducts } from "@/fetch/client/woocommerce";
+import { OrderImportDTO } from "@/types/schema/orders";
+import { WooCommerceProduct } from "@/types/schema/woocommerce";
+import { validateOrderImportSheet } from "@/types/validations/orders";
+import { parseWooCommerceProductsMultiple } from "@/types/validations/woo";
+import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
+import { BAD_REQUEST } from "@/utility/statusCodes";
+import { getProductQuantity } from "@/utility/woocommerce";
+
+//TODO: line item validation has been skipped due to time constraints; come back to do this properly when possible
+type ValidationStatus = "ok" | "missing";
+export type OrderImportValidationStatus = {
+  id?: string;
+  overallStatus: ValidationStatus;
+  shipping: {
+    firstName: ValidationStatus;
+    lastName: ValidationStatus;
+    addressLine1: ValidationStatus;
+    city: ValidationStatus;
+    state: ValidationStatus;
+    zip: ValidationStatus;
+  };
+  billing: {
+    firstName: ValidationStatus;
+    lastName: ValidationStatus;
+    email: ValidationStatus;
+    addressLine1: ValidationStatus;
+    city: ValidationStatus;
+    state: ValidationStatus;
+    zip: ValidationStatus;
+  };
+  lineItems: {
+    sku: string;
+    validationStatus: ValidationStatus;
+  }[];
+};
+export type PendingOrderUploadData = {
+  pendingUploads: OrderImportDTO[];
+  validationStatuses: OrderImportValidationStatus[];
+  warnings: string[];
+};
+export type UploadResult = {
+  payload: OrderImportDTO;
+  message: string;
+  ok: boolean;
+};
+
+export async function createPendingOrderUploadData(
+  formData: FormData,
+): Promise<PendingOrderUploadData> {
+  //get data from the form
+  const file = formData.get("file");
+  const url = `${formData.get("url")}`;
+  const key = `${formData.get("key")}`;
+  const secret = `${formData.get("secret")}`;
+  if (!(file instanceof File) || file.size === 0) {
+    throw new AppError({
+      type: "Client Request",
+      clientMessage: "Invalid or missing file.",
+      serverMessage: "Invalid or missing file.",
+      statusCode: BAD_REQUEST,
+    });
+  }
+
+  //get and parse json from form data
+  const arrayBuffer = await file.arrayBuffer();
+  const ordersSheet = getSheetFromBuffer(Buffer.from(arrayBuffer), "orders");
+  const ordersJson = sheetToJson(ordersSheet);
+
+  const lineItemsSheet = getSheetFromBuffer(
+    Buffer.from(arrayBuffer),
+    "line items",
+  );
+  const lineItemsJson = sheetToJson(lineItemsSheet);
+
+  const parsedOrders = validateOrderImportSheet(ordersJson, lineItemsJson);
+
+  //get products to check against the ones in the import sheet
+  const response = await getAllProducts(url, key, secret);
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(
+      `Response code ${response.status} while retrieving product data from the store. Message from the server: ${json.message || "(no message found"}`,
+    );
+  }
+  const parsedProducts = parseWooCommerceProductsMultiple(json);
+  populateProductIds(parsedOrders, parsedProducts);
+
+  //create a validation status for each order
+  const orderValidationStatuses = parsedOrders.map((order) =>
+    checkOrderValidationStatus(order),
+  );
+
+  //return the orders to be uploaded as well as the validation statuses of each
+  return {
+    pendingUploads: parsedOrders,
+    validationStatuses: orderValidationStatuses,
+    warnings: generateImportWarnings(parsedOrders, parsedProducts),
+  };
+}
+
+function generateImportWarnings(
+  orders: OrderImportDTO[],
+  products: WooCommerceProduct[],
+) {
+  const warnings: string[] = [];
+  //the sum of all line item quantities for each SKU represented in the import (e.g. "SHIRT1234 has a total of 123 units requested in this import")
+  //this allows us to check if there's sufficient stock of each SKU in WooCommerce to accommodate all line items in the import
+  const totalsRequestedForSKUs = new Map<string, number>();
+
+  for (const order of orders) {
+    for (const lineItem of order.lineItems) {
+      const { sku, quantity } = lineItem;
+      if (!sku || !quantity) continue;
+
+      const currentTotal = totalsRequestedForSKUs.get(sku) || 0;
+      const newTotal = currentTotal + quantity;
+      totalsRequestedForSKUs.set(sku, newTotal);
+    }
+  }
+
+  for (const pair of totalsRequestedForSKUs) {
+    const sku = pair[0];
+    const totalRequested = pair[1];
+    const quantityOnStore = getProductQuantity(sku, products);
+    if (quantityOnStore < totalRequested) {
+      warnings.push(
+        `WARNING: Insufficient stock. A total of ${totalRequested} of ${sku} are requested by this import, but the stock on the store is only ${quantityOnStore}`,
+      );
+    }
+  }
+
+  return warnings;
+}
+
+function populateProductIds(
+  pendingOrders: OrderImportDTO[],
+  existingProducts: WooCommerceProduct[],
+) {
+  for (const order of pendingOrders) {
+    for (const lineItem of order.lineItems) {
+      //are there any products where their main SKU matches the line item's SKU? (this should only happen if the line item is a non-variation product)
+      const matchingProduct = existingProducts.find(
+        (product) =>
+          product.sku.toLocaleLowerCase() === lineItem.sku?.toLocaleLowerCase(),
+      );
+      if (matchingProduct) {
+        lineItem.name = matchingProduct.name;
+        lineItem.productId = matchingProduct.id;
+        continue;
+      }
+
+      //if we get here, it's either nonexistent or a variation product; try to use SKU to find a product ID and a variation ID
+      const productWithMatchingVariation = existingProducts.find(
+        (product) =>
+          !!product.variations.find(
+            (variation) =>
+              variation.sku?.toLocaleLowerCase() ===
+              lineItem.sku?.toLocaleLowerCase(),
+          ),
+      );
+      if (!productWithMatchingVariation) continue;
+
+      lineItem.productId = productWithMatchingVariation.id;
+      lineItem.name = `${productWithMatchingVariation.name} (variation)`;
+      const matchingVariation = productWithMatchingVariation.variations.find(
+        (variation) =>
+          variation.sku?.toLocaleLowerCase() ===
+          lineItem.sku?.toLocaleLowerCase(),
+      );
+      if (!matchingVariation) continue;
+
+      lineItem.variationId = matchingVariation.id;
+    }
+  }
+}
+
+export function checkOrderValidationStatus(
+  pendingOrder: OrderImportDTO,
+  // existingProducts: WooCommerceProduct[],
+): OrderImportValidationStatus {
+  //validate each line item
+  // const lineItemsValidationStatuses: {
+  //   sku: string;
+  //   validationStatus: ValidationStatus;
+  // }[] = pendingOrder.lineItems.map((lineItem) => {
+  //   const hasSku = lineItem.sku !== undefined;
+  //   const skuFoundInAnyProductOrVariation = !!existingProducts.find(
+  //     (product) => {
+  //       const matchesMainSku =
+  //         product.sku.toLocaleLowerCase() === lineItem.sku?.toLocaleLowerCase();
+  //       if (matchesMainSku) return true;
+
+  //       return !!product.variations.find(
+  //         (variation) =>
+  //           variation.sku?.toLocaleLowerCase() ===
+  //           lineItem.sku?.toLocaleLowerCase(),
+  //       );
+  //     },
+  //   );
+
+  //   return {
+  //     sku: `${lineItem.sku}`,
+  //     validationStatus:
+  //       hasSku && skuFoundInAnyProductOrVariation ? "ok" : "missing",
+  //   };
+  // });
+  const lineItemsValidationStatuses: {
+    sku: string;
+    validationStatus: ValidationStatus;
+  }[] = pendingOrder.lineItems.map((lineItem) => ({
+    sku: `${lineItem.sku}`,
+    validationStatus: lineItem.productId === undefined ? "missing" : "ok",
+  })); //ran out of time; do proper line item validation at some point
+
+  //validate the order fields, and include the validated line items
+  const orderValidationStatus: OrderImportValidationStatus = {
+    id: pendingOrder.id,
+    overallStatus: "ok", //start off as ok, but will be downgraded if any of the below are a lower status
+    shipping: {
+      firstName: pendingOrder.shipping.firstName ? "ok" : "missing",
+      lastName: pendingOrder.shipping.lastName ? "ok" : "missing",
+      addressLine1: pendingOrder.shipping.addressLine1 ? "ok" : "missing",
+      city: pendingOrder.shipping.city ? "ok" : "missing",
+      state: pendingOrder.shipping.state ? "ok" : "missing",
+      zip: pendingOrder.shipping.zip ? "ok" : "missing",
+    },
+    billing: {
+      firstName: pendingOrder.billing.firstName ? "ok" : "missing",
+      lastName: pendingOrder.billing.lastName ? "ok" : "missing",
+      email: pendingOrder.billing.email ? "ok" : "missing",
+      addressLine1: pendingOrder.billing.addressLine1 ? "ok" : "missing",
+      city: pendingOrder.billing.city ? "ok" : "missing",
+      state: pendingOrder.billing.state ? "ok" : "missing",
+      zip: pendingOrder.billing.zip ? "ok" : "missing",
+    },
+    lineItems: lineItemsValidationStatuses,
+  };
+
+  //decide the overall status
+  if (pendingOrder.lineItems.length === 0)
+    orderValidationStatus.overallStatus = "missing";
+  for (const [_, value] of Object.entries(orderValidationStatus.shipping)) {
+    if (value !== "ok") orderValidationStatus.overallStatus = "missing";
+  }
+  for (const [_, value] of Object.entries(orderValidationStatus.billing)) {
+    if (value !== "ok") orderValidationStatus.overallStatus = "missing";
+  }
+  const lineItemIssueCount = orderValidationStatus.lineItems.filter(
+    (item) => item.validationStatus !== "ok",
+  ).length;
+  if (lineItemIssueCount > 0) orderValidationStatus.overallStatus = "missing";
+
+  return orderValidationStatus;
+}

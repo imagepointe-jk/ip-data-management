@@ -107,6 +107,7 @@ export const cartStateSchema = z.object({
     company: z.string(),
     local: z.string(),
     phone: z.string(),
+    state: z.string(),
     comments: z.string(),
   }),
   createdInVersion: z.string().optional(),
@@ -119,6 +120,7 @@ export const quoteRequestSchema = z.object({
   company: z.string(),
   local: z.string().optional(),
   phone: z.string().optional(),
+  state: z.string(),
   comments: z.string().optional(),
   cart: cartStateSchema,
 });

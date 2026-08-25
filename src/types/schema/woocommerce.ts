@@ -1,11 +1,18 @@
 import { z } from "zod";
 import { DiffStatus } from "./misc";
 
+const wooCommerceProductVariationSchema = z.object({
+  id: z.number(),
+  sku: z.string().nullable(),
+  stock_quantity: z.number().nullable(),
+});
+
 export const wooCommerceProductSchema = z.object({
   id: z.number(),
   name: z.string(),
   sku: z.string(),
   weight: z.string(),
+  stock_quantity: z.number().nullable(),
   images: z.array(
     z.object({
       src: z.string(),
@@ -13,6 +20,7 @@ export const wooCommerceProductSchema = z.object({
     }),
   ),
   permalink: z.string(),
+  variations: z.array(wooCommerceProductVariationSchema),
 });
 
 export const wooCommerceDAProductVariationSchema = z.object({

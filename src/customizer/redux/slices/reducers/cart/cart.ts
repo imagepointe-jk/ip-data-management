@@ -14,7 +14,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 
 export function setCartProducts(
   state: CartState,
-  action: PayloadAction<CartState>
+  action: PayloadAction<CartState>,
 ) {
   state.products = action.payload.products;
 }
@@ -24,22 +24,22 @@ export function addProductVariation(
   action: PayloadAction<{
     variationId: number;
     targetProductData: PopulatedProductSettings;
-  }>
+  }>,
 ) {
   const { targetProductData, variationId } = action.payload;
 
   const existingVariation = findVariationInCart(state, variationId);
   if (existingVariation)
     throw new Error(
-      `Tried to add additional instance of variation ${variationId}`
+      `Tried to add additional instance of variation ${variationId}`,
     );
 
   const newVariation = createProductVariationForState(
     variationId,
-    targetProductData
+    targetProductData,
   );
   const productInState = state.products.find(
-    (product) => product.id === targetProductData.id
+    (product) => product.id === targetProductData.id,
   )!;
 
   productInState?.variations.push(newVariation);
@@ -47,18 +47,18 @@ export function addProductVariation(
 
 export function removeProductVariation(
   state: CartState,
-  action: PayloadAction<{ targetProductId: number; variationId: number }>
+  action: PayloadAction<{ targetProductId: number; variationId: number }>,
 ) {
   const { targetProductId, variationId } = action.payload;
 
   const productInState = state.products.find(
-    (product) => product.id === targetProductId
+    (product) => product.id === targetProductId,
   );
   if (!productInState)
     throw new Error(`Product id ${targetProductId} not found in state`);
 
   productInState.variations = productInState.variations.filter(
-    (variation) => variation.id !== variationId
+    (variation) => variation.id !== variationId,
   );
 }
 
@@ -77,7 +77,7 @@ export function changeProductVariationQuantities(
       ["5xl"]?: number;
       ["6xl"]?: number;
     };
-  }>
+  }>,
 ) {
   const { targetVariationId, newQuantities } = action.payload;
   const variationInState = findVariationInCart(state, targetVariationId);
@@ -98,7 +98,7 @@ export function changeProductVariationQuantities(
 
 export function pruneCart(
   state: CartState,
-  action: PayloadAction<{ variationIdToPreserve?: number }>
+  action: PayloadAction<{ variationIdToPreserve?: number }>,
 ) {
   const { variationIdToPreserve } = action.payload;
 
@@ -107,7 +107,7 @@ export function pruneCart(
   for (const product of state.products) {
     product.variations = product.variations.filter((variation) => {
       const hasAnyDesign = !!variation.views.find(
-        (view) => view.artworks.length > 0 || view.texts.length > 0
+        (view) => view.artworks.length > 0 || view.texts.length > 0,
       );
       return variation.id === variationIdToPreserve || hasAnyDesign;
     });
@@ -116,7 +116,7 @@ export function pruneCart(
 
 export function deleteObjectFromState(
   state: CartState,
-  action: PayloadAction<{ guid: string }>
+  action: PayloadAction<{ guid: string }>,
 ) {
   const { guid } = action.payload;
   const viewWithArtwork = findViewWithArtworkInCart(state, guid);
@@ -124,11 +124,11 @@ export function deleteObjectFromState(
 
   if (viewWithArtwork) {
     viewWithArtwork.artworks = viewWithArtwork.artworks.filter(
-      (artwork) => artwork.objectData.editorGuid !== guid
+      (artwork) => artwork.objectData.editorGuid !== guid,
     );
   } else if (viewWithText) {
     viewWithText.texts = viewWithText.texts.filter(
-      (text) => text.objectData.editorGuid !== guid
+      (text) => text.objectData.editorGuid !== guid,
     );
   } else console.error("Guid not found for delete operation");
 }
@@ -141,13 +141,13 @@ export function copyDesign(
   action: PayloadAction<{
     sourceVariationId: number;
     targetVariationId: number;
-  }>
+  }>,
 ) {
   const { sourceVariationId, targetVariationId } = action.payload;
   const sourceVariation = findVariationInCart(state, sourceVariationId);
   if (!sourceVariation)
     throw new Error(
-      `Source variation id ${sourceVariationId} not found in state`
+      `Source variation id ${sourceVariationId} not found in state`,
     );
 
   const targetVariation = findVariationInCart(state, targetVariationId);
@@ -160,12 +160,12 @@ export function copyDesign(
     const sourceView = sourceVariation.views[i];
     if (!sourceView) {
       console.error(
-        `No source view index ${i} corresponding to target view index ${i}`
+        `No source view index ${i} corresponding to target view index ${i}`,
       );
       continue;
     }
     targetView.artworks = sourceView.artworks.map((artwork) =>
-      cloneArtwork(artwork)
+      cloneArtwork(artwork),
     );
     targetView.texts = sourceView.texts.map((text) => cloneText(text));
   }
@@ -193,6 +193,10 @@ export function setLocal(state: CartState, action: PayloadAction<string>) {
 
 export function setPhone(state: CartState, action: PayloadAction<string>) {
   state.contactInfo.phone = action.payload;
+}
+
+export function setState(state: CartState, action: PayloadAction<string>) {
+  state.contactInfo.state = action.payload;
 }
 
 export function setComments(state: CartState, action: PayloadAction<string>) {
