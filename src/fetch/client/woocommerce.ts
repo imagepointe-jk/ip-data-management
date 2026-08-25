@@ -60,26 +60,26 @@ export async function getOrderApprovalProduct(
 //   );
 // }
 
-// export async function updateProduct(params: {
-//   storeUrl: string;
-//   apiKey: string;
-//   apiSecret: string;
-//   productId: number;
-//   stockQuantity?: number;
-//   price?: number;
-//   published?: boolean;
-//   sortOrder?: number;
-// }) {
-//   const {
-//     productId,
-//     price,
-//     stockQuantity,
-//     published,
-//     apiKey,
-//     apiSecret,
-//     storeUrl,
-//     sortOrder,
-//   } = params;
+export async function updateProduct(params: {
+  storeUrl: string;
+  apiKey: string;
+  apiSecret: string;
+  productId: number;
+  stockQuantity?: number;
+  price?: number;
+  published?: boolean;
+  sortOrder?: number;
+}) {
+  const {
+    productId,
+    price,
+    stockQuantity,
+    published,
+    apiKey,
+    apiSecret,
+    storeUrl,
+    sortOrder,
+  } = params;
 
   const bodyData: { [key: string]: number | string } = {};
   if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
