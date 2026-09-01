@@ -11,6 +11,9 @@ import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
 import { sendEmail } from "@/utility/mail";
+import { WooCommerceProduct } from "@/types/schema/woocommerce";
+import { parseWooCommerceProduct } from "@/types/validations/woo";
+import { inspect } from "util";
 
 export async function startSync(formData: FormData) {
   const file = formData.get("file");
@@ -273,13 +276,30 @@ export async function createProduct(params: {
   name?: string;
   sku: string;
   type?: string;
-}): Promise<{ ok: boolean; status: number; message?: string }> {
-  const { apiKey, apiSecret, storeUrl, sku, type, name } = params;
+  attributes?: { name: string; options: string[] }[];
+}): Promise<{
+  ok: boolean;
+  status: number;
+  message?: string;
+  createdProduct?: WooCommerceProduct;
+}> {
+  const { apiKey, apiSecret, storeUrl, sku, type, name, attributes } = params;
+
+  const attributesToUse = attributes
+    ? attributes.map((item) => ({
+        id: 0,
+        name: item.name,
+        options: item.options,
+        visible: true,
+        variation: true,
+      }))
+    : undefined;
 
   const body = {
     name: name || "New Product",
     sku,
     type: type || "simple",
+    attributes: attributesToUse,
   };
 
   try {
@@ -305,6 +325,65 @@ export async function createProduct(params: {
     return {
       ok: true,
       status: OK,
+      createdProduct: parseWooCommerceProduct(json),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: INTERNAL_SERVER_ERROR,
+    };
+  }
+}
+
+export async function createProductVariation(params: {
+  storeUrl: string;
+  apiKey: string;
+  apiSecret: string;
+  sku: string;
+  parentId: number;
+  attributes: { name: string; option: string }[];
+}): Promise<{
+  ok: boolean;
+  status: number;
+  message?: string;
+  createdId?: number;
+}> {
+  const { apiKey, apiSecret, storeUrl, sku, parentId, attributes } = params;
+
+  const body = {
+    sku,
+    attributes,
+  };
+
+  console.log(inspect(body, true, null));
+
+  try {
+    const response = await fetch(
+      `${storeUrl}/wp-json/wc/v3/products/${parentId}/variations`,
+      {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+        },
+      },
+    );
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        status: response.status,
+        message: json.message || "No error message found",
+      };
+    }
+
+    return {
+      ok: true,
+      status: OK,
+      createdId: +`${json.id}`,
     };
   } catch (error) {
     return {

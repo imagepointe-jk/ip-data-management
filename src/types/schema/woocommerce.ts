@@ -5,6 +5,24 @@ const wooCommerceProductVariationSchema = z.object({
   id: z.number(),
   sku: z.string().nullable(),
   stock_quantity: z.number().nullable(),
+  attributes: z
+    .array(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        slug: z.string().optional(),
+        option: z.string().optional(),
+      }),
+    )
+    .optional(),
+});
+
+const wooCommerceProductAttributeSchema = z.object({
+  id: z.number(),
+  name: z.string().optional(),
+  slug: z.string().optional(),
+  variation: z.boolean(),
+  options: z.array(z.string()).optional(),
 });
 
 export const wooCommerceProductSchema = z.object({
@@ -21,6 +39,7 @@ export const wooCommerceProductSchema = z.object({
   ),
   permalink: z.string(),
   variations: z.array(wooCommerceProductVariationSchema),
+  attributes: z.array(wooCommerceProductAttributeSchema).optional(),
 });
 
 export const wooCommerceDAProductVariationSchema = z.object({

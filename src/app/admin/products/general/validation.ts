@@ -60,36 +60,6 @@ export function validatePublishedStatus(
   return published;
 }
 
-export function validateParentId(
-  normalizedInputObject: { [key: string]: any },
-  rowIndex: number,
-  fullSheetJson: any[],
-) {
-  const parentSKU =
-    typeof normalizedInputObject.parent === "string"
-      ? `${normalizedInputObject.parent}`
-      : undefined;
-  if (parentSKU === undefined) return undefined; //no parent SKU given, so no parent ID to look for
-
-  const parent = fullSheetJson.find((otherItem) => {
-    const otherNormalized = normalizeObjectKeys(otherItem);
-    return otherNormalized.sku === parentSKU;
-  });
-
-  if (parent === undefined)
-    throw new Error(`Unable to find parent of variation at index ${rowIndex}`);
-
-  //if we get here, a parent was found
-  const normalizedParent = normalizeObjectKeys(parent);
-  if (normalizedParent.operation === "create") return undefined; //we're creating the parent during this import, so it won't have an ID yet (and we don't need it to)
-
-  const parentId = +`${normalizedParent.id}`;
-  if (isNaN(parentId))
-    throw new Error(`Parent of variation at index ${rowIndex} has invalid ID`);
-
-  return parentId;
-}
-
 export function validateProductType(
   normalizedInputObject: { [key: string]: any },
   rowIndex: number,

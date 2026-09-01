@@ -4,6 +4,7 @@ import SyncTable from "@/components/SyncTable/SyncTable";
 import { FormEvent, useState } from "react";
 import {
   createProductSyncRows,
+  getServerContext,
   ProductSyncRow,
   syncRow,
 } from "./generalProductUpload";
@@ -47,15 +48,29 @@ export function GeneralProductUploadForm() {
     const secret = `${formData.get("secret")}`;
 
     setUploadStatus("processing");
+    const serverContext = await getServerContext({ url, key, secret });
+    console.log(`retrieved ${serverContext.length} existing products`);
+    console.log(serverContext);
+    const sortedRows = syncRows.toSorted((a) =>
+      a.data?.parentSku === undefined ? -1 : 1,
+    );
 
-    for (const row of syncRows) {
+    for (const row of sortedRows) {
       const { rowId, status } = row.syncRowData;
       if (status === "invalid" || status === "error") continue;
 
       try {
         updateExistingSyncRow(rowId, "processing");
 
-        const result = await syncRow({ url, key, secret, row });
+        const result = await syncRow({
+          url,
+          key,
+          secret,
+          row,
+          allRows: sortedRows,
+          // newRecordsSoFar,
+          serverContext,
+        });
 
         if (!result.success) {
           updateExistingSyncRow(rowId, "error", result.message);
@@ -155,8 +170,8 @@ export function GeneralProductUploadForm() {
             headerName: "Published",
           },
           {
-            createCell: (item) => item.data?.sku,
-            headerName: "SKU",
+            createCell: (item) => item.data?.name,
+            headerName: "Name",
           },
           {
             createCell: (item) => item.data?.sortOrder,
