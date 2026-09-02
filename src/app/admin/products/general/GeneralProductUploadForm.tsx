@@ -49,8 +49,6 @@ export function GeneralProductUploadForm() {
 
     setUploadStatus("processing");
     const serverContext = await getServerContext({ url, key, secret });
-    console.log(`retrieved ${serverContext.length} existing products`);
-    console.log(serverContext);
     const sortedRows = syncRows.toSorted((a) =>
       a.data?.parentSku === undefined ? -1 : 1,
     );
@@ -68,7 +66,6 @@ export function GeneralProductUploadForm() {
           secret,
           row,
           allRows: sortedRows,
-          // newRecordsSoFar,
           serverContext,
         });
 
@@ -160,18 +157,27 @@ export function GeneralProductUploadForm() {
       )}
       <SyncTable
         dataset={syncRows}
+        style={{ width: "2250px" }}
         columns={[
           {
             createCell: (item) => item.data?.sku,
             headerName: "SKU",
+            className: styles["column-medium"],
           },
           {
-            createCell: (item) => item.data?.published,
+            createCell: (item) => `${item.data?.published}`,
             headerName: "Published",
+            className: styles["column-small"],
           },
           {
             createCell: (item) => item.data?.name,
             headerName: "Name",
+            className: styles["column-medium"],
+          },
+          {
+            createCell: (item) => item.data?.description,
+            headerName: "Description",
+            className: styles["column-large"],
           },
           {
             createCell: (item) => item.data?.sortOrder,
@@ -181,6 +187,36 @@ export function GeneralProductUploadForm() {
           {
             createCell: (item) => item.data?.stock,
             headerName: "Stock",
+            className: styles["column-small"],
+          },
+          {
+            createCell: (item) => item.data?.lowStockAmount,
+            headerName: "Low Stock Amount",
+            className: styles["column-medium"],
+          },
+          {
+            createCell: (item) => item.data?.weight,
+            headerName: "Weight",
+            className: styles["column-small"],
+          },
+          {
+            createCell: (item) => `${item.data?.manageStock}`,
+            headerName: "Manage Stock?",
+            className: styles["column-medium"],
+          },
+          {
+            createCell: (item) => `$${item.data?.retailPrice?.toFixed(2)}`,
+            headerName: "Retail Price",
+            className: styles["column-small"],
+          },
+          {
+            createCell: (item) => `$${item.data?.costOfGood?.toFixed(2)}`,
+            headerName: "Cost of Good",
+            className: styles["column-small"],
+          },
+          {
+            createCell: (item) => item.data?.taxClass,
+            headerName: "Tax Class",
             className: styles["column-small"],
           },
         ]}

@@ -1,3 +1,11 @@
 .column-small {
-  width: 75px;
+  width: 90px;
+}
+
+.column-medium {
+  width: 150px;
+}
+
+.column-large {
+  width: 350px;
 }

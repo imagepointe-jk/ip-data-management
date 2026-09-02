@@ -273,9 +273,20 @@ export async function createProduct(params: {
   storeUrl: string;
   apiKey: string;
   apiSecret: string;
-  name?: string;
-  sku: string;
   type?: string;
+  description?: string;
+  published?: boolean;
+  sortOrder?: number;
+  parentSku?: string;
+  name?: string;
+  sku?: string;
+  retailPrice?: number;
+  costOfGood?: number;
+  stock?: number;
+  lowStockAmount?: number;
+  manageStock?: boolean;
+  weight?: number;
+  taxClass?: string;
   attributes?: { name: string; options: string[] }[];
 }): Promise<{
   ok: boolean;
@@ -283,7 +294,25 @@ export async function createProduct(params: {
   message?: string;
   createdProduct?: WooCommerceProduct;
 }> {
-  const { apiKey, apiSecret, storeUrl, sku, type, name, attributes } = params;
+  const {
+    apiKey,
+    apiSecret,
+    storeUrl,
+    sku,
+    type,
+    name,
+    description,
+    published,
+    sortOrder,
+    weight,
+    taxClass,
+    attributes,
+    costOfGood,
+    lowStockAmount,
+    manageStock,
+    retailPrice,
+    stock,
+  } = params;
 
   const attributesToUse = attributes
     ? attributes.map((item) => ({
@@ -295,12 +324,35 @@ export async function createProduct(params: {
       }))
     : undefined;
 
-  const body = {
+  const body: any = {
     name: name || "New Product",
+    description,
+    status:
+      published === true
+        ? "publish"
+        : published === false
+          ? "draft"
+          : undefined,
     sku,
     type: type || "simple",
+    manage_stock: manageStock || false,
     attributes: attributesToUse,
+    menu_order: sortOrder !== undefined ? sortOrder : 0,
+    stock_quantity: stock !== undefined ? stock : 0,
+    low_stock_amount: lowStockAmount,
+    tax_class: taxClass || "",
+    weight: weight !== undefined ? `${weight}` : "0",
+    regular_price: `${retailPrice}`,
+    meta_data: [],
   };
+
+  if (costOfGood !== undefined) {
+    body.meta_data.push({
+      key: "_wc_cog_cost",
+      value: `${costOfGood}`,
+    });
+  }
+  console.log(inspect(body, true, null));
 
   try {
     const response = await fetch(`${storeUrl}/wp-json/wc/v3/products`, {

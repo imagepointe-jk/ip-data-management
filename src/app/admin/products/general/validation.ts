@@ -17,47 +17,40 @@ export function validateSortOrder(
   normalizedInputObject: { [key: string]: any },
   rowIndex: number,
 ) {
-  const sortOrder =
-    normalizedInputObject.order !== undefined
-      ? +`${normalizedInputObject.order}`
-      : undefined;
-  if (sortOrder !== undefined && isNaN(sortOrder))
-    throw new Error(`Invalid "order" value at index ${rowIndex}`);
-
-  return sortOrder;
+  return validateNumberFromAny(
+    normalizedInputObject.order,
+    `Invalid "order" value at index ${rowIndex}`,
+  );
 }
 
 export function validateStock(
   normalizedInputObject: { [key: string]: any },
   rowIndex: number,
 ) {
-  const stock =
-    normalizedInputObject.stock !== undefined
-      ? +`${normalizedInputObject.stock}`
-      : undefined;
-  if (stock !== undefined && isNaN(stock))
-    throw new Error(`Invalid "stock" value at index ${rowIndex}`);
-
-  return stock;
+  return validateNumberFromAny(
+    normalizedInputObject.stock,
+    `Invalid "stock" value at index ${rowIndex}`,
+  );
 }
 
 export function validatePublishedStatus(
   normalizedInputObject: { [key: string]: any },
   rowIndex: number,
 ) {
-  const published =
-    normalizedInputObject.published === undefined
-      ? undefined
-      : normalizedInputObject.published === "y"
-        ? true
-        : false;
-  if (
-    normalizedInputObject.published !== undefined &&
-    !["y", "n"].includes(normalizedInputObject.published)
-  )
-    throw new Error(`Invalid "published" value at index ${rowIndex}`);
+  return validateYesOrNo(
+    normalizedInputObject.published,
+    `Invalid "published" value at index ${rowIndex}`,
+  );
+}
 
-  return published;
+export function validateManageStock(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateYesOrNo(
+    normalizedInputObject["stock tracking"],
+    `Invalid "stock tracking" value at index ${rowIndex}`,
+  );
 }
 
 export function validateProductType(
@@ -92,4 +85,73 @@ export function validateSku(
     );
 
   return sku;
+}
+
+export function validateRetailPrice(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateNumberFromAny(
+    normalizedInputObject["retail price"],
+    `Invalid "retail price" value at index ${rowIndex}`,
+  );
+}
+
+export function validateCostOfGood(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateNumberFromAny(
+    normalizedInputObject["cost of good"],
+    `Invalid "cost of good" value at index ${rowIndex}`,
+  );
+}
+
+export function validateLowStockAmount(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateNumberFromAny(
+    normalizedInputObject["low stock amount"],
+    `Invalid "low stock amount" value at index ${rowIndex}`,
+  );
+}
+
+export function validateWeight(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateNumberFromAny(
+    normalizedInputObject.weight,
+    `Invalid "weight" value at index ${rowIndex}`,
+  );
+}
+
+export function validateTaxClass(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  const taxClass =
+    normalizedInputObject["tax class"] === undefined
+      ? undefined
+      : `${normalizedInputObject["tax class"]}`;
+  if (taxClass !== undefined && !["standard", "clothing"].includes(taxClass))
+    throw new Error(`Invalid "tax class" value at index ${rowIndex}`);
+
+  return taxClass;
+}
+
+function validateYesOrNo(val: any, messageIfError: string) {
+  const asBool = val === undefined ? undefined : val === "y" ? true : false;
+  if (val !== undefined && !["y", "n"].includes(val))
+    throw new Error(messageIfError);
+
+  return asBool;
+}
+
+function validateNumberFromAny(val: any, messageIfError: string) {
+  const asNum = val !== undefined ? +`${val}` : undefined;
+  if (val !== undefined && isNaN(val)) throw new Error(messageIfError);
+
+  return asNum;
 }

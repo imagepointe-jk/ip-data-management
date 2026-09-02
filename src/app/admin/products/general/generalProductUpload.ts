@@ -12,12 +12,18 @@ import { getSheetFromBuffer, sheetToJson } from "@/utility/spreadsheet";
 import { BAD_REQUEST } from "@/utility/statusCodes";
 import { v4 as uuidv4 } from "uuid";
 import {
+  validateCostOfGood,
   validateId,
+  validateLowStockAmount,
+  validateManageStock,
   validateProductType,
   validatePublishedStatus,
+  validateRetailPrice,
   validateSku,
   validateSortOrder,
   validateStock,
+  validateTaxClass,
+  validateWeight,
 } from "./validation";
 import { getAllProducts } from "@/fetch/client/woocommerce";
 import { parseWooCommerceProductsMultiple } from "@/types/validations/woo";
@@ -30,7 +36,14 @@ export type ProductSyncRow = {
     parentSku?: string;
     name?: string;
     sku?: string;
+    description?: string;
+    retailPrice?: number;
+    costOfGood?: number;
     stock?: number;
+    lowStockAmount?: number;
+    manageStock?: boolean;
+    weight?: number;
+    taxClass?: string;
     published?: boolean;
     sortOrder?: number;
     type?: string;
@@ -85,8 +98,17 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
       const id = validateId(normalized, operation, i);
       const sortOrder = validateSortOrder(normalized, i);
       const stock = validateStock(normalized, i);
+      const lowStockAmount = validateLowStockAmount(normalized, i);
       const published = validatePublishedStatus(normalized, i);
-      // const parentId = validateParentId(normalized, i, json);
+      const description =
+        normalized.description === undefined
+          ? undefined
+          : `${normalized.description}`;
+      const retailPrice = validateRetailPrice(normalized, i);
+      const costOfGood = validateCostOfGood(normalized, i);
+      const weight = validateWeight(normalized, i);
+      const manageStock = validateManageStock(normalized, i);
+      const taxClass = validateTaxClass(normalized, i);
       const sku = validateSku(normalized, operation, i);
       const name =
         normalized.name === undefined ? undefined : `${normalized.name}`;
@@ -104,9 +126,16 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
         id,
         sku,
         name,
+        description,
+        retailPrice,
+        costOfGood,
         sortOrder,
         published,
         stock,
+        lowStockAmount,
+        manageStock,
+        taxClass,
+        weight,
         parentSku,
         type,
         color,
@@ -193,7 +222,24 @@ async function handleCreationSyncRow(params: {
   } = params;
   if (!data) return;
 
-  const { parentSku, sku, name, type, color, size } = data;
+  const {
+    parentSku,
+    sku,
+    name,
+    type,
+    color,
+    size,
+    costOfGood,
+    description,
+    lowStockAmount,
+    manageStock,
+    published,
+    retailPrice,
+    sortOrder,
+    stock,
+    taxClass,
+    weight,
+  } = data;
   const isVariation = parentSku !== undefined;
   let response: {
     ok: boolean;
@@ -235,6 +281,16 @@ async function handleCreationSyncRow(params: {
       sku: `${sku}`,
       name,
       type,
+      costOfGood,
+      description,
+      lowStockAmount,
+      manageStock,
+      published,
+      retailPrice,
+      sortOrder,
+      stock,
+      taxClass,
+      weight,
       attributes: attributesArray,
     });
     const { createdProduct } = response;
