@@ -266,6 +266,13 @@ async function handleCreationSyncRow(params: {
       apiKey: key,
       apiSecret: secret,
       sku: `${sku}`,
+      costOfGood,
+      lowStockAmount,
+      manageStock,
+      published,
+      retailPrice,
+      stock,
+      weight,
       attributes: createVariationAttributesArray({ color, size }),
       parentId: parent.id,
     });
@@ -324,7 +331,21 @@ async function handleUpdateSyncRow(params: {
   } = params;
   if (!data) return;
 
-  const { parentSku, sku, id, stock, published, sortOrder } = data;
+  const {
+    parentSku,
+    sku,
+    id,
+    stock,
+    published,
+    sortOrder,
+    costOfGood,
+    description,
+    lowStockAmount,
+    manageStock,
+    retailPrice,
+    taxClass,
+    weight,
+  } = data;
   const isVariation = parentSku !== undefined;
   let response: {
     ok: boolean;
@@ -352,7 +373,12 @@ async function handleUpdateSyncRow(params: {
       apiSecret: secret,
       productId: parent.id,
       variationId: id,
-      stockQuantity: stock,
+      stock,
+      weight,
+      retailPrice,
+      costOfGood,
+      manageStock,
+      lowStockAmount,
       published,
     });
   } else {
@@ -361,9 +387,16 @@ async function handleUpdateSyncRow(params: {
       apiKey: key,
       apiSecret: secret,
       productId: id,
-      stockQuantity: stock,
+      stock,
       published,
       sortOrder,
+      costOfGood,
+      description,
+      lowStockAmount,
+      manageStock,
+      retailPrice,
+      taxClass,
+      weight,
     });
   }
 

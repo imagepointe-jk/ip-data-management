@@ -165,7 +165,10 @@ export function GeneralProductUploadForm() {
             className: styles["column-medium"],
           },
           {
-            createCell: (item) => `${item.data?.published}`,
+            createCell: (item) =>
+              item.data?.published !== undefined
+                ? `${item.data?.published}`
+                : undefined,
             headerName: "Published",
             className: styles["column-small"],
           },
@@ -200,17 +203,26 @@ export function GeneralProductUploadForm() {
             className: styles["column-small"],
           },
           {
-            createCell: (item) => `${item.data?.manageStock}`,
+            createCell: (item) =>
+              item.data?.manageStock !== undefined
+                ? `${item.data?.manageStock}`
+                : undefined,
             headerName: "Manage Stock?",
             className: styles["column-medium"],
           },
           {
-            createCell: (item) => `$${item.data?.retailPrice?.toFixed(2)}`,
+            createCell: (item) =>
+              item.data?.retailPrice !== undefined
+                ? `$${item.data?.retailPrice?.toFixed(2)}`
+                : undefined,
             headerName: "Retail Price",
             className: styles["column-small"],
           },
           {
-            createCell: (item) => `$${item.data?.costOfGood?.toFixed(2)}`,
+            createCell: (item) =>
+              item.data?.costOfGood !== undefined
+                ? `$${item.data?.costOfGood?.toFixed(2)}`
+                : undefined,
             headerName: "Cost of Good",
             className: styles["column-small"],
           },

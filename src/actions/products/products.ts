@@ -170,26 +170,51 @@ export async function updateProductVariation(params: {
   apiSecret: string;
   productId: number;
   variationId: number;
-  stockQuantity?: number;
-  price?: number;
+  stock?: number;
+  lowStockAmount?: number;
+  manageStock?: boolean;
+  retailPrice?: number;
+  weight?: number;
   published?: boolean;
+  costOfGood?: number;
 }): Promise<{ ok: boolean; status: number }> {
   const {
     productId,
     variationId,
-    price,
-    stockQuantity,
+    retailPrice,
+    stock,
     published,
     apiKey,
     apiSecret,
     storeUrl,
+    weight,
+    lowStockAmount,
+    manageStock,
+    costOfGood,
   } = params;
 
-  const bodyData: { [key: string]: number | string } = {};
-  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
-  if (price !== undefined) bodyData.regular_price = `${price}`;
-  if (published !== undefined)
-    bodyData.status = published ? "publish" : "private";
+  const bodyData: any = {
+    status:
+      published === true
+        ? "publish"
+        : published === false
+          ? "draft"
+          : undefined,
+    manage_stock: manageStock !== undefined ? manageStock : undefined,
+    stock_quantity: stock !== undefined ? stock : undefined,
+    low_stock_amount: lowStockAmount,
+    weight: weight !== undefined ? `${weight}` : undefined,
+    regular_price: retailPrice !== undefined ? `${retailPrice}` : undefined,
+  };
+
+  if (costOfGood !== undefined) {
+    bodyData.meta_data = [
+      {
+        key: "_wc_cog_cost",
+        value: `${costOfGood}`,
+      },
+    ];
+  }
 
   try {
     const response = await fetch(
@@ -221,28 +246,59 @@ export async function updateProduct(params: {
   apiKey: string;
   apiSecret: string;
   productId: number;
-  stockQuantity?: number;
-  price?: number;
+  stock?: number;
+  retailPrice?: number;
   published?: boolean;
   sortOrder?: number;
+  costOfGood?: number;
+  description?: string;
+  lowStockAmount?: number;
+  manageStock?: boolean;
+  taxClass?: string;
+  weight?: number;
 }): Promise<{ ok: boolean; status: number }> {
   const {
     productId,
-    price,
-    stockQuantity,
+    retailPrice,
+    stock,
     published,
     apiKey,
     apiSecret,
     storeUrl,
     sortOrder,
+    lowStockAmount,
+    taxClass,
+    weight,
+    manageStock,
+    costOfGood,
+    description,
   } = params;
 
-  const bodyData: { [key: string]: number | string } = {};
-  if (stockQuantity !== undefined) bodyData.stock_quantity = stockQuantity;
-  if (price !== undefined) bodyData.regular_price = `${price}`;
-  if (published !== undefined)
-    bodyData.status = published ? "publish" : "draft";
-  if (sortOrder !== undefined) bodyData.menu_order = sortOrder;
+  const bodyData: any = {
+    description,
+    status:
+      published === true
+        ? "publish"
+        : published === false
+          ? "draft"
+          : undefined,
+    manage_stock: manageStock !== undefined ? manageStock : undefined,
+    menu_order: sortOrder !== undefined ? sortOrder : undefined,
+    stock_quantity: stock !== undefined ? stock : undefined,
+    low_stock_amount: lowStockAmount,
+    tax_class: taxClass !== undefined ? taxClass : undefined,
+    weight: weight !== undefined ? `${weight}` : undefined,
+    regular_price: retailPrice !== undefined ? `${retailPrice}` : undefined,
+  };
+
+  if (costOfGood !== undefined) {
+    bodyData.meta_data = [
+      {
+        key: "_wc_cog_cost",
+        value: `${costOfGood}`,
+      },
+    ];
+  }
 
   try {
     const response = await fetch(
@@ -352,7 +408,6 @@ export async function createProduct(params: {
       value: `${costOfGood}`,
     });
   }
-  console.log(inspect(body, true, null));
 
   try {
     const response = await fetch(`${storeUrl}/wp-json/wc/v3/products`, {
@@ -393,6 +448,13 @@ export async function createProductVariation(params: {
   apiSecret: string;
   sku: string;
   parentId: number;
+  retailPrice?: number;
+  costOfGood?: number;
+  published?: boolean;
+  lowStockAmount?: number;
+  manageStock?: boolean;
+  weight?: number;
+  stock?: number;
   attributes: { name: string; option: string }[];
 }): Promise<{
   ok: boolean;
@@ -400,14 +462,44 @@ export async function createProductVariation(params: {
   message?: string;
   createdId?: number;
 }> {
-  const { apiKey, apiSecret, storeUrl, sku, parentId, attributes } = params;
-
-  const body = {
+  const {
+    apiKey,
+    apiSecret,
+    storeUrl,
     sku,
+    parentId,
+    attributes,
+    costOfGood,
+    lowStockAmount,
+    manageStock,
+    published,
+    retailPrice,
+    stock,
+    weight,
+  } = params;
+
+  const body: any = {
+    sku,
+    status:
+      published === true
+        ? "publish"
+        : published === false
+          ? "private"
+          : undefined,
+    regular_price: `${retailPrice}`,
+    stock_quantity: stock !== undefined ? stock : 0,
+    low_stock_amount: lowStockAmount,
+    manage_stock: manageStock || false,
+    weight: weight !== undefined ? `${weight}` : "0",
+    meta_data: [],
     attributes,
   };
-
-  console.log(inspect(body, true, null));
+  if (costOfGood !== undefined) {
+    body.meta_data.push({
+      key: "_wc_cog_cost",
+      value: `${costOfGood}`,
+    });
+  }
 
   try {
     const response = await fetch(
