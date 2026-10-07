@@ -49,6 +49,7 @@ export function validateOrderImportSheet(ordersJson: any, lineItemsJson: any) {
     customerNote: orderRow["customer note"],
     couponCode: orderRow["coupon code"],
     handlingFeeAmount: orderRow["handling fee amount"],
+    orderStatus: orderRow["order status"],
   }));
 
   return z.array(orderImportSchema).parse(toBeParsed);

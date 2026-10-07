@@ -129,6 +129,7 @@ export async function createOrder(
     customerNote,
     couponCode,
     handlingFeeAmount,
+    orderStatus,
   } = data;
 
   body.billing = {
@@ -180,7 +181,7 @@ export async function createOrder(
   ];
 
   if (customerNote) body.customer_note = customerNote;
-  body.status = "processing"; //hardcoded for now
+  body.status = orderStatus ? orderStatus : "processing";
 
   const metadata: { key: string; value: string }[] = [];
   if (handlingFeeAmount) {

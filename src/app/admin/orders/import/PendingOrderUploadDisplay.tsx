@@ -20,6 +20,7 @@ export function PendingOrderUploadDisplay({
     couponCode,
     customerNote,
     handlingFeeAmount,
+    orderStatus,
   } = pendingUpload;
   const [expanded, setExpanded] = useState(false);
 
@@ -109,6 +110,9 @@ export function PendingOrderUploadDisplay({
               <div>
                 Handling Fee Amount:{" "}
                 {handlingFeeAmount ? `$${handlingFeeAmount}` : "(n/a)"}
+              </div>
+              <div>
+                Order Status: {orderStatus ? `${orderStatus}` : "(default)"}
               </div>
             </div>
           </div>
