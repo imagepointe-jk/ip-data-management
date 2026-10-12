@@ -174,6 +174,7 @@ export async function updateProductVariation(params: {
   lowStockAmount?: number;
   manageStock?: boolean;
   retailPrice?: number;
+  salePrice?: number;
   weight?: number;
   published?: boolean;
   costOfGood?: number;
@@ -182,6 +183,7 @@ export async function updateProductVariation(params: {
     productId,
     variationId,
     retailPrice,
+    salePrice,
     stock,
     published,
     apiKey,
@@ -205,6 +207,7 @@ export async function updateProductVariation(params: {
     low_stock_amount: lowStockAmount,
     weight: weight !== undefined ? `${weight}` : undefined,
     regular_price: retailPrice !== undefined ? `${retailPrice}` : undefined,
+    sale_price: salePrice !== undefined ? `${salePrice}` : undefined,
   };
 
   if (costOfGood !== undefined) {
@@ -248,6 +251,7 @@ export async function updateProduct(params: {
   productId: number;
   stock?: number;
   retailPrice?: number;
+  salePrice?: number;
   published?: boolean;
   sortOrder?: number;
   costOfGood?: number;
@@ -260,6 +264,7 @@ export async function updateProduct(params: {
   const {
     productId,
     retailPrice,
+    salePrice,
     stock,
     published,
     apiKey,
@@ -289,6 +294,7 @@ export async function updateProduct(params: {
     tax_class: taxClass !== undefined ? taxClass : undefined,
     weight: weight !== undefined ? `${weight}` : undefined,
     regular_price: retailPrice !== undefined ? `${retailPrice}` : undefined,
+    sale_price: salePrice !== undefined ? `${salePrice}` : undefined,
   };
 
   if (costOfGood !== undefined) {
@@ -337,6 +343,7 @@ export async function createProduct(params: {
   name?: string;
   sku?: string;
   retailPrice?: number;
+  salePrice?: number;
   costOfGood?: number;
   stock?: number;
   lowStockAmount?: number;
@@ -367,6 +374,7 @@ export async function createProduct(params: {
     lowStockAmount,
     manageStock,
     retailPrice,
+    salePrice,
     stock,
   } = params;
 
@@ -399,6 +407,7 @@ export async function createProduct(params: {
     tax_class: taxClass || "",
     weight: weight !== undefined ? `${weight}` : "0",
     regular_price: `${retailPrice}`,
+    sale_price: salePrice !== undefined ? `${salePrice}` : undefined,
     meta_data: [],
   };
 
@@ -449,6 +458,7 @@ export async function createProductVariation(params: {
   sku: string;
   parentId: number;
   retailPrice?: number;
+  salePrice?: number;
   costOfGood?: number;
   published?: boolean;
   lowStockAmount?: number;
@@ -474,6 +484,7 @@ export async function createProductVariation(params: {
     manageStock,
     published,
     retailPrice,
+    salePrice,
     stock,
     weight,
   } = params;
@@ -487,6 +498,7 @@ export async function createProductVariation(params: {
           ? "private"
           : undefined,
     regular_price: `${retailPrice}`,
+    sale_price: salePrice !== undefined ? `${salePrice}` : undefined,
     stock_quantity: stock !== undefined ? stock : 0,
     low_stock_amount: lowStockAmount,
     manage_stock: manageStock || false,

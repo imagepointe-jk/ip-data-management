@@ -220,6 +220,14 @@ export function GeneralProductUploadForm() {
           },
           {
             createCell: (item) =>
+              item.data?.salePrice !== undefined
+                ? `$${item.data?.salePrice?.toFixed(2)}`
+                : undefined,
+            headerName: "Sale Price",
+            className: styles["column-small"],
+          },
+          {
+            createCell: (item) =>
               item.data?.costOfGood !== undefined
                 ? `$${item.data?.costOfGood?.toFixed(2)}`
                 : undefined,

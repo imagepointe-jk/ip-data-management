@@ -19,6 +19,7 @@ import {
   validateProductType,
   validatePublishedStatus,
   validateRetailPrice,
+  validateSalePrice,
   validateSku,
   validateSortOrder,
   validateStock,
@@ -38,6 +39,7 @@ export type ProductSyncRow = {
     sku?: string;
     description?: string;
     retailPrice?: number;
+    salePrice?: number;
     costOfGood?: number;
     stock?: number;
     lowStockAmount?: number;
@@ -105,6 +107,7 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
           ? undefined
           : `${normalized.description}`;
       const retailPrice = validateRetailPrice(normalized, i);
+      const salePrice = validateSalePrice(normalized, i);
       const costOfGood = validateCostOfGood(normalized, i);
       const weight = validateWeight(normalized, i);
       const manageStock = validateManageStock(normalized, i);
@@ -128,6 +131,7 @@ function validateGeneralProductSheet(json: any): ProductSyncRow[] {
         name,
         description,
         retailPrice,
+        salePrice,
         costOfGood,
         sortOrder,
         published,
@@ -235,6 +239,7 @@ async function handleCreationSyncRow(params: {
     manageStock,
     published,
     retailPrice,
+    salePrice,
     sortOrder,
     stock,
     taxClass,
@@ -271,6 +276,7 @@ async function handleCreationSyncRow(params: {
       manageStock,
       published,
       retailPrice,
+      salePrice,
       stock,
       weight,
       attributes: createVariationAttributesArray({ color, size }),
@@ -294,6 +300,7 @@ async function handleCreationSyncRow(params: {
       manageStock,
       published,
       retailPrice,
+      salePrice,
       sortOrder,
       stock,
       taxClass,
@@ -343,6 +350,7 @@ async function handleUpdateSyncRow(params: {
     lowStockAmount,
     manageStock,
     retailPrice,
+    salePrice,
     taxClass,
     weight,
   } = data;
@@ -376,6 +384,7 @@ async function handleUpdateSyncRow(params: {
       stock,
       weight,
       retailPrice,
+      salePrice,
       costOfGood,
       manageStock,
       lowStockAmount,
@@ -395,6 +404,7 @@ async function handleUpdateSyncRow(params: {
       lowStockAmount,
       manageStock,
       retailPrice,
+      salePrice,
       taxClass,
       weight,
     });

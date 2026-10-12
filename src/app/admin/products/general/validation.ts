@@ -97,6 +97,16 @@ export function validateRetailPrice(
   );
 }
 
+export function validateSalePrice(
+  normalizedInputObject: { [key: string]: any },
+  rowIndex: number,
+) {
+  return validateNumberFromAny(
+    normalizedInputObject["sale price"],
+    `Invalid "sale price" value at index ${rowIndex}`,
+  );
+}
+
 export function validateCostOfGood(
   normalizedInputObject: { [key: string]: any },
   rowIndex: number,
