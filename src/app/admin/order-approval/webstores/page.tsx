@@ -14,6 +14,10 @@ export default async function Page() {
         These records establish a link between an external webstore and the
         order approval system.
       </p>
+      <p>
+        <strong>NOTE:</strong> This area is under development. Some webstores
+        seen here may not be relevant to the order approval system.
+      </p>
       <ResultsTable webstores={sortedWebstores} />
       <CreateButton />
     </>

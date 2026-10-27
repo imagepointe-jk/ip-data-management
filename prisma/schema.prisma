@@ -30,6 +30,42 @@ model Color {
   customProductSettings  CustomProductSettingsVariation[]
 }
 
+model Webstore {
+  id                  Int    @id @default(autoincrement())
+  name                String
+  organizationName    String
+  url                 String @unique
+  apiKey              String //encrypted
+  apiKeyEncryptIv     String
+  apiKeyEncryptTag    String
+  apiSecret           String //encrypted
+  apiSecretEncryptIv  String
+  apiSecretEncryptTag String
+  salesPersonName     String @default("None")
+  salesPersonEmail    String @default("None")
+
+  //order approval related settings
+  otherSupportEmails           String? //when a customer submits a help form, the email will also go to all of these addresses
+  orderUpdatedEmails           String?
+  notifyUpdaterOnOrderUpdate   Boolean                   @default(true) //whether to send confirmation email to the person updating an order using the approval form. highly specific setting that should probably be replaced with something more comprehensive.
+  customOrderApprovedEmail     String?
+  useCustomOrderApprovedEmail  Boolean                   @default(false)
+  reminderEmailTargets         String? //semicolon-separated list of email addresses to send reminder emails to about outstanding orders 
+  sendReminderEmails           Boolean                   @default(true)
+  shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
+  shippingEmailDestOverride    String? //overrides the IP shipping team email defined in env variables; useful for testing so the email doesn't actually go to the team
+  approverDashboardViewerEmail String                    @default("NO_EMAIL")
+  requirePinForApproval        Boolean                   @default(true)
+  allowOrderHelpRequest        Boolean                   @default(true) //whether to allow approvers to request assistance with an order using the "I need help" button in the approver area
+  autoCreateApprover           Boolean                   @default(false) //if true, will automatically create a new user based on the email address in the "approver" field coming from WC (if one doesn't already exist) 
+  shippingSettings             WebstoreShippingSettings?
+  shippingMethods              WebstoreShippingMethod[]
+  workflows                    OrderWorkflow[]
+  roles                        WebstoreUserRole[]
+  checkoutFields               WebstoreCheckoutField[]
+  logs                         WebstoreLog[]
+}
+
 model DignityApparelSearchString {
   id        Int      @id @default(autoincrement())
   search    String
@@ -192,39 +228,6 @@ model ProductSizeOptions {
 
 //#endregion
 //#region Order Approval
-model Webstore {
-  id                           Int                       @id @default(autoincrement())
-  name                         String
-  organizationName             String
-  url                          String                    @unique
-  apiKey                       String //encrypted
-  apiKeyEncryptIv              String
-  apiKeyEncryptTag             String
-  apiSecret                    String //encrypted
-  apiSecretEncryptIv           String
-  apiSecretEncryptTag          String
-  salesPersonName              String                    @default("None")
-  salesPersonEmail             String                    @default("None")
-  otherSupportEmails           String? //when a customer submits a help form, the email will also go to all of these addresses
-  orderUpdatedEmails           String?
-  notifyUpdaterOnOrderUpdate   Boolean                   @default(true) //whether to send confirmation email to the person updating an order using the approval form. highly specific setting that should probably be replaced with something more comprehensive.
-  customOrderApprovedEmail     String?
-  useCustomOrderApprovedEmail  Boolean                   @default(false)
-  reminderEmailTargets         String? //semicolon-separated list of email addresses to send reminder emails to about outstanding orders 
-  sendReminderEmails           Boolean                   @default(true)
-  shippingEmailFilename        String                    @default("NO_SHIPPING_EMAIL")
-  shippingEmailDestOverride    String? //overrides the IP shipping team email defined in env variables; useful for testing so the email doesn't actually go to the team
-  approverDashboardViewerEmail String                    @default("NO_EMAIL")
-  requirePinForApproval        Boolean                   @default(true)
-  allowOrderHelpRequest        Boolean                   @default(true) //whether to allow approvers to request assistance with an order using the "I need help" button in the approver area
-  autoCreateApprover           Boolean                   @default(false) //if true, will automatically create a new user based on the email address in the "approver" field coming from WC (if one doesn't already exist) 
-  shippingSettings             WebstoreShippingSettings?
-  shippingMethods              WebstoreShippingMethod[]
-  workflows                    OrderWorkflow[]
-  roles                        WebstoreUserRole[]
-  checkoutFields               WebstoreCheckoutField[]
-  logs                         WebstoreLog[]
-}
 
 model WebstoreShippingSettings {
   id                        Int      @id @default(autoincrement())
