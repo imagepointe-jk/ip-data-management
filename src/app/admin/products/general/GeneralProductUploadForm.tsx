@@ -11,7 +11,16 @@ import {
 import { useImmer } from "use-immer";
 import styles from "@/styles/productImport/productImport.module.css";
 
-export function GeneralProductUploadForm() {
+type Props = {
+  webstores: {
+    id: number;
+    name: string;
+    url: string;
+    apiKey: string;
+    apiSecret: string;
+  }[];
+};
+export function GeneralProductUploadForm({ webstores }: Props) {
   const [syncRows, setSyncRows] = useImmer<ProductSyncRow[]>([]);
   const [uploadStatus, setUploadStatus] = useState<
     "ready" | "processing" | "done"
@@ -35,6 +44,8 @@ export function GeneralProductUploadForm() {
     const formData = new FormData(form);
 
     if (!syncRowsReady) {
+      const webstoreId = +`${formData.get("webstore-id")}`;
+      console.log(webstoreId);
       const rows = await createProductSyncRows(formData);
       setSyncRows(rows);
     } else {
@@ -43,9 +54,14 @@ export function GeneralProductUploadForm() {
   }
 
   async function doSync(formData: FormData) {
-    const url = `${formData.get("url")}`;
-    const key = `${formData.get("key")}`;
-    const secret = `${formData.get("secret")}`;
+    const requestedId = +`${formData.get("webstore-id")}`;
+    const matchingStore = webstores.find((store) => store.id === requestedId);
+    if (!matchingStore) return;
+    const { url, apiKey: key, apiSecret: secret } = matchingStore;
+
+    // const url = `${formData.get("url")}`;
+    // const key = `${formData.get("key")}`;
+    // const secret = `${formData.get("secret")}`;
 
     setUploadStatus("processing");
     const serverContext = await getServerContext({ url, key, secret });
@@ -97,14 +113,16 @@ export function GeneralProductUploadForm() {
   }
 
   function clearForm() {
-    const url = document.getElementById("url");
-    const key = document.getElementById("key");
-    const secret = document.getElementById("secret");
+    // const url = document.getElementById("url");
+    // const key = document.getElementById("key");
+    // const secret = document.getElementById("secret");
+    const webstoreId = document.getElementById("webstore-id");
     const file = document.getElementById("file");
 
-    (url as HTMLInputElement).value = "";
-    (key as HTMLInputElement).value = "";
-    (secret as HTMLInputElement).value = "";
+    // (url as HTMLInputElement).value = "";
+    // (key as HTMLInputElement).value = "";
+    // (secret as HTMLInputElement).value = "";
+    (webstoreId as HTMLInputElement).value = "";
     (file as HTMLInputElement).value = "";
 
     setSyncRows([]);
@@ -118,7 +136,18 @@ export function GeneralProductUploadForm() {
       onSubmit={onSubmit}
     >
       <h3>Upload Import Spreadsheet</h3>
-      <label htmlFor="url">
+      <label htmlFor="webstore-id">
+        <div>Target Webstore</div>
+        <select name="webstore-id" id="webstore-id">
+          <option value="">Select a store...</option>
+          {webstores.map((store) => (
+            <option key={store.id} value={store.id}>
+              {store.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      {/* <label htmlFor="url">
         Store URL
         <input type="text" name="url" id="url" required />
       </label>
@@ -129,7 +158,7 @@ export function GeneralProductUploadForm() {
       <label htmlFor="secret">
         API Secret
         <input type="text" name="secret" id="secret" required />
-      </label>
+      </label> */}
       <label htmlFor="file">
         <input type="file" name="file" id="file" required />
       </label>
