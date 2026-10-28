@@ -10,7 +10,18 @@ export function decryptWebstoreData(webstore: Webstore) {
     apiSecretEncryptIv,
     apiSecretEncryptTag,
   } = webstore;
-  const key = decrypt(apiKey, apiKeyEncryptIv, apiKeyEncryptTag);
-  const secret = decrypt(apiSecret, apiSecretEncryptIv, apiSecretEncryptTag);
+
+  //fallback values
+  let key = "<UNABLE TO DECRYPT API KEY>";
+  let secret = "<UNABLE TO DECRYPT API SECRET>";
+
+  try {
+    key = decrypt(apiKey, apiKeyEncryptIv, apiKeyEncryptTag);
+  } catch (_) {}
+
+  try {
+    secret = decrypt(apiSecret, apiSecretEncryptIv, apiSecretEncryptTag);
+  } catch (_) {}
+
   return { key, secret };
 }
